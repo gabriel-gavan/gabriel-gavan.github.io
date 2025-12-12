@@ -5,35 +5,27 @@
   <title>Mini Game Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
-     crossorigin="anonymous"></script>
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (Option A: always load) -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
 
   <style>
-    :root {
-      color-scheme: dark;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
 
     body {
-	  margin: 0;
-	  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	  /* Background image + fallback color */
-	  /* Background image + fallback color */
-	  background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;
-	  color: #e5e7eb;
-	  min-height: 100vh;
-	  display: block;
-}
-
-
-    .hidden {
-      display: none !important;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: block;
     }
+
+    .hidden { display: none !important; }
 
     /* --------- LAYOUT WRAPPER: SIDE ADS + MAIN CONTENT --------- */
     .page-wrap {
@@ -43,7 +35,7 @@
       gap: 12px;
     }
 
-    /* --------- SIDE BANNERS --------- */
+    /* Side columns kept for layout spacing (Auto Ads can still place ads on the page) */
     .side-banner {
       flex: 0 0 180px;
       display: flex;
@@ -52,38 +44,10 @@
       padding: 4px;
     }
 
-    .ad-placeholder {
-      width: 160px;
-      height: 600px;
-      border-radius: 12px;
-      background: #020617;
-      border: 1px dashed #374151;
-      color: #9ca3af;
-      font-size: 0.75rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0.75rem;
-    }
-
-    .ad-placeholder span {
-      opacity: 0.8;
-    }
-
-    .side-banner ins.adsbygoogle {
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
+    /* Hide side columns on small screens */
     @media (max-width: 1024px) {
-      .side-banner {
-        display: none;
-      }
-      .page-wrap {
-        justify-content: center;
-      }
+      .side-banner { display: none; }
+      .page-wrap { justify-content: center; }
     }
 
     /* --------- MAIN CONTENT (HUB) --------- */
@@ -99,7 +63,7 @@
       min-height: calc(100vh - 24px);
     }
 
-    /* --------- TOP LEADERBOARD BANNER --------- */
+    /* --------- TOP STRIP (no manual ad units for Auto Ads) --------- */
     .top-banner {
       padding: 0.6rem 1.5rem 0.4rem;
       border-bottom: 1px solid #111827;
@@ -114,65 +78,27 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 70px;
-    }
-
-    .ad-placeholder-top {
-      width: 728px;
-      height: 90px;
-      max-width: 100%;
-      border-radius: 12px;
-      background: #020617;
-      border: 1px dashed #374151;
-      color: #9ca3af;
-      font-size: 0.8rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0.75rem;
-    }
-
-    .ad-placeholder-top span {
-      opacity: 0.8;
-    }
-
-    .top-banner ins.adsbygoogle {
-      display: block;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    @media (max-width: 700px) {
-      .top-banner {
-        padding: 0.4rem 0.8rem 0.2rem;
-      }
-      .ad-placeholder-top {
-        height: auto;
-        min-height: 60px;
-      }
+      min-height: 20px;
     }
 
     header {
       padding: 1.5rem 1.5rem 0.8rem;
       border-bottom: 1px solid #111827;
-	  background: url('images/header-bg.png') center/cover no-repeat;
-	  color: white;
-	  position: relative;
+      background: url('images/header-bg.png') center/cover no-repeat;
+      color: white;
+      position: relative;
     }
-	/* dim overlay for readability */
-	header::before {
-	  content: "";
-	  position: absolute;
-	  inset: 0;
-	  background: rgba(0,0,0,0.55);
-	}
 
-	header * {
-	  position: relative;
-	  z-index: 2;
-	}
+    /* dim overlay for readability */
+    header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+    }
+
+    header * { position: relative; z-index: 2; }
+
     header h1 {
       margin: 0 0 0.4rem;
       font-size: 1.7rem;
@@ -232,9 +158,7 @@
       outline: none;
     }
 
-    .search-input::placeholder {
-      color: #6b7280;
-    }
+    .search-input::placeholder { color: #6b7280; }
 
     .type-select {
       background: #020617;
@@ -268,20 +192,16 @@
     .content-scroll {
       overflow: auto;
       padding: 0.4rem 1.5rem 1rem;
-	      background-image: url("images/hub-bg.jpg"); /* your image */
-		background-size: cover;
-		background-position: center;
-		background-repeat: no-repeat;
-		border-top: 1px solid rgba(255,255,255,0.08);
+      background-image: url("images/hub-bg.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     @media (max-width: 700px) {
-      header {
-        padding: 1.1rem 1rem 0.8rem;
-      }
-      .content-scroll {
-        padding: 0.4rem 1rem 0.8rem;
-      }
+      header { padding: 1.1rem 1rem 0.8rem; }
+      .content-scroll { padding: 0.4rem 1rem 0.8rem; }
     }
 
     /* --------- CATEGORY TITLES (ANIMATED BANNERS) --------- */
@@ -302,15 +222,8 @@
       box-shadow: 0 10px 25px rgba(15,23,42,0.8);
     }
 
-    .category-title span.label {
-      opacity: 0.95;
-    }
-
-    .category-title span.sub {
-      font-size: 0.8rem;
-      color: #9ca3af;
-      opacity: 0.9;
-    }
+    .category-title span.label { opacity: 0.95; }
+    .category-title span.sub { font-size: 0.8rem; color: #9ca3af; opacity: 0.9; }
 
     @keyframes bannerGlow {
       0%   { background-position: 0% 50%; }
@@ -368,9 +281,7 @@
       color: #cbd5f5;
     }
 
-    .tag-row {
-      margin-top: 0.2rem;
-    }
+    .tag-row { margin-top: 0.2rem; }
 
     .tag {
       font-size: 0.7rem;
@@ -426,9 +337,7 @@
       background: #020617;
     }
 
-    footer span {
-      opacity: 0.9;
-    }
+    footer span { opacity: 0.9; }
 
     /* ================== COOKIE BANNER ================== */
     .cookie-banner {
@@ -577,49 +486,24 @@
       gap: 0.3rem;
     }
 
-    .privacy-settings-btn span {
-      font-size: 0.85rem;
-    }
+    .privacy-settings-btn span { font-size: 0.85rem; }
 
     @media (max-width: 640px) {
-      .privacy-settings-btn {
-        bottom: 3.4rem; /* so it doesn't overlap the banner */
-      }
+      .privacy-settings-btn { bottom: 3.4rem; }
     }
-
   </style>
 </head>
 <body>
 
 <div class="page-wrap">
 
-  <!-- ===================== LEFT BANNER AREA ===================== -->
-  <aside class="side-banner">
-    <div class="ad-placeholder">
-      <strong>Ad Slot</strong>
-      <span>Paste AdSense code here<br/>for a 160×600 sidebar banner.</span>
-    </div>
-  </aside>
+  <!-- LEFT COLUMN (kept empty for Auto Ads) -->
+  <aside class="side-banner"></aside>
 
-  <!-- ===================== MAIN ARCADE HUB ===================== -->
   <main class="main-content">
 
-    <!-- TOP LEADERBOARD BANNER -->
     <div class="top-banner">
-      <div class="top-banner-inner">
-		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
-	    crossorigin="anonymous"></script>
-		<!-- Top Banner -->
-		<ins class="adsbygoogle"
-		     style="display:block"
-		     data-ad-client="ca-pub-5482914432517813"
-		     data-ad-slot="8834567127"
-		     data-ad-format="auto"
-		     data-full-width-responsive="true"></ins>
-		<script>
-		     (adsbygoogle = window.adsbygoogle || []).push({});
-		</script>
-      </div>
+      <div class="top-banner-inner"></div>
     </div>
 
     <header>
@@ -635,11 +519,7 @@
     <!-- FILTERS / SEARCH / SHUFFLE -->
     <div class="filters-bar">
       <div class="filters-left">
-        <input
-          id="searchInput"
-          class="search-input"
-          type="text"
-          placeholder="Search games by name or description…" />
+        <input id="searchInput" class="search-input" type="text" placeholder="Search games by name or description…" />
         <select id="typeFilter" class="type-select">
           <option value="all">All types</option>
           <option value="arcade">Arcade</option>
@@ -718,7 +598,7 @@
           </div>
         </div>
 
-        <!-- Stargrid Defense (also in Top Picks) -->
+        <!-- Stargrid Defense (Top Picks) -->
         <div class="card game-card"
              data-id="stargrid-defense-top"
              data-url="stargrid-defense.html"
@@ -1068,13 +948,8 @@
 
   </main>
 
-  <!-- ===================== RIGHT BANNER AREA ===================== -->
-  <aside class="side-banner">
-    <div class="ad-placeholder">
-      <strong>Ad Slot</strong>
-      <span>Paste another AdSense code here<br/>for the right sidebar banner.</span>
-    </div>
-  </aside>
+  <!-- RIGHT COLUMN (kept empty for Auto Ads) -->
+  <aside class="side-banner"></aside>
 
 </div>
 
@@ -1099,16 +974,11 @@
 <div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
   <div class="privacy-modal">
     <h2>Privacy &amp; Cookies</h2>
-    <p>
-      This site uses cookies and similar technologies to:
-    </p>
+    <p>This site uses cookies and similar technologies to:</p>
     <ul>
       <li>Remember your preferences (for example, which games you play most).</li>
       <li>Measure traffic and usage to improve the site.</li>
-      <li>
-        If you enable it, show personalized ads via third-party partners such as Google AdSense,
-        which may use cookies and identifiers to personalize content and ads.
-      </li>
+      <li>If you enable it, show personalized ads via third-party partners such as Google AdSense.</li>
     </ul>
     <p>
       Under GDPR and similar laws, you can choose whether we may use non-essential cookies (analytics / ads).
@@ -1133,7 +1003,6 @@
   <span>⚙</span> Privacy &amp; Cookies
 </button>
 
-<!-- ============ GAME LOGIC + PRIVACY / COOKIE LOGIC ============ -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const cards = Array.from(document.querySelectorAll('.game-card'));
@@ -1218,13 +1087,8 @@
       });
     }
 
-    if (searchInput) {
-      searchInput.addEventListener('input', applyFilters);
-    }
-
-    if (typeFilter) {
-      typeFilter.addEventListener('change', applyFilters);
-    }
+    if (searchInput) searchInput.addEventListener('input', applyFilters);
+    if (typeFilter) typeFilter.addEventListener('change', applyFilters);
 
     if (shuffleBtn) {
       shuffleBtn.addEventListener('click', () => {
@@ -1248,20 +1112,17 @@
       });
     }
 
-    // ===== Cookie / Privacy consent =====
+    // ===== Cookie / Privacy consent (UI only in this version) =====
     const CONSENT_KEY = 'nrPrivacyConsent';
 
     function getConsent() {
-      try {
-        return JSON.parse(localStorage.getItem(CONSENT_KEY)) || null;
-      } catch (e) {
-        return null;
-      }
+      try { return JSON.parse(localStorage.getItem(CONSENT_KEY)) || null; }
+      catch (e) { return null; }
     }
 
     function saveConsent(status) {
       const value = {
-        status,               // "granted" | "denied"
+        status,
         analytics: status === 'granted',
         ads: status === 'granted',
         updatedAt: new Date().toISOString()
@@ -1270,93 +1131,25 @@
       return value;
     }
 
-    function showCookieBanner() {
-      if (cookieBanner) cookieBanner.classList.remove('hidden');
-    }
-
-    function hideCookieBanner() {
-      if (cookieBanner) cookieBanner.classList.add('hidden');
-    }
-
-    function openPrivacyModal() {
-      if (privacyModalBackdrop) privacyModalBackdrop.classList.remove('hidden');
-    }
-
-    function closePrivacyModal() {
-      if (privacyModalBackdrop) privacyModalBackdrop.classList.add('hidden');
-    }
-
-    // IMPORTANT: When you actually enable AdSense or analytics,
-    // you should only load those scripts AFTER consent = "granted".
-    function loadAdAndAnalyticsScriptsIfConsented(consent) {
-      if (!consent || consent.status !== 'granted') {
-        return;
-      }
-      // Example stub:
-      // const script = document.createElement('script');
-      // script.async = true;
-      // script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-CLIENT-ID";
-      // script.crossOrigin = "anonymous";
-      // document.head.appendChild(script);
-    }
+    function showCookieBanner() { if (cookieBanner) cookieBanner.classList.remove('hidden'); }
+    function hideCookieBanner() { if (cookieBanner) cookieBanner.classList.add('hidden'); }
+    function openPrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.remove('hidden'); }
+    function closePrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.add('hidden'); }
 
     const existingConsent = getConsent();
+    if (!existingConsent) showCookieBanner();
+    else hideCookieBanner();
 
-    if (!existingConsent) {
-      showCookieBanner();
-    } else {
-      hideCookieBanner();
-      loadAdAndAnalyticsScriptsIfConsented(existingConsent);
-    }
+    if (cookieAcceptBtn) cookieAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); });
+    if (cookieRejectBtn) cookieRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); });
 
-    if (cookieAcceptBtn) {
-      cookieAcceptBtn.addEventListener('click', () => {
-        const consent = saveConsent('granted');
-        hideCookieBanner();
-        loadAdAndAnalyticsScriptsIfConsented(consent);
-      });
-    }
+    if (privacySettingsBtn) privacySettingsBtn.addEventListener('click', openPrivacyModal);
 
-    if (cookieRejectBtn) {
-      cookieRejectBtn.addEventListener('click', () => {
-        saveConsent('denied');
-        hideCookieBanner();
-      });
-    }
-
-    if (privacySettingsBtn) {
-      privacySettingsBtn.addEventListener('click', () => {
-        openPrivacyModal();
-      });
-    }
-
-    if (privacyAcceptBtn) {
-      privacyAcceptBtn.addEventListener('click', () => {
-        const consent = saveConsent('granted');
-        hideCookieBanner();
-        loadAdAndAnalyticsScriptsIfConsented(consent);
-        closePrivacyModal();
-      });
-    }
-
-    if (privacyRejectBtn) {
-      privacyRejectBtn.addEventListener('click', () => {
-        saveConsent('denied');
-        hideCookieBanner();
-        closePrivacyModal();
-      });
-    }
-
-    if (privacyCloseBtn) {
-      privacyCloseBtn.addEventListener('click', () => {
-        closePrivacyModal();
-      });
-    }
-
+    if (privacyAcceptBtn) privacyAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); closePrivacyModal(); });
+    if (privacyRejectBtn) privacyRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); closePrivacyModal(); });
+    if (privacyCloseBtn)  privacyCloseBtn.addEventListener('click', closePrivacyModal);
   });
 </script>
 
 </body>
 </html>
-
-
