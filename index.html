@@ -491,6 +491,146 @@
     @media (max-width: 640px) {
       .privacy-settings-btn { bottom: 3.4rem; }
     }
+    /* ===========================
+   MOBILE IMPROVEMENTS
+   Paste at the END of <style>
+   =========================== */
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Prevent any accidental overflow caused by long content */
+.page-wrap, .main-content, .content-scroll, .grid {
+  min-width: 0;
+}
+
+/* Make the hub feel less “boxed” on smaller screens */
+@media (max-width: 1024px) {
+  .page-wrap {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .main-content {
+    border-radius: 14px;
+  }
+}
+
+/* Phones: stack filters, make grid 1 column, adjust spacing */
+@media (max-width: 640px) {
+  /* Top strip takes less space */
+  .top-banner {
+    padding: 0.35rem 0.6rem;
+  }
+  .top-banner-inner {
+    min-height: 0;
+  }
+
+  /* Header becomes more compact */
+  header {
+    padding: 1.05rem 0.95rem 0.85rem;
+    background-position: center top;
+  }
+  header h1 {
+    font-size: 1.45rem;
+  }
+  header p {
+    font-size: 0.9rem;
+    line-height: 1.35rem;
+  }
+
+  /* Filters = full width stacked */
+  .filters-bar {
+    max-width: 100%;
+    margin: 0.6rem 0.6rem 0.2rem;
+    padding: 0;
+    gap: 0.55rem;
+  }
+
+  .filters-left,
+  .filters-right {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .search-input,
+  .type-select,
+  .btn-secondary {
+    width: 100%;
+  }
+
+  .btn-secondary {
+    justify-content: center;
+  }
+
+  /* Scroll area padding becomes smaller */
+  .content-scroll {
+    padding: 0.4rem 0.8rem 0.9rem;
+    background-attachment: scroll; /* fixed backgrounds can lag on mobile */
+  }
+
+  /* Category banner fits better */
+  .category-title {
+    margin: 0.95rem auto 0.45rem;
+    padding: 0.45rem 0.75rem;
+    font-size: 1.05rem;
+    line-height: 1.2rem;
+    border-radius: 14px; /* less “pill” on tiny screens */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.15rem;
+  }
+
+  .category-title span.sub {
+    font-size: 0.8rem;
+  }
+
+  /* Grid becomes single column */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+    max-width: 100%;
+  }
+
+  /* Cards slightly smaller but still “big” */
+  .card {
+    padding: 1.05rem 1.1rem;
+    min-height: 160px;
+  }
+
+  .card a {
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+
+  .card-desc {
+    font-size: 0.92rem;
+    line-height: 1.35rem;
+  }
+
+  /* Cookie banner buttons stack nicely */
+  .cookie-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .btn-cookie-primary,
+  .btn-cookie-secondary {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Privacy modal fits on small screens */
+  .privacy-modal {
+    width: calc(100% - 24px);
+    margin: 12px;
+    max-height: calc(100vh - 24px);
+    overflow: auto;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1153,4 +1293,5 @@
 
 </body>
 </html>
+
 
