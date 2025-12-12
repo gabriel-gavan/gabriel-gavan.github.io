@@ -630,6 +630,50 @@ html, body {
     overflow: auto;
   }
 }
+  /* ================== MOBILE OPTIMIZATION ================== */
+@media (max-width: 640px) {
+
+  /* One card per row */
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  /* Smaller cards */
+  .card {
+    padding: 1rem 1.1rem;
+    min-height: auto;
+  }
+
+  /* Smaller title */
+  .card a {
+    font-size: 1.15rem;
+  }
+
+  /* Smaller description */
+  .card-desc {
+    font-size: 0.82rem;
+    line-height: 1.2rem;
+  }
+
+  /* Smaller tags */
+  .tag {
+    font-size: 0.62rem;
+    padding: 0.12rem 0.4rem;
+  }
+
+  /* Reduce hover lift on mobile */
+  .card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Category titles tighter */
+  .category-title {
+    font-size: 1rem;
+    padding: 0.3rem 0.6rem;
+  }
+}
 
   </style>
 </head>
@@ -1293,5 +1337,6 @@ html, body {
 
 </body>
 </html>
+
 
 
