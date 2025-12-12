@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Timer Bomb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    input { padding:.3rem .5rem;border-radius:.4rem;border:1px solid #374151;background:#0f172a;color:#fff; }
+    button { padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin-left:.3rem; }
+  </style>
+</head>
+<body>
+
+<h2>⏳ Timer Bomb</h2>
+<a href="index.html">⬅ Back</a>
+<p>Defuse the bomb in 20 seconds by guessing the secret 3-digit code (100–999).</p>
+
+<p id="time">Time: 20</p>
+<input id="code" type="number" placeholder="Enter code">
+<button onclick="tryCode()">Submit</button>
+<p id="hint"></p>
+
+<script>
+let target = Math.floor(Math.random()*900)+100;
+let time=20, timer, gameOver=false;
+
+function tick(){
+  time--;
+  document.getElementById("time").innerText="Time: "+time;
+  if(time<=0){
+    clearInterval(timer);
+    if(!gameOver){
+      gameOver=true;
+      document.getElementById("hint").innerText="💥 Boom! The code was "+target;
+    }
+  }
+}
+
+function tryCode(){
+  if(gameOver) return;
+  const val=parseInt(document.getElementById("code").value,10);
+  const h=document.getElementById("hint");
+  if(isNaN(val)) { h.innerText="Enter a number!"; return; }
+  if(val===target){
+    gameOver=true;
+    clearInterval(timer);
+    h.innerText="🧯 Defused! You saved the day!";
+  } else if(val<target){
+    h.innerText="Too low!";
+  } else {
+    h.innerText="Too high!";
+  }
+}
+
+timer=setInterval(tick,1000);
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

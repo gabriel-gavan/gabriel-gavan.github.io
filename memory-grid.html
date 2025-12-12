@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head><title>Memory Grid</title></head>
+<body>
+
+<h2>Memory Grid</h2>
+<a href="index.html">⬅ Back</a><br><br>
+
+<div id="grid"></div>
+<p id="msg"></p>
+
+<script>
+let size=4;
+let values, revealed=[];
+
+const grid=document.getElementById("grid");
+grid.style.display="grid";
+grid.style.gridTemplateColumns="repeat(4,70px)";
+grid.style.gap="10px";
+
+function init() {
+  revealed=[];
+  values=[...Array(8).keys(), ...Array(8).keys()].sort(()=>Math.random()-0.5);
+  grid.innerHTML="";
+
+  values.forEach((v,i)=>{
+    let d=document.createElement("div");
+    d.innerText="?";
+    d.style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;border:1px solid black;font-size:20px;";
+    d.onclick=()=>flip(d,i);
+    grid.appendChild(d);
+  });
+}
+
+function flip(card,i){
+  if(revealed.length==2) return;
+  card.innerText = values[i];
+  revealed.push({card,i});
+
+  if(revealed.length==2){
+    if(values[revealed[0].i]!==values[revealed[1].i]){
+      setTimeout(()=>{
+        revealed[0].card.innerText="?";
+        revealed[1].card.innerText="?";
+        revealed=[];
+      },800);
+    } else revealed=[];
+  }
+}
+
+init();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

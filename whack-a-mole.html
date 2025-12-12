@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Whack-a-Mole</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    #grid { display:inline-grid; grid-template-columns:repeat(3,70px); gap:8px;margin-top:10px; }
+    .cell {
+      width:70px;height:70px;
+      background:#111827;border-radius:.6rem;border:1px solid #374151;
+      display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:28px;
+    }
+    .mole { background:#22c55e; }
+  </style>
+</head>
+<body>
+
+<h2>🐹 Whack-a-Mole</h2>
+<a href="index.html">⬅ Back</a>
+<p>Click the mole as it appears. You have 30 seconds.</p>
+
+<p id="score">Score: 0</p>
+<p id="time">Time: 30</p>
+<div id="grid"></div>
+<p id="msg"></p>
+
+<script>
+const grid=document.getElementById("grid");
+let score=0, time=30, timer, moleIndex=-1;
+
+for(let i=0;i<9;i++){
+  const d=document.createElement("div");
+  d.className="cell";
+  d.onclick=()=>hit(i);
+  grid.appendChild(d);
+}
+
+function spawnMole(){
+  const cells=[...document.querySelectorAll(".cell")];
+  cells.forEach(c=>c.classList.remove("mole"));
+  moleIndex=Math.floor(Math.random()*9);
+  cells[moleIndex].classList.add("mole");
+  cells[moleIndex].innerText="🐹";
+  cells.forEach((c,idx)=>{ if(idx!==moleIndex) c.innerText=""; });
+}
+
+function hit(i){
+  if(i===moleIndex){
+    score++;
+    document.getElementById("score").innerText="Score: "+score;
+    moleIndex=-1;
+  }
+}
+
+function tick(){
+  time--;
+  document.getElementById("time").innerText="Time: "+time;
+  if(time<=0){
+    clearInterval(timer);
+    document.getElementById("msg").innerText="⏱ Time's up! Final score: "+score;
+    [...document.querySelectorAll(".cell")].forEach(c=>{c.classList.remove("mole");c.innerText="";});
+  } else {
+    spawnMole();
+  }
+}
+
+function start(){
+  score=0; time=30;
+  document.getElementById("score").innerText="Score: 0";
+  document.getElementById("time").innerText="Time: 30";
+  document.getElementById("msg").innerText="";
+  if(timer) clearInterval(timer);
+  timer=setInterval(tick,1000);
+}
+
+start();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

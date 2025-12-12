@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minesweeper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed; color:#fff; text-align:center; }
+    a { color:#a5b4fc; }
+    #board { display:inline-grid; grid-template-columns: repeat(8,30px); gap:2px; margin-top:10px; }
+    .cell {
+      width:30px;height:30px;
+      background:#111827;border:1px solid #374151;
+      display:flex;align-items:center;justify-content:center;
+      font-size:14px; cursor:pointer;
+    }
+    .open { background:#1f2937; cursor:default; }
+    .mine { background:#b91c1c; }
+  </style>
+</head>
+<body>
+
+<h2>💣 Minesweeper (8×8, 10 mines)</h2>
+<a href="index.html">⬅ Back</a>
+<p>Click to reveal. Numbers = nearby mines. Hitting a mine ends the game.</p>
+
+<div id="board"></div>
+<p id="status"></p>
+
+<script>
+const rows=8, cols=8, minesCount=10;
+let board=[], gameOver=false, opened=0;
+
+function init() {
+  gameOver=false; opened=0;
+  document.getElementById("status").innerText="";
+  board=[];
+  for(let r=0;r<rows;r++){
+    board[r]=[];
+    for(let c=0;c<cols;c++){
+      board[r][c]={mine:false,open:false,count:0,el:null};
+    }
+  }
+  // place mines
+  let placed=0;
+  while(placed<minesCount){
+    let r=Math.floor(Math.random()*rows);
+    let c=Math.floor(Math.random()*cols);
+    if(!board[r][c].mine){
+      board[r][c].mine=true;
+      placed++;
+    }
+  }
+  // compute counts
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      if(board[r][c].mine) continue;
+      let total=0;
+      for(let dr=-1;dr<=1;dr++){
+        for(let dc=-1;dc<=1;dc++){
+          let nr=r+dr,nc=c+dc;
+          if(nr>=0&&nr<rows&&nc>=0&&nc<cols&&board[nr][nc].mine) total++;
+        }
+      }
+      board[r][c].count=total;
+    }
+  }
+
+  const container=document.getElementById("board");
+  container.innerHTML="";
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const d=document.createElement("div");
+      d.className="cell";
+      d.onclick=()=>openCell(r,c);
+      board[r][c].el=d;
+      container.appendChild(d);
+    }
+  }
+}
+
+function openCell(r,c){
+  if(gameOver) return;
+  const cell=board[r][c];
+  if(cell.open) return;
+  cell.open=true;
+  opened++;
+  cell.el.classList.add("open");
+  if(cell.mine){
+    cell.el.classList.add("mine");
+    cell.el.innerText="💣";
+    endGame(false);
+    return;
+  }
+  if(cell.count>0){
+    cell.el.innerText=cell.count;
+  } else {
+    // flood fill
+    for(let dr=-1;dr<=1;dr++){
+      for(let dc=-1;dc<=1;dc++){
+        let nr=r+dr,nc=c+dc;
+        if(nr>=0&&nr<rows&&nc>=0&&nc<cols){
+          if(!board[nr][nc].open) openCell(nr,nc);
+        }
+      }
+    }
+  }
+  if(opened === rows*cols - minesCount) endGame(true);
+}
+
+function endGame(win){
+  gameOver=true;
+  if(win) document.getElementById("status").innerText="🎉 You cleared the board!";
+  else {
+    document.getElementById("status").innerText="💥 Boom! You hit a mine.";
+    // reveal all mines
+    for(let r=0;r<rows;r++){
+      for(let c=0;c<cols;c++){
+        if(board[r][c].mine){
+          board[r][c].el.classList.add("mine","open");
+          board[r][c].el.innerText="💣";
+        }
+      }
+    }
+  }
+}
+
+init();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

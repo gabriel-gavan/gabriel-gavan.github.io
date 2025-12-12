@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe vs AI</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    #board { display:inline-grid;grid-template-columns:repeat(3,70px);gap:4px;margin-top:10px; }
+    .cell {
+      width:70px;height:70px;border-radius:.5rem;border:1px solid #374151;
+      display:flex;align-items:center;justify-content:center;font-size:26px;cursor:pointer;background:#111827;
+    }
+  </style>
+</head>
+<body>
+
+<h2>⭕ Tic Tac Toe vs AI</h2>
+<a href="index.html">⬅ Back</a>
+<p>You are X. Click a cell to play. AI is O.</p>
+
+<div id="board"></div>
+<p id="msg"></p>
+<button onclick="resetGame()">Restart</button>
+
+<script>
+let board = Array(9).fill(null); // 'X','O'
+let gameOver=false;
+
+const boardDiv=document.getElementById("board");
+const msg=document.getElementById("msg");
+
+function render(){
+  boardDiv.innerHTML="";
+  board.forEach((v,i)=>{
+    const d=document.createElement("div");
+    d.className="cell";
+    d.innerText=v? v:"";
+    d.onclick=()=>playerMove(i);
+    boardDiv.appendChild(d);
+  });
+}
+
+function lines(){
+  return [
+    [0,1,2],[3,4,5],[6,7,8], // rows
+    [0,3,6],[1,4,7],[2,5,8], // cols
+    [0,4,8],[2,4,6]          // diag
+  ];
+}
+
+function winner(b){
+  for(const [a,b1,c] of lines()){
+    if(b[a] && b[a]===b[b1] && b[a]===b[c]) return b[a];
+  }
+  if(b.every(x=>x)) return "draw";
+  return null;
+}
+
+function playerMove(i){
+  if(gameOver || board[i]) return;
+  board[i]="X";
+  checkState();
+  if(!gameOver) aiMove();
+}
+
+function aiMove(){
+  // simple AI: try to win, block, else random
+  let move = bestMoveFor("O") ?? bestMoveFor("X") ?? randomMove();
+  if(move!=null){
+    board[move]="O";
+    checkState();
+  }
+}
+
+function bestMoveFor(player){
+  for(let i=0;i<9;i++){
+    if(!board[i]){
+      const copy=board.slice();
+      copy[i]=player;
+      if(winner(copy)===player) return i;
+    }
+  }
+  return null;
+}
+
+function randomMove(){
+  const empties = board.map((v,i)=>v?null:i).filter(v=>v!=null);
+  if(!empties.length) return null;
+  return empties[Math.floor(Math.random()*empties.length)];
+}
+
+function checkState(){
+  const w=winner(board);
+  render();
+  if(w){
+    gameOver=true;
+    if(w==="draw") msg.innerText="It's a draw.";
+    else msg.innerText = (w==="X"?"You win! 🎉":"AI wins 🤖");
+  }
+}
+
+function resetGame(){
+  board=Array(9).fill(null);
+  gameOver=false;
+  msg.innerText="";
+  render();
+}
+
+resetGame();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

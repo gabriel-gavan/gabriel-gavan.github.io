@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Rock Paper Scissors</title></head>
+<body>
+
+<h2>Rock Paper Scissors</h2>
+<a href="index.html">⬅ Back</a><br><br>
+
+<button onclick="play('rock')">Rock</button>
+<button onclick="play('paper')">Paper</button>
+<button onclick="play('scissors')">Scissors</button>
+
+<p id="out"></p>
+
+<script>
+function play(p){
+  let c=["rock","paper","scissors"][Math.floor(Math.random()*3)];
+
+  let result = 
+    p==c ? "Draw" :
+    (p=="rock"&&c=="scissors") ||
+    (p=="paper"&&c=="rock") ||
+    (p=="scissors"&&c=="paper") ? "You win!" : "You lose!";
+
+  document.getElementById("out").innerText =
+    "You: "+p+" | CPU: "+c+" → "+result;
+}
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

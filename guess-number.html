@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Guess The Number</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+
+<h2>Guess The Number (1–100)</h2>
+<a href="index.html">⬅ Back</a><br><br>
+
+<input id="guess" type="number" placeholder="Enter number">
+<button onclick="check()">Try</button>
+<p id="msg"></p>
+
+<script>
+let target = Math.floor(Math.random()*100)+1;
+
+function check() {
+  let v=document.getElementById("guess").value;
+  let msg=document.getElementById("msg");
+
+  if (v==target) msg.innerText="✅ Correct!";
+  else if (v<target) msg.innerText="Too low!";
+  else msg.innerText="Too high!";
+}
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

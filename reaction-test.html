@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head><title>Reaction Test</title></head>
+<body>
+
+<h2>Reaction Test</h2>
+<a href="index.html">⬅ Back</a><br><br>
+
+<button id="btn" onclick="start()">Start</button>
+<p id="msg"></p>
+
+<script>
+let startTime;
+
+function start(){
+  document.getElementById("msg").innerText="Wait...";
+  let delay = Math.random()*3000 + 1000;
+
+  setTimeout(()=>{
+    startTime = performance.now();
+    document.getElementById("btn").innerText="CLICK!";
+    document.getElementById("btn").onclick=stop;
+  }, delay);
+}
+
+function stop(){
+  let time = Math.round(performance.now() - startTime);
+  document.getElementById("msg").innerText = "⏱ "+time+" ms";
+  document.getElementById("btn").innerText="Start";
+  document.getElementById("btn").onclick=start;
+}
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

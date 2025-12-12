@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff; }
+    a { color:#a5b4fc; }
+    main { max-width:600px;margin:1rem auto;padding:0 1rem; }
+    button { margin-top:.4rem;padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;display:block; }
+  </style>
+</head>
+<body>
+
+<main>
+  <h2>❓ Mini Quiz</h2>
+  <a href="index.html">⬅ Back</a>
+  <p>Multiple choice quiz, 5 questions. Click an answer.</p>
+
+  <h3 id="qText"></h3>
+  <div id="answers"></div>
+  <p id="progress"></p>
+  <p id="result"></p>
+</main>
+
+<script>
+const questions = [
+  {
+    q:"What is the capital of France?",
+    answers:["Berlin","Madrid","Paris","Rome"],
+    correct:2
+  },
+  {
+    q:"Which planet is known as the Red Planet?",
+    answers:["Earth","Mars","Jupiter","Venus"],
+    correct:1
+  },
+  {
+    q:"How many sides does a hexagon have?",
+    answers:["5","6","7","8"],
+    correct:1
+  },
+  {
+    q:"Which language runs in a web browser?",
+    answers:["Java","C++","Python","JavaScript"],
+    correct:3
+  },
+  {
+    q:"What does HTML stand for?",
+    answers:["Hyperlinks and Text Markup Language","Hyper Text Markup Language","Home Tool Markup Language","Hyper Tech Markup Language"],
+    correct:1
+  }
+];
+
+let index=0, score=0;
+
+const qText=document.getElementById("qText");
+const answersDiv=document.getElementById("answers");
+const progress=document.getElementById("progress");
+const result=document.getElementById("result");
+
+function showQuestion(){
+  const q=questions[index];
+  qText.innerText=q.q;
+  progress.innerText=`Question ${index+1} / ${questions.length}`;
+  answersDiv.innerHTML="";
+  result.innerText="";
+
+  q.answers.forEach((a,i)=>{
+    const btn=document.createElement("button");
+    btn.innerText=a;
+    btn.onclick=()=>answer(i);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function answer(i){
+  const correct = questions[index].correct;
+  if(i===correct){
+    score++;
+    result.innerText="✅ Correct!";
+  } else {
+    result.innerText="❌ Wrong!";
+  }
+  index++;
+  if(index<questions.length){
+    setTimeout(showQuestion,700);
+  } else {
+    setTimeout(()=>{
+      qText.innerText="Quiz finished!";
+      answersDiv.innerHTML="";
+      progress.innerText="";
+      result.innerText=`Your score: ${score} / ${questions.length}`;
+    },700);
+  }
+}
+
+showQuestion();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

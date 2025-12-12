@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Higher / Lower</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    .card-row { display:flex;justify-content:center;gap:1rem;margin:1rem 0; }
+    .card { padding:.5rem 1rem;border-radius:.6rem;border:1px solid #374151;background:#111827;font-size:1.4rem;min-width:70px; }
+    button { padding:.4rem .9rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin:0 .3rem; }
+  </style>
+</head>
+<body>
+
+<h2>⬆⬇ Higher / Lower</h2>
+<a href="index.html">⬅ Back</a>
+<p>Guess if the next number (1–100) will be higher or lower than the current one.</p>
+
+<div class="card-row">
+  <div class="card" id="current">?</div>
+  <div class="card" id="next">?</div>
+</div>
+
+<button onclick="guess('higher')">Higher</button>
+<button onclick="guess('lower')">Lower</button>
+
+<p id="msg"></p>
+<p id="score">Score: 0</p>
+
+<script>
+let current=0, score=0;
+
+function newRound(){
+  current = Math.floor(Math.random()*100)+1;
+  document.getElementById("current").innerText=current;
+  document.getElementById("next").innerText="?";
+  document.getElementById("msg").innerText="";
+}
+
+function guess(type){
+  const next = Math.floor(Math.random()*100)+1;
+  document.getElementById("next").innerText=next;
+  const correct = type==="higher" ? next>current : next<current;
+  if(correct){
+    score++;
+    document.getElementById("msg").innerText="✅ Correct!";
+  } else {
+    score=0;
+    document.getElementById("msg").innerText="❌ Wrong!";
+  }
+  document.getElementById("score").innerText="Score: "+score;
+  current=next;
+  document.getElementById("current").innerText=current;
+  document.getElementById("next").innerText="?";
+}
+
+newRound();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

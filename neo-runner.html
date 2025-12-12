@@ -1,0 +1,2304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neo Runner – Cyber District</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    /* Layout: side banners + main column */
+    .layout {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px 8px;
+      gap: 12px;
+    }
+
+    .ad-vertical {
+      width: 160px;
+      min-height: 600px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      text-align: center;
+      color: #6b7280;
+      padding: 8px;
+    }
+
+    .main-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .top-banner {
+      width: 100%;
+      max-width: 960px;
+      height: 90px;
+      border-radius: 12px;
+      border: 1px dashed #1f2937;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #6b7280;
+      text-align: center;
+      padding: 4px;
+    }
+
+    canvas {
+      border-radius: 14px;
+      border: 1px solid #4b5563;
+      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      max-width: 100%;
+      height: auto;
+      cursor: crosshair;
+      display: block;
+    }
+
+    /* Mobile: hide side banners, keep top */
+    @media (max-width: 900px) {
+      .layout {
+        padding: 8px;
+        gap: 0;
+      }
+      .ad-vertical {
+        display: none;
+      }
+      .top-banner {
+        height: 60px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <!-- LEFT BANNER -->
+  <aside class="ad-vertical">
+    <!-- LEFT SIDEBAR BANNER (160x600) -->
+    <!-- Google AdSense: paste your left sidebar ad code here
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXX"
+         data-ad-slot="YYYY"
+         data-ad-format="vertical"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div>
+      Left Banner Zone<br/>
+      <strong>160×600</strong><br/>
+      Paste your AdSense code here.
+    </div>
+  </aside>
+
+  <!-- MAIN COLUMN -->
+  <main class="main-column">
+    <!-- TOP LEADERBOARD -->
+    <div class="top-banner">
+      <!-- TOP LEADERBOARD (728x90 recommended) -->
+      <!-- Google AdSense: paste your top leaderboard ad code here
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-XXXX"
+           data-ad-slot="ZZZZ"
+           data-ad-format="horizontal"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+      Top Banner Zone – recommended 728×90 (auto also works).<br/>
+      Paste your AdSense snippet here.
+    </div>
+<!-- GAME HEADER -->
+    <div class="game-header">
+      <div class="title">Neo Runner – Campaign</div>
+      <div>
+        <a href="index.html">⬅ Back to Hub</a>
+      </div>
+    </div>
+    <!-- GAME CANVAS -->
+    <canvas id="gameCanvas" width="960" height="540"></canvas>
+  </main>
+
+  <!-- RIGHT BANNER -->
+  <aside class="ad-vertical">
+    <!-- RIGHT SIDEBAR BANNER -->
+    <!-- Google AdSense: paste your right sidebar ad code here
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXX"
+         data-ad-slot="WWWW"
+         data-ad-format="vertical"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    -->
+    <div>
+      Right Banner Zone<br/>
+      <strong>160×600</strong><br/>
+      Paste your AdSense code here.
+    </div>
+  </aside>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById("gameCanvas");
+  const ctx = canvas.getContext("2d");
+  const WIDTH = canvas.width;
+  const HEIGHT = canvas.height;
+  const TAU = Math.PI * 2;
+
+  // ---------- LEVEL DEFINITIONS ----------
+  const LEVELS = [
+  // ───────────── Sector 1 – Neon District ─────────────
+  {
+    sector: 1,
+    stage: 1,
+    name: "Sector 1-1 – Neon District Entry",
+    shortName: "1-1 Neon Entry",
+    length: 1400,
+    scrollSpeed: 220,
+    gravity: 2100,
+    jumpVelocity: -720,
+    pitChance: 0.10,
+    droneChance: 0.15,
+    laserChance: 0.00,
+    skyTop: "#020617",
+    skyBottom: "#0b1120",
+    groundColor: "#111827",
+    platformColor: "#1f2937",
+    neonAccent: "#38bdf8"
+  },
+  {
+    sector: 1,
+    stage: 2,
+    name: "Sector 1-2 – Rooftop Run",
+    shortName: "1-2 Rooftops",
+    length: 1700,
+    scrollSpeed: 235,
+    gravity: 2150,
+    jumpVelocity: -740,
+    pitChance: 0.14,
+    droneChance: 0.18,
+    laserChance: 0.03,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#22d3ee"
+  },
+  {
+    sector: 1,
+    stage: 3,
+    name: "Sector 1-3 – Rail Line Escape",
+    shortName: "1-3 Rail Line",
+    length: 1900,
+    scrollSpeed: 245,
+    gravity: 2200,
+    jumpVelocity: -760,
+    pitChance: 0.16,
+    droneChance: 0.22,
+    laserChance: 0.05,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#0ea5e9"
+  },
+
+  // ───────────── Sector 2 – Hologrid Plaza ─────────────
+  {
+    sector: 2,
+    stage: 1,
+    name: "Sector 2-1 – Hologrid Plaza",
+    shortName: "2-1 Plaza",
+    length: 2000,
+    scrollSpeed: 250,
+    gravity: 2200,
+    jumpVelocity: -770,
+    pitChance: 0.16,
+    droneChance: 0.22,
+    laserChance: 0.05,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#1f2937",
+    neonAccent: "#6366f1"
+  },
+  {
+    sector: 2,
+    stage: 2,
+    name: "Sector 2-2 – Freight Lanes",
+    shortName: "2-2 Freight",
+    length: 2200,
+    scrollSpeed: 260,
+    gravity: 2250,
+    jumpVelocity: -780,
+    pitChance: 0.18,
+    droneChance: 0.25,
+    laserChance: 0.07,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#4f46e5"
+  },
+  {
+    sector: 2,
+    stage: 3,
+    name: "Sector 2-3 – Neon Bypass",
+    shortName: "2-3 Bypass",
+    length: 2400,
+    scrollSpeed: 270,
+    gravity: 2300,
+    jumpVelocity: -800,
+    pitChance: 0.20,
+    droneChance: 0.27,
+    laserChance: 0.09,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#818cf8"
+  },
+
+  // ───────────── Sector 3 – Industrial Veins ─────────────
+  {
+    sector: 3,
+    stage: 1,
+    name: "Sector 3-1 – Pipe Maze",
+    shortName: "3-1 Pipes",
+    length: 2500,
+    scrollSpeed: 270,
+    gravity: 2300,
+    jumpVelocity: -800,
+    pitChance: 0.20,
+    droneChance: 0.28,
+    laserChance: 0.10,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#1f2937",
+    neonAccent: "#f97316"
+  },
+  {
+    sector: 3,
+    stage: 2,
+    name: "Sector 3-2 – Furnace Lines",
+    shortName: "3-2 Furnace",
+    length: 2700,
+    scrollSpeed: 280,
+    gravity: 2350,
+    jumpVelocity: -820,
+    pitChance: 0.22,
+    droneChance: 0.30,
+    laserChance: 0.12,
+    skyTop: "#111827",
+    skyBottom: "#450a0a",
+    groundColor: "#111827",
+    platformColor: "#1f2937",
+    neonAccent: "#fb923c"
+  },
+  {
+    sector: 3,
+    stage: 3,
+    name: "Sector 3-3 – Reactor Edge",
+    shortName: "3-3 Reactor",
+    length: 2900,
+    scrollSpeed: 290,
+    gravity: 2400,
+    jumpVelocity: -840,
+    pitChance: 0.24,
+    droneChance: 0.32,
+    laserChance: 0.14,
+    skyTop: "#111827",
+    skyBottom: "#450a0a",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#f97316"
+  },
+
+  // ───────────── Sector 4 – Skybridge Array ─────────────
+  {
+    sector: 4,
+    stage: 1,
+    name: "Sector 4-1 – Skybridge Base",
+    shortName: "4-1 Skybridge",
+    length: 3000,
+    scrollSpeed: 290,
+    gravity: 2350,
+    jumpVelocity: -840,
+    pitChance: 0.24,
+    droneChance: 0.32,
+    laserChance: 0.15,
+    skyTop: "#020617",
+    skyBottom: "#1e293b",
+    groundColor: "#020617",
+    platformColor: "#0f172a",
+    neonAccent: "#22c55e"
+  },
+  {
+    sector: 4,
+    stage: 2,
+    name: "Sector 4-2 – Crosswinds",
+    shortName: "4-2 Crosswinds",
+    length: 3200,
+    scrollSpeed: 300,
+    gravity: 2350,
+    jumpVelocity: -850,
+    pitChance: 0.26,
+    droneChance: 0.34,
+    laserChance: 0.16,
+    skyTop: "#020617",
+    skyBottom: "#1e293b",
+    groundColor: "#020617",
+    platformColor: "#0f172a",
+    neonAccent: "#16a34a"
+  },
+  {
+    sector: 4,
+    stage: 3,
+    name: "Sector 4-3 – Upper Stratos",
+    shortName: "4-3 Stratos",
+    length: 3400,
+    scrollSpeed: 305,
+    gravity: 2400,
+    jumpVelocity: -860,
+    pitChance: 0.27,
+    droneChance: 0.36,
+    laserChance: 0.18,
+    skyTop: "#0b1120",
+    skyBottom: "#1e293b",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#4ade80"
+  },
+
+  // ───────────── Sector 5 – Data Chasm ─────────────
+  {
+    sector: 5,
+    stage: 1,
+    name: "Sector 5-1 – Broken Lifts",
+    shortName: "5-1 Lifts",
+    length: 3500,
+    scrollSpeed: 305,
+    gravity: 2450,
+    jumpVelocity: -870,
+    pitChance: 0.28,
+    droneChance: 0.37,
+    laserChance: 0.20,
+    skyTop: "#020617",
+    skyBottom: "#0f172a",
+    groundColor: "#020617",
+    platformColor: "#0f172a",
+    neonAccent: "#a855f7"
+  },
+  {
+    sector: 5,
+    stage: 2,
+    name: "Sector 5-2 – Core Descent",
+    shortName: "5-2 Core",
+    length: 3700,
+    scrollSpeed: 315,
+    gravity: 2450,
+    jumpVelocity: -880,
+    pitChance: 0.30,
+    droneChance: 0.39,
+    laserChance: 0.22,
+    skyTop: "#020617",
+    skyBottom: "#312e81",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#c4b5fd"
+  },
+  {
+    sector: 5,
+    stage: 3,
+    name: "Sector 5-3 – Bitstream Drop",
+    shortName: "5-3 Bitstream",
+    length: 3900,
+    scrollSpeed: 325,
+    gravity: 2500,
+    jumpVelocity: -890,
+    pitChance: 0.32,
+    droneChance: 0.41,
+    laserChance: 0.24,
+    skyTop: "#020617",
+    skyBottom: "#312e81",
+    groundColor: "#020617",
+    platformColor: "#111827",
+    neonAccent: "#a855f7"
+  },
+
+  // ───────────── Sector 6 – Aurora Belt ─────────────
+  {
+    sector: 6,
+    stage: 1,
+    name: "Sector 6-1 – Low Orbit Rail",
+    shortName: "6-1 Orbit",
+    length: 4000,
+    scrollSpeed: 330,
+    gravity: 2500,
+    jumpVelocity: -900,
+    pitChance: 0.32,
+    droneChance: 0.42,
+    laserChance: 0.25,
+    skyTop: "#020617",
+    skyBottom: "#1d283a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#facc15"
+  },
+  {
+    sector: 6,
+    stage: 2,
+    name: "Sector 6-2 – Ring Fragments",
+    shortName: "6-2 Rings",
+    length: 4200,
+    scrollSpeed: 340,
+    gravity: 2550,
+    jumpVelocity: -910,
+    pitChance: 0.34,
+    droneChance: 0.44,
+    laserChance: 0.27,
+    skyTop: "#020617",
+    skyBottom: "#1d283a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#fde047"
+  },
+  {
+    sector: 6,
+    stage: 3,
+    name: "Sector 6-3 – Solar Wake",
+    shortName: "6-3 Wake",
+    length: 4400,
+    scrollSpeed: 350,
+    gravity: 2600,
+    jumpVelocity: -920,
+    pitChance: 0.36,
+    droneChance: 0.46,
+    laserChance: 0.29,
+    skyTop: "#0f172a",
+    skyBottom: "#1d283a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#fbbf24"
+  },
+
+  // ───────────── Sector 7 – Blackout Zone ─────────────
+  {
+    sector: 7,
+    stage: 1,
+    name: "Sector 7-1 – Power Cuts",
+    shortName: "7-1 Blackout",
+    length: 4500,
+    scrollSpeed: 350,
+    gravity: 2550,
+    jumpVelocity: -920,
+    pitChance: 0.36,
+    droneChance: 0.47,
+    laserChance: 0.30,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#f43f5e"
+  },
+  {
+    sector: 7,
+    stage: 2,
+    name: "Sector 7-2 – Dark Lattice",
+    shortName: "7-2 Lattice",
+    length: 4700,
+    scrollSpeed: 360,
+    gravity: 2600,
+    jumpVelocity: -930,
+    pitChance: 0.38,
+    droneChance: 0.49,
+    laserChance: 0.32,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#fb7185"
+  },
+  {
+    sector: 7,
+    stage: 3,
+    name: "Sector 7-3 – Total Eclipse",
+    shortName: "7-3 Eclipse",
+    length: 4900,
+    scrollSpeed: 370,
+    gravity: 2650,
+    jumpVelocity: -940,
+    pitChance: 0.40,
+    droneChance: 0.51,
+    laserChance: 0.34,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#f97373"
+  },
+
+  // ───────────── Sector 8 – Quantum Freeway ─────────────
+  {
+    sector: 8,
+    stage: 1,
+    name: "Sector 8-1 – Split Lanes",
+    shortName: "8-1 Lanes",
+    length: 5000,
+    scrollSpeed: 375,
+    gravity: 2650,
+    jumpVelocity: -950,
+    pitChance: 0.40,
+    droneChance: 0.52,
+    laserChance: 0.35,
+    skyTop: "#020617",
+    skyBottom: "#0f172a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#22c55e"
+  },
+  {
+    sector: 8,
+    stage: 2,
+    name: "Sector 8-2 – Phase Traffic",
+    shortName: "8-2 Phase",
+    length: 5200,
+    scrollSpeed: 385,
+    gravity: 2700,
+    jumpVelocity: -960,
+    pitChance: 0.42,
+    droneChance: 0.54,
+    laserChance: 0.37,
+    skyTop: "#020617",
+    skyBottom: "#0f172a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#10b981"
+  },
+  {
+    sector: 8,
+    stage: 3,
+    name: "Sector 8-3 – Overclock Run",
+    shortName: "8-3 Overclock",
+    length: 5400,
+    scrollSpeed: 395,
+    gravity: 2750,
+    jumpVelocity: -970,
+    pitChance: 0.44,
+    droneChance: 0.56,
+    laserChance: 0.39,
+    skyTop: "#020617",
+    skyBottom: "#0f172a",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#34d399"
+  },
+
+  // ───────────── Sector 9 – Singularity Gate ─────────────
+  {
+    sector: 9,
+    stage: 1,
+    name: "Sector 9-1 – Event Streets",
+    shortName: "9-1 Event",
+    length: 5500,
+    scrollSpeed: 400,
+    gravity: 2750,
+    jumpVelocity: -980,
+    pitChance: 0.44,
+    droneChance: 0.58,
+    laserChance: 0.40,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#a855f7"
+  },
+  {
+    sector: 9,
+    stage: 2,
+    name: "Sector 9-2 – Collapse Ring",
+    shortName: "9-2 Collapse",
+    length: 5700,
+    scrollSpeed: 410,
+    gravity: 2800,
+    jumpVelocity: -990,
+    pitChance: 0.46,
+    droneChance: 0.60,
+    laserChance: 0.42,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#f97316"
+  },
+  {
+    sector: 9,
+    stage: 3,
+    name: "Sector 9-3 – Gravity Shear",
+    shortName: "9-3 Shear",
+    length: 5900,
+    scrollSpeed: 420,
+    gravity: 2850,
+    jumpVelocity: -1000,
+    pitChance: 0.48,
+    droneChance: 0.62,
+    laserChance: 0.44,
+    skyTop: "#020617",
+    skyBottom: "#111827",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#f97316"
+  },
+
+  // ───────────── Sector 10 – Core Nexus (Final 3) ─────────────
+  {
+    sector: 10,
+    stage: 1,
+    name: "Sector 10-1 – Nexus Perimeter",
+    shortName: "10-1 Perimeter",
+    length: 6000,
+    scrollSpeed: 430,
+    gravity: 2850,
+    jumpVelocity: -1010,
+    pitChance: 0.48,
+    droneChance: 0.64,
+    laserChance: 0.46,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#38bdf8"
+  },
+  {
+    sector: 10,
+    stage: 2,
+    name: "Sector 10-2 – Inner Firewall",
+    shortName: "10-2 Firewall",
+    length: 6200,
+    scrollSpeed: 440,
+    gravity: 2900,
+    jumpVelocity: -1020,
+    pitChance: 0.50,
+    droneChance: 0.66,
+    laserChance: 0.48,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#facc15"
+  },
+  {
+    sector: 10,
+    stage: 3,
+    name: "Sector 10-3 – Core Breakout",
+    shortName: "10-3 Core",
+    length: 6500,
+    scrollSpeed: 455,
+    gravity: 2950,
+    jumpVelocity: -1035,
+    pitChance: 0.52,
+    droneChance: 0.70,
+    laserChance: 0.52,
+    skyTop: "#020617",
+    skyBottom: "#020617",
+    groundColor: "#020617",
+    platformColor: "#020617",
+    neonAccent: "#f97316"
+  }
+];
+
+// Make all levels longer without editing each one.
+// 1.0 = original, 1.5 = 50% longer, 2.0 = double, etc.
+const LEVEL_LENGTH_MULT = 5.0;
+
+  // ---------- Utils ----------
+  function clamp(v, min, max) {
+    return v < min ? min : v > max ? max : v;
+  }
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+  function rectsOverlap(a, b) {
+    return (
+      a.x < b.x + b.w &&
+      a.x + a.w > b.x &&
+      a.y < b.y + b.h &&
+      a.y + a.h > b.y
+    );
+  }
+
+  // ---------- Input ----------
+  const keys = {};
+  const mouse = { x: WIDTH / 2, y: HEIGHT / 2, down: false };
+
+  window.addEventListener("keydown", e => {
+    keys[e.key.toLowerCase()] = true;
+    if (e.key === " " || e.key === "ArrowUp") e.preventDefault(); // avoid scroll
+
+    if (e.key === "p" || e.key === "P") {
+      if (game.state === "playing") game.state = "paused";
+      else if (game.state === "paused") game.state = "playing";
+    }
+
+    if (e.key === "enter") {
+      if (game.state === "menu" || game.state === "gameover") {
+        game.levelIndex = 0;        // start campaign from sector 1
+        startRun();
+      } else if (game.state === "victory") {
+        if (game.levelIndex < LEVELS.length - 1) {
+          game.levelIndex++;
+        } else {
+          // finished last sector – loop back to first
+          game.levelIndex = 0;
+        }
+        startRun();
+      }
+    }
+
+    if (e.key === "r" || e.key === "R") {
+      if (game.state === "gameover") {
+        // restart same sector
+        startRun();
+      }
+    }
+  });
+  window.addEventListener("keyup", e => {
+    keys[e.key.toLowerCase()] = false;
+  });
+
+  canvas.addEventListener("mousemove", e => {
+    const rect = canvas.getBoundingClientRect();
+    const sx = canvas.width / rect.width;
+    const sy = canvas.height / rect.height;
+    mouse.x = (e.clientX - rect.left) * sx;
+    mouse.y = (e.clientY - rect.top) * sy;
+  });
+  canvas.addEventListener("mousedown", () => { mouse.down = true; });
+  window.addEventListener("mouseup", () => { mouse.down = false; });
+
+  canvas.addEventListener("click", () => {
+    if (game.state === "menu" || game.state === "gameover") {
+      game.levelIndex = 0;
+      startRun();
+    } else if (game.state === "victory") {
+      if (game.levelIndex < LEVELS.length - 1) {
+        game.levelIndex++;
+      } else {
+        game.levelIndex = 0;
+      }
+      startRun();
+    }
+  });
+
+  // ---------- Game Data ----------
+  const game = {
+    state: "menu",   // menu, playing, paused, gameover, victory
+    time: 0,
+    score: 0,
+    bestScore: 0,
+    distance: 0,
+    levelLength: 3200,
+    levelIndex: 0
+  };
+
+  const camera = {
+    x: 0,
+    y: 0
+  };
+
+  const player = {
+    x: 80,
+    y: 0,
+    w: 32,
+    h: 44,
+    vx: 0,
+    vy: 0,
+    speed: 220,
+    jumpStrength: 420,
+    gravity: 1000,
+    maxFall: 900,
+    onGround: false,
+    jumpsUsed: 0,
+    maxJumps: 2, // double jump
+    dashTimer: 0,
+    dashDuration: 0.16,
+    dashSpeed: 550,
+    facing: 1,
+    hp: 100,
+    maxHp: 100,
+    shield: 20,
+    maxShield: 60,
+    invulnTimer: 0
+  };
+
+	const platforms = [];
+	const hazards = [];
+	const orbs = [];
+	const drones = [];
+	const turrets = [];   // 👈 NEW
+	const particles = [];
+	let exitPortal = null;
+
+
+  // ---------- Level Generation ----------
+function buildLevel() {
+  // 1) Level config
+  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+
+  // 2) Clear arrays
+  platforms.length = 0;
+  hazards.length   = 0;
+  orbs.length      = 0;
+  drones.length    = 0;
+  turrets.length   = 0;
+  particles.length = 0;
+  exitPortal       = null;
+
+  // 3) Safe values from config
+  const baseLength      = Number.isFinite(cfg.length)       ? cfg.length       : 3000;
+  const effectiveLength = baseLength * (typeof LEVEL_LENGTH_MULT === "number" ? LEVEL_LENGTH_MULT : 1);
+
+  const gravity         = Number.isFinite(cfg.gravity)      ? cfg.gravity      : 2100;
+  const jumpVel         = Number.isFinite(cfg.jumpVelocity) ? cfg.jumpVelocity : -750;
+  const heightScale     = Number.isFinite(cfg.heightScale)  ? cfg.heightScale  : 1;
+  const orbChance       = Number.isFinite(cfg.orbChance)    ? cfg.orbChance    : 0.22;
+  const pitGap          = Number.isFinite(cfg.pitGap)       ? cfg.pitGap       : 500;
+  const droneZones      = Number.isFinite(cfg.droneZones)
+                          ? cfg.droneZones
+                          : (3 + Math.floor(game.levelIndex / 3));
+  const droneSpeedFactor = Number.isFinite(cfg.droneSpeedFactor)
+                          ? cfg.droneSpeedFactor
+                          : 1;
+
+  game.levelLength  = effectiveLength;
+  const levelLength = game.levelLength || cfg.length || 4000;
+
+  // physics
+  player.gravity      = gravity;
+  player.jumpStrength = Math.abs(jumpVel);
+
+  const groundY = HEIGHT - 80;
+
+  // 4) Define zones where ground is REMOVED so you MUST use high platforms
+  const climbZones = [
+    {
+      start: effectiveLength * 0.55,
+      end:   effectiveLength * 0.62
+    },
+    {
+      start: effectiveLength * 0.78,
+      end:   effectiveLength * 0.86
+    }
+  ];
+
+  // helper: add a ground segment while cutting out climb zones
+  function addGroundSegmentClipped(segStart, segEnd) {
+    if (segEnd <= segStart) return;
+
+    let curStart = segStart;
+
+    for (const z of climbZones) {
+      const zStart = z.start;
+      const zEnd   = z.end;
+
+      // no overlap
+      if (zEnd <= curStart || zStart >= segEnd) continue;
+
+      // piece before the zone
+      if (zStart > curStart) {
+        const width = zStart - curStart;
+        if (width > 0) {
+          addPlatform({
+            x: curStart,
+            y: groundY,
+            w: width,
+            h: 40,
+            type: "ground"
+          });
+        }
+      }
+
+      // skip [zStart, zEnd]
+      curStart = Math.max(curStart, zEnd);
+      if (curStart >= segEnd) break;
+    }
+
+    // tail piece after last skipped zone
+    if (curStart < segEnd) {
+      addPlatform({
+        x: curStart,
+        y: groundY,
+        w: segEnd - curStart,
+        h: 40,
+        type: "ground"
+      });
+    }
+  }
+
+  // 5) Ground with REAL gaps (aligned to pits), respecting climb zones
+  const pitWidth  = 140;
+  const firstGapX = 400;
+  let   lastGroundX = -200;
+
+  for (let x = firstGapX; x < effectiveLength - 400; x += pitGap) {
+    const pitCenter = x;
+    const leftEdge  = pitCenter - pitWidth / 2;
+    const rightEdge = pitCenter + pitWidth / 2;
+
+    // ground segment from lastGroundX -> leftEdge, with climb zones cut out
+    addGroundSegmentClipped(lastGroundX, leftEdge);
+
+    // the actual pit hazard
+    hazards.push({
+      x: leftEdge,
+      y: groundY + 20,
+      w: pitWidth,
+      h: 40,
+      type: "pit"
+    });
+
+    lastGroundX = rightEdge;
+  }
+
+  // final ground segment after last pit
+  addGroundSegmentClipped(lastGroundX, effectiveLength + 300);
+
+  // 6) Base chunks for floating platforms
+  const baseChunks = [
+    { startRel: 0.06, endRel: 0.24, heightOffset: 120 },
+    { startRel: 0.26, endRel: 0.42, heightOffset: 180 },
+    { startRel: 0.46, endRel: 0.62, heightOffset: 140 },
+    { startRel: 0.66, endRel: 0.82, heightOffset: 210 },
+    { startRel: 0.84, endRel: 0.96, heightOffset: 160 }
+  ];
+
+  baseChunks.forEach((c, idx) => {
+    const start      = effectiveLength * c.startRel;
+    const end        = effectiveLength * c.endRel;
+    const baseOffset = c.heightOffset * heightScale;
+
+    const segmentWidth = 150;
+    for (let x = start; x < end; x += segmentWidth + 60) {
+      const yOffset =
+        (idx % 2 === 0 ? 0 : (idx % 3 === 0 ? 40 : -20)) * heightScale;
+      const platY = groundY - baseOffset + yOffset;
+
+      addPlatform({
+        x,
+        y: platY,
+        w: segmentWidth,
+        h: 20,
+        type: "platform"
+      });
+
+      if (Math.random() < orbChance) {
+        orbs.push({
+          x: x + segmentWidth / 2 - 8,
+          y: platY - 28,
+          r: 8,
+          collected: false
+        });
+      }
+    }
+  });
+
+  // 7) FORCED CLIMB HIGH PLATFORMS (no ground underneath due to climb zones)
+  for (const z of climbZones) {
+    const baseY  = groundY - 220 * heightScale;
+    const startX = z.start + 40;
+    const endX   = z.end - 40;
+
+    let x = startX;
+    let idx = 0;
+
+    while (x < endX) {
+      // variable width & spacing
+      const width   = 150 + Math.random() * 60;        // 150–210
+      const gapX    = 140 + Math.random() * 80;        // 140–220 between platforms
+
+      // stair-like vertical pattern: up, up, small down, repeat
+      let stepOffset;
+      const pattern = idx % 4;
+      if (pattern === 0)      stepOffset = 0;
+      else if (pattern === 1) stepOffset = -50 * heightScale;
+      else if (pattern === 2) stepOffset = -90 * heightScale;
+      else                    stepOffset = -40 * heightScale;
+
+      // small random variation so it's not perfectly regular
+      const jitterY = (Math.random() - 0.5) * 20 * heightScale;
+
+      const platY = baseY + stepOffset + jitterY;
+
+      addPlatform({
+        x,
+        y: platY,
+        w: width,
+        h: 20,
+        type: "platform"
+      });
+
+      // a few orbs, but not on every single step
+      if (Math.random() < 0.30) {
+        orbs.push({
+          x: x + width / 2 - 8,
+          y: platY - 26,
+          r: 8,
+          collected: false
+        });
+      }
+
+      x += width + gapX;
+      idx++;
+    }
+  }
+
+
+  // 8) Spikes on some platforms
+  const spikeChance = clamp(0.25 + 0.05 * game.levelIndex, 0.25, 0.4);
+  for (const p of platforms) {
+    if (p.type === "platform" && Math.random() < spikeChance) {
+      hazards.push({
+        x: p.x + p.w / 3,
+        y: p.y - 18,
+        w: 24,
+        h: 18,
+        type: "spikes"
+      });
+    }
+  }
+
+        // 9) Drones – roaming enemies (more on later levels, spread vertically)
+  const zoneCount = droneZones;
+  const patrolHalfWidth = 130;
+
+  // we don't want drones too close to the portal area – leave that to turrets
+  const rightDronesLimit = effectiveLength - 900; // no new zones after this x
+
+  for (let i = 1; i <= zoneCount; i++) {
+    let baseZoneX = (effectiveLength / (zoneCount + 1)) * i;
+    let zoneX = baseZoneX + (Math.random() - 0.5) * 80; // ±40 jitter
+
+    // clamp zone center so it's not too close to edges or portal
+    zoneX = clamp(
+      zoneX,
+      400 + patrolHalfWidth,
+      rightDronesLimit - patrolHalfWidth
+    );
+
+    // if this zone would end up beyond our safe limit, skip it
+    if (zoneX >= rightDronesLimit) continue;
+
+    // choose a vertical band for this zone
+    let band;
+    if (i % 3 === 0) band = "low";
+    else if (i % 3 === 1) band = "mid";
+    else band = "high";
+
+    const baseOffsetLow  = 80;
+    const baseOffsetMid  = 180;
+    const baseOffsetHigh = 280;
+
+    let zoneY;
+    if (band === "low") {
+      zoneY = groundY - baseOffsetLow;
+    } else if (band === "mid") {
+      zoneY = groundY - baseOffsetMid;
+    } else {
+      zoneY = groundY - baseOffsetHigh;
+    }
+
+    const baseSpeed = 70 * droneSpeedFactor;
+
+    let dronesPerZone =
+      game.levelIndex < 8  ? 2 :
+      game.levelIndex < 18 ? 3 : 4;
+
+    // make the last zone a bit lighter so we avoid "pairs" bunching up
+    if (i === zoneCount) {
+      dronesPerZone = Math.max(1, dronesPerZone - 1);
+    }
+
+    // compute an actual patrol region that stays inside the level
+    let minX = zoneX - patrolHalfWidth;
+    let maxX = zoneX + patrolHalfWidth;
+
+    minX = Math.max(260, minX);
+    maxX = Math.min(effectiveLength - 260, maxX);
+
+    // if the patrol region is too tiny, just skip this zone
+    if (maxX - minX < 60) continue;
+
+    // place drones spaced across the patrol region instead of stacked
+    for (let j = 0; j < dronesPerZone; j++) {
+      const t = (j + 0.5) / dronesPerZone; // 0..1 within the band
+      const baseX = minX + t * (maxX - minX);
+
+      const jitterX = (Math.random() - 0.5) * 20;
+      const jitterY = (Math.random() - 0.5) * 14;
+
+      drones.push({
+        x: baseX + jitterX,
+        y: zoneY + (j % 2 === 0 ? 0 : 24) + jitterY,
+        w: 30,
+        h: 24,
+        vx: baseSpeed * (Math.random() < 0.5 ? 1 : -1),
+        minX,
+        maxX,
+        alive: true
+      });
+    }
+  }
+
+  // Guaranteed early low drone so the start isn't free
+  drones.push({
+    x: 450,
+    y: groundY - 40,
+    w: 30,
+    h: 24,
+    vx: 60 * droneSpeedFactor,
+    minX: 360,
+    maxX: 540,
+    alive: true
+  });
+
+
+
+
+  // 10) Turrets – vertical patrol enemies (mid-section only)
+  const turretCount = Math.max(3, Math.floor(levelLength / 1800));
+  for (let i = 0; i < turretCount; i++) {
+    // only between ~18% and ~60% of the level
+    const baseX = levelLength * (0.18 + 0.42 * Math.random());
+    const maxHeightOffset = 260 + 30 * (i % 3);
+
+    const minY   = groundY - maxHeightOffset; // highest position
+    const maxY   = groundY - 120;             // lowest position (still above pits)
+    const startY = (minY + maxY) / 2;
+
+    turrets.push({
+      x: baseX,
+      y: startY,
+      w: 26,
+      h: 34,
+      vy: 80 + 20 * (i % 3),
+      minY,
+      maxY,
+      alive: true
+    });
+  }
+
+
+
+      // 11) END-SECTION TURRET GAUNTLET – 3 ground + 3 air (all bobbing)
+  const clusterCount   = 3;
+  const clusterStartX  = effectiveLength - 650;
+  const clusterSpacing = 170;
+
+  for (let i = 0; i < clusterCount; i++) {
+    const tx = clusterStartX + i * clusterSpacing;
+
+    // --- bottom row: bob just above the ground ---
+    const bottomMinY = groundY - 72; // highest
+    const bottomMaxY = groundY - 38; // lowest (almost touching ground)
+
+    turrets.push({
+      x: tx,
+      y: bottomMaxY,                  // start near ground
+      w: 26,
+      h: 34,
+      vy: -60 - i * 6,                // slightly varied
+      minY: bottomMinY,
+      maxY: bottomMaxY,
+      alive: true
+    });
+
+    // --- top row: bob higher above them ---
+    const airMinY = groundY - 220;    // highest
+    const airMaxY = groundY - 150;    // lowest
+
+    turrets.push({
+      x: tx,
+      y: airMaxY,                     // start lower
+      w: 26,
+      h: 34,
+      vy: -80 - i * 8,
+      minY: airMinY,
+      maxY: airMaxY,
+      alive: true
+    });
+  }
+
+
+
+
+  // 12) Exit portal
+  exitPortal = {
+    x: effectiveLength - 120,
+    y: groundY - 120,
+    w: 60,
+    h: 100,
+    active: true
+  };
+
+  // 13) Player start
+  player.x = 60;
+  player.y = groundY - player.h;
+  player.vx = 0;
+  player.vy = 0;
+  player.onGround = true;
+  player.jumpsUsed = 0;
+
+  // 14) Reset distance
+  game.distance = 0;
+}
+
+
+
+
+
+  // ---------- Particles ----------
+  function spawnParticles(x, y, color, count = 12) {
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * TAU;
+      const spd = 60 + Math.random() * 200;
+      particles.push({
+        x,
+        y,
+        vx: Math.cos(ang) * spd,
+        vy: Math.sin(ang) * spd,
+        life: 0.4 + Math.random() * 0.6,
+        radius: 1.5 + Math.random() * 2.5,
+        color
+      });
+    }
+  }
+function spawnPitSparks(x, y, color = "rgba(94,234,212,1)", count = 6) {
+  for (let i = 0; i < count; i++) {
+    const vx = (Math.random() - 0.5) * 60;          // small horizontal drift
+    const vy = 40 + Math.random() * 120;            // always falling down
+    particles.push({
+      x,
+      y,
+      vx,
+      vy,
+      life: 0.5 + Math.random() * 0.4,
+      radius: 1 + Math.random() * 2,
+      color
+    });
+  }
+}
+  function updateParticles(dt) {
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.life -= dt;
+      p.vx *= 0.96;
+      p.vy *= 0.96;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+  }
+
+  function drawParticles() {
+    ctx.save();
+    for (const p of particles) {
+      ctx.globalAlpha = clamp(p.life, 0, 1);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x - camera.x, p.y - camera.y, p.radius, 0, TAU);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
+  // ---------- Player Control ----------
+  function handleJump() {
+    if (player.jumpsUsed < player.maxJumps) {
+      player.vy = -player.jumpStrength;
+      player.onGround = false;
+      player.jumpsUsed++;
+      spawnParticles(player.x, player.y + player.h, "rgba(56,189,248,0.8)", 16);
+    }
+  }
+
+  function handleDash() {
+    if (player.dashTimer > 0) return;
+    const dir = player.facing || 1;
+    player.dashTimer = player.dashDuration;
+    player.vy = 0;
+    player.vx = dir * player.dashSpeed;
+    player.invulnTimer = Math.max(player.invulnTimer, player.dashDuration + 0.05);
+    spawnParticles(player.x, player.y + player.h / 2, "rgba(129,140,248,1)", 20);
+  }
+
+  let jumpPressed = false;
+  let dashPressed = false;
+
+  function updatePlayerInput(dt) {
+    let move = 0;
+    if (keys["arrowleft"] || keys["a"]) move -= 1;
+    if (keys["arrowright"] || keys["d"]) move += 1;
+
+    const targetSpeed = move * player.speed;
+    player.vx = lerp(player.vx, targetSpeed, 0.12);
+
+    if (move !== 0) player.facing = move;
+
+    const wantJump = keys[" "] || keys["w"] || keys["arrowup"];
+    if (wantJump && !jumpPressed) {
+      handleJump();
+      jumpPressed = true;
+    }
+    if (!wantJump) jumpPressed = false;
+
+    const wantDash = keys["shift"];
+    if (wantDash && !dashPressed) {
+      handleDash();
+      dashPressed = true;
+    }
+    if (!wantDash) dashPressed = false;
+
+    if (player.dashTimer > 0) {
+      player.dashTimer -= dt;
+      if (player.dashTimer <= 0) {
+        player.dashTimer = 0;
+      }
+    }
+
+    if (player.invulnTimer > 0) {
+      player.invulnTimer -= dt;
+      if (player.invulnTimer < 0) player.invulnTimer = 0;
+    }
+  }
+
+  function updatePlayerPhysics(dt) {
+    player.vy += player.gravity * dt;
+    if (player.vy > player.maxFall) player.vy = player.maxFall;
+
+    player.x += player.vx * dt;
+
+    const playerRect = { x: player.x, y: player.y, w: player.w, h: player.h };
+    for (const p of platforms) {
+      const platRect = { x: p.x, y: p.y, w: p.w, h: p.h };
+      if (rectsOverlap(playerRect, platRect)) {
+        if (player.vx > 0) {
+          player.x = p.x - player.w;
+        } else if (player.vx < 0) {
+          player.x = p.x + p.w;
+        }
+        playerRect.x = player.x;
+        player.vx = 0;
+      }
+    }
+
+    player.y += player.vy * dt;
+    player.onGround = false;
+    playerRect.y = player.y;
+
+    for (const p of platforms) {
+      const platRect = { x: p.x, y: p.y, w: p.w, h: p.h };
+      if (rectsOverlap(playerRect, platRect)) {
+        if (player.vy > 0) {
+          player.y = p.y - player.h;
+          player.onGround = true;
+          player.jumpsUsed = 0;
+        } else if (player.vy < 0) {
+          player.y = p.y + p.h;
+        }
+        playerRect.y = player.y;
+        player.vy = 0;
+      }
+    }
+
+    if (player.y > HEIGHT + 200) {
+      damagePlayer(999);
+    }
+
+    game.distance = Math.max(game.distance, player.x);
+  }
+
+  // ---------- Damage & Collisions ----------
+  function damagePlayer(amount) {
+    if (game.state !== "playing") return;
+    if (player.invulnTimer > 0) return;
+
+    let remaining = amount;
+
+    if (player.shield > 0) {
+      const absorbed = Math.min(player.shield, remaining);
+      player.shield -= absorbed;
+      remaining -= absorbed;
+      spawnParticles(player.x + player.w / 2, player.y + player.h / 2, "rgba(56,189,248,1)", 18);
+    }
+
+    if (remaining > 0) {
+      player.hp -= remaining;
+      spawnParticles(player.x + player.w / 2, player.y + player.h / 2, "rgba(248,113,113,1)", 18);
+    }
+
+    player.invulnTimer = 0.7;
+
+    if (player.hp <= 0) {
+      player.hp = 0;
+      game.state = "gameover";
+      game.bestScore = Math.max(game.bestScore, game.score);
+    }
+  }
+
+  function updateHazardsAndEnemies(dt) {
+    const hitBox = { x: player.x, y: player.y, w: player.w, h: player.h };
+
+    // pits & spikes
+    for (const h of hazards) {
+      const hr = { x: h.x, y: h.y, w: h.w, h: h.h };
+      if (rectsOverlap(hitBox, hr)) {
+        if (h.type === "pit") {
+          damagePlayer(999);
+        } else if (h.type === "spikes") {
+          damagePlayer(35 * dt);
+        }
+      }
+    }
+	// extra: pit proximity FX (falling sparks)
+  const groundY = HEIGHT - 80;
+  for (const h of hazards) {
+    if (h.type !== "pit") continue;
+
+    const pitCenterX = h.x + h.w / 2;
+    const playerCenterX = player.x + player.w / 2;
+    const dx = Math.abs(playerCenterX - pitCenterX);
+
+    // only when somewhat close horizontally & above ground
+    if (dx < 220 && player.y < groundY + 40) {
+      // dt-scaled chance so it's framerate-independent
+      if (Math.random() < 2.0 * dt) {
+        const sparkX = pitCenterX + (Math.random() - 0.5) * h.w * 0.6;
+        const pitTopWorldY = groundY; // top edge in world space
+        spawnPitSparks(sparkX, pitTopWorldY - 4, "rgba(94,234,212,1)", 4);
+      }
+    }
+  }
+    // drones
+    for (const d of drones) {
+      if (!d.alive) continue;
+
+      d.x += d.vx * dt;
+      if (d.x < d.minX) {
+        d.x = d.minX;
+        d.vx *= -1;
+      } else if (d.x + d.w > d.maxX) {
+        d.x = d.maxX - d.w;
+        d.vx *= -1;
+      }
+
+      const dr = { x: d.x, y: d.y, w: d.w, h: d.h };
+      const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+
+      if (rectsOverlap(pr, dr)) {
+        const playerBottom = player.y + player.h;
+        const droneTop = d.y;
+        if (player.vy > 120 && playerBottom - droneTop < 15) {
+          d.alive = false;
+          player.vy = -player.jumpStrength * 0.7;
+          player.jumpsUsed = Math.min(player.jumpsUsed, 1);
+          spawnParticles(d.x + d.w / 2, d.y + d.h / 2, "rgba(248,250,252,1)", 20);
+          game.score += 80;
+        } else {
+          damagePlayer(25);
+        }
+      }
+    }
+	    // turrets – vertical patrols
+  for (const t of turrets) {
+    if (!t.alive) continue;
+
+    // simple top/bottom bounds on *top* of turret
+    t.y += t.vy * dt;
+
+    if (t.y < t.minY) {
+      t.y = t.minY;
+      t.vy *= -1;
+    } else if (t.y > t.maxY) {
+      t.y = t.maxY;
+      t.vy *= -1;
+    }
+
+    const tr = { x: t.x, y: t.y, w: t.w, h: t.h };
+    const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+
+    if (rectsOverlap(pr, tr)) {
+      const playerBottom = player.y + player.h;
+      const turretTop = t.y;
+
+      // stomp logic
+      if (player.vy > 120 && playerBottom - turretTop < 15) {
+        t.alive = false;
+        player.vy = -player.jumpStrength * 0.7;
+        player.jumpsUsed = Math.min(player.jumpsUsed, 1);
+        spawnParticles(t.x + t.w / 2, t.y + t.h / 2, "rgba(251,191,36,1)", 20);
+        game.score += 120;
+      } else {
+        damagePlayer(30);
+      }
+    }
+  }
+}
+
+
+  function updateOrbs(dt) {
+    for (let i = orbs.length - 1; i >= 0; i--) {
+      const o = orbs[i];
+      if (o.collected) continue;
+
+      o._t = (o._t || Math.random() * TAU) + dt * 4;
+      const dy = Math.sin(o._t) * 4;
+
+      const or = { x: o.x, y: o.y + dy, w: o.r * 2, h: o.r * 2 };
+      const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+      if (rectsOverlap(or, pr)) {
+        o.collected = true;
+        game.score += 25;
+        player.shield = clamp(player.shield + 10, 0, player.maxShield);
+        spawnParticles(o.x + o.r, o.y + o.r + dy, "rgba(129,140,248,1)", 16);
+      }
+    }
+  }
+
+  function checkPortal() {
+    if (!exitPortal || !exitPortal.active) return;
+    const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
+    const er = { x: exitPortal.x, y: exitPortal.y, w: exitPortal.w, h: exitPortal.h };
+    if (rectsOverlap(pr, er)) {
+      // level clear
+      game.state = "victory";
+      game.score += 200 * (game.levelIndex + 1); // small sector bonus
+      game.bestScore = Math.max(game.bestScore, game.score);
+    }
+  }
+
+  // ---------- Game Flow ----------
+  function startRun() {
+  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+
+  game.state = "playing";
+  game.time = 0;
+  game.score = game.levelIndex === 0 ? 0 : game.score;
+  game.distance = 0;
+  // remove / comment this:
+  // game.levelLength = cfg.length;
+
+  player.hp = player.maxHp;
+  player.shield = 20;
+  player.invulnTimer = 0;
+  player.dashTimer = 0;
+  player.jumpsUsed = 0;
+
+  buildLevel();
+}
+
+
+  // ---------- Update ----------
+  function update(dt) {
+    if (game.state === "menu" || game.state === "gameover" || game.state === "victory") {
+      game.time += dt;
+      updateParticles(dt);
+      return;
+    }
+
+    if (game.state === "paused") {
+      return;
+    }
+
+    game.time += dt;
+
+    updatePlayerInput(dt);
+    updatePlayerPhysics(dt);
+    updateHazardsAndEnemies(dt);
+    updateOrbs(dt);
+    updateParticles(dt);
+    checkPortal();
+
+    const targetCamX = clamp(
+      player.x - WIDTH * 0.4,
+      0,
+      Math.max(0, game.levelLength - WIDTH)
+    );
+    camera.x = lerp(camera.x, targetCamX, 0.15);
+    camera.y = 0;
+  }
+
+  // ---------- Drawing ----------
+  function drawBackground() {
+    const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+
+    ctx.save();
+    const g = ctx.createLinearGradient(0, 0, 0, HEIGHT);
+    g.addColorStop(0, cfg.skyTop);
+    g.addColorStop(1, cfg.skyBottom);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    const baseY = HEIGHT - 120;
+    const camParallax1 = camera.x * 0.3;
+    const camParallax2 = camera.x * 0.6;
+
+    ctx.globalAlpha = 0.4;
+    for (let x = -camParallax1 % 260 - 260; x < WIDTH + 260; x += 260) {
+      const w = 140;
+      const h = 120 + Math.random() * 40;
+      ctx.fillStyle = "#020817";
+      ctx.fillRect(x + 60, baseY - h, w, h);
+    }
+
+    ctx.globalAlpha = 0.6;
+    for (let x = -camParallax2 % 200 - 200; x < WIDTH + 200; x += 200) {
+      const w = 90;
+      const h = 90 + Math.random() * 60;
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(x + 40, baseY - h + 20, w, h);
+    }
+
+    ctx.globalAlpha = 0.2;
+    ctx.strokeStyle = "#0ea5e9";
+    ctx.lineWidth = 1;
+    for (let y = baseY - 140; y < baseY + 40; y += 16) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(WIDTH, y);
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+// put this near where you define `platforms`
+//const platforms = []; // (you already have this)
+
+// SAFE helper
+function addPlatform(p) {
+  if (
+    !Number.isFinite(p.x) ||
+    !Number.isFinite(p.y) ||
+    !Number.isFinite(p.w) ||
+    !Number.isFinite(p.h)
+  ) {
+    console.warn("Bad platform on creation", p);
+    return; // don't add invalid stuff
+  }
+
+  // IMPORTANT: push into the array, do NOT call addPlatform again
+  platforms.push(p);
+}
+
+
+function drawPlatforms() {
+  ctx.save();
+  for (const p of platforms) {
+    const sx = p.x - camera.x;
+    const sy = p.y - camera.y;
+
+    if (
+      !Number.isFinite(sx) ||
+      !Number.isFinite(sy) ||
+      !Number.isFinite(p.w) ||
+      !Number.isFinite(p.h)
+    ) {
+      console.warn("Bad platform data at draw", { p, sx, sy, pY: p.y, camY: camera.y });
+      continue;
+    }
+
+    if (sx + p.w < -40 || sx > WIDTH + 40) continue;
+
+    const isGround = p.type === "ground";
+
+    // --- FILL ---
+    // ground = brown, platforms = dark bluish
+    ctx.fillStyle = isGround
+      ? "rgba(72, 44, 28, 0.98)"   // rich brown
+      : "rgba(15, 23, 42, 0.9)";   // original for platforms
+    ctx.fillRect(sx, sy, p.w, p.h);
+
+    // --- OUTLINE / GRADIENT ---
+    const grad = ctx.createLinearGradient(sx, sy, sx, sy + p.h);
+    if (isGround) {
+      grad.addColorStop(0, "#7c4a27"); // lighter brown top
+      grad.addColorStop(1, "#4b2a16"); // darker brown bottom
+    } else {
+      grad.addColorStop(0, "#38bdf8"); // neon platforms
+      grad.addColorStop(1, "#6366f1");
+    }
+
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = isGround ? 2 : 3;
+    ctx.strokeRect(sx, sy, p.w, p.h);
+
+    // glow strip for *non-ground* platforms only
+    if (!isGround) {
+      ctx.globalAlpha = 0.14;
+      ctx.fillStyle = "#22d3ee";
+      ctx.fillRect(sx, sy + p.h, p.w, 4);
+      ctx.globalAlpha = 1;
+    }
+  }
+  ctx.restore();
+}
+
+
+
+
+  function drawHazards() {
+  ctx.save();
+  const groundY = HEIGHT - 80;
+
+  for (const h of hazards) {
+    const sx = h.x - camera.x;
+    const sy = h.y - camera.y;
+    if (sx + h.w < -40 || sx > WIDTH + 40) continue;
+
+    if (h.type === "pit") {
+      const pitTop   = groundY - camera.y;
+      const pitDepth = 100;
+
+      // --- BLACK VOID ---
+      ctx.fillStyle = "rgb(2,2,12)";
+      ctx.fillRect(sx, pitTop, h.w, pitDepth);
+
+      // --- DEEP DARK FADE ---
+      const fade = ctx.createLinearGradient(sx, pitTop, sx, pitTop + pitDepth);
+      fade.addColorStop(0, "rgba(0,0,0,0.9)");
+      fade.addColorStop(1, "rgba(0,0,0,1)");
+      ctx.fillStyle = fade;
+      ctx.fillRect(sx, pitTop, h.w, pitDepth);
+
+      // --- NEON EDGE (top rim) ---
+      const rim = ctx.createLinearGradient(sx, pitTop - 4, sx, pitTop + 4);
+      rim.addColorStop(0, "#7dd3fc");
+      rim.addColorStop(1, "#0ea5e9");
+      ctx.fillStyle = rim;
+      ctx.fillRect(sx, pitTop - 3, h.w, 3);
+
+      // --- SIDE WARNING STRIPES ---
+      ctx.fillStyle = "#facc15";
+      const stripeH = 14;
+
+      function drawStripe(x, flip) {
+        ctx.save();
+        ctx.translate(x, pitTop - stripeH);
+        if (flip) ctx.scale(-1, 1);
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(6, stripeH);
+        ctx.lineTo(0, stripeH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+
+      drawStripe(sx - 4, false);
+      drawStripe(sx + h.w + 4, true);
+
+      // --- SUBTLE MIST HOVERING ABOVE PIT ---
+      const mistLayers = 2;
+      for (let i = 0; i < mistLayers; i++) {
+        const t = game.time * 0.7 + i * 1.3 + h.x * 0.001;
+        const mistHeight = 10 + i * 6;
+        const mistY =
+          pitTop - 8 - i * 8 + Math.sin(t) * 2; // slight wobble
+
+        ctx.globalAlpha = 0.20 - i * 0.06;
+        const mg = ctx.createLinearGradient(sx, mistY, sx, mistY + mistHeight);
+        mg.addColorStop(0, "rgba(148,163,184,0.3)");
+        mg.addColorStop(1, "rgba(15,23,42,0)");
+        ctx.fillStyle = mg;
+        ctx.fillRect(sx, mistY, h.w, mistHeight);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    else if (h.type === "spikes") {
+      ctx.fillStyle = "#f97316";
+      const spikes = Math.max(3, Math.floor(h.w / 6));
+      const step = h.w / spikes;
+      for (let i = 0; i < spikes; i++) {
+        const x0 = sx + i * step;
+        ctx.beginPath();
+        ctx.moveTo(x0, sy + h.h);
+        ctx.lineTo(x0 + step / 2, sy);
+        ctx.lineTo(x0 + step, sy + h.h);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+  }
+
+  ctx.restore();
+}
+
+
+
+  function drawOrbs() {
+    ctx.save();
+    for (const o of orbs) {
+      if (o.collected) continue;
+      o._t = (o._t || 0) + 0.1;
+      const dy = Math.sin(o._t) * 4;
+
+      const sx = o.x - camera.x + o.r;
+      const sy = o.y - camera.y + o.r + dy;
+
+      const grad = ctx.createRadialGradient(sx, sy, 0, sx, sy, o.r * 2.2);
+      grad.addColorStop(0, "rgba(129,140,248,0.9)");
+      grad.addColorStop(1, "rgba(129,140,248,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(sx, sy, o.r * 2.2, 0, TAU);
+      ctx.fill();
+
+      ctx.fillStyle = "#e5e7eb";
+      ctx.beginPath();
+      ctx.arc(sx, sy, o.r, 0, TAU);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawDrones() {
+    ctx.save();
+    for (const d of drones) {
+      if (!d.alive) continue;
+      const sx = d.x - camera.x;
+      const sy = d.y - camera.y;
+      if (sx + d.w < -40 || sx > WIDTH + 40) continue;
+
+      const cx = sx + d.w / 2;
+      const cy = sy + d.h / 2;
+
+      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, d.w * 1.3);
+      grad.addColorStop(0, "rgba(248,113,113,0.9)");
+      grad.addColorStop(1, "rgba(248,113,113,0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, d.w * 1.3, 0, TAU);
+      ctx.fill();
+
+      ctx.fillStyle = "#111827";
+      ctx.fillRect(sx, sy, d.w, d.h);
+      ctx.strokeStyle = "#f97316";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(sx, sy, d.w, d.h);
+
+      ctx.fillStyle = "#f97316";
+      ctx.beginPath();
+      ctx.arc(cx, cy, 4, 0, TAU);
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(59,130,246,0.9)";
+      ctx.beginPath();
+      ctx.moveTo(sx, cy + 6);
+      ctx.lineTo(sx - 8, cy + 12);
+      ctx.moveTo(sx + d.w, cy + 6);
+      ctx.lineTo(sx + d.w + 8, cy + 12);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+function drawTurrets() {
+  ctx.save();
+  for (const t of turrets) {
+    if (!t.alive) continue;
+
+    const sx = t.x - camera.x;
+    const sy = t.y - camera.y;
+    if (sx + t.w < -40 || sx > WIDTH + 40) continue;
+
+    const cx = sx + t.w / 2;
+    const cy = sy + t.h / 2;
+
+    // glow
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, t.w * 1.6);
+    glow.addColorStop(0, "rgba(251,191,36,0.9)");
+    glow.addColorStop(1, "rgba(251,191,36,0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, t.w * 1.6, 0, TAU);
+    ctx.fill();
+
+    // body
+    ctx.fillStyle = "#020617";
+    ctx.strokeStyle = "#facc15";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(sx, sy, t.w, t.h, 6);
+    ctx.fill();
+    ctx.stroke();
+
+    // eye
+    ctx.fillStyle = "#facc15";
+    ctx.beginPath();
+    ctx.arc(cx, sy + t.h * 0.25, 5, 0, TAU);
+    ctx.fill();
+
+    // barrel pointing down-ish
+    ctx.strokeStyle = "#f97316";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + t.h * 0.1);
+    ctx.lineTo(cx, cy + t.h * 0.45);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+  function drawPlayer() {
+    const px = player.x - camera.x;
+    const py = player.y - camera.y;
+
+    ctx.save();
+    ctx.translate(px + player.w / 2, py + player.h / 2);
+
+    if (player.invulnTimer > 0) {
+      const t = (Math.sin(game.time * 20) + 1) / 2;
+      ctx.globalAlpha = 0.4 + 0.6 * t;
+    }
+
+    if (player.dashTimer > 0) {
+      ctx.globalAlpha = 0.45;
+      ctx.fillStyle = "rgba(129,140,248,0.7)";
+      ctx.beginPath();
+      ctx.ellipse(
+        -player.facing * 12,
+        4,
+        player.w * 0.9,
+        player.h * 0.5,
+        0,
+        0,
+        TAU
+      );
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.fillStyle = "#0f172a";
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.roundRect(-player.w / 2, -player.h / 2, player.w, player.h, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    const visorW = 18;
+    const visorH = 10;
+    const visorX = (player.facing >= 0 ? 4 : -visorW - 4);
+    ctx.fillStyle = "#38bdf8";
+    ctx.beginPath();
+    ctx.roundRect(visorX, -10, visorW, visorH, 4);
+    ctx.fill();
+
+    const grad = ctx.createRadialGradient(0, player.h / 2, 0, 0, player.h / 2, 18);
+    grad.addColorStop(0, "rgba(56,189,248,0.7)");
+    grad.addColorStop(1, "rgba(56,189,248,0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(0, player.h / 2, 18, 0, TAU);
+    ctx.fill();
+
+    if (player.shield > 0) {
+      const ratio = player.shield / player.maxShield;
+      ctx.strokeStyle = "rgba(56,189,248,0.8)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, player.w * 0.7 + ratio * 6, 0, TAU);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+  }
+
+  function drawPortal() {
+    if (!exitPortal) return;
+    const p = exitPortal;
+    const sx = p.x - camera.x;
+    const sy = p.y - camera.y;
+
+    ctx.save();
+    const cx = sx + p.w / 2;
+    const cy = sy + p.h / 2;
+
+    const t = (Math.sin(game.time * 2) + 1) / 2;
+
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, p.w);
+    grad.addColorStop(0, "rgba(52,211,153,0.9)");
+    grad.addColorStop(1, "rgba(52,211,153,0)");
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, p.w, 0, TAU);
+    ctx.fill();
+
+    ctx.strokeStyle = "#22c55e";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.roundRect(sx, sy, p.w, p.h, 10);
+    ctx.stroke();
+
+    ctx.strokeStyle = "rgba(45,212,191,0.5)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const innerH = p.h * (0.6 + 0.2 * t);
+    const innerY = sy + (p.h - innerH) / 2;
+    ctx.roundRect(sx + 8, innerY, p.w - 16, innerH, 8);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawHUD() {
+  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+
+  ctx.save();
+  ctx.fillStyle = "rgba(15,23,42,0.9)";
+  ctx.fillRect(0, 0, WIDTH, 60);
+
+  // HP bar
+  const hpRatio = clamp(player.hp / player.maxHp, 0, 1);
+  const hpX = 16;
+  const hpY = 16;
+  const hpW = 200;
+  const hpH = 10;
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(hpX, hpY, hpW, hpH);
+  const hpGrad = ctx.createLinearGradient(hpX, hpY, hpX + hpW, hpY);
+  hpGrad.addColorStop(0, "#22c55e");
+  hpGrad.addColorStop(1, "#f97316");
+  ctx.fillStyle = hpGrad;
+  ctx.fillRect(hpX, hpY, hpW * hpRatio, hpH);
+  ctx.strokeStyle = "#111827";
+  ctx.strokeRect(hpX, hpY, hpW, hpH);
+  ctx.fillStyle = "#e5e7eb";
+  ctx.font = "11px system-ui";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "bottom";
+  ctx.fillText("HP", hpX, hpY - 2);
+
+  // Shield bar
+  const shX = 16;
+  const shY = 34;
+  const shW = 200;
+  const shH = 6;
+  const shRatio = clamp(player.shield / player.maxShield, 0, 1);
+  ctx.fillStyle = "#020617";
+  ctx.fillRect(shX, shY, shW, shH);
+  ctx.fillStyle = "#38bdf8";
+  ctx.fillRect(shX, shY, shW * shRatio, shH);
+  ctx.strokeStyle = "#111827";
+  ctx.strokeRect(shX, shY, shW, shH);
+
+  // Score / best (right)
+  ctx.fillStyle = "#e5e7eb";
+  ctx.font = "13px system-ui";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "top";
+  ctx.fillText(`Score: ${game.score}`, WIDTH - 18, 10);
+  ctx.fillText(`Best: ${game.bestScore}`, WIDTH - 18, 26);
+
+  // LEVEL INFO (center)  🔥
+  ctx.textAlign = "center";
+  ctx.font = "11px system-ui";
+  ctx.fillStyle = "#9ca3af";
+  ctx.fillText(
+    `Level ${game.levelIndex + 1}/${LEVELS.length} – ${cfg.shortName} – Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
+    WIDTH / 2,
+    10
+  );
+
+  // Controls (bottom-left)
+  ctx.textAlign = "left";
+  ctx.font = "10px system-ui";
+  ctx.fillStyle = "#9ca3af";
+  ctx.fillText("Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)", 16, 50);
+  ctx.fillText("Dash: Shift · Pause: P", 16, 62);
+
+  ctx.restore();
+}
+
+
+  function drawOverlay() {
+  const cfg = LEVELS[game.levelIndex] || LEVELS[0];
+
+  ctx.save();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const cx = WIDTH / 2;
+  const cy = HEIGHT / 2;
+
+  // --- MENU ---
+  if (game.state === "menu") {
+    ctx.fillStyle = "rgba(15,23,42,0.9)";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "32px system-ui";
+    ctx.fillText("NEO RUNNER", cx, cy - 70);
+
+    ctx.font = "16px system-ui";
+    ctx.fillText("Futuristic runner with levels, hazards and dashes.", cx, cy - 30);
+    ctx.fillText("Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)", cx, cy);
+    ctx.fillText("Dash: Shift · Pause: P", cx, cy + 26);
+
+    ctx.font = "13px system-ui";
+    ctx.fillStyle = "#9ca3af";
+    ctx.fillText(
+      `Campaign: ${LEVELS.length} sectors · Starting at Level 1/${LEVELS.length}`,
+      cx,
+      cy + 54
+    );
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.fillText("Press ENTER or click to start", cx, cy + 80);
+  }
+
+  // --- PAUSED ---
+  else if (game.state === "paused") {
+    ctx.fillStyle = "rgba(15,23,42,0.6)";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "26px system-ui";
+    ctx.fillText("PAUSED", cx, cy - 10);
+    ctx.font = "14px system-ui";
+    ctx.fillText("Press P to resume", cx, cy + 18);
+  }
+
+  // --- GAME OVER ---
+  else if (game.state === "gameover") {
+    ctx.fillStyle = "rgba(15,23,42,0.85)";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.fillStyle = "#f97373";
+    ctx.font = "28px system-ui";
+    ctx.fillText("RUN TERMINATED", cx, cy - 60);
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "15px system-ui";
+    ctx.fillText(
+      `Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`,
+      cx,
+      cy - 22
+    );
+
+    ctx.font = "14px system-ui";
+    ctx.fillText(
+      `Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
+      cx,
+      cy + 2
+    );
+    ctx.fillText(
+      `Score: ${game.score} · Best: ${game.bestScore}`,
+      cx,
+      cy + 26
+    );
+
+    ctx.font = "13px system-ui";
+    ctx.fillStyle = "#9ca3af";
+    ctx.fillText("Press ENTER or click to retry this level", cx, cy + 56);
+    ctx.fillText("Press M to return to main hub (if you added one)", cx, cy + 78);
+  }
+
+  // --- LEVEL COMPLETE / VICTORY ---
+  else if (game.state === "victory") {
+    ctx.fillStyle = "rgba(15,23,42,0.85)";
+    ctx.fillRect(0, 0, WIDTH, HEIGHT);
+
+    ctx.fillStyle = "#22c55e";
+    ctx.font = "28px system-ui";
+    ctx.fillText("SECTOR CLEARED!", cx, cy - 60);
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "15px system-ui";
+    ctx.fillText(
+      `Level ${game.levelIndex + 1} / ${LEVELS.length} – ${cfg.shortName}`,
+      cx,
+      cy - 24
+    );
+    ctx.fillText(
+      `Distance: ${Math.floor(game.distance)} / ${game.levelLength}`,
+      cx,
+      cy + 0
+    );
+    ctx.fillText(
+      `Score: ${game.score} · Best: ${game.bestScore}`,
+      cx,
+      cy + 24
+    );
+
+    ctx.font = "13px system-ui";
+    ctx.fillStyle = "#9ca3af";
+    ctx.fillText("Press ENTER or click for next level (or restart)", cx, cy + 54);
+  }
+
+  ctx.restore();
+}
+
+
+ function draw() {
+  drawBackground();
+  drawPlatforms();
+  drawHazards();
+  drawOrbs();
+  drawDrones();
+  drawTurrets();   // 👈 NEW
+  drawParticles();
+  if (game.state !== "menu" && game.state !== "gameover" && game.state !== "victory") {
+    drawPlayer();
+    drawPortal();
+    drawHUD();
+  } else {
+    drawPortal();
+  }
+  drawOverlay();
+}
+
+
+  // ---------- Main Loop ----------
+  let lastTime = performance.now();
+  function loop(ts) {
+    const dt = (ts - lastTime) / 1000;
+    lastTime = ts;
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // startup idle particles
+  spawnParticles(WIDTH / 2, HEIGHT / 2 + 40, "rgba(129,140,248,0.8)", 40);
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+<script src="footer.js"></script>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head><title>Typing Speed Test</title></head>
+<body>
+
+<h2>Typing Speed Test</h2>
+<a href="index.html">⬅ Back</a><br><br>
+
+<p id="text">The quick brown fox jumps over the lazy dog</p>
+<input id="input" oninput="check()">
+<p id="res"></p>
+
+<script>
+let start=null;
+let text=document.getElementById("text").innerText;
+
+function check(){
+  if(!start) start=Date.now();
+  let val=document.getElementById("input").value;
+
+  if(val===text){
+    let time=(Date.now()-start)/1000;
+    let wpm=Math.round((text.split(" ").length/time)*60);
+    document.getElementById("res").innerText="✅ "+wpm+" WPM";
+  }
+}
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

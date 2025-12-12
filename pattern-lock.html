@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pattern Lock</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    #grid { display:inline-grid;grid-template-columns:repeat(3,60px);gap:10px;margin-top:10px; }
+    .cell {
+      width:60px;height:60px;border-radius:999px;
+      border:2px solid #4b5563;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:18px;
+    }
+    .cell.active { background:#6366f1;border-color:#a5b4fc; }
+  </style>
+</head>
+<body>
+
+<h2>🔒 Pattern Lock</h2>
+<a href="index.html">⬅ Back</a>
+<p>Click the dots in order to match the pattern shown.</p>
+
+<p id="patternText"></p>
+<div id="grid"></div>
+<p id="msg"></p>
+<button onclick="resetPattern()">Reset input</button>
+
+<script>
+const correctPattern = [1,2,5,8,9]; // positions 1-9
+let inputPattern=[];
+
+const grid=document.getElementById("grid");
+for(let i=1;i<=9;i++){
+  const d=document.createElement("div");
+  d.className="cell";
+  d.innerText=i;
+  d.onclick=()=>tap(i,d);
+  grid.appendChild(d);
+}
+
+document.getElementById("patternText").innerText="Pattern: "+correctPattern.join(" → ");
+
+function tap(i,el){
+  if(inputPattern.indexOf(i)!==-1) return; // don't repeat
+  inputPattern.push(i);
+  el.classList.add("active");
+  check();
+}
+
+function check(){
+  const msg=document.getElementById("msg");
+  if(inputPattern.length===correctPattern.length){
+    const ok = correctPattern.every((v,idx)=>v===inputPattern[idx]);
+    msg.innerText = ok ? "✅ Unlocked!" : "❌ Wrong pattern!";
+  } else {
+    msg.innerText="Input: "+inputPattern.join(" → ");
+  }
+}
+
+function resetPattern(){
+  inputPattern=[];
+  document.getElementById("msg").innerText="";
+  [...document.querySelectorAll(".cell")].forEach(c=>c.classList.remove("active"));
+}
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

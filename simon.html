@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simon Says</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    .row { display:flex;justify-content:center;gap:10px;margin-top:15px; }
+    .btn {
+      width:80px;height:80px;border-radius:10px;border:none;
+      cursor:pointer;opacity:0.9;transition:transform .1s, filter .1s;
+    }
+    .btn.active { transform:scale(1.05); filter:brightness(1.4); }
+    #b0 { background:#ef4444; }
+    #b1 { background:#22c55e; }
+    #b2 { background:#3b82f6; }
+    #b3 { background:#eab308; }
+  </style>
+</head>
+<body>
+
+<h2>🎵 Simon Says (Colors)</h2>
+<a href="index.html">⬅ Back</a>
+<p>Watch the flashing sequence, then repeat it by clicking the colors.</p>
+
+<button id="start">Start</button>
+<p id="info">Level: 0</p>
+<p id="msg"></p>
+
+<div class="row">
+  <button id="b0" class="btn" data-i="0"></button>
+  <button id="b1" class="btn" data-i="1"></button>
+</div>
+<div class="row">
+  <button id="b2" class="btn" data-i="2"></button>
+  <button id="b3" class="btn" data-i="3"></button>
+</div>
+
+<script>
+let seq=[], step=0, accepting=false, level=0;
+
+const buttons = [...document.querySelectorAll(".btn")];
+const info = document.getElementById("info");
+const msg = document.getElementById("msg");
+
+function randomColor() { return Math.floor(Math.random()*4); }
+
+function flash(i){
+  const b=buttons[i];
+  b.classList.add("active");
+  setTimeout(()=>b.classList.remove("active"),400);
+}
+
+function playSequence(){
+  accepting=false; step=0;
+  msg.innerText="Watch...";
+  let i=0;
+  const interval=setInterval(()=>{
+    flash(seq[i]);
+    i++;
+    if(i>=seq.length){
+      clearInterval(interval);
+      accepting=true;
+      msg.innerText="Now repeat!";
+    }
+  },600);
+}
+
+function nextLevel(){
+  level++;
+  info.innerText="Level: "+level;
+  seq.push(randomColor());
+  setTimeout(playSequence,400);
+}
+
+document.getElementById("start").onclick=()=>{
+  seq=[]; level=0; msg.innerText="";
+  nextLevel();
+};
+
+buttons.forEach(b=>{
+  b.onclick=()=>{
+    if(!accepting) return;
+    const i=parseInt(b.dataset.i,10);
+    flash(i);
+    if(i===seq[step]){
+      step++;
+      if(step===seq.length){
+        msg.innerText="✅ Good! Next level...";
+        accepting=false;
+        setTimeout(nextLevel,700);
+      }
+    } else {
+      msg.innerText="❌ Wrong! You reached level "+level+". Press Start to try again.";
+      accepting=false;
+    }
+  };
+});
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

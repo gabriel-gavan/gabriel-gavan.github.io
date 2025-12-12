@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mini Game Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- =========================
+       GOOGLE ADSENSE (GLOBAL)
+       =========================
+       After your AdSense account is approved:
+
+       1. Replace YOUR-CLIENT-ID below with your real client id.
+       2. Remove the surrounding HTML comment markers if you want.
+
+       Example format AdSense gives:
+       ca-pub-1234567890123456
+  -->
+  <!--
+  <script async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-CLIENT-ID"
+          crossorigin="anonymous"></script>
+  -->
+
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+	  margin: 0;
+	  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+	  /* Background image + fallback color */
+	  /* Background image + fallback color */
+	  background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+	  color: #e5e7eb;
+	  min-height: 100vh;
+	  display: block;
+}
+
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* --------- LAYOUT WRAPPER: SIDE ADS + MAIN CONTENT --------- */
+    .page-wrap {
+      display: flex;
+      width: 100%;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    /* --------- SIDE BANNERS --------- */
+    .side-banner {
+      flex: 0 0 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .ad-placeholder {
+      width: 160px;
+      height: 600px;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px dashed #374151;
+      color: #9ca3af;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0.75rem;
+    }
+
+    .ad-placeholder span {
+      opacity: 0.8;
+    }
+
+    .side-banner ins.adsbygoogle {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1024px) {
+      .side-banner {
+        display: none;
+      }
+      .page-wrap {
+        justify-content: center;
+      }
+    }
+
+    /* --------- MAIN CONTENT (HUB) --------- */
+    .main-content {
+      flex: 1 1 auto;
+      background: rgba(15,23,42,0.9);
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: calc(100vh - 24px);
+    }
+
+    /* --------- TOP LEADERBOARD BANNER --------- */
+    .top-banner {
+      padding: 0.6rem 1.5rem 0.4rem;
+      border-bottom: 1px solid #111827;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+    }
+
+    .top-banner-inner {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 70px;
+    }
+
+    .ad-placeholder-top {
+      width: 728px;
+      height: 90px;
+      max-width: 100%;
+      border-radius: 12px;
+      background: #020617;
+      border: 1px dashed #374151;
+      color: #9ca3af;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0.75rem;
+    }
+
+    .ad-placeholder-top span {
+      opacity: 0.8;
+    }
+
+    .top-banner ins.adsbygoogle {
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    @media (max-width: 700px) {
+      .top-banner {
+        padding: 0.4rem 0.8rem 0.2rem;
+      }
+      .ad-placeholder-top {
+        height: auto;
+        min-height: 60px;
+      }
+    }
+
+    header {
+      padding: 1.5rem 1.5rem 0.8rem;
+      border-bottom: 1px solid #111827;
+	  background: url('images/header-bg.png') center/cover no-repeat;
+	  color: white;
+	  position: relative;
+    }
+	/* dim overlay for readability */
+	header::before {
+	  content: "";
+	  position: absolute;
+	  inset: 0;
+	  background: rgba(0,0,0,0.55);
+	}
+
+	header * {
+	  position: relative;
+	  z-index: 2;
+	}
+    header h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1.7rem;
+      letter-spacing: 0.03em;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .badge-row {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .badge-row .pill {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.15rem 0.6rem;
+      background: rgba(15,23,42,0.85);
+    }
+
+    /* --------- FILTERS BAR --------- */
+    .filters-bar {
+      max-width: 1300px;
+      margin: 0.7rem auto 0.2rem;
+      padding: 0.6rem 0.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filters-left,
+    .filters-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-input {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.45rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      min-width: 210px;
+      outline: none;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .type-select {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+    }
+
+    .btn-secondary {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #111827;
+      border-color: #6366f1;
+      transform: translateY(-1px);
+    }
+
+    .content-scroll {
+      overflow: auto;
+      padding: 0.4rem 1.5rem 1rem;
+	      background-image: url("images/hub-bg.jpg"); /* your image */
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
+		border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        padding: 1.1rem 1rem 0.8rem;
+      }
+      .content-scroll {
+        padding: 0.4rem 1rem 0.8rem;
+      }
+    }
+
+    /* --------- CATEGORY TITLES (ANIMATED BANNERS) --------- */
+    .category-title {
+      max-width: 1300px;
+      margin: 1.1rem auto 0.4rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      background: linear-gradient(120deg, rgba(79,70,229,0.2), rgba(236,72,153,0.12), rgba(56,189,248,0.16));
+      background-size: 200% 200%;
+      animation: bannerGlow 10s linear infinite;
+      border: 1px solid rgba(99,102,241,0.45);
+      box-shadow: 0 10px 25px rgba(15,23,42,0.8);
+    }
+
+    .category-title span.label {
+      opacity: 0.95;
+    }
+
+    .category-title span.sub {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      opacity: 0.9;
+    }
+
+    @keyframes bannerGlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .grid {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px,1fr));
+      gap: 1.2rem;
+    }
+
+    .card {
+      position: relative;
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.5rem 1.8rem;
+      border: 1px solid #111827;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      min-height: 200px;
+      font-size: 1rem;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: #6366f1;
+      background: radial-gradient(circle at top left, rgba(90,70,255,0.25), #020617 40%);
+      box-shadow: 0 16px 32px rgba(15,23,42,0.9);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card a {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e5e7eb;
+      text-decoration: none;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      line-height: 1.3rem;
+      color: #cbd5f5;
+    }
+
+    .tag-row {
+      margin-top: 0.2rem;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      display: inline-block;
+      border: 1px solid #4b5563;
+      padding: 0.15rem .45rem;
+      border-radius: 999px;
+      opacity: 0.93;
+      margin-right: 0.25rem;
+      margin-top: 0.1rem;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .badge-new {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #a3e635);
+      color: #022c22;
+      border: 1px solid rgba(34,197,94,0.9);
+      box-shadow: 0 0 10px rgba(34,197,94,0.4);
+      white-space: nowrap;
+    }
+
+    .most-played {
+      border-color: #facc15 !important;
+      box-shadow: 0 0 0 1px rgba(250,204,21,0.4), 0 20px 40px rgba(15,23,42,0.95);
+    }
+
+    .badge-most-played {
+      position: absolute;
+      bottom: 0.7rem;
+      right: 1.2rem;
+      font-size: 0.7rem;
+      padding: 0.16rem 0.55rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f97316, #facc15);
+      color: #111827;
+      border: 1px solid rgba(250,204,21,0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      box-shadow: 0 0 12px rgba(250,204,21,0.6);
+    }
+
+    footer {
+      text-align: center;
+      padding: 0.8rem 1rem 1rem;
+      font-size: .78rem;
+      color: #9ca3af;
+      border-top: 1px solid #111827;
+      background: #020617;
+    }
+
+    footer span {
+      opacity: 0.9;
+    }
+
+    /* ================== COOKIE BANNER ================== */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: rgba(15,23,42,0.98);
+      border-top: 1px solid #374151;
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.75);
+      padding: 0.9rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cookie-inner {
+      max-width: 960px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+    }
+
+    .cookie-text {
+      flex: 1 1 260px;
+      line-height: 1.3rem;
+    }
+
+    .cookie-text a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .cookie-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .btn-cookie-primary {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border-radius: 999px;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 10px 20px rgba(79,70,229,0.6);
+    }
+
+    .btn-cookie-secondary {
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.45rem 1rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* ================== PRIVACY MODAL ================== */
+    .privacy-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .privacy-modal {
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid #374151;
+      max-width: 540px;
+      width: 100%;
+      padding: 1.5rem 1.6rem 1.2rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.85);
+    }
+
+    .privacy-modal h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .privacy-modal p {
+      font-size: 0.86rem;
+      line-height: 1.4rem;
+      color: #e5e7eb;
+      margin: 0.3rem 0;
+    }
+
+    .privacy-modal ul {
+      margin: 0.4rem 0 0.6rem;
+      padding-left: 1.1rem;
+      font-size: 0.82rem;
+      color: #d1d5db;
+    }
+
+    .privacy-modal a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .modal-actions {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* ================== PRIVACY SETTINGS FLOATING BUTTON ================== */
+    .privacy-settings-btn {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 1rem;
+      z-index: 9998;
+      background: rgba(15,23,42,0.95);
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+      color: #e5e7eb;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .privacy-settings-btn span {
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 640px) {
+      .privacy-settings-btn {
+        bottom: 3.4rem; /* so it doesn't overlap the banner */
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- ===================== LEFT BANNER AREA ===================== -->
+  <aside class="side-banner">
+    <div class="ad-placeholder">
+      <strong>Ad Slot</strong>
+      <span>Paste AdSense code here<br/>for a 160×600 sidebar banner.</span>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ARCADE HUB ===================== -->
+  <main class="main-content">
+
+    <!-- TOP LEADERBOARD BANNER -->
+    <div class="top-banner">
+      <div class="top-banner-inner">
+        <div class="ad-placeholder-top">
+          <strong>Top Banner Ad</strong>
+          <span>Paste your 728×90 (or responsive) AdSense unit here.</span>
+        </div>
+      </div>
+    </div>
+
+    <header>
+      <h1>Mini Game Hub</h1>
+      <p>Pick a game and play instantly. All games run in your browser as simple HTML files.</p>
+      <div class="badge-row">
+        <div class="pill">No download</div>
+        <div class="pill">Keyboard + mouse friendly</div>
+        <div class="pill">Great for quick breaks</div>
+      </div>
+    </header>
+
+    <!-- FILTERS / SEARCH / SHUFFLE -->
+    <div class="filters-bar">
+      <div class="filters-left">
+        <input
+          id="searchInput"
+          class="search-input"
+          type="text"
+          placeholder="Search games by name or description…" />
+        <select id="typeFilter" class="type-select">
+          <option value="all">All types</option>
+          <option value="arcade">Arcade</option>
+          <option value="shooter">Shooter</option>
+          <option value="strategy">Strategy</option>
+          <option value="logic">Logic</option>
+          <option value="memory">Memory</option>
+          <option value="classic">Classic</option>
+          <option value="typing">Typing</option>
+          <option value="ai">AI</option>
+        </select>
+      </div>
+      <div class="filters-right">
+        <button id="shuffleBtn" class="btn-secondary">🔀 Shuffle</button>
+        <button id="resetFiltersBtn" class="btn-secondary">Reset Filters</button>
+      </div>
+    </div>
+
+    <div class="content-scroll">
+
+      <!-- ===================== TOP PICKS ===================== -->
+      <div class="category-title">
+        <span class="label">🔥 Top Picks</span>
+        <span class="sub">Hand-picked for quick fun and high replay value.</span>
+      </div>
+      <section class="grid">
+
+        <!-- Neon Arena -->
+        <div class="card game-card"
+             data-id="neon-arena"
+             data-url="neon-arena.html"
+             data-title="Neon Arena"
+             data-tags="arcade,shooter,campaign,featured"
+             data-desc="Dash, shoot and survive waves of enemies in a neon arena.">
+          <div class="card-header-row">
+            <a href="neon-arena.html">🌌 Neon Arena</a>
+            <span class="badge-new">New</span>
+          </div>
+          <p class="card-desc">Dash, shoot and survive intense enemy waves in a glowing neon battlefield.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">shooter</span><span class="tag">campaign</span>
+          </div>
+        </div>
+
+        <!-- Neo Runner -->
+        <div class="card game-card"
+             data-id="neo-runner"
+             data-url="neo-runner.html"
+             data-title="Neo Runner"
+             data-tags="arcade,strategy,featured"
+             data-desc="Run over obstacles and avoid enemies.">
+          <div class="card-header-row">
+            <a href="neo-runner.html">🛰 Neo Runner</a>
+            <span class="badge-new">New</span>
+          </div>
+          <p class="card-desc">Run, dodge and time your jumps to survive a futuristic gauntlet of enemies and traps.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">featured</span>
+          </div>
+        </div>
+
+        <!-- Starfall Squadron -->
+        <div class="card game-card"
+             data-id="starfall-squadron"
+             data-url="starfall-squadron.html"
+             data-title="Starfall Squadron"
+             data-tags="arcade,shooter,featured"
+             data-desc="Vertical shmup: dodge bullets, grab powerups, defeat bosses.">
+          <div class="card-header-row">
+            <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
+            <span class="badge-new">New</span>
+          </div>
+          <p class="card-desc">Classic vertical shoot ’em up: dodge bullet storms, grab power-ups and crush bosses.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">shooter</span>
+          </div>
+        </div>
+
+        <!-- Stargrid Defense (also in Top Picks) -->
+        <div class="card game-card"
+             data-id="stargrid-defense-top"
+             data-url="stargrid-defense.html"
+             data-title="Stargrid Defense"
+             data-tags="strategy,tower defense,arcade,featured"
+             data-desc="Build towers along the path and stop enemy waves.">
+          <div class="card-header-row">
+            <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
+            <span class="badge-new">New</span>
+          </div>
+          <p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
+          <div class="tag-row">
+            <span class="tag">tower defense</span><span class="tag">strategy</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================== CLASSIC QUICK GAMES ===================== -->
+      <div class="category-title">
+        <span class="label">🎮 Classic Quick Games</span>
+        <span class="sub">Perfect for short breaks and easy to learn.</span>
+      </div>
+      <section class="grid">
+
+        <div class="card game-card"
+             data-id="rps"
+             data-url="rps.html"
+             data-title="Rock Paper Scissors"
+             data-tags="classic,arcade"
+             data-desc="Beat the computer in this timeless classic.">
+          <div class="card-header-row">
+            <a href="rps.html">✊ Rock Paper Scissors</a>
+          </div>
+          <p class="card-desc">Pick your move and try to outsmart the computer in this timeless mini duel.</p>
+          <div class="tag-row">
+            <span class="tag">classic</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="snake"
+             data-url="snake.html"
+             data-title="Snake"
+             data-tags="arcade,classic"
+             data-desc="Grow the snake by eating food, but don’t crash into yourself.">
+          <div class="card-header-row">
+            <a href="snake.html">🐍 Snake</a>
+          </div>
+          <p class="card-desc">Eat the food, grow longer and don’t crash into walls or your own tail.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">classic</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="tictactoe-ai"
+             data-url="tictactoe-ai.html"
+             data-title="Tic Tac Toe vs AI"
+             data-tags="classic,ai,logic"
+             data-desc="Can you outsmart the AI in a simple 3×3 grid?">
+          <div class="card-header-row">
+            <a href="tictactoe-ai.html">⭕ Tic Tac Toe vs AI</a>
+          </div>
+          <p class="card-desc">Play against an AI in this simple but tricky 3×3 grid battle.</p>
+          <div class="tag-row">
+            <span class="tag">classic</span><span class="tag">AI</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="whack-a-mole"
+             data-url="whack-a-mole.html"
+             data-title="Whack-a-Mole"
+             data-tags="arcade,reflex"
+             data-desc="Click moles before they disappear. Don’t miss too many!">
+          <div class="card-header-row">
+            <a href="whack-a-mole.html">🐹 Whack-a-Mole</a>
+          </div>
+          <p class="card-desc">Test your reflexes by hitting moles before they vanish from their holes.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">reflex</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================== SKILL & LOGIC ===================== -->
+      <div class="category-title">
+        <span class="label">🧠 Skill & Logic Games</span>
+        <span class="sub">Train your brain, memory and reaction time.</span>
+      </div>
+      <section class="grid">
+
+        <div class="card game-card"
+             data-id="guess-number"
+             data-url="guess-number.html"
+             data-title="Guess The Number"
+             data-tags="logic,numbers"
+             data-desc="Pick a number range and try to guess it in as few tries as possible.">
+          <div class="card-header-row">
+            <a href="guess-number.html">🎯 Guess The Number</a>
+          </div>
+          <p class="card-desc">Choose a range and try to guess the hidden number in the fewest attempts.</p>
+          <div class="tag-row">
+            <span class="tag">logic</span><span class="tag">numbers</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="reaction-test"
+             data-url="reaction-test.html"
+             data-title="Reaction Test"
+             data-tags="speed,reflex"
+             data-desc="Wait for the screen to flash, then click as fast as you can.">
+          <div class="card-header-row">
+            <a href="reaction-test.html">⚡ Reaction Test</a>
+          </div>
+          <p class="card-desc">Wait for the signal, then click instantly and see how fast you really are.</p>
+          <div class="tag-row">
+            <span class="tag">speed</span><span class="tag">reflex</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="memory-grid"
+             data-url="memory-grid.html"
+             data-title="Memory Grid"
+             data-tags="memory,logic"
+             data-desc="Memorize the highlighted tiles and repeat the pattern.">
+          <div class="card-header-row">
+            <a href="memory-grid.html">🧠 Memory Grid</a>
+          </div>
+          <p class="card-desc">Watch the pattern of tiles light up, then repeat it without making a mistake.</p>
+          <div class="tag-row">
+            <span class="tag">memory</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="typing-speed"
+             data-url="typing-speed.html"
+             data-title="Typing Speed Test"
+             data-tags="typing,skill"
+             data-desc="Type the shown text as fast and accurately as you can.">
+          <div class="card-header-row">
+            <a href="typing-speed.html">⌨ Typing Speed Test</a>
+          </div>
+          <p class="card-desc">Type the given text as fast as possible and see your WPM and accuracy.</p>
+          <div class="tag-row">
+            <span class="tag">typing</span><span class="tag">skill</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="higher-lower"
+             data-url="higher-lower.html"
+             data-title="Higher / Lower"
+             data-tags="guessing,logic"
+             data-desc="Guess if the next number will be higher or lower.">
+          <div class="card-header-row">
+            <a href="higher-lower.html">⬆⬇ Higher / Lower</a>
+          </div>
+          <p class="card-desc">Predict if the next number drawn will be higher or lower than the current one.</p>
+          <div class="tag-row">
+            <span class="tag">guessing</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="minesweeper"
+             data-url="minesweeper.html"
+             data-title="Minesweeper"
+             data-tags="logic,puzzle"
+             data-desc="Clear the field without detonating any hidden mines.">
+          <div class="card-header-row">
+            <a href="minesweeper.html">💣 Minesweeper</a>
+          </div>
+          <p class="card-desc">Use number hints to uncover all safe tiles and avoid the hidden mines.</p>
+          <div class="tag-row">
+            <span class="tag">logic</span><span class="tag">puzzle</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="simon"
+             data-url="simon.html"
+             data-title="Simon Says (Colors)"
+             data-tags="memory"
+             data-desc="Watch the color sequence and repeat it flawlessly.">
+          <div class="card-header-row">
+            <a href="simon.html">🎵 Simon Says (Colors)</a>
+          </div>
+          <p class="card-desc">Memorize and replay the growing sequence of colorful lights and sounds.</p>
+          <div class="tag-row">
+            <span class="tag">memory</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="quiz"
+             data-url="quiz.html"
+             data-title="Mini Quiz"
+             data-tags="trivia,logic"
+             data-desc="Answer quick questions across random topics.">
+          <div class="card-header-row">
+            <a href="quiz.html">❓ Mini Quiz</a>
+          </div>
+          <p class="card-desc">Answer short questions across random topics and see how many you get right.</p>
+          <div class="tag-row">
+            <span class="tag">trivia</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="timer-bomb"
+             data-url="timer-bomb.html"
+             data-title="Timer Bomb"
+             data-tags="pressure,logic"
+             data-desc="Defuse the bomb before the countdown hits zero.">
+          <div class="card-header-row">
+            <a href="timer-bomb.html">⏳ Timer Bomb</a>
+          </div>
+          <p class="card-desc">Work under pressure to disarm the bomb before the timer reaches zero.</p>
+          <div class="tag-row">
+            <span class="tag">pressure</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="pattern-lock"
+             data-url="pattern-lock.html"
+             data-title="Pattern Lock"
+             data-tags="pattern,logic"
+             data-desc="Recreate the shown lock pattern without mistakes.">
+          <div class="card-header-row">
+            <a href="pattern-lock.html">🔒 Pattern Lock</a>
+          </div>
+          <p class="card-desc">Memorize the pattern, then draw it perfectly to unlock.</p>
+          <div class="tag-row">
+            <span class="tag">pattern</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="sliding-puzzle"
+             data-url="sliding-puzzle.html"
+             data-title="Sliding Puzzle (3×3)"
+             data-tags="puzzle,logic"
+             data-desc="Rearrange the tiles until the image is complete.">
+          <div class="card-header-row">
+            <a href="sliding-puzzle.html">🧩 Sliding Puzzle (3×3)</a>
+          </div>
+          <p class="card-desc">Slide tiles around until every piece is in the right place.</p>
+          <div class="tag-row">
+            <span class="tag">puzzle</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ===================== STRATEGY & CAMPAIGN ===================== -->
+      <div class="category-title">
+        <span class="label">🚀 Strategy & Campaign</span>
+        <span class="sub">Longer sessions, planning and tower defense.</span>
+      </div>
+      <section class="grid">
+
+        <div class="card game-card"
+             data-id="stargrid-defense"
+             data-url="stargrid-defense.html"
+             data-title="Stargrid Defense"
+             data-tags="strategy,tower defense,arcade"
+             data-desc="Build towers along the path and stop enemy waves.">
+          <div class="card-header-row">
+            <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
+          </div>
+          <p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
+          <div class="tag-row">
+            <span class="tag">tower defense</span><span class="tag">strategy</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="neon-arena-strategy"
+             data-url="neon-arena.html"
+             data-title="Neon Arena"
+             data-tags="arcade,shooter,campaign,strategy"
+             data-desc="Dash, shoot and survive waves of enemies in a neon arena.">
+          <div class="card-header-row">
+            <a href="neon-arena.html">🌌 Neon Arena</a>
+          </div>
+          <p class="card-desc">A fast-paced arena where positioning, timing and upgrades matter for survival.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">shooter</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="neo-runner-strategy"
+             data-url="neo-runner.html"
+             data-title="Neo Runner"
+             data-tags="arcade,strategy"
+             data-desc="Run over obstacles and avoid enemies.">
+          <div class="card-header-row">
+            <a href="neo-runner.html">🛰 Neo Runner</a>
+          </div>
+          <p class="card-desc">Plan your jumps and movement to chain safe paths through enemy-infested levels.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">strategy</span>
+          </div>
+        </div>
+
+        <div class="card game-card"
+             data-id="starfall-squadron-strategy"
+             data-url="starfall-squadron.html"
+             data-title="Starfall Squadron"
+             data-tags="arcade,shooter,strategy"
+             data-desc="Vertical shmup: dodge bullets, grab powerups, defeat bosses.">
+          <div class="card-header-row">
+            <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
+          </div>
+          <p class="card-desc">Pick the right powerups and flight path to survive bullet patterns and boss fights.</p>
+          <div class="tag-row">
+            <span class="tag">arcade</span><span class="tag">shooter</span>
+          </div>
+        </div>
+
+      </section>
+
+    </div>
+
+    <footer>
+      <p>🎮 Thanks for playing in our mini arcade!</p>
+      <p>⭐ Bookmark this page — new games are added weekly.</p>
+      <p>💬 Got ideas or feedback? Share the fun with your friends!</p>
+
+      <hr style="border:1px solid #111827; margin:10px auto; width:60%;">
+
+      <p>
+        <a href="privacy.html" style="color:#9ca3af;">Privacy Policy</a> ·
+        <a href="terms.html" style="color:#9ca3af;">Terms of Use</a>
+      </p>
+
+      <p>© <span id="footer-year"></span> Neo Runner Arcade — All Rights Reserved.</p>
+    </footer>
+
+  </main>
+
+  <!-- ===================== RIGHT BANNER AREA ===================== -->
+  <aside class="side-banner">
+    <div class="ad-placeholder">
+      <strong>Ad Slot</strong>
+      <span>Paste another AdSense code here<br/>for the right sidebar banner.</span>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ============ COOKIE CONSENT BANNER ============ -->
+<div id="cookie-banner" class="cookie-banner hidden">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      We use cookies and similar technologies to deliver and improve this arcade, to measure traffic and (if enabled)
+      to show personalized ads via partners like Google AdSense. By clicking <strong>“Accept all”</strong> you consent
+      to the use of cookies for analytics and advertising. You can change your choice at any time in
+      <strong>Privacy &amp; Cookies</strong>.
+      See our <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.
+    </div>
+    <div class="cookie-actions">
+      <button id="cookie-reject" class="btn-cookie-secondary">Reject non-essential</button>
+      <button id="cookie-accept" class="btn-cookie-primary">Accept all</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRIVACY / GDPR / CCPA MODAL ============ -->
+<div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
+  <div class="privacy-modal">
+    <h2>Privacy &amp; Cookies</h2>
+    <p>
+      This site uses cookies and similar technologies to:
+    </p>
+    <ul>
+      <li>Remember your preferences (for example, which games you play most).</li>
+      <li>Measure traffic and usage to improve the site.</li>
+      <li>
+        If you enable it, show personalized ads via third-party partners such as Google AdSense,
+        which may use cookies and identifiers to personalize content and ads.
+      </li>
+    </ul>
+    <p>
+      Under GDPR and similar laws, you can choose whether we may use non-essential cookies (analytics / ads).
+      Under CCPA/CPRA, you may opt out of the <em>sale or sharing</em> of personal information by rejecting
+      non-essential cookies.
+    </p>
+    <p>
+      For full details, please see our
+      <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and
+      <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a>.
+    </p>
+    <div class="modal-actions">
+      <button id="privacy-reject" class="btn-outline">Reject non-essential</button>
+      <button id="privacy-accept" class="btn-cookie-primary">Accept all cookies</button>
+      <button id="privacy-close" class="btn-outline">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Floating privacy settings button -->
+<button id="privacy-settings-btn" class="privacy-settings-btn">
+  <span>⚙</span> Privacy &amp; Cookies
+</button>
+
+<!-- ============ GAME LOGIC + PRIVACY / COOKIE LOGIC ============ -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = Array.from(document.querySelectorAll('.game-card'));
+    const searchInput = document.getElementById('searchInput');
+    const typeFilter = document.getElementById('typeFilter');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const resetBtn = document.getElementById('resetFiltersBtn');
+
+    const cookieBanner = document.getElementById('cookie-banner');
+    const cookieAcceptBtn = document.getElementById('cookie-accept');
+    const cookieRejectBtn = document.getElementById('cookie-reject');
+
+    const privacyModalBackdrop = document.getElementById('privacy-modal-backdrop');
+    const privacyAcceptBtn = document.getElementById('privacy-accept');
+    const privacyRejectBtn = document.getElementById('privacy-reject');
+    const privacyCloseBtn = document.getElementById('privacy-close');
+    const privacySettingsBtn = document.getElementById('privacy-settings-btn');
+
+    const footerYearSpan = document.getElementById('footer-year');
+
+    // ===== Dynamic footer year =====
+    if (footerYearSpan) {
+      footerYearSpan.textContent = new Date().getFullYear();
+    }
+
+    // ===== Play counts (Most Played) =====
+    let playCounts = {};
+    try {
+      playCounts = JSON.parse(localStorage.getItem('gamePlayCounts')) || {};
+    } catch (e) {
+      playCounts = {};
+    }
+
+    cards.forEach(card => {
+      const id = card.dataset.id;
+      const url = card.dataset.url;
+      if (!id || !url) return;
+
+      card.addEventListener('click', () => {
+        playCounts[id] = (playCounts[id] || 0) + 1;
+        localStorage.setItem('gamePlayCounts', JSON.stringify(playCounts));
+        window.location.href = url;
+      });
+    });
+
+    const sorted = Object.entries(playCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    sorted.forEach(([id]) => {
+      const card = document.querySelector('.game-card[data-id="' + id + '"]');
+      if (card && !card.classList.contains('most-played')) {
+        card.classList.add('most-played');
+        const label = document.createElement('div');
+        label.className = 'badge-most-played';
+        label.textContent = 'Most Played';
+        card.appendChild(label);
+      }
+    });
+
+    // ===== Filters & search =====
+    function applyFilters() {
+      const query = (searchInput.value || '').trim().toLowerCase();
+      const type = typeFilter.value;
+
+      cards.forEach(card => {
+        const title = (card.dataset.title || '').toLowerCase();
+        const desc = (card.dataset.desc || '').toLowerCase();
+        const tagsRaw = (card.dataset.tags || '').toLowerCase();
+        const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+
+        const matchesSearch =
+          !query ||
+          title.includes(query) ||
+          desc.includes(query);
+
+        const matchesType =
+          type === 'all' ||
+          tags.includes(type);
+
+        card.style.display = (matchesSearch && matchesType) ? '' : 'none';
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener('input', applyFilters);
+    }
+
+    if (typeFilter) {
+      typeFilter.addEventListener('change', applyFilters);
+    }
+
+    if (shuffleBtn) {
+      shuffleBtn.addEventListener('click', () => {
+        const sections = new Set(cards.map(c => c.parentElement));
+        sections.forEach(section => {
+          const sectionCards = Array.from(section.querySelectorAll('.game-card'));
+          const shuffled = sectionCards
+            .map(c => ({ c, sort: Math.random() }))
+            .sort((a, b) => a.sort - b.sort)
+            .map(x => x.c);
+          shuffled.forEach(card => section.appendChild(card));
+        });
+      });
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        if (typeFilter) typeFilter.value = 'all';
+        cards.forEach(card => card.style.display = '');
+      });
+    }
+
+    // ===== Cookie / Privacy consent =====
+    const CONSENT_KEY = 'nrPrivacyConsent';
+
+    function getConsent() {
+      try {
+        return JSON.parse(localStorage.getItem(CONSENT_KEY)) || null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function saveConsent(status) {
+      const value = {
+        status,               // "granted" | "denied"
+        analytics: status === 'granted',
+        ads: status === 'granted',
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem(CONSENT_KEY, JSON.stringify(value));
+      return value;
+    }
+
+    function showCookieBanner() {
+      if (cookieBanner) cookieBanner.classList.remove('hidden');
+    }
+
+    function hideCookieBanner() {
+      if (cookieBanner) cookieBanner.classList.add('hidden');
+    }
+
+    function openPrivacyModal() {
+      if (privacyModalBackdrop) privacyModalBackdrop.classList.remove('hidden');
+    }
+
+    function closePrivacyModal() {
+      if (privacyModalBackdrop) privacyModalBackdrop.classList.add('hidden');
+    }
+
+    // IMPORTANT: When you actually enable AdSense or analytics,
+    // you should only load those scripts AFTER consent = "granted".
+    function loadAdAndAnalyticsScriptsIfConsented(consent) {
+      if (!consent || consent.status !== 'granted') {
+        return;
+      }
+      // Example stub:
+      // const script = document.createElement('script');
+      // script.async = true;
+      // script.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR-CLIENT-ID";
+      // script.crossOrigin = "anonymous";
+      // document.head.appendChild(script);
+    }
+
+    const existingConsent = getConsent();
+
+    if (!existingConsent) {
+      showCookieBanner();
+    } else {
+      hideCookieBanner();
+      loadAdAndAnalyticsScriptsIfConsented(existingConsent);
+    }
+
+    if (cookieAcceptBtn) {
+      cookieAcceptBtn.addEventListener('click', () => {
+        const consent = saveConsent('granted');
+        hideCookieBanner();
+        loadAdAndAnalyticsScriptsIfConsented(consent);
+      });
+    }
+
+    if (cookieRejectBtn) {
+      cookieRejectBtn.addEventListener('click', () => {
+        saveConsent('denied');
+        hideCookieBanner();
+      });
+    }
+
+    if (privacySettingsBtn) {
+      privacySettingsBtn.addEventListener('click', () => {
+        openPrivacyModal();
+      });
+    }
+
+    if (privacyAcceptBtn) {
+      privacyAcceptBtn.addEventListener('click', () => {
+        const consent = saveConsent('granted');
+        hideCookieBanner();
+        loadAdAndAnalyticsScriptsIfConsented(consent);
+        closePrivacyModal();
+      });
+    }
+
+    if (privacyRejectBtn) {
+      privacyRejectBtn.addEventListener('click', () => {
+        saveConsent('denied');
+        hideCookieBanner();
+        closePrivacyModal();
+      });
+    }
+
+    if (privacyCloseBtn) {
+      privacyCloseBtn.addEventListener('click', () => {
+        closePrivacyModal();
+      });
+    }
+
+  });
+</script>
+
+</body>
+</html>

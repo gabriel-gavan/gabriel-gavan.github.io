@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sliding Puzzle 3×3</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui,sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed;;color:#fff;text-align:center; }
+    a { color:#a5b4fc; }
+    #grid { display:inline-grid;grid-template-columns:repeat(3,70px);gap:4px;margin-top:10px; }
+    .tile {
+      width:70px;height:70px;display:flex;align-items:center;justify-content:center;
+      background:#111827;border-radius:.6rem;border:1px solid #374151;font-size:20px;cursor:pointer;
+    }
+    .empty { background:transparent;border:none;cursor:default; }
+  </style>
+</head>
+<body>
+
+<h2>🧩 Sliding Puzzle (3×3)</h2>
+<a href="index.html">⬅ Back</a>
+<p>Click tiles next to the empty space to slide them. Order 1–8.</p>
+
+<div id="grid"></div>
+<p id="msg"></p>
+<button onclick="shuffle()">Shuffle</button>
+
+<script>
+let tiles=[]; // array of numbers 1..8 and null
+
+const grid=document.getElementById("grid");
+
+function render(){
+  grid.innerHTML="";
+  tiles.forEach((v,idx)=>{
+    const d=document.createElement("div");
+    d.className="tile";
+    if(v===null){
+      d.classList.add("empty");
+    } else {
+      d.innerText=v;
+      d.onclick=()=>move(idx);
+    }
+    grid.appendChild(d);
+  });
+}
+
+function neighbors(i){
+  const row=Math.floor(i/3), col=i%3;
+  const list=[];
+  if(row>0) list.push(i-3);
+  if(row<2) list.push(i+3);
+  if(col>0) list.push(i-1);
+  if(col<2) list.push(i+1);
+  return list;
+}
+
+function move(i){
+  const emptyIndex = tiles.indexOf(null);
+  if(neighbors(i).includes(emptyIndex)){
+    [tiles[i],tiles[emptyIndex]]=[tiles[emptyIndex],tiles[i]];
+    render();
+    checkWin();
+  }
+}
+
+function checkWin(){
+  const ok = tiles.slice(0,8).every((v,i)=>v===i+1) && tiles[8]===null;
+  if(ok) document.getElementById("msg").innerText="🎉 Solved!";
+  else document.getElementById("msg").innerText="";
+}
+
+function shuffle(){
+  tiles=[1,2,3,4,5,6,7,8,null];
+  for(let i=0;i<50;i++){ move(Math.floor(Math.random()*9)); } // random moves
+  document.getElementById("msg").innerText="";
+  render();
+}
+
+shuffle();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

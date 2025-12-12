@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Snake</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, sans-serif; background:
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		url("images/hub-bg.jpg") center center / cover no-repeat fixed; color:#fff; text-align:center; }
+    a { color:#a5b4fc; }
+    canvas { background:#0f172a; margin-top:10px; border:1px solid #374151; }
+  </style>
+</head>
+<body>
+
+<h2>🐍 Snake</h2>
+<a href="index.html">⬅ Back</a>
+<p>Use arrow keys to move. Eat the red food, don't hit walls or yourself.</p>
+
+<canvas id="game" width="300" height="300"></canvas>
+<p id="score">Score: 0</p>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const size = 15;
+let snake, dir, food, score, interval, alive;
+
+function reset() {
+  snake = [{x:10, y:10}];
+  dir = {x:1, y:0};
+  score = 0;
+  alive = true;
+  placeFood();
+  document.getElementById("score").innerText = "Score: 0";
+  if (interval) clearInterval(interval);
+  interval = setInterval(loop, 120);
+}
+
+function placeFood() {
+  food = {
+    x: Math.floor(Math.random()* (canvas.width/size)),
+    y: Math.floor(Math.random()* (canvas.height/size))
+  };
+}
+
+document.addEventListener("keydown", e => {
+  if (!alive) return;
+  if (e.key === "ArrowUp" && dir.y !== 1) dir = {x:0,y:-1};
+  if (e.key === "ArrowDown" && dir.y !== -1) dir = {x:0,y:1};
+  if (e.key === "ArrowLeft" && dir.x !== 1) dir = {x:-1,y:0};
+  if (e.key === "ArrowRight" && dir.x !== -1) dir = {x:1,y:0};
+});
+
+function loop() {
+  const head = {x: snake[0].x + dir.x, y: snake[0].y + dir.y};
+
+  // wall collision
+  if (head.x < 0 || head.y < 0 || head.x >= canvas.width/size || head.y >= canvas.height/size) {
+    gameOver();
+    return;
+  }
+
+  // self collision
+  if (snake.some((s,i)=> i>0 && s.x===head.x && s.y===head.y)) {
+    gameOver();
+    return;
+  }
+
+  snake.unshift(head);
+
+  // food
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    document.getElementById("score").innerText = "Score: "+score;
+    placeFood();
+  } else {
+    snake.pop();
+  }
+
+  draw();
+}
+
+function gameOver() {
+  alive = false;
+  clearInterval(interval);
+  alert("Game Over! Score: " + score);
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // draw snake
+  ctx.fillStyle = "#22c55e";
+  snake.forEach(p => {
+    ctx.fillRect(p.x*size, p.y*size, size-1, size-1);
+  });
+
+  // draw food
+  ctx.fillStyle = "#ef4444";
+  ctx.fillRect(food.x*size, food.y*size, size-1, size-1);
+}
+
+reset();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>
