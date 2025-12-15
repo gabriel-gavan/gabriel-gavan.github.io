@@ -5,7 +5,7 @@
   <title>Neo Runner – Cyber District</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader -->
   <script async
     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
     crossorigin="anonymous"></script>
@@ -22,7 +22,6 @@
       min-height: 100vh;
     }
 
-    /* Layout: side banners + main column */
     .layout {
       display: flex;
       justify-content: center;
@@ -73,7 +72,6 @@
       padding: 4px;
     }
 
-    /* Header like neon-arena */
     .game-header {
       width: 100%;
       max-width: 960px;
@@ -88,10 +86,7 @@
       gap: 0.8rem;
       flex-wrap: wrap;
     }
-    .game-header .title {
-      font-weight: 700;
-      letter-spacing: 0.03em;
-    }
+    .game-header .title { font-weight: 700; letter-spacing: 0.03em; }
     .game-header a {
       color: #e5e7eb;
       text-decoration: none;
@@ -119,54 +114,49 @@
       cursor: crosshair;
       display: block;
 
-      touch-action: none;      /* ✅ critical */
-      user-select: none;       /* ✅ */
+      touch-action: none;
+      user-select: none;
       -webkit-user-select: none;
     }
 
-    /* Mobile: hide side banners, keep top */
     @media (max-width: 900px) {
-      .layout {
-        padding: 8px;
-        gap: 0;
-      }
-      .ad-vertical {
-        display: none;
-      }
-      .top-banner {
-        height: 60px;
-        font-size: 11px;
-      }
+      .layout { padding: 8px; gap: 0; }
+      .ad-vertical { display: none; }
+      .top-banner { height: 60px; font-size: 11px; }
       .game-header { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
       .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
     }
 
     /* =========================
-       MOBILE CONTROLS (overlay)
+       MOBILE CONTROLS (below)
        ========================= */
-    .mobile-controls {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
+    .controls-below {
+      width: 100%;
+      max-width: 960px;
       display: none;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 6px 2px;
+      pointer-events: auto;
     }
 
     @media (max-width: 900px) {
-      .mobile-controls { display: block; }
+      .controls-below { display: flex; }
     }
 
     .mc-joystick {
-      position: absolute;
-      left: 12px;
-      bottom: 12px;
       width: 140px;
       height: 140px;
       border-radius: 999px;
       background: rgba(2,6,23,0.55);
       border: 1px solid rgba(148,163,184,0.35);
       box-shadow: 0 12px 28px rgba(0,0,0,0.55);
-      pointer-events: auto;
       touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      position: relative;
+      flex: 0 0 auto;
     }
 
     .mc-joystick::after {
@@ -188,57 +178,43 @@
       background: rgba(56,189,248,0.25);
       border: 1px solid rgba(56,189,248,0.55);
       box-shadow: 0 10px 18px rgba(0,0,0,0.5);
-    }
-
-    .mc-buttons {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
       pointer-events: none;
     }
 
-    .mc-row { display: flex; gap: 10px; justify-content: flex-end; pointer-events: none; }
+    .mc-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: flex-end;
+      flex: 1 1 auto;
+    }
 
     .mc-btn {
-      pointer-events: auto;
       touch-action: none;
       user-select: none;
       -webkit-user-select: none;
-      width: 110px;
-      height: 52px;
+      width: 140px;
+      height: 56px;
       border-radius: 14px;
       border: 1px solid rgba(148,163,184,0.35);
       background: rgba(2,6,23,0.65);
       color: #e5e7eb;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: 0.02em;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       box-shadow: 0 12px 26px rgba(0,0,0,0.55);
-      opacity: 0.95;
+      opacity: 0.97;
     }
     .mc-btn:active { transform: translateY(1px); opacity: 1; }
-
     .mc-btn.jump { border-color: rgba(56,189,248,0.65); }
-    .mc-btn.dash { border-color: rgba(129,140,248,0.65); }
-    .mc-btn.pause {
-      position: absolute;
-      right: 12px;
-      top: 10px;
-      width: 86px;
-      height: 44px;
-      border-radius: 999px;
-      border-color: rgba(34,197,94,0.55);
-      pointer-events: auto;
-    }
+    .mc-btn.pause { border-color: rgba(34,197,94,0.55); width: 96px; }
 
     @media (max-width: 420px) {
       .mc-joystick { width: 126px; height: 126px; }
-      .mc-btn { width: 100px; height: 50px; }
+      .mc-btn { width: 132px; height: 54px; }
+      .mc-btn.pause { width: 92px; }
     }
   </style>
 </head>
@@ -268,24 +244,20 @@
       <div><a href="index.html">⬅ Back to Hub</a></div>
     </div>
 
-    <!-- GAME CANVAS + MOBILE OVERLAY -->
+    <!-- GAME CANVAS -->
     <div class="game-wrap">
       <canvas id="gameCanvas" width="960" height="540"></canvas>
+    </div>
 
-      <!-- ✅ Mobile controls overlay -->
-      <div class="mobile-controls" id="mobileControls" aria-hidden="true">
-        <div class="mc-joystick" id="joyBase"><div class="mc-knob" id="joyKnob"></div></div>
+    <!-- ✅ MOBILE CONTROLS BELOW THE GAME FRAME -->
+    <div class="controls-below" id="controlsBelow" aria-hidden="true">
+      <div class="mc-joystick" id="joyBase" aria-label="Move joystick">
+        <div class="mc-knob" id="joyKnob"></div>
+      </div>
 
+      <div class="mc-actions">
         <button class="mc-btn pause" id="btnPause" type="button">⏸</button>
-
-        <div class="mc-buttons">
-          <div class="mc-row">
-            <button class="mc-btn dash" id="btnDash" type="button">DASH</button>
-          </div>
-          <div class="mc-row">
-            <button class="mc-btn jump" id="btnJump" type="button">JUMP</button>
-          </div>
-        </div>
+        <button class="mc-btn jump" id="btnJump" type="button">JUMP</button>
       </div>
     </div>
   </main>
@@ -310,610 +282,313 @@
 
   // ---------- LEVEL DEFINITIONS ----------
   const LEVELS = [
-  // ───────────── Sector 1 – Neon District ─────────────
   {
-    sector: 1,
-    stage: 1,
+    sector: 1, stage: 1,
     name: "Sector 1-1 – Neon District Entry",
     shortName: "1-1 Neon Entry",
-    length: 1400,
-    scrollSpeed: 220,
-    gravity: 2100,
-    jumpVelocity: -720,
-    pitChance: 0.10,
-    droneChance: 0.15,
-    laserChance: 0.00,
-    skyTop: "#020617",
-    skyBottom: "#0b1120",
-    groundColor: "#111827",
-    platformColor: "#1f2937",
-    neonAccent: "#38bdf8"
+    length: 1400, scrollSpeed: 220, gravity: 2100, jumpVelocity: -720,
+    pitChance: 0.10, droneChance: 0.15, laserChance: 0.00,
+    skyTop: "#020617", skyBottom: "#0b1120",
+    groundColor: "#111827", platformColor: "#1f2937", neonAccent: "#38bdf8"
   },
   {
-    sector: 1,
-    stage: 2,
+    sector: 1, stage: 2,
     name: "Sector 1-2 – Rooftop Run",
     shortName: "1-2 Rooftops",
-    length: 1700,
-    scrollSpeed: 235,
-    gravity: 2150,
-    jumpVelocity: -740,
-    pitChance: 0.14,
-    droneChance: 0.18,
-    laserChance: 0.03,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#22d3ee"
+    length: 1700, scrollSpeed: 235, gravity: 2150, jumpVelocity: -740,
+    pitChance: 0.14, droneChance: 0.18, laserChance: 0.03,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#22d3ee"
   },
   {
-    sector: 1,
-    stage: 3,
+    sector: 1, stage: 3,
     name: "Sector 1-3 – Rail Line Escape",
     shortName: "1-3 Rail Line",
-    length: 1900,
-    scrollSpeed: 245,
-    gravity: 2200,
-    jumpVelocity: -760,
-    pitChance: 0.16,
-    droneChance: 0.22,
-    laserChance: 0.05,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#0ea5e9"
+    length: 1900, scrollSpeed: 245, gravity: 2200, jumpVelocity: -760,
+    pitChance: 0.16, droneChance: 0.22, laserChance: 0.05,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#0ea5e9"
   },
 
-  // ───────────── Sector 2 – Hologrid Plaza ─────────────
   {
-    sector: 2,
-    stage: 1,
+    sector: 2, stage: 1,
     name: "Sector 2-1 – Hologrid Plaza",
     shortName: "2-1 Plaza",
-    length: 2000,
-    scrollSpeed: 250,
-    gravity: 2200,
-    jumpVelocity: -770,
-    pitChance: 0.16,
-    droneChance: 0.22,
-    laserChance: 0.05,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#1f2937",
-    neonAccent: "#6366f1"
+    length: 2000, scrollSpeed: 250, gravity: 2200, jumpVelocity: -770,
+    pitChance: 0.16, droneChance: 0.22, laserChance: 0.05,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#1f2937", neonAccent: "#6366f1"
   },
   {
-    sector: 2,
-    stage: 2,
+    sector: 2, stage: 2,
     name: "Sector 2-2 – Freight Lanes",
     shortName: "2-2 Freight",
-    length: 2200,
-    scrollSpeed: 260,
-    gravity: 2250,
-    jumpVelocity: -780,
-    pitChance: 0.18,
-    droneChance: 0.25,
-    laserChance: 0.07,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#4f46e5"
+    length: 2200, scrollSpeed: 260, gravity: 2250, jumpVelocity: -780,
+    pitChance: 0.18, droneChance: 0.25, laserChance: 0.07,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#4f46e5"
   },
   {
-    sector: 2,
-    stage: 3,
+    sector: 2, stage: 3,
     name: "Sector 2-3 – Neon Bypass",
     shortName: "2-3 Bypass",
-    length: 2400,
-    scrollSpeed: 270,
-    gravity: 2300,
-    jumpVelocity: -800,
-    pitChance: 0.20,
-    droneChance: 0.27,
-    laserChance: 0.09,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#818cf8"
+    length: 2400, scrollSpeed: 270, gravity: 2300, jumpVelocity: -800,
+    pitChance: 0.20, droneChance: 0.27, laserChance: 0.09,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#818cf8"
   },
 
-  // ───────────── Sector 3 – Industrial Veins ─────────────
   {
-    sector: 3,
-    stage: 1,
+    sector: 3, stage: 1,
     name: "Sector 3-1 – Pipe Maze",
     shortName: "3-1 Pipes",
-    length: 2500,
-    scrollSpeed: 270,
-    gravity: 2300,
-    jumpVelocity: -800,
-    pitChance: 0.20,
-    droneChance: 0.28,
-    laserChance: 0.10,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#1f2937",
-    neonAccent: "#f97316"
+    length: 2500, scrollSpeed: 270, gravity: 2300, jumpVelocity: -800,
+    pitChance: 0.20, droneChance: 0.28, laserChance: 0.10,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#1f2937", neonAccent: "#f97316"
   },
   {
-    sector: 3,
-    stage: 2,
+    sector: 3, stage: 2,
     name: "Sector 3-2 – Furnace Lines",
     shortName: "3-2 Furnace",
-    length: 2700,
-    scrollSpeed: 280,
-    gravity: 2350,
-    jumpVelocity: -820,
-    pitChance: 0.22,
-    droneChance: 0.30,
-    laserChance: 0.12,
-    skyTop: "#111827",
-    skyBottom: "#450a0a",
-    groundColor: "#111827",
-    platformColor: "#1f2937",
-    neonAccent: "#fb923c"
+    length: 2700, scrollSpeed: 280, gravity: 2350, jumpVelocity: -820,
+    pitChance: 0.22, droneChance: 0.30, laserChance: 0.12,
+    skyTop: "#111827", skyBottom: "#450a0a",
+    groundColor: "#111827", platformColor: "#1f2937", neonAccent: "#fb923c"
   },
   {
-    sector: 3,
-    stage: 3,
+    sector: 3, stage: 3,
     name: "Sector 3-3 – Reactor Edge",
     shortName: "3-3 Reactor",
-    length: 2900,
-    scrollSpeed: 290,
-    gravity: 2400,
-    jumpVelocity: -840,
-    pitChance: 0.24,
-    droneChance: 0.32,
-    laserChance: 0.14,
-    skyTop: "#111827",
-    skyBottom: "#450a0a",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#f97316"
+    length: 2900, scrollSpeed: 290, gravity: 2400, jumpVelocity: -840,
+    pitChance: 0.24, droneChance: 0.32, laserChance: 0.14,
+    skyTop: "#111827", skyBottom: "#450a0a",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#f97316"
   },
 
-  // ───────────── Sector 4 – Skybridge Array ─────────────
   {
-    sector: 4,
-    stage: 1,
+    sector: 4, stage: 1,
     name: "Sector 4-1 – Skybridge Base",
     shortName: "4-1 Skybridge",
-    length: 3000,
-    scrollSpeed: 290,
-    gravity: 2350,
-    jumpVelocity: -840,
-    pitChance: 0.24,
-    droneChance: 0.32,
-    laserChance: 0.15,
-    skyTop: "#020617",
-    skyBottom: "#1e293b",
-    groundColor: "#020617",
-    platformColor: "#0f172a",
-    neonAccent: "#22c55e"
+    length: 3000, scrollSpeed: 290, gravity: 2350, jumpVelocity: -840,
+    pitChance: 0.24, droneChance: 0.32, laserChance: 0.15,
+    skyTop: "#020617", skyBottom: "#1e293b",
+    groundColor: "#020617", platformColor: "#0f172a", neonAccent: "#22c55e"
   },
   {
-    sector: 4,
-    stage: 2,
+    sector: 4, stage: 2,
     name: "Sector 4-2 – Crosswinds",
     shortName: "4-2 Crosswinds",
-    length: 3200,
-    scrollSpeed: 300,
-    gravity: 2350,
-    jumpVelocity: -850,
-    pitChance: 0.26,
-    droneChance: 0.34,
-    laserChance: 0.16,
-    skyTop: "#020617",
-    skyBottom: "#1e293b",
-    groundColor: "#020617",
-    platformColor: "#0f172a",
-    neonAccent: "#16a34a"
+    length: 3200, scrollSpeed: 300, gravity: 2350, jumpVelocity: -850,
+    pitChance: 0.26, droneChance: 0.34, laserChance: 0.16,
+    skyTop: "#020617", skyBottom: "#1e293b",
+    groundColor: "#020617", platformColor: "#0f172a", neonAccent: "#16a34a"
   },
   {
-    sector: 4,
-    stage: 3,
+    sector: 4, stage: 3,
     name: "Sector 4-3 – Upper Stratos",
     shortName: "4-3 Stratos",
-    length: 3400,
-    scrollSpeed: 305,
-    gravity: 2400,
-    jumpVelocity: -860,
-    pitChance: 0.27,
-    droneChance: 0.36,
-    laserChance: 0.18,
-    skyTop: "#0b1120",
-    skyBottom: "#1e293b",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#4ade80"
+    length: 3400, scrollSpeed: 305, gravity: 2400, jumpVelocity: -860,
+    pitChance: 0.27, droneChance: 0.36, laserChance: 0.18,
+    skyTop: "#0b1120", skyBottom: "#1e293b",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#4ade80"
   },
 
-  // ───────────── Sector 5 – Data Chasm ─────────────
   {
-    sector: 5,
-    stage: 1,
+    sector: 5, stage: 1,
     name: "Sector 5-1 – Broken Lifts",
     shortName: "5-1 Lifts",
-    length: 3500,
-    scrollSpeed: 305,
-    gravity: 2450,
-    jumpVelocity: -870,
-    pitChance: 0.28,
-    droneChance: 0.37,
-    laserChance: 0.20,
-    skyTop: "#020617",
-    skyBottom: "#0f172a",
-    groundColor: "#020617",
-    platformColor: "#0f172a",
-    neonAccent: "#a855f7"
+    length: 3500, scrollSpeed: 305, gravity: 2450, jumpVelocity: -870,
+    pitChance: 0.28, droneChance: 0.37, laserChance: 0.20,
+    skyTop: "#020617", skyBottom: "#0f172a",
+    groundColor: "#020617", platformColor: "#0f172a", neonAccent: "#a855f7"
   },
   {
-    sector: 5,
-    stage: 2,
+    sector: 5, stage: 2,
     name: "Sector 5-2 – Core Descent",
     shortName: "5-2 Core",
-    length: 3700,
-    scrollSpeed: 315,
-    gravity: 2450,
-    jumpVelocity: -880,
-    pitChance: 0.30,
-    droneChance: 0.39,
-    laserChance: 0.22,
-    skyTop: "#020617",
-    skyBottom: "#312e81",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#c4b5fd"
+    length: 3700, scrollSpeed: 315, gravity: 2450, jumpVelocity: -880,
+    pitChance: 0.30, droneChance: 0.39, laserChance: 0.22,
+    skyTop: "#020617", skyBottom: "#312e81",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#c4b5fd"
   },
   {
-    sector: 5,
-    stage: 3,
+    sector: 5, stage: 3,
     name: "Sector 5-3 – Bitstream Drop",
     shortName: "5-3 Bitstream",
-    length: 3900,
-    scrollSpeed: 325,
-    gravity: 2500,
-    jumpVelocity: -890,
-    pitChance: 0.32,
-    droneChance: 0.41,
-    laserChance: 0.24,
-    skyTop: "#020617",
-    skyBottom: "#312e81",
-    groundColor: "#020617",
-    platformColor: "#111827",
-    neonAccent: "#a855f7"
+    length: 3900, scrollSpeed: 325, gravity: 2500, jumpVelocity: -890,
+    pitChance: 0.32, droneChance: 0.41, laserChance: 0.24,
+    skyTop: "#020617", skyBottom: "#312e81",
+    groundColor: "#020617", platformColor: "#111827", neonAccent: "#a855f7"
   },
 
-  // ───────────── Sector 6 – Aurora Belt ─────────────
   {
-    sector: 6,
-    stage: 1,
+    sector: 6, stage: 1,
     name: "Sector 6-1 – Low Orbit Rail",
     shortName: "6-1 Orbit",
-    length: 4000,
-    scrollSpeed: 330,
-    gravity: 2500,
-    jumpVelocity: -900,
-    pitChance: 0.32,
-    droneChance: 0.42,
-    laserChance: 0.25,
-    skyTop: "#020617",
-    skyBottom: "#1d283a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#facc15"
+    length: 4000, scrollSpeed: 330, gravity: 2500, jumpVelocity: -900,
+    pitChance: 0.32, droneChance: 0.42, laserChance: 0.25,
+    skyTop: "#020617", skyBottom: "#1d283a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#facc15"
   },
   {
-    sector: 6,
-    stage: 2,
+    sector: 6, stage: 2,
     name: "Sector 6-2 – Ring Fragments",
     shortName: "6-2 Rings",
-    length: 4200,
-    scrollSpeed: 340,
-    gravity: 2550,
-    jumpVelocity: -910,
-    pitChance: 0.34,
-    droneChance: 0.44,
-    laserChance: 0.27,
-    skyTop: "#020617",
-    skyBottom: "#1d283a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#fde047"
+    length: 4200, scrollSpeed: 340, gravity: 2550, jumpVelocity: -910,
+    pitChance: 0.34, droneChance: 0.44, laserChance: 0.27,
+    skyTop: "#020617", skyBottom: "#1d283a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#fde047"
   },
   {
-    sector: 6,
-    stage: 3,
+    sector: 6, stage: 3,
     name: "Sector 6-3 – Solar Wake",
     shortName: "6-3 Wake",
-    length: 4400,
-    scrollSpeed: 350,
-    gravity: 2600,
-    jumpVelocity: -920,
-    pitChance: 0.36,
-    droneChance: 0.46,
-    laserChance: 0.29,
-    skyTop: "#0f172a",
-    skyBottom: "#1d283a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#fbbf24"
+    length: 4400, scrollSpeed: 350, gravity: 2600, jumpVelocity: -920,
+    pitChance: 0.36, droneChance: 0.46, laserChance: 0.29,
+    skyTop: "#0f172a", skyBottom: "#1d283a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#fbbf24"
   },
 
-  // ───────────── Sector 7 – Blackout Zone ─────────────
   {
-    sector: 7,
-    stage: 1,
+    sector: 7, stage: 1,
     name: "Sector 7-1 – Power Cuts",
     shortName: "7-1 Blackout",
-    length: 4500,
-    scrollSpeed: 350,
-    gravity: 2550,
-    jumpVelocity: -920,
-    pitChance: 0.36,
-    droneChance: 0.47,
-    laserChance: 0.30,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#f43f5e"
+    length: 4500, scrollSpeed: 350, gravity: 2550, jumpVelocity: -920,
+    pitChance: 0.36, droneChance: 0.47, laserChance: 0.30,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#f43f5e"
   },
   {
-    sector: 7,
-    stage: 2,
+    sector: 7, stage: 2,
     name: "Sector 7-2 – Dark Lattice",
     shortName: "7-2 Lattice",
-    length: 4700,
-    scrollSpeed: 360,
-    gravity: 2600,
-    jumpVelocity: -930,
-    pitChance: 0.38,
-    droneChance: 0.49,
-    laserChance: 0.32,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#fb7185"
+    length: 4700, scrollSpeed: 360, gravity: 2600, jumpVelocity: -930,
+    pitChance: 0.38, droneChance: 0.49, laserChance: 0.32,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#fb7185"
   },
   {
-    sector: 7,
-    stage: 3,
+    sector: 7, stage: 3,
     name: "Sector 7-3 – Total Eclipse",
     shortName: "7-3 Eclipse",
-    length: 4900,
-    scrollSpeed: 370,
-    gravity: 2650,
-    jumpVelocity: -940,
-    pitChance: 0.40,
-    droneChance: 0.51,
-    laserChance: 0.34,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#f97373"
+    length: 4900, scrollSpeed: 370, gravity: 2650, jumpVelocity: -940,
+    pitChance: 0.40, droneChance: 0.51, laserChance: 0.34,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#f97373"
   },
 
-  // ───────────── Sector 8 – Quantum Freeway ─────────────
   {
-    sector: 8,
-    stage: 1,
+    sector: 8, stage: 1,
     name: "Sector 8-1 – Split Lanes",
     shortName: "8-1 Lanes",
-    length: 5000,
-    scrollSpeed: 375,
-    gravity: 2650,
-    jumpVelocity: -950,
-    pitChance: 0.40,
-    droneChance: 0.52,
-    laserChance: 0.35,
-    skyTop: "#020617",
-    skyBottom: "#0f172a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#22c55e"
+    length: 5000, scrollSpeed: 375, gravity: 2650, jumpVelocity: -950,
+    pitChance: 0.40, droneChance: 0.52, laserChance: 0.35,
+    skyTop: "#020617", skyBottom: "#0f172a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#22c55e"
   },
   {
-    sector: 8,
-    stage: 2,
+    sector: 8, stage: 2,
     name: "Sector 8-2 – Phase Traffic",
     shortName: "8-2 Phase",
-    length: 5200,
-    scrollSpeed: 385,
-    gravity: 2700,
-    jumpVelocity: -960,
-    pitChance: 0.42,
-    droneChance: 0.54,
-    laserChance: 0.37,
-    skyTop: "#020617",
-    skyBottom: "#0f172a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#10b981"
+    length: 5200, scrollSpeed: 385, gravity: 2700, jumpVelocity: -960,
+    pitChance: 0.42, droneChance: 0.54, laserChance: 0.37,
+    skyTop: "#020617", skyBottom: "#0f172a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#10b981"
   },
   {
-    sector: 8,
-    stage: 3,
+    sector: 8, stage: 3,
     name: "Sector 8-3 – Overclock Run",
     shortName: "8-3 Overclock",
-    length: 5400,
-    scrollSpeed: 395,
-    gravity: 2750,
-    jumpVelocity: -970,
-    pitChance: 0.44,
-    droneChance: 0.56,
-    laserChance: 0.39,
-    skyTop: "#020617",
-    skyBottom: "#0f172a",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#34d399"
+    length: 5400, scrollSpeed: 395, gravity: 2750, jumpVelocity: -970,
+    pitChance: 0.44, droneChance: 0.56, laserChance: 0.39,
+    skyTop: "#020617", skyBottom: "#0f172a",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#34d399"
   },
 
-  // ───────────── Sector 9 – Singularity Gate ─────────────
   {
-    sector: 9,
-    stage: 1,
+    sector: 9, stage: 1,
     name: "Sector 9-1 – Event Streets",
     shortName: "9-1 Event",
-    length: 5500,
-    scrollSpeed: 400,
-    gravity: 2750,
-    jumpVelocity: -980,
-    pitChance: 0.44,
-    droneChance: 0.58,
-    laserChance: 0.40,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#a855f7"
+    length: 5500, scrollSpeed: 400, gravity: 2750, jumpVelocity: -980,
+    pitChance: 0.44, droneChance: 0.58, laserChance: 0.40,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#a855f7"
   },
   {
-    sector: 9,
-    stage: 2,
+    sector: 9, stage: 2,
     name: "Sector 9-2 – Collapse Ring",
     shortName: "9-2 Collapse",
-    length: 5700,
-    scrollSpeed: 410,
-    gravity: 2800,
-    jumpVelocity: -990,
-    pitChance: 0.46,
-    droneChance: 0.60,
-    laserChance: 0.42,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#f97316"
+    length: 5700, scrollSpeed: 410, gravity: 2800, jumpVelocity: -990,
+    pitChance: 0.46, droneChance: 0.60, laserChance: 0.42,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#f97316"
   },
   {
-    sector: 9,
-    stage: 3,
+    sector: 9, stage: 3,
     name: "Sector 9-3 – Gravity Shear",
     shortName: "9-3 Shear",
-    length: 5900,
-    scrollSpeed: 420,
-    gravity: 2850,
-    jumpVelocity: -1000,
-    pitChance: 0.48,
-    droneChance: 0.62,
-    laserChance: 0.44,
-    skyTop: "#020617",
-    skyBottom: "#111827",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#f97316"
+    length: 5900, scrollSpeed: 420, gravity: 2850, jumpVelocity: -1000,
+    pitChance: 0.48, droneChance: 0.62, laserChance: 0.44,
+    skyTop: "#020617", skyBottom: "#111827",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#f97316"
   },
 
-  // ───────────── Sector 10 – Core Nexus (Final 3) ─────────────
   {
-    sector: 10,
-    stage: 1,
+    sector: 10, stage: 1,
     name: "Sector 10-1 – Nexus Perimeter",
     shortName: "10-1 Perimeter",
-    length: 6000,
-    scrollSpeed: 430,
-    gravity: 2850,
-    jumpVelocity: -1010,
-    pitChance: 0.48,
-    droneChance: 0.64,
-    laserChance: 0.46,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#38bdf8"
+    length: 6000, scrollSpeed: 430, gravity: 2850, jumpVelocity: -1010,
+    pitChance: 0.48, droneChance: 0.64, laserChance: 0.46,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#38bdf8"
   },
   {
-    sector: 10,
-    stage: 2,
+    sector: 10, stage: 2,
     name: "Sector 10-2 – Inner Firewall",
     shortName: "10-2 Firewall",
-    length: 6200,
-    scrollSpeed: 440,
-    gravity: 2900,
-    jumpVelocity: -1020,
-    pitChance: 0.50,
-    droneChance: 0.66,
-    laserChance: 0.48,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#facc15"
+    length: 6200, scrollSpeed: 440, gravity: 2900, jumpVelocity: -1020,
+    pitChance: 0.50, droneChance: 0.66, laserChance: 0.48,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#facc15"
   },
   {
-    sector: 10,
-    stage: 3,
+    sector: 10, stage: 3,
     name: "Sector 10-3 – Core Breakout",
     shortName: "10-3 Core",
-    length: 6500,
-    scrollSpeed: 455,
-    gravity: 2950,
-    jumpVelocity: -1035,
-    pitChance: 0.52,
-    droneChance: 0.70,
-    laserChance: 0.52,
-    skyTop: "#020617",
-    skyBottom: "#020617",
-    groundColor: "#020617",
-    platformColor: "#020617",
-    neonAccent: "#f97316"
+    length: 6500, scrollSpeed: 455, gravity: 2950, jumpVelocity: -1035,
+    pitChance: 0.52, droneChance: 0.70, laserChance: 0.52,
+    skyTop: "#020617", skyBottom: "#020617",
+    groundColor: "#020617", platformColor: "#020617", neonAccent: "#f97316"
   }
 ];
 
-  // Make all levels longer without editing each one.
-  // 1.0 = original, 1.5 = 50% longer, 2.0 = double, etc.
   const LEVEL_LENGTH_MULT = 5.0;
 
   // ---------- Utils ----------
-  function clamp(v, min, max) {
-    return v < min ? min : v > max ? max : v;
-  }
-  function lerp(a, b, t) {
-    return a + (b - a) * t;
-  }
+  function clamp(v, min, max) { return v < min ? min : v > max ? max : v; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
   function rectsOverlap(a, b) {
-    return (
-      a.x < b.x + b.w &&
-      a.x + a.w > b.x &&
-      a.y < b.y + b.h &&
-      a.y + a.h > b.y
-    );
+    return (a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y);
   }
 
   // ---------- Input ----------
   const keys = {};
   const mouse = { x: WIDTH / 2, y: HEIGHT / 2, down: false };
 
-  // ✅ Mobile detection + virtual controls
   const IS_MOBILE = (('ontouchstart' in window) || (navigator.maxTouchPoints > 0)) &&
                     window.matchMedia("(max-width: 900px)").matches;
 
-  const mobileControls = document.getElementById("mobileControls");
+  const controlsBelow = document.getElementById("controlsBelow");
   const joyBase = document.getElementById("joyBase");
   const joyKnob = document.getElementById("joyKnob");
   const btnJump = document.getElementById("btnJump");
-  const btnDash = document.getElementById("btnDash");
   const btnPause = document.getElementById("btnPause");
 
-  if (mobileControls) mobileControls.style.display = IS_MOBILE ? "block" : "none";
+  if (controlsBelow) controlsBelow.style.display = IS_MOBILE ? "flex" : "none";
 
-  const virtual = {
-    joyX: 0,
-    jumpQueued: false
-  };
+  const virtual = { joyX: 0, jumpQueued: false };
 
-  // Joystick (horizontal only)
   let joyActive = false;
   let joyPointerId = null;
   let joyCenter = { x: 0, y: 0 };
@@ -972,14 +647,22 @@
   if (btnJump) {
     btnJump.addEventListener("pointerdown", (e) => {
       e.preventDefault();
-      virtual.jumpQueued = true; // tap/button => jump (double jump supported)
+      virtual.jumpQueued = true;
       btnJump.setPointerCapture(e.pointerId);
     }, { passive: false });
   }
 
+  if (btnPause) {
+    btnPause.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (game.state === "playing") game.state = "paused";
+      else if (game.state === "paused") game.state = "playing";
+    });
+  }
+
   window.addEventListener("keydown", e => {
     keys[e.key.toLowerCase()] = true;
-    if (e.key === " " || e.key === "ArrowUp") e.preventDefault(); // avoid scroll
+    if (e.key === " " || e.key === "ArrowUp") e.preventDefault();
 
     if (e.key === "p" || e.key === "P") {
       if (game.state === "playing") game.state = "paused";
@@ -988,28 +671,20 @@
 
     if (e.key === "enter") {
       if (game.state === "menu" || game.state === "gameover") {
-        game.levelIndex = 0;        // start campaign from sector 1
+        game.levelIndex = 0;
         startRun();
       } else if (game.state === "victory") {
-        if (game.levelIndex < LEVELS.length - 1) {
-          game.levelIndex++;
-        } else {
-          game.levelIndex = 0;
-        }
+        game.levelIndex = (game.levelIndex < LEVELS.length - 1) ? (game.levelIndex + 1) : 0;
         startRun();
       }
     }
 
     if (e.key === "r" || e.key === "R") {
-      if (game.state === "gameover") {
-        startRun();
-      }
+      if (game.state === "gameover") startRun();
     }
   });
 
-  window.addEventListener("keyup", e => {
-    keys[e.key.toLowerCase()] = false;
-  });
+  window.addEventListener("keyup", e => { keys[e.key.toLowerCase()] = false; });
 
   canvas.addEventListener("mousemove", e => {
     const rect = canvas.getBoundingClientRect();
@@ -1021,18 +696,12 @@
   canvas.addEventListener("mousedown", () => { mouse.down = true; });
   window.addEventListener("mouseup", () => { mouse.down = false; });
 
-  // ✅ Unified pointer tap handling (desktop + mobile)
-  // Tap while playing => jump, menu/victory => start/next
-  let pDown = false;
-  let pStartX = 0, pStartY = 0;
-  let pMoved = false;
+  // Tap on canvas (mobile): while playing => jump; otherwise => start/next
+  let pDown = false, pStartX = 0, pStartY = 0, pMoved = false;
 
   canvas.addEventListener("pointerdown", (e) => {
-    pDown = true;
-    pMoved = false;
-    pStartX = e.clientX;
-    pStartY = e.clientY;
-
+    pDown = true; pMoved = false;
+    pStartX = e.clientX; pStartY = e.clientY;
     canvas.setPointerCapture(e.pointerId);
     e.preventDefault();
   }, { passive: false });
@@ -1058,7 +727,6 @@
         startRun();
       }
     }
-
     e.preventDefault();
   }, { passive: false });
 
@@ -1066,7 +734,7 @@
 
   // ---------- Game Data ----------
   const game = {
-    state: "menu",   // menu, playing, paused, gameover, victory
+    state: "menu",
     time: 0,
     score: 0,
     bestScore: 0,
@@ -1078,12 +746,8 @@
   const camera = { x: 0, y: 0 };
 
   const player = {
-    x: 80,
-    y: 0,
-    w: 32,
-    h: 44,
-    vx: 0,
-    vy: 0,
+    x: 80, y: 0, w: 32, h: 44,
+    vx: 0, vy: 0,
     speed: 220,
     jumpStrength: 420,
     gravity: 1000,
@@ -1091,14 +755,12 @@
     onGround: false,
     jumpsUsed: 0,
     maxJumps: 2, // double jump
-    dashTimer: 0,
+    dashTimer: 0,          // kept for compatibility, but DASH input removed
     dashDuration: 0.16,
     dashSpeed: 550,
     facing: 1,
-    hp: 100,
-    maxHp: 100,
-    shield: 20,
-    maxShield: 60,
+    hp: 100, maxHp: 100,
+    shield: 20, maxShield: 60,
     invulnTimer: 0
   };
 
@@ -1122,25 +784,20 @@
     particles.length = 0;
     exitPortal       = null;
 
-    const baseLength      = Number.isFinite(cfg.length)       ? cfg.length       : 3000;
+    const baseLength      = Number.isFinite(cfg.length) ? cfg.length : 3000;
     const effectiveLength = baseLength * (typeof LEVEL_LENGTH_MULT === "number" ? LEVEL_LENGTH_MULT : 1);
 
-    const gravity         = Number.isFinite(cfg.gravity)      ? cfg.gravity      : 2100;
+    const gravity         = Number.isFinite(cfg.gravity) ? cfg.gravity : 2100;
     const jumpVel         = Number.isFinite(cfg.jumpVelocity) ? cfg.jumpVelocity : -750;
-    const heightScale     = Number.isFinite(cfg.heightScale)  ? cfg.heightScale  : 1;
-    const orbChance       = Number.isFinite(cfg.orbChance)    ? cfg.orbChance    : 0.22;
-    const pitGap          = Number.isFinite(cfg.pitGap)       ? cfg.pitGap       : 500;
-    const droneZones      = Number.isFinite(cfg.droneZones)
-                            ? cfg.droneZones
-                            : (3 + Math.floor(game.levelIndex / 3));
-    const droneSpeedFactor = Number.isFinite(cfg.droneSpeedFactor)
-                            ? cfg.droneSpeedFactor
-                            : 1;
+    const heightScale     = Number.isFinite(cfg.heightScale) ? cfg.heightScale : 1;
+    const orbChance       = Number.isFinite(cfg.orbChance) ? cfg.orbChance : 0.22;
+    const pitGap          = Number.isFinite(cfg.pitGap) ? cfg.pitGap : 500;
+    const droneZones      = Number.isFinite(cfg.droneZones) ? cfg.droneZones : (3 + Math.floor(game.levelIndex / 3));
+    const droneSpeedFactor = Number.isFinite(cfg.droneSpeedFactor) ? cfg.droneSpeedFactor : 1;
 
-    game.levelLength  = effectiveLength;
+    game.levelLength = effectiveLength;
     const levelLength = game.levelLength || cfg.length || 4000;
 
-    // physics
     player.gravity      = gravity;
     player.jumpStrength = Math.abs(jumpVel);
 
@@ -1158,23 +815,18 @@
       for (const z of climbZones) {
         const zStart = z.start;
         const zEnd   = z.end;
-
         if (zEnd <= curStart || zStart >= segEnd) continue;
 
         if (zStart > curStart) {
           const width = zStart - curStart;
-          if (width > 0) {
-            addPlatform({ x: curStart, y: groundY, w: width, h: 40, type: "ground" });
-          }
+          if (width > 0) addPlatform({ x: curStart, y: groundY, w: width, h: 40, type: "ground" });
         }
 
         curStart = Math.max(curStart, zEnd);
         if (curStart >= segEnd) break;
       }
 
-      if (curStart < segEnd) {
-        addPlatform({ x: curStart, y: groundY, w: segEnd - curStart, h: 40, type: "ground" });
-      }
+      if (curStart < segEnd) addPlatform({ x: curStart, y: groundY, w: segEnd - curStart, h: 40, type: "ground" });
     }
 
     const pitWidth  = 140;
@@ -1188,13 +840,7 @@
 
       addGroundSegmentClipped(lastGroundX, leftEdge);
 
-      hazards.push({
-        x: leftEdge,
-        y: groundY + 20,
-        w: pitWidth,
-        h: 40,
-        type: "pit"
-      });
+      hazards.push({ x: leftEdge, y: groundY + 20, w: pitWidth, h: 40, type: "pit" });
 
       lastGroundX = rightEdge;
     }
@@ -1216,8 +862,7 @@
 
       const segmentWidth = 150;
       for (let x = start; x < end; x += segmentWidth + 60) {
-        const yOffset =
-          (idx % 2 === 0 ? 0 : (idx % 3 === 0 ? 40 : -20)) * heightScale;
+        const yOffset = (idx % 2 === 0 ? 0 : (idx % 3 === 0 ? 40 : -20)) * heightScale;
         const platY = groundY - baseOffset + yOffset;
 
         addPlatform({ x, y: platY, w: segmentWidth, h: 20, type: "platform" });
@@ -1295,15 +940,11 @@
 
       const baseSpeed = 70 * droneSpeedFactor;
 
-      let dronesPerZone =
-        game.levelIndex < 8  ? 2 :
-        game.levelIndex < 18 ? 3 : 4;
-
+      let dronesPerZone = (game.levelIndex < 8 ? 2 : (game.levelIndex < 18 ? 3 : 4));
       if (i === zoneCount) dronesPerZone = Math.max(1, dronesPerZone - 1);
 
       let minX = zoneX - patrolHalfWidth;
       let maxX = zoneX + patrolHalfWidth;
-
       minX = Math.max(260, minX);
       maxX = Math.min(effectiveLength - 260, maxX);
 
@@ -1322,47 +963,35 @@
           w: 30,
           h: 24,
           vx: baseSpeed * (Math.random() < 0.5 ? 1 : -1),
-          minX,
-          maxX,
+          minX, maxX,
           alive: true
         });
       }
     }
 
     drones.push({
-      x: 450,
-      y: groundY - 40,
-      w: 30,
-      h: 24,
-      vx: 60 * droneSpeedFactor,
-      minX: 360,
-      maxX: 540,
-      alive: true
+      x: 450, y: groundY - 40, w: 30, h: 24,
+      vx: 60 * droneSpeedFactor, minX: 360, maxX: 540, alive: true
     });
 
     const turretCount = Math.max(3, Math.floor(levelLength / 1800));
     for (let i = 0; i < turretCount; i++) {
       const baseX = levelLength * (0.18 + 0.42 * Math.random());
       const maxHeightOffset = 260 + 30 * (i % 3);
-
       const minY   = groundY - maxHeightOffset;
       const maxY   = groundY - 120;
       const startY = (minY + maxY) / 2;
 
       turrets.push({
-        x: baseX,
-        y: startY,
-        w: 26,
-        h: 34,
+        x: baseX, y: startY, w: 26, h: 34,
         vy: 80 + 20 * (i % 3),
-        minY,
-        maxY,
+        minY, maxY,
         alive: true
       });
     }
 
-    const clusterCount   = 3;
-    const clusterStartX  = effectiveLength - 650;
+    const clusterCount = 3;
+    const clusterStartX = effectiveLength - 650;
     const clusterSpacing = 170;
 
     for (let i = 0; i < clusterCount; i++) {
@@ -1372,13 +1001,9 @@
       const bottomMaxY = groundY - 38;
 
       turrets.push({
-        x: tx,
-        y: bottomMaxY,
-        w: 26,
-        h: 34,
+        x: tx, y: bottomMaxY, w: 26, h: 34,
         vy: -60 - i * 6,
-        minY: bottomMinY,
-        maxY: bottomMaxY,
+        minY: bottomMinY, maxY: bottomMaxY,
         alive: true
       });
 
@@ -1386,24 +1011,14 @@
       const airMaxY = groundY - 150;
 
       turrets.push({
-        x: tx,
-        y: airMaxY,
-        w: 26,
-        h: 34,
+        x: tx, y: airMaxY, w: 26, h: 34,
         vy: -80 - i * 8,
-        minY: airMinY,
-        maxY: airMaxY,
+        minY: airMinY, maxY: airMaxY,
         alive: true
       });
     }
 
-    exitPortal = {
-      x: effectiveLength - 120,
-      y: groundY - 120,
-      w: 60,
-      h: 100,
-      active: true
-    };
+    exitPortal = { x: effectiveLength - 120, y: groundY - 120, w: 60, h: 100, active: true };
 
     player.x = 60;
     player.y = groundY - player.h;
@@ -1435,13 +1050,7 @@
     for (let i = 0; i < count; i++) {
       const vx = (Math.random() - 0.5) * 60;
       const vy = 40 + Math.random() * 120;
-      particles.push({
-        x, y,
-        vx, vy,
-        life: 0.5 + Math.random() * 0.4,
-        radius: 1 + Math.random() * 2,
-        color
-      });
+      particles.push({ x, y, vx, vy, life: 0.5 + Math.random() * 0.4, radius: 1 + Math.random() * 2, color });
     }
   }
 
@@ -1480,32 +1089,13 @@
     }
   }
 
-  function handleDash() {
-    if (player.dashTimer > 0) return;
-    const dir = player.facing || 1;
-    player.dashTimer = player.dashDuration;
-    player.vy = 0;
-    player.vx = dir * player.dashSpeed;
-    player.invulnTimer = Math.max(player.invulnTimer, player.dashDuration + 0.05);
-    spawnParticles(player.x, player.y + player.h / 2, "rgba(129,140,248,1)", 20);
-  }
-
-  if (btnDash) btnDash.addEventListener("click", (e) => { e.preventDefault(); handleDash(); });
-  if (btnPause) btnPause.addEventListener("click", (e) => {
-    e.preventDefault();
-    if (game.state === "playing") game.state = "paused";
-    else if (game.state === "paused") game.state = "playing";
-  });
-
   let jumpPressed = false;
-  let dashPressed = false;
 
   function updatePlayerInput(dt) {
     let move = 0;
     if (keys["arrowleft"] || keys["a"]) move -= 1;
     if (keys["arrowright"] || keys["d"]) move += 1;
 
-    // ✅ mobile joystick adds movement
     move += virtual.joyX;
     move = clamp(move, -1, 1);
 
@@ -1521,22 +1111,9 @@
     }
     if (!wantJump) jumpPressed = false;
 
-    // ✅ mobile jump tap/button
     if (virtual.jumpQueued) {
       handleJump();
       virtual.jumpQueued = false;
-    }
-
-    const wantDash = keys["shift"];
-    if (wantDash && !dashPressed) {
-      handleDash();
-      dashPressed = true;
-    }
-    if (!wantDash) dashPressed = false;
-
-    if (player.dashTimer > 0) {
-      player.dashTimer -= dt;
-      if (player.dashTimer <= 0) player.dashTimer = 0;
     }
 
     if (player.invulnTimer > 0) {
@@ -1555,11 +1132,8 @@
     for (const p of platforms) {
       const platRect = { x: p.x, y: p.y, w: p.w, h: p.h };
       if (rectsOverlap(playerRect, platRect)) {
-        if (player.vx > 0) {
-          player.x = p.x - player.w;
-        } else if (player.vx < 0) {
-          player.x = p.x + p.w;
-        }
+        if (player.vx > 0) player.x = p.x - player.w;
+        else if (player.vx < 0) player.x = p.x + p.w;
         playerRect.x = player.x;
         player.vx = 0;
       }
@@ -1584,10 +1158,7 @@
       }
     }
 
-    if (player.y > HEIGHT + 200) {
-      damagePlayer(999);
-    }
-
+    if (player.y > HEIGHT + 200) damagePlayer(999);
     game.distance = Math.max(game.distance, player.x);
   }
 
@@ -1622,23 +1193,17 @@
   function updateHazardsAndEnemies(dt) {
     const hitBox = { x: player.x, y: player.y, w: player.w, h: player.h };
 
-    // pits & spikes
     for (const h of hazards) {
       const hr = { x: h.x, y: h.y, w: h.w, h: h.h };
       if (rectsOverlap(hitBox, hr)) {
-        if (h.type === "pit") {
-          damagePlayer(999);
-        } else if (h.type === "spikes") {
-          damagePlayer(35 * dt);
-        }
+        if (h.type === "pit") damagePlayer(999);
+        else if (h.type === "spikes") damagePlayer(35 * dt);
       }
     }
 
-    // pit proximity FX (falling sparks)
     const groundY = HEIGHT - 80;
     for (const h of hazards) {
       if (h.type !== "pit") continue;
-
       const pitCenterX = h.x + h.w / 2;
       const playerCenterX = player.x + player.w / 2;
       const dx = Math.abs(playerCenterX - pitCenterX);
@@ -1646,24 +1211,17 @@
       if (dx < 220 && player.y < groundY + 40) {
         if (Math.random() < 2.0 * dt) {
           const sparkX = pitCenterX + (Math.random() - 0.5) * h.w * 0.6;
-          const pitTopWorldY = groundY;
-          spawnPitSparks(sparkX, pitTopWorldY - 4, "rgba(94,234,212,1)", 4);
+          spawnPitSparks(sparkX, groundY - 4, "rgba(94,234,212,1)", 4);
         }
       }
     }
 
-    // drones
     for (const d of drones) {
       if (!d.alive) continue;
 
       d.x += d.vx * dt;
-      if (d.x < d.minX) {
-        d.x = d.minX;
-        d.vx *= -1;
-      } else if (d.x + d.w > d.maxX) {
-        d.x = d.maxX - d.w;
-        d.vx *= -1;
-      }
+      if (d.x < d.minX) { d.x = d.minX; d.vx *= -1; }
+      else if (d.x + d.w > d.maxX) { d.x = d.maxX - d.w; d.vx *= -1; }
 
       const dr = { x: d.x, y: d.y, w: d.w, h: d.h };
       const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
@@ -1683,19 +1241,12 @@
       }
     }
 
-    // turrets – vertical patrols
     for (const t of turrets) {
       if (!t.alive) continue;
 
       t.y += t.vy * dt;
-
-      if (t.y < t.minY) {
-        t.y = t.minY;
-        t.vy *= -1;
-      } else if (t.y > t.maxY) {
-        t.y = t.maxY;
-        t.vy *= -1;
-      }
+      if (t.y < t.minY) { t.y = t.minY; t.vy *= -1; }
+      else if (t.y > t.maxY) { t.y = t.maxY; t.vy *= -1; }
 
       const tr = { x: t.x, y: t.y, w: t.w, h: t.h };
       const pr = { x: player.x, y: player.y, w: player.w, h: player.h };
@@ -1718,8 +1269,7 @@
   }
 
   function updateOrbs(dt) {
-    for (let i = orbs.length - 1; i >= 0; i--) {
-      const o = orbs[i];
+    for (const o of orbs) {
       if (o.collected) continue;
 
       o._t = (o._t || Math.random() * TAU) + dt * 4;
@@ -1747,7 +1297,6 @@
     }
   }
 
-  // ---------- Game Flow ----------
   function startRun() {
     game.state = "playing";
     game.time = 0;
@@ -1763,14 +1312,12 @@
     buildLevel();
   }
 
-  // ---------- Update ----------
   function update(dt) {
     if (game.state === "menu" || game.state === "gameover" || game.state === "victory") {
       game.time += dt;
       updateParticles(dt);
       return;
     }
-
     if (game.state === "paused") return;
 
     game.time += dt;
@@ -1836,7 +1383,6 @@
     ctx.restore();
   }
 
-  // SAFE helper
   function addPlatform(p) {
     if (!Number.isFinite(p.x) || !Number.isFinite(p.y) || !Number.isFinite(p.w) || !Number.isFinite(p.h)) {
       console.warn("Bad platform on creation", p);
@@ -1850,27 +1396,16 @@
     for (const p of platforms) {
       const sx = p.x - camera.x;
       const sy = p.y - camera.y;
-
-      if (!Number.isFinite(sx) || !Number.isFinite(sy) || !Number.isFinite(p.w) || !Number.isFinite(p.h)) {
-        console.warn("Bad platform data at draw", { p, sx, sy, pY: p.y, camY: camera.y });
-        continue;
-      }
-
+      if (!Number.isFinite(sx) || !Number.isFinite(sy) || !Number.isFinite(p.w) || !Number.isFinite(p.h)) continue;
       if (sx + p.w < -40 || sx > WIDTH + 40) continue;
 
       const isGround = p.type === "ground";
-
       ctx.fillStyle = isGround ? "rgba(72, 44, 28, 0.98)" : "rgba(15, 23, 42, 0.9)";
       ctx.fillRect(sx, sy, p.w, p.h);
 
       const grad = ctx.createLinearGradient(sx, sy, sx, sy + p.h);
-      if (isGround) {
-        grad.addColorStop(0, "#7c4a27");
-        grad.addColorStop(1, "#4b2a16");
-      } else {
-        grad.addColorStop(0, "#38bdf8");
-        grad.addColorStop(1, "#6366f1");
-      }
+      if (isGround) { grad.addColorStop(0, "#7c4a27"); grad.addColorStop(1, "#4b2a16"); }
+      else { grad.addColorStop(0, "#38bdf8"); grad.addColorStop(1, "#6366f1"); }
 
       ctx.strokeStyle = grad;
       ctx.lineWidth = isGround ? 2 : 3;
@@ -1896,7 +1431,7 @@
       if (sx + h.w < -40 || sx > WIDTH + 40) continue;
 
       if (h.type === "pit") {
-        const pitTop   = groundY - camera.y;
+        const pitTop = groundY - camera.y;
         const pitDepth = 100;
 
         ctx.fillStyle = "rgb(2,2,12)";
@@ -2088,23 +1623,6 @@
       ctx.globalAlpha = 0.4 + 0.6 * t;
     }
 
-    if (player.dashTimer > 0) {
-      ctx.globalAlpha = 0.45;
-      ctx.fillStyle = "rgba(129,140,248,0.7)";
-      ctx.beginPath();
-      ctx.ellipse(
-        -player.facing * 12,
-        4,
-        player.w * 0.9,
-        player.h * 0.5,
-        0,
-        0,
-        TAU
-      );
-      ctx.fill();
-      ctx.globalAlpha = 1;
-    }
-
     ctx.fillStyle = "#0f172a";
     ctx.strokeStyle = "#38bdf8";
     ctx.lineWidth = 2;
@@ -2113,8 +1631,7 @@
     ctx.fill();
     ctx.stroke();
 
-    const visorW = 18;
-    const visorH = 10;
+    const visorW = 18, visorH = 10;
     const visorX = (player.facing >= 0 ? 4 : -visorW - 4);
     ctx.fillStyle = "#38bdf8";
     ctx.beginPath();
@@ -2232,11 +1749,10 @@
     ctx.fillStyle = "#9ca3af";
     ctx.fillText(
       IS_MOBILE
-        ? "Move: Joystick · Jump: Tap/JUMP (double) · Dash: DASH · Pause: ⏸"
+        ? "Move: Joystick below · Jump: Tap/JUMP (double) · Pause: ⏸"
         : "Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)",
       16, 50
     );
-    if (!IS_MOBILE) ctx.fillText("Dash: Shift · Pause: P", 16, 62);
 
     ctx.restore();
   }
@@ -2265,11 +1781,10 @@
       ctx.font = "15px system-ui";
       ctx.fillText(
         IS_MOBILE
-          ? "Move: Joystick · Jump: Tap/JUMP (double) · Dash: DASH · Pause: ⏸"
+          ? "Move: Joystick below · Jump: Tap/JUMP (double) · Pause: ⏸"
           : "Move: A / D or Arrows · Jump: Space / W / ↑ (double jump)",
         cx, cy
       );
-      if (!IS_MOBILE) ctx.fillText("Dash: Shift · Pause: P", cx, cy + 26);
 
       ctx.font = "13px system-ui";
       ctx.fillStyle = "#9ca3af";
@@ -2360,14 +1875,21 @@
     requestAnimationFrame(loop);
   }
 
-  // startup idle particles
-  spawnParticles(WIDTH / 2, HEIGHT / 2 + 40, "rgba(129,140,248,0.8)", 40);
+  // ---------- Extras: drawing functions used above ----------
+  function spawnInitParticles() {
+    spawnParticles(WIDTH / 2, HEIGHT / 2 + 40, "rgba(129,140,248,0.8)", 40);
+  }
+
+  // hazards/enemies/orbs drawing helpers already defined; just ensure this exists:
+  function drawParticles() { /* defined earlier */ }
+
+  // ✅ Ensure particles exist at startup
+  spawnInitParticles();
 
   requestAnimationFrame(loop);
 })();
 </script>
 
-<!-- keep footer.js, but place before </body> -->
 <script src="footer.js"></script>
 </body>
 </html>
