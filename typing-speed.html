@@ -116,17 +116,22 @@
       border-radius: 12px;
       padding: 14px;
       font-size: 16px;
-      line-height: 1.5;
+      line-height: 1.6;
       margin-bottom: 14px;
+      text-align: left;
+      user-select: none;
+      word-break: break-word;
     }
 
     .text-box span.done { color: #22c55e; }
     .text-box span.current { color: #38bdf8; text-decoration: underline; }
     .text-box span.pending { color: #9ca3af; }
+    .text-box span.wrong { color: #f97316; background: rgba(248,113,113,0.12); border-radius: 4px; padding: 0 1px; }
+    .text-box span.wrongCurrent { color: #f97316; text-decoration: underline; background: rgba(248,113,113,0.12); border-radius: 4px; padding: 0 1px; }
 
     input {
       width: 100%;
-      max-width: 520px;
+      max-width: 720px;
       padding: 14px;
       border-radius: 12px;
       border: 1px solid rgba(148,163,184,0.35);
@@ -150,12 +155,41 @@
       border-radius: 999px;
       border: 1px solid rgba(148,163,184,0.25);
       background: rgba(2,6,23,0.35);
-      font-weight: 800;
+      font-weight: 900;
       font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 8px 0 6px;
+    }
+
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(2,6,23,0.35);
+      user-select: none;
+    }
+
+    .toggle input { width: 18px; height: 18px; margin: 0; }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
     .btn {
-      margin-top: 12px;
       padding: 12px 16px;
       border-radius: 12px;
       border: 1px solid rgba(148,163,184,0.35);
@@ -163,20 +197,34 @@
       color: #e5e7eb;
       font-weight: 900;
       cursor: pointer;
-      min-width: 160px;
+      min-width: 170px;
     }
+
+    .btn.primary { border-color: rgba(56,189,248,0.6); }
+    .btn.success { border-color: rgba(34,197,94,0.6); }
+    .btn.warn { border-color: rgba(249,115,22,0.6); min-width: 190px; }
 
     .btn:active { transform: translateY(1px); }
 
     .result {
       margin-top: 10px;
       font-size: 16px;
-      font-weight: 800;
+      font-weight: 900;
+      min-height: 24px;
+    }
+
+    .subnote {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #9ca3af;
     }
 
     @media (max-width: 900px) {
       .ad-vertical { display: none; }
       .top-banner { height: 60px; font-size: 11px; }
+      .text-box { font-size: 15px; }
+      input { font-size: 16px; }
+      .btn { min-width: 150px; }
     }
   </style>
 </head>
@@ -203,8 +251,23 @@
       <div class="text-box" id="textBox"></div>
 
       <div class="hud">
+        <div class="pill" id="idxPill">Sentence: 1/1</div>
         <div class="pill" id="timePill">Time: 0.0s</div>
         <div class="pill" id="wpmPill">WPM: —</div>
+        <div class="pill" id="accPill">Accuracy: 100%</div>
+      </div>
+
+      <div class="hud">
+        <div class="pill" id="bestSentencePill">Best (this): —</div>
+        <div class="pill" id="bestOverallPill">Best (overall): —</div>
+      </div>
+
+      <div class="controls-row">
+        <label class="toggle" title="Random mode picks a random sentence instead of ascending order.">
+          <input type="checkbox" id="randomToggle" />
+          <span><strong>Random mode</strong></span>
+        </label>
+        <button class="btn warn" id="resetScoresBtn" type="button">Reset Saved Scores</button>
       </div>
 
       <input
@@ -215,11 +278,16 @@
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
+        inputmode="text"
       />
 
       <div class="result" id="result"></div>
+      <div class="subnote">Tip: When you finish a sentence, press <strong>Enter</strong> for Next.</div>
 
-      <button class="btn" id="restartBtn">Restart</button>
+      <div class="btn-row">
+        <button class="btn primary" id="restartBtn" type="button">Restart</button>
+        <button class="btn success" id="nextBtn" type="button">Next Sentence ➜</button>
+      </div>
     </div>
 
   </main>
@@ -232,42 +300,310 @@
 
 <script>
 (() => {
-  const TEXT =
-    "The quick brown fox jumps over the lazy dog";
+  // 100+ sentences (we sort by ascending length at runtime for non-random mode)
+  const RAW_SENTENCES = [
+    "Type fast.",
+    "Stay calm.",
+    "Keep going.",
+    "Breathe and type.",
+    "Small steps matter.",
+    "Focus on accuracy.",
+    "Warm up your hands.",
+    "Speed comes with practice.",
+    "Eyes forward, fingers ready.",
+    "Short lines build confidence.",
+    "A clean desk helps focus.",
+    "Mistakes are part of learning.",
+    "Smooth typing beats rushing hard.",
+    "Relax your shoulders and wrists.",
+    "Consistency is the real superpower.",
+    "Good posture makes typing easier.",
+    "Accuracy first, speed will follow.",
+    "Tap lightly to avoid finger fatigue.",
+    "Read ahead while you keep typing.",
+    "Avoid backspace spamming; keep rhythm.",
+    "Train daily for a few minutes only.",
+    "Your best speed is a steady speed.",
+    "Try to type without looking down much.",
+    "Keep your thumbs relaxed, not rigid.",
+    "A gentle pace can still be quick.",
+    "Reset and restart if you feel tense.",
+    "Practice on different sentence lengths.",
+    "Some sentences are short; some are long.",
+    "The quick brown fox jumps over the lazy dog.",
+    "Sharp focus beats raw speed every time.",
+    "A quick test can reveal your weak spots.",
+    "Accuracy builds trust in your own hands.",
+    "If you stumble, breathe, then continue typing.",
+    "Rhythm matters more than frantic keystrokes.",
+    "Your hands should float, not slam, on keys.",
+    "When you improve, celebrate small progress.",
+    "Typing is a skill, and skills can be trained.",
+    "Keep the cursor moving like a calm heartbeat.",
+    "The best typists look ahead, not at the keys.",
+    "A little patience today pays off tomorrow.",
+    "Try a steady cadence, like music in your head.",
+    "Fast typing is easier when your mind is quiet.",
+    "You can be quick without being aggressive at all.",
+    "Practice can turn awkward motion into smooth flow.",
+    "One clean sentence typed well is a small victory.",
+    "A slow start often leads to a strong finish.",
+    "If your fingers feel stiff, pause for a moment.",
+    "Typing on mobile is different, so be gentle there.",
+    "For long lines, keep breathing and keep your pace.",
+    "Don’t chase perfection; chase repeatable comfort.",
+    "You can fix speed later, but accuracy starts now.",
+    "Imagine each keypress landing softly and cleanly.",
+    "Use the same hand positions so movement stays small.",
+    "Your eyes should guide your hands like a navigator.",
+    "Most speed gains come from fewer mistakes, not rushing.",
+    "A calm mind will usually type faster than a stressed one.",
+    "Sometimes the best improvement is simply showing up daily.",
+    "On hard words, slow down slightly to avoid big error chains.",
+    "When you type smoothly, the sentence almost types itself.",
+    "Try to keep your wrists neutral rather than bent up or down.",
+    "If you lose your place, glance at the sentence and continue.",
+    "Short drills can be more effective than long exhausting sessions.",
+    "A good warm-up can improve accuracy in the first thirty seconds.",
+    "Over time, your fingers learn patterns like a musician learns scales.",
+    "If your hands hurt, stop and rest; pain is not a training strategy.",
+    "Speed is a byproduct of correct repetition done many times over.",
+    "In every run, aim for one thing: fewer mistakes than the last run.",
+    "When you type the same word often, your fingers start to automate it.",
+    "You don’t need to be perfect; you just need to be a little better today.",
+    "A balanced pace helps your brain keep up with your hands comfortably.",
+    "Typing tests are like mirrors; they show you where you can improve next.",
+    "Some people type faster by relaxing, because tension slows everything down.",
+    "A steady rhythm reduces backspaces, and fewer backspaces increases WPM.",
+    "Treat each sentence like a small lap; finish it cleanly, then move forward.",
+    "If you make a typo, don’t panic; keep calm, correct it, and regain rhythm.",
+    "Use your eyes to read a few characters ahead so your fingers never wait.",
+    "With practice, long sentences become easier because patterns start repeating.",
+    "When you learn to stay calm under pressure, your speed becomes consistent.",
+    "Typing is not only about speed; it is also about clarity and precision.",
+    "For very long sentences, aim to stay smooth rather than trying to sprint.",
+    "Your goal is to reduce friction: fewer pauses, fewer errors, softer hands.",
+    "A good technique is to keep your fingertips close to the keys at all times.",
+    "If you feel stuck, restart and focus on accuracy until rhythm returns again.",
+    "This sentence is designed to be longer and more complex, yet still readable.",
+    "A longer sentence requires attention, but attention becomes easier with practice.",
+    "When you type long phrases smoothly, you build endurance and stable confidence.",
+    "The more you practice, the more your brain predicts words before you type them.",
+    "Even if you type slowly, finishing cleanly is better than rushing into mistakes.",
+    "Practice with punctuation, because punctuation can disrupt rhythm if you’re tense.",
+    "The best improvements often come from tiny technique changes repeated for weeks.",
+    "Typing on different devices changes timing, so keep your expectations realistic.",
+    "Some sentences include commas, pauses, and rhythm changes to test your control.",
+    "If you can type this without stress, you are building durable typing strength.",
+    "This is a fairly long sentence with multiple clauses that tests steady pacing.",
+    "A strong typist stays relaxed, reads ahead, and keeps the cursor moving forward.",
+    "This sentence is intentionally longer, with more words, to test endurance and flow.",
+    "When the sentence gets long, keep your breathing steady and let your hands do the work.",
+    "Long sentences can feel intimidating, but your accuracy improves when you keep calm and consistent.",
+    "Typing is like running: if you sprint too early, you burn out; if you pace, you finish strong.",
+    "Here is an even longer sentence that rewards smooth rhythm, careful reading, and patient control while typing.",
+    "This very long sentence is designed to push your endurance and focus, so keep your shoulders relaxed and your hands light.",
+    "If you can complete long prompts without rushing, you will build reliable speed that holds up under pressure and fatigue."
+  ];
+
+  const SENTENCES_ASC = RAW_SENTENCES
+    .map(s => s.trim())
+    .filter(Boolean)
+    .sort((a,b) => (a.length - b.length) || (a.split(/\s+/).length - b.split(/\s+/).length));
+
+  const LS_MODE_KEY = "typing_speed_mode_random_v1";
+  const LS_OVERALL_BEST_KEY = "typing_speed_best_overall_wpm_v1";
+  const LS_SENTENCE_BEST_KEY = "typing_speed_best_per_sentence_v1"; // JSON map: sentence -> bestWpm
 
   const textBox = document.getElementById("textBox");
   const input = document.getElementById("input");
   const result = document.getElementById("result");
   const timePill = document.getElementById("timePill");
   const wpmPill = document.getElementById("wpmPill");
+  const accPill = document.getElementById("accPill");
+  const idxPill = document.getElementById("idxPill");
+  const bestSentencePill = document.getElementById("bestSentencePill");
+  const bestOverallPill = document.getElementById("bestOverallPill");
   const restartBtn = document.getElementById("restartBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const randomToggle = document.getElementById("randomToggle");
+  const resetScoresBtn = document.getElementById("resetScoresBtn");
+
+  let sentenceIndex = 0;
+  let TEXT = SENTENCES_ASC[0];
 
   let startTime = null;
   let finished = false;
 
-  function renderText(value = "") {
-    let html = "";
-    for (let i = 0; i < TEXT.length; i++) {
-      if (i < value.length) {
-        html += `<span class="done">${TEXT[i]}</span>`;
-      } else if (i === value.length) {
-        html += `<span class="current">${TEXT[i]}</span>`;
+  function clamp(v, min, max){ return v < min ? min : v > max ? max : v; }
+
+  function escapeHtml(s) {
+    return s
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function loadPerSentenceBestMap() {
+    try {
+      const raw = localStorage.getItem(LS_SENTENCE_BEST_KEY);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object") return parsed;
+    } catch {}
+    return {};
+  }
+
+  function savePerSentenceBestMap(map) {
+    try { localStorage.setItem(LS_SENTENCE_BEST_KEY, JSON.stringify(map)); } catch {}
+  }
+
+  function getOverallBest() {
+    const v = Number(localStorage.getItem(LS_OVERALL_BEST_KEY));
+    return Number.isFinite(v) && v > 0 ? v : null;
+  }
+
+  function setOverallBest(wpm) {
+    try { localStorage.setItem(LS_OVERALL_BEST_KEY, String(wpm)); } catch {}
+  }
+
+  function setModeRandom(on) {
+    try { localStorage.setItem(LS_MODE_KEY, on ? "1" : "0"); } catch {}
+  }
+
+  function getModeRandom() {
+    return localStorage.getItem(LS_MODE_KEY) === "1";
+  }
+
+  function computeAccuracyAndMistakes(typed) {
+    const n = Math.max(TEXT.length, typed.length);
+    if (n === 0) return { acc: 100, mistakes: 0 };
+
+    let correct = 0;
+    let mistakes = 0;
+
+    for (let i = 0; i < n; i++) {
+      const expected = TEXT[i];
+      const got = typed[i];
+
+      if (got === undefined) {
+        // not typed yet; don't count as mistake
+      } else if (expected === got) {
+        correct++;
       } else {
-        html += `<span class="pending">${TEXT[i]}</span>`;
+        mistakes++;
       }
     }
+
+    const acc = Math.round((correct / Math.max(1, typed.length)) * 100);
+    return { acc: clamp(acc, 0, 100), mistakes };
+  }
+
+  function renderText(typed = "") {
+    let html = "";
+    const len = TEXT.length;
+
+    for (let i = 0; i < len; i++) {
+      const expected = TEXT[i];
+      const got = typed[i];
+
+      if (got === undefined) {
+        if (i === typed.length) html += `<span class="current">${escapeHtml(expected)}</span>`;
+        else html += `<span class="pending">${escapeHtml(expected)}</span>`;
+      } else {
+        if (got === expected) html += `<span class="done">${escapeHtml(expected)}</span>`;
+        else {
+          if (i === typed.length - 1) html += `<span class="wrongCurrent">${escapeHtml(expected)}</span>`;
+          else html += `<span class="wrong">${escapeHtml(expected)}</span>`;
+        }
+      }
+    }
+
+    // If user typed beyond the sentence, show a small indicator
+    if (typed.length > len) {
+      const extra = typed.slice(len);
+      html += ` <span class="wrong">⟦extra: ${escapeHtml(extra)}⟧</span>`;
+    }
+
     textBox.innerHTML = html;
   }
 
-  function reset() {
+  function updateBestPills() {
+    const map = loadPerSentenceBestMap();
+    const bestThis = map[TEXT] ? Number(map[TEXT]) : null;
+    const bestOverall = getOverallBest();
+
+    bestSentencePill.textContent = `Best (this): ${bestThis ? (bestThis + " WPM") : "—"}`;
+    bestOverallPill.textContent = `Best (overall): ${bestOverall ? (bestOverall + " WPM") : "—"}`;
+  }
+
+  function resetCurrent() {
     startTime = null;
     finished = false;
     input.value = "";
     result.textContent = "";
     timePill.textContent = "Time: 0.0s";
     wpmPill.textContent = "WPM: —";
+    accPill.textContent = "Accuracy: 100%";
     renderText("");
-    input.focus();
+    updateBestPills();
+    setTimeout(() => input.focus(), 10);
+  }
+
+  function setSentenceByIndex(i) {
+    sentenceIndex = (i + SENTENCES_ASC.length) % SENTENCES_ASC.length;
+    TEXT = SENTENCES_ASC[sentenceIndex];
+    idxPill.textContent = `Sentence: ${sentenceIndex + 1}/${SENTENCES_ASC.length}`;
+    resetCurrent();
+  }
+
+  function setSentenceRandom() {
+    // avoid repeating same sentence when possible
+    let tries = 0;
+    let idx = Math.floor(Math.random() * SENTENCES_ASC.length);
+    while (idx === sentenceIndex && tries < 5) {
+      idx = Math.floor(Math.random() * SENTENCES_ASC.length);
+      tries++;
+    }
+    setSentenceByIndex(idx);
+  }
+
+  function nextSentence() {
+    if (randomToggle.checked) setSentenceRandom();
+    else setSentenceByIndex(sentenceIndex + 1);
+  }
+
+  function finalizeIfCompleted() {
+    const val = input.value;
+    if (val !== TEXT) return;
+
+    finished = true;
+    const elapsed = (performance.now() - startTime) / 1000;
+    const words = TEXT.trim().split(/\s+/).filter(Boolean).length || 1;
+    const wpm = Math.round((words / Math.max(0.1, elapsed)) * 60);
+
+    // accuracy at finish (should be 100 if exact match, but keep it consistent)
+    const { acc } = computeAccuracyAndMistakes(val);
+
+    wpmPill.textContent = `WPM: ${wpm}`;
+    accPill.textContent = `Accuracy: ${acc}%`;
+    result.textContent = `✅ Completed! ${wpm} WPM · ${acc}% accuracy`;
+
+    // save best per sentence
+    const map = loadPerSentenceBestMap();
+    const prev = Number(map[TEXT] || 0);
+    if (!Number.isFinite(prev) || wpm > prev) {
+      map[TEXT] = wpm;
+      savePerSentenceBestMap(map);
+    }
+
+    // save overall best
+    const overall = getOverallBest();
+    if (!overall || wpm > overall) setOverallBest(wpm);
+
+    updateBestPills();
   }
 
   input.addEventListener("input", () => {
@@ -276,23 +612,55 @@
     if (!startTime) startTime = performance.now();
 
     const val = input.value;
+
     renderText(val);
 
     const elapsed = (performance.now() - startTime) / 1000;
     timePill.textContent = `Time: ${elapsed.toFixed(1)}s`;
 
-    if (val === TEXT) {
-      finished = true;
-      const words = TEXT.split(" ").length;
-      const wpm = Math.round((words / elapsed) * 60);
-      wpmPill.textContent = `WPM: ${wpm}`;
-      result.textContent = `✅ Great job! ${wpm} WPM`;
+    const { acc } = computeAccuracyAndMistakes(val);
+    accPill.textContent = `Accuracy: ${acc}%`;
+
+    // show live WPM estimate (based on typed length proportion)
+    const wordsTotal = TEXT.trim().split(/\s+/).filter(Boolean).length || 1;
+    const progress = clamp(val.length / Math.max(1, TEXT.length), 0, 1);
+    const estWords = Math.max(0.2, wordsTotal * progress);
+    const estWpm = Math.round((estWords / Math.max(0.2, elapsed)) * 60);
+    wpmPill.textContent = `WPM: ${startTime ? estWpm : "—"}`;
+
+    finalizeIfCompleted();
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && finished) {
+      e.preventDefault();
+      nextSentence();
     }
   });
 
-  restartBtn.addEventListener("click", reset);
+  restartBtn.addEventListener("click", resetCurrent);
+  nextBtn.addEventListener("click", nextSentence);
 
-  reset();
+  randomToggle.addEventListener("change", () => {
+    setModeRandom(randomToggle.checked);
+    // do not reshuffle list; just change behavior for "Next"
+    // but also update index pill label immediately
+    idxPill.textContent = `Sentence: ${sentenceIndex + 1}/${SENTENCES_ASC.length}`;
+  });
+
+  resetScoresBtn.addEventListener("click", () => {
+    try {
+      localStorage.removeItem(LS_SENTENCE_BEST_KEY);
+      localStorage.removeItem(LS_OVERALL_BEST_KEY);
+    } catch {}
+    updateBestPills();
+    result.textContent = "🧹 Saved scores cleared.";
+    setTimeout(() => { if (!finished) result.textContent = ""; }, 1200);
+  });
+
+  // init
+  randomToggle.checked = getModeRandom();
+  setSentenceByIndex(0);
 })();
 </script>
 
