@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Runner Rush (Endless)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
+
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: block; /* keep normal flow so footer.js behaves */
+    }
+
+    .page-wrap {
+      display: flex;
+      width: 100%;
+      max-width: 1440px;
+      padding: 12px;
+      gap: 12px;
+      margin: 0 auto;
+    }
+
+    .side-banner {
+      flex: 0 0 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      .side-banner { display: none; }
+      .page-wrap { justify-content: center; padding: 10px; }
+    }
+
+    .main-game {
+      flex: 1 1 auto;
+      background: rgba(15,23,42,0.95);
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: calc(100vh - 24px);
+    }
+
+    .top-banner {
+      padding: 0.6rem 1.2rem 0.4rem;
+      border-bottom: 1px solid #111827;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+    }
+    .top-banner-inner {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 18px;
+    }
+
+    .game-header {
+      padding: 0.55rem 1.2rem;
+      border-bottom: 1px solid #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
+      font-size: 0.9rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .game-header .title {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .game-header a {
+      color: #e5e7eb;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
+    }
+    .game-header a:hover { border-color: #6366f1; }
+
+    .game-body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.75rem 1.2rem 1rem;
+      overflow: auto;
+      gap: 10px;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: 980px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+      background: radial-gradient(circle at top, rgba(2,6,23,0.9), rgba(2,6,23,0.98));
+      box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid #4b5563;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      cursor: pointer;
+      touch-action: none;
+      display: block;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .left-controls, .right-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+      user-select: none;
+      -webkit-user-select: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+    .btn:hover { border-color: rgba(99,102,241,0.8); }
+    .btn:active { transform: translateY(1px); }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 7px 10px;
+      background: rgba(2,6,23,0.45);
+      color: #cbd5f5;
+      font-size: 12px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      width: 100%;
+      max-width: 980px;
+      color: rgba(203,213,245,0.9);
+      font-size: 12px;
+      line-height: 1.35rem;
+      text-align: center;
+      opacity: 0.92;
+    }
+
+    @media (max-width: 700px) {
+      .page-wrap { padding: 8px; gap: 8px; }
+      .top-banner { padding: 0.35rem 0.6rem 0.25rem; }
+      .game-header { padding: 0.5rem 0.7rem; font-size: 0.85rem; }
+      .game-body { padding: 0.55rem 0.7rem 0.85rem; }
+      .btn { width: 100%; }
+      .controls { gap: 10px; }
+      .left-controls, .right-controls { width: 100%; }
+      .pill { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <aside class="side-banner"></aside>
+
+  <main class="main-game">
+    <div class="top-banner"><div class="top-banner-inner"></div></div>
+
+    <div class="game-header">
+      <div class="title">🏃 Neon Runner Rush <span style="opacity:.65;font-weight:700;">(Endless)</span></div>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
+    </div>
+
+    <div class="game-body">
+      <div class="frame">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <div class="controls">
+          <div class="left-controls">
+            <button class="btn" id="btnStart">▶ Start</button>
+            <button class="btn" id="btnRetry">♻ Retry</button>
+            <button class="btn" id="btnShop">🧬 Skins</button>
+          </div>
+          <div class="right-controls">
+            <div class="pill" id="hudPill">
+              <span>Score: <b id="hudScore">0</b></span>
+              <span>Best: <b id="hudBest">0</b></span>
+              <span>Coins: <b id="hudCoins">0</b></span>
+              <span>Boost: <b id="hudBoost">Ready</b></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">
+        <b>Controls:</b> <b>Space / Tap</b> to jump. <b>Hold</b> to boost (short sprint). Collect coins, avoid obstacles.
+        Unlock characters in <b>Skins</b>. <span style="opacity:.9;">Mobile: tap/hold anywhere on canvas.</span>
+      </div>
+    </div>
+  </main>
+
+  <aside class="side-banner"></aside>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+
+  const W = canvas.width, H = canvas.height;
+  const TAU = Math.PI * 2;
+
+  // HUD
+  const hudScore = document.getElementById("hudScore");
+  const hudBest = document.getElementById("hudBest");
+  const hudCoins = document.getElementById("hudCoins");
+  const hudBoost = document.getElementById("hudBoost");
+
+  const btnStart = document.getElementById("btnStart");
+  const btnRetry = document.getElementById("btnRetry");
+  const btnShop  = document.getElementById("btnShop");
+
+  // Storage keys
+  const KEY_BEST = "nr_runner_best";
+  const KEY_COINS = "nr_runner_coins";
+  const KEY_SKIN = "nr_runner_skin";
+  const KEY_UNLOCKS = "nr_runner_unlocks"; // json array of ids
+
+  const clamp = (v,a,b)=> v<a?a:v>b?b:v;
+  const rand = (a,b)=> a + Math.random()*(b-a);
+  const irand = (a,b)=> Math.floor(rand(a,b+1));
+
+  // Visual theme
+  const theme = {
+    bg1: "#020617",
+    grid: "rgba(148,163,184,0.12)",
+    neonA: "#6366f1",
+    neonB: "#ec4899",
+    good: "#22c55e",
+    warn: "#facc15",
+    bad:  "#f97316",
+    danger:"#ef4444",
+    text: "#e5e7eb",
+    sub:  "#9ca3af",
+  };
+
+  // Ground + lanes
+  const GROUND_Y = Math.floor(H * 0.78);
+  const RUNNER_X = Math.floor(W * 0.22);
+
+  // ===============================
+  // Character assets (optional)
+  // If you add your own licensed sprites:
+  //   images/runner/hero.png  (spritesheet)
+  //   images/runner/wings.png (overlay)
+  //
+  // If those files do not exist, the game automatically uses a
+  // more "realistic" vector runner with arms open in air + wing glow.
+  // ===============================
+  const USE_SPRITES_IF_AVAILABLE = true;
+
+  const heroImg = new Image();
+  const wingsImg = new Image();
+  let heroReady = false;
+  let wingsReady = false;
+
+  // You can replace these paths with your own files
+  heroImg.src = "images/runner/hero.png";
+  wingsImg.src = "images/runner/wings.png";
+
+  heroImg.onload = () => { heroReady = true; };
+  heroImg.onerror = () => { heroReady = false; };
+
+  wingsImg.onload = () => { wingsReady = true; };
+  wingsImg.onerror = () => { wingsReady = false; };
+
+  // If you use a sprite sheet:
+  // Put run frames in row 0, jump frames in row 1 (or adjust).
+  const HERO_SPR = {
+    fw: 96,
+    fh: 96,
+    cols: 8,
+    // frame indices assuming row-major (0..)
+    run:  [0,1,2,3,4,5,6,7],
+    jump: [8,9,10,11],        // row 2 in a 8-col sheet; adjust freely
+    fall: [12],               // optional
+    fps: 12
+  };
+
+  // Game state
+  const state = {
+    mode: "menu", // menu | play | dead | skins
+    t: 0,
+    speed: 320,
+    speedMult: 1.0,
+    difficulty: 1.0,
+    score: 0,
+    best: 0,
+    coins: 0,
+    sessionCoins: 0,
+    cameraShake: 0,
+
+    // input
+    jumpHeld: false,
+    boostHeld: false,
+
+    // boost
+    boost: {
+      energy: 1.0,        // 0..1
+      active: false,
+      cooldown: 0,
+    },
+
+    // runner
+    runner: {
+      y: GROUND_Y - 46,
+      vy: 0,
+      w: 34,
+      h: 46,
+      onGround: true,
+      coyote: 0,
+      jumpBuffer: 0,
+      anim: 0,
+      sprT: 0,
+      sprFrame: 0
+    },
+
+    obstacles: [],
+    coinsOnTrack: [],
+    powerups: [],
+    particles: [],
+    parallax: {
+      far: 0,
+      mid: 0,
+      near: 0,
+    },
+
+    // spawn timers
+    spawnObs: 0,
+    spawnCoin: 0,
+    spawnPower: 0,
+
+    // skins
+    skins: [
+      { id:"neo",  name:"Neo",  price:0,   primary:"#38bdf8", accent:"#6366f1", trail:"#38bdf8" },
+      { id:"ember",name:"Ember",price:50,  primary:"#f97316", accent:"#facc15", trail:"#f97316" },
+      { id:"nova", name:"Nova", price:120, primary:"#ec4899", accent:"#a855f7", trail:"#ec4899" },
+      { id:"mint", name:"Mint", price:200, primary:"#22c55e", accent:"#38bdf8", trail:"#22c55e" },
+    ],
+    selectedSkin: "neo",
+    unlocked: new Set(["neo"]),
+  };
+
+  // Load persistent
+  try { state.best = parseInt(localStorage.getItem(KEY_BEST) || "0", 10) || 0; } catch(e) {}
+  try { state.coins = parseInt(localStorage.getItem(KEY_COINS) || "0", 10) || 0; } catch(e) {}
+  try { const sk = localStorage.getItem(KEY_SKIN); if (sk) state.selectedSkin = sk; } catch(e) {}
+  try {
+    const raw = localStorage.getItem(KEY_UNLOCKS);
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) arr.forEach(id => state.unlocked.add(id));
+    }
+  } catch(e) {}
+  if (!state.unlocked.has(state.selectedSkin)) state.selectedSkin = "neo";
+
+  function savePersist(){
+    try { localStorage.setItem(KEY_BEST, String(state.best)); } catch(e) {}
+    try { localStorage.setItem(KEY_COINS, String(state.coins)); } catch(e) {}
+    try { localStorage.setItem(KEY_SKIN, state.selectedSkin); } catch(e) {}
+    try { localStorage.setItem(KEY_UNLOCKS, JSON.stringify(Array.from(state.unlocked))); } catch(e) {}
+  }
+
+  function currentSkin(){
+    return state.skins.find(s => s.id === state.selectedSkin) || state.skins[0];
+  }
+
+  // Particles
+  function puff(x,y,color,count=10,spread=1){
+    for(let i=0;i<count;i++){
+      const a = rand(0,TAU);
+      const s = rand(50,220) * spread;
+      state.particles.push({
+        x, y,
+        vx: Math.cos(a)*s,
+        vy: Math.sin(a)*s,
+        r: rand(1.4,3.3),
+        life: rand(0.25,0.6),
+        color
+      });
+    }
+  }
+  function sparkLine(x1,y1,x2,y2,color,count=8){
+    for(let i=0;i<count;i++){
+      const t = Math.random();
+      const x = x1 + (x2-x1)*t;
+      const y = y1 + (y2-y1)*t;
+      state.particles.push({
+        x, y,
+        vx: rand(-80,80),
+        vy: rand(-120,60),
+        r: rand(1.0,2.4),
+        life: rand(0.2,0.45),
+        color
+      });
+    }
+  }
+
+  // Entities
+  function spawnObstacle(){
+    const type = Math.random() < 0.6 ? "block" : (Math.random() < 0.6 ? "tall" : "spikes");
+    let w = 34, h = 36;
+    if (type === "tall"){ w = 32; h = 62; }
+    if (type === "spikes"){ w = 50; h = 26; }
+    const isDouble = state.difficulty > 1.8 && Math.random() < 0.25;
+
+    const x = W + 30;
+    const y = GROUND_Y - h;
+
+    state.obstacles.push({ type, x, y, w, h, passed:false, double:isDouble });
+
+    if (isDouble){
+      const gap = rand(110, 190);
+      state.obstacles.push({
+        type: (type === "tall" ? "block" : "tall"),
+        x: x + gap,
+        y: GROUND_Y - (type === "tall" ? 36 : 62),
+        w: (type === "tall" ? 34 : 32),
+        h: (type === "tall" ? 36 : 62),
+        passed: false,
+        double: true
+      });
+    }
+  }
+
+  function spawnCoinLine(){
+    const count = irand(4, 8);
+    const startX = W + rand(20, 120);
+    const baseY = GROUND_Y - rand(80, 150);
+    for(let i=0;i<count;i++){
+      state.coinsOnTrack.push({
+        x: startX + i*28,
+        y: baseY + Math.sin(i*0.7)*8,
+        r: 8,
+        taken: false,
+        bob: rand(0,TAU)
+      });
+    }
+  }
+
+  function spawnPowerup(){
+    const kind = Math.random() < 0.55 ? "magnet" : "shield";
+    state.powerups.push({
+      kind,
+      x: W + rand(40, 140),
+      y: GROUND_Y - rand(120, 190),
+      r: 12,
+      taken: false,
+      bob: rand(0,TAU)
+    });
+  }
+
+  // Powerups state
+  const effects = { shield: 0, magnet: 0 };
+
+  function setHUD(){
+    hudScore.textContent = String(Math.floor(state.score));
+    hudBest.textContent  = String(Math.floor(state.best));
+    hudCoins.textContent = String(Math.floor(state.coins));
+    hudBoost.textContent = state.boost.active ? "BOOST!" :
+      state.boost.energy >= 1 ? "Ready" :
+      `${Math.floor(state.boost.energy*100)}%`;
+  }
+
+  function resetRun(){
+    state.t = 0;
+    state.speed = 320;
+    state.speedMult = 1.0;
+    state.difficulty = 1.0;
+    state.score = 0;
+    state.sessionCoins = 0;
+    state.cameraShake = 0;
+
+    state.runner.y = GROUND_Y - 46;
+    state.runner.vy = 0;
+    state.runner.onGround = true;
+    state.runner.coyote = 0;
+    state.runner.jumpBuffer = 0;
+    state.runner.anim = 0;
+    state.runner.sprT = 0;
+    state.runner.sprFrame = 0;
+
+    state.obstacles = [];
+    state.coinsOnTrack = [];
+    state.powerups = [];
+    state.particles = [];
+
+    state.parallax.far = 0;
+    state.parallax.mid = 0;
+    state.parallax.near = 0;
+
+    state.spawnObs = 0.9;
+    state.spawnCoin = 0.6;
+    state.spawnPower = 2.0;
+
+    state.boost.energy = 1.0;
+    state.boost.active = false;
+    state.boost.cooldown = 0;
+
+    effects.shield = 0;
+    effects.magnet = 0;
+
+    setHUD();
+  }
+
+  function startGame(){
+    resetRun();
+    state.mode = "play";
+    btnStart.textContent = "⏸ Pause";
+  }
+
+  function killGame(){
+    state.mode = "dead";
+    btnStart.textContent = "▶ Start";
+    state.coins += state.sessionCoins;
+    if (state.score > state.best) state.best = Math.floor(state.score);
+    savePersist();
+    setHUD();
+  }
+
+  function togglePause(){
+    if (state.mode === "play"){
+      state.mode = "menu";
+      btnStart.textContent = "▶ Resume";
+    } else if (state.mode === "menu" && btnStart.textContent.includes("Resume")){
+      state.mode = "play";
+      btnStart.textContent = "⏸ Pause";
+    }
+  }
+
+  // Input helpers
+  function doJump(){
+    state.runner.jumpBuffer = 0.12;
+  }
+
+  // Keyboard input (FIXED: jumpHeld now true on keydown)
+  window.addEventListener("keydown", (e) => {
+    if (e.code === "Space" || e.code === "ArrowUp"){
+      e.preventDefault();
+      doJump();
+      state.jumpHeld = true;
+    }
+    if (e.code === "ShiftLeft" || e.code === "ShiftRight"){
+      state.boostHeld = true;
+    }
+    if (e.code === "KeyP"){
+      togglePause();
+    }
+  }, {passive:false});
+
+  window.addEventListener("keyup", (e) => {
+    if (e.code === "Space" || e.code === "ArrowUp"){
+      state.jumpHeld = false;
+    }
+    if (e.code === "ShiftLeft" || e.code === "ShiftRight"){
+      state.boostHeld = false;
+    }
+  });
+
+  // Pointer input (FIXED: no duplicate pointerdown forcing boost always)
+  let pointerDown = false;
+  let boostTimer = null;
+
+  function getPos(e){
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width;
+    const sy = canvas.height / r.height;
+    return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
+  }
+
+  canvas.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const p = getPos(e);
+
+    if (state.mode === "skins"){
+      handleSkinsClick(p.x, p.y);
+      return;
+    }
+
+    if (state.mode === "menu"){
+      if (btnStart.textContent.includes("Resume")) togglePause();
+      else startGame();
+      return;
+    }
+    if (state.mode === "dead"){
+      startGame();
+      return;
+    }
+
+    // In play: tap = jump, hold = boost after a short delay (so jump taps don't auto-boost)
+    pointerDown = true;
+    doJump();
+    state.jumpHeld = true;
+
+    clearTimeout(boostTimer);
+    boostTimer = setTimeout(() => {
+      if (pointerDown) state.boostHeld = true;
+    }, 180);
+  }, {passive:false});
+
+  canvas.addEventListener("pointerup", (e) => {
+    e.preventDefault();
+    pointerDown = false;
+    state.jumpHeld = false;
+    state.boostHeld = false;
+    clearTimeout(boostTimer);
+  }, {passive:false});
+
+  canvas.addEventListener("pointercancel", () => {
+    pointerDown = false;
+    state.jumpHeld = false;
+    state.boostHeld = false;
+    clearTimeout(boostTimer);
+  });
+
+  // Buttons
+  btnStart.addEventListener("click", () => {
+    if (state.mode === "play"){ togglePause(); return; }
+    if (state.mode === "menu"){
+      if (btnStart.textContent.includes("Resume")) togglePause();
+      else startGame();
+      return;
+    }
+    if (state.mode === "dead"){ startGame(); return; }
+    if (state.mode === "skins"){
+      state.mode = "menu";
+      btnStart.textContent = "▶ Start";
+      btnShop.textContent = "🧬 Skins";
+      return;
+    }
+  });
+
+  btnRetry.addEventListener("click", () => startGame());
+
+  btnShop.addEventListener("click", () => {
+    if (state.mode === "play") return;
+    if (state.mode !== "skins"){
+      state.mode = "skins";
+      btnShop.textContent = "⬅ Back";
+      btnStart.textContent = "▶ Start";
+    } else {
+      state.mode = "menu";
+      btnShop.textContent = "🧬 Skins";
+      btnStart.textContent = "▶ Start";
+    }
+  });
+
+  function rectHit(ax,ay,aw,ah,bx,by,bw,bh){
+    return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
+  }
+  function circleRectHit(cx,cy,cr, rx,ry,rw,rh){
+    const nx = clamp(cx, rx, rx+rw);
+    const ny = clamp(cy, ry, ry+rh);
+    const dx = cx - nx;
+    const dy = cy - ny;
+    return (dx*dx + dy*dy) <= cr*cr;
+  }
+
+  // Physics + game update
+  function update(dt){
+    state.t += dt;
+
+    const scroll = state.speed * state.speedMult * dt;
+    state.parallax.far  = (state.parallax.far + scroll*0.15) % W;
+    state.parallax.mid  = (state.parallax.mid + scroll*0.35) % W;
+    state.parallax.near = (state.parallax.near + scroll*0.75) % W;
+
+    state.score += dt * (10 * state.difficulty);
+    state.difficulty = 1 + state.score / 450;
+    state.speed = 320 + (state.score * 0.65);
+
+    // Boost system
+    state.boost.cooldown = Math.max(0, state.boost.cooldown - dt);
+    state.boost.active = false;
+
+    if (state.boostHeld && state.boost.energy > 0.08){
+      state.boost.active = true;
+      state.speedMult = 1.24;
+      state.boost.energy = Math.max(0, state.boost.energy - dt*0.36);
+
+      const sk = currentSkin();
+      if (Math.random() < 0.6){
+        puff(RUNNER_X - 12, state.runner.y + state.runner.h - 10, sk.trail, 2, 0.65);
+      }
+    } else {
+      state.speedMult = 1.0;
+      state.boost.energy = Math.min(1, state.boost.energy + dt*0.16);
+    }
+
+    effects.shield = Math.max(0, effects.shield - dt);
+    effects.magnet = Math.max(0, effects.magnet - dt);
+
+    // Runner physics
+    const r = state.runner;
+    const GRAV = 1700;
+    const JUMP_V = -680;
+    const JUMP_CUT = 0.55;
+
+    r.coyote = r.onGround ? 0.12 : Math.max(0, r.coyote - dt);
+    r.jumpBuffer = Math.max(0, r.jumpBuffer - dt);
+
+    if (r.jumpBuffer > 0 && (r.onGround || r.coyote > 0)){
+      r.vy = JUMP_V;
+      r.onGround = false;
+      r.coyote = 0;
+      r.jumpBuffer = 0;
+      puff(RUNNER_X, GROUND_Y - 6, theme.neonA, 14, 1.0);
+    }
+
+    if (!state.jumpHeld && r.vy < 0){
+      r.vy *= JUMP_CUT;
+    }
+
+    r.vy += GRAV * dt;
+    r.y += r.vy * dt;
+
+    const floorY = GROUND_Y - r.h;
+    if (r.y >= floorY){
+      r.y = floorY;
+      r.vy = 0;
+      if (!r.onGround){
+        puff(RUNNER_X, GROUND_Y - 4, "rgba(56,189,248,0.9)", 10, 0.9);
+      }
+      r.onGround = true;
+    } else {
+      r.onGround = false;
+    }
+
+    r.anim = (r.anim + dt*(r.onGround ? (10 + state.speed*0.01) : 6)) % 1;
+
+    // Sprite animation timing
+    if (USE_SPRITES_IF_AVAILABLE && heroReady){
+      r.sprT += dt;
+      const fps = HERO_SPR.fps;
+      if (r.onGround){
+        const idx = Math.floor(r.sprT * fps) % HERO_SPR.run.length;
+        r.sprFrame = HERO_SPR.run[idx];
+      } else {
+        // jump / fall
+        if (r.vy < -60) r.sprFrame = HERO_SPR.jump[0] ?? HERO_SPR.run[0];
+        else if (r.vy < 120) r.sprFrame = HERO_SPR.jump[1] ?? HERO_SPR.jump[0] ?? HERO_SPR.run[0];
+        else r.sprFrame = HERO_SPR.fall[0] ?? HERO_SPR.jump[HERO_SPR.jump.length-1] ?? HERO_SPR.run[0];
+      }
+    }
+
+    // Spawn
+    state.spawnObs -= dt;
+    if (state.spawnObs <= 0){
+      spawnObstacle();
+      const base = clamp(1.05 - state.difficulty*0.12, 0.42, 0.95);
+      state.spawnObs = base + rand(0.05, 0.28);
+    }
+
+    state.spawnCoin -= dt;
+    if (state.spawnCoin <= 0){
+      if (Math.random() < 0.75) spawnCoinLine();
+      state.spawnCoin = rand(0.85, 1.35);
+    }
+
+    state.spawnPower -= dt;
+    if (state.spawnPower <= 0){
+      if (Math.random() < 0.55) spawnPowerup();
+      state.spawnPower = rand(5.0, 9.0);
+    }
+
+    // Move obstacles
+    for (let i = state.obstacles.length - 1; i >= 0; i--){
+      const o = state.obstacles[i];
+      o.x -= scroll;
+      if (!o.passed && o.x + o.w < RUNNER_X){
+        o.passed = true;
+        state.score += 8;
+      }
+      if (o.x < -120) state.obstacles.splice(i, 1);
+    }
+
+    // Coins
+    for (let i = state.coinsOnTrack.length - 1; i >= 0; i--){
+      const c = state.coinsOnTrack[i];
+      c.x -= scroll;
+      c.bob += dt*4;
+
+      if (!c.taken){
+        if (effects.magnet > 0){
+          const dx = (RUNNER_X - c.x);
+          const dy = ((r.y + r.h*0.45) - c.y);
+          const d = Math.hypot(dx,dy);
+          if (d < 220){
+            c.x += dx * dt * 6.2;
+            c.y += dy * dt * 6.2;
+          }
+        }
+
+        if (circleRectHit(c.x, c.y, c.r, RUNNER_X - r.w/2, r.y, r.w, r.h)){
+          c.taken = true;
+          state.sessionCoins += 1;
+          puff(c.x, c.y, theme.warn, 10, 1.0);
+        }
+      }
+
+      if (c.x < -80 || c.taken) state.coinsOnTrack.splice(i, 1);
+    }
+
+    // Powerups
+    for (let i = state.powerups.length - 1; i >= 0; i--){
+      const p = state.powerups[i];
+      p.x -= scroll;
+      p.bob += dt*3.3;
+
+      if (!p.taken){
+        if (circleRectHit(p.x, p.y, p.r, RUNNER_X - r.w/2, r.y, r.w, r.h)){
+          p.taken = true;
+          if (p.kind === "shield"){
+            effects.shield = 7.5;
+            puff(p.x, p.y, theme.good, 18, 1.1);
+          } else {
+            effects.magnet = 8.5;
+            puff(p.x, p.y, theme.neonB, 18, 1.1);
+          }
+        }
+      }
+
+      if (p.x < -80 || p.taken) state.powerups.splice(i, 1);
+    }
+
+    // Collision with obstacles
+    for (const o of state.obstacles){
+      if (rectHit(RUNNER_X - r.w/2, r.y, r.w, r.h, o.x, o.y, o.w, o.h)){
+        if (effects.shield > 0){
+          effects.shield = 0;
+          state.cameraShake = 0.22;
+          sparkLine(RUNNER_X, r.y + r.h/2, o.x + o.w/2, o.y + o.h/2, theme.good, 14);
+          puff(o.x + o.w/2, o.y + o.h/2, theme.good, 22, 1.2);
+          o.x = -9999;
+          state.score += 20;
+        } else {
+          state.cameraShake = 0.28;
+          puff(RUNNER_X, r.y + r.h/2, theme.danger, 26, 1.2);
+          killGame();
+          break;
+        }
+      }
+    }
+
+    // Particles
+    for (let i = state.particles.length - 1; i >= 0; i--){
+      const p = state.particles[i];
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vx *= 0.90;
+      p.vy *= 0.90;
+      p.life -= dt;
+      if (p.life <= 0) state.particles.splice(i, 1);
+    }
+
+    state.cameraShake = Math.max(0, state.cameraShake - dt);
+
+    // HUD (include session coins)
+    hudScore.textContent = String(Math.floor(state.score));
+    hudBest.textContent  = String(Math.floor(state.best));
+    hudCoins.textContent = String(Math.floor(state.coins + state.sessionCoins));
+    hudBoost.textContent = state.boost.active ? "BOOST!" :
+      state.boost.energy >= 1 ? "Ready" :
+      `${Math.floor(state.boost.energy*100)}%`;
+  }
+
+  // Drawing
+  function draw(){
+    let shakeX = 0, shakeY = 0;
+    if (state.cameraShake > 0){
+      const s = state.cameraShake * 10;
+      shakeX = rand(-s, s);
+      shakeY = rand(-s, s);
+    }
+
+    ctx.save();
+    ctx.translate(shakeX, shakeY);
+
+    drawBackground();
+    drawParallax();
+    drawTrack();
+    drawEntities();
+    drawRunner();   // <-- UPDATED character rendering
+    drawFX();
+    drawOverlay();
+
+    ctx.restore();
+  }
+
+  function drawBackground(){
+    ctx.fillStyle = theme.bg1;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.globalAlpha = 0.15;
+    ctx.strokeStyle = theme.grid;
+    ctx.lineWidth = 1;
+    const gs = 40;
+    for(let x=0;x<=W;x+=gs){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<=H;y+=gs){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+
+    const g = ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0, "rgba(99,102,241,0.18)");
+    g.addColorStop(0.55, "rgba(236,72,153,0.08)");
+    g.addColorStop(1, "rgba(2,6,23,0)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  function drawParallax(){
+    const farY = Math.floor(H*0.28);
+    ctx.globalAlpha = 0.85;
+    for(let i=0;i<42;i++){
+      const x = (i*80 - state.parallax.far) % (W+200) - 100;
+      const h = 10 + (i%7)*8;
+      ctx.fillStyle = "rgba(148,163,184,0.18)";
+      ctx.fillRect(x, farY - h, 24, h);
+    }
+
+    const midY = Math.floor(H*0.44);
+    for(let i=0;i<26;i++){
+      const x = (i*120 - state.parallax.mid) % (W+260) - 130;
+      const h = 20 + (i%5)*22;
+      const c = i%2===0 ? "rgba(99,102,241,0.18)" : "rgba(236,72,153,0.14)";
+      ctx.fillStyle = c;
+      ctx.fillRect(x, midY - h, 48, h);
+      ctx.globalAlpha = 0.55;
+      ctx.fillStyle = "rgba(224,231,255,0.12)";
+      ctx.fillRect(x+10, midY - h + 10, 4, h-18);
+      ctx.globalAlpha = 0.85;
+    }
+
+    ctx.globalAlpha = 1;
+  }
+
+  function drawTrack(){
+    const g = ctx.createLinearGradient(0,GROUND_Y,0,H);
+    g.addColorStop(0, "rgba(15,23,42,0.95)");
+    g.addColorStop(1, "rgba(2,6,23,1)");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, GROUND_Y, W, H-GROUND_Y);
+
+    ctx.strokeStyle = "rgba(99,102,241,0.55)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, GROUND_Y);
+    ctx.lineTo(W, GROUND_Y);
+    ctx.stroke();
+
+    ctx.globalAlpha = 0.6;
+    ctx.strokeStyle = "rgba(236,72,153,0.30)";
+    ctx.lineWidth = 3;
+    const dashY = GROUND_Y + 22;
+    const dashLen = 28;
+    const gap = 26;
+    const off = (state.parallax.near*1.1) % (dashLen+gap);
+    for(let x = -80; x < W+80; x += dashLen+gap){
+      ctx.beginPath();
+      ctx.moveTo(x - off, dashY);
+      ctx.lineTo(x - off + dashLen, dashY);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawEntities(){
+    for(const c of state.coinsOnTrack){
+      const bob = Math.sin(c.bob)*4;
+      drawCoin(c.x, c.y + bob, c.r);
+    }
+
+    for(const p of state.powerups){
+      const bob = Math.sin(p.bob)*5;
+      drawPower(p.x, p.y + bob, p.kind);
+    }
+
+    for(const o of state.obstacles){
+      if (o.x < -500) continue;
+      drawObstacle(o);
+    }
+  }
+
+  function drawCoin(x,y,r){
+    ctx.save();
+    const g = ctx.createRadialGradient(x,y,0,x,y,28);
+    g.addColorStop(0, "rgba(250,204,21,0.35)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x,y,24,0,TAU); ctx.fill();
+
+    ctx.fillStyle = "rgba(2,6,23,0.9)";
+    ctx.beginPath(); ctx.arc(x,y,r+2,0,TAU); ctx.fill();
+    ctx.strokeStyle = theme.warn;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(x,y,r+2,0,TAU); ctx.stroke();
+
+    ctx.fillStyle = "rgba(250,204,21,0.85)";
+    ctx.font = "12px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("¢", x, y+0.5);
+    ctx.restore();
+  }
+
+  function drawPower(x,y,kind){
+    ctx.save();
+    const col = kind === "shield" ? theme.good : theme.neonB;
+
+    const g = ctx.createRadialGradient(x,y,0,x,y,36);
+    g.addColorStop(0, kind === "shield" ? "rgba(34,197,94,0.28)" : "rgba(236,72,153,0.22)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x,y,32,0,TAU); ctx.fill();
+
+    ctx.fillStyle = "rgba(2,6,23,0.9)";
+    ctx.beginPath(); ctx.arc(x,y,14,0,TAU); ctx.fill();
+    ctx.strokeStyle = col;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(x,y,14,0,TAU); ctx.stroke();
+
+    ctx.fillStyle = "rgba(229,231,235,0.9)";
+    ctx.font = "12px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(kind === "shield" ? "🛡" : "🧲", x, y+0.5);
+    ctx.restore();
+  }
+
+  function drawObstacle(o){
+    ctx.save();
+
+    const gx = o.x + o.w/2, gy = o.y + o.h/2;
+    const g = ctx.createRadialGradient(gx,gy,0,gx,gy,54);
+    g.addColorStop(0, "rgba(239,68,68,0.20)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(gx,gy,46,0,TAU); ctx.fill();
+
+    ctx.fillStyle = "rgba(2,6,23,0.9)";
+    ctx.fillRect(o.x, o.y, o.w, o.h);
+
+    ctx.strokeStyle = o.type === "spikes" ? theme.danger : theme.bad;
+    ctx.lineWidth = 3;
+    ctx.strokeRect(o.x, o.y, o.w, o.h);
+
+    ctx.globalAlpha = 0.75;
+    ctx.strokeStyle = "rgba(224,231,255,0.10)";
+    ctx.lineWidth = 1;
+    for(let i=0;i<o.w;i+=8){
+      ctx.beginPath();
+      ctx.moveTo(o.x+i, o.y);
+      ctx.lineTo(o.x+i, o.y+o.h);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+
+    if (o.type === "spikes"){
+      ctx.fillStyle = theme.danger;
+      const n = Math.floor(o.w / 10);
+      for(let i=0;i<n;i++){
+        const sx = o.x + i*(o.w/n);
+        ctx.beginPath();
+        ctx.moveTo(sx, o.y+o.h);
+        ctx.lineTo(sx + (o.w/n)/2, o.y);
+        ctx.lineTo(sx + (o.w/n), o.y+o.h);
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  // ========= UPDATED RUNNER DRAW (sprite if available, else "realistic" vector man + wings) =========
+  function drawRunner(){
+    const sk = currentSkin();
+    const r = state.runner;
+
+    const x = RUNNER_X;
+    const y = r.y;
+    const onGround = r.onGround;
+
+    // Boost trail
+    if (state.boost.active){
+      ctx.save();
+      ctx.globalAlpha = 0.8;
+      ctx.strokeStyle = sk.trail;
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(x - 58, y + r.h*0.70);
+      ctx.lineTo(x - 14, y + r.h*0.70);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Outer glow
+    ctx.save();
+    const g = ctx.createRadialGradient(x, y + r.h/2, 0, x, y + r.h/2, 70);
+    g.addColorStop(0, "rgba(99,102,241,0.20)");
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y + r.h/2, 58, 0, TAU); ctx.fill();
+    ctx.restore();
+
+    // Draw wings overlay (airborne)
+    drawWingsOverlay(x, y, r.w, r.h, sk, onGround);
+
+    // Sprite mode if files exist
+    const useSprite = USE_SPRITES_IF_AVAILABLE && heroReady;
+    if (useSprite){
+      const fw = HERO_SPR.fw, fh = HERO_SPR.fh;
+      const cols = HERO_SPR.cols;
+      const idx = r.sprFrame;
+
+      const col = idx % cols;
+      const row = Math.floor(idx / cols);
+      const sx = col * fw;
+      const sy = row * fh;
+
+      // Scale sprite to runner size (taller)
+      const drawW = 78;
+      const drawH = 78;
+      const dx = x - drawW/2;
+      const dy = (y + r.h) - drawH + 10;
+
+      // subtle neon outline pass
+      ctx.save();
+      ctx.globalAlpha = 0.30;
+      ctx.shadowBlur = 18;
+      ctx.shadowColor = sk.primary;
+      ctx.drawImage(heroImg, sx, sy, fw, fh, dx, dy, drawW, drawH);
+      ctx.restore();
+
+      ctx.drawImage(heroImg, sx, sy, fw, fh, dx, dy, drawW, drawH);
+
+    } else {
+      // Vector "more realistic" runner:
+      // - head/torso/limbs
+      // - arms open while airborne
+      drawVectorRunner(x, y, r.w, r.h, sk, onGround, r.vy, r.anim);
+    }
+
+    // Shield / magnet rings
+    ctx.save();
+    if (effects.shield > 0){
+      ctx.globalAlpha = 0.9;
+      ctx.strokeStyle = theme.good;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x, y + r.h/2, 36 + Math.sin(state.t*8)*2, 0, TAU);
+      ctx.stroke();
+    }
+    if (effects.magnet > 0){
+      ctx.globalAlpha = 0.65;
+      ctx.strokeStyle = theme.neonB;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y + r.h/2, 52 + Math.sin(state.t*6)*2, 0, TAU);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawWingsOverlay(x, y, w, h, sk, onGround){
+    if (onGround) return;
+
+    // If you provide a wings PNG, we’ll use it
+    if (USE_SPRITES_IF_AVAILABLE && wingsReady){
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      // behind runner
+      const ww = 110, wh = 80;
+      ctx.drawImage(wingsImg, x - ww/2, y + 4, ww, wh);
+      ctx.restore();
+      return;
+    }
+
+    // Otherwise draw a neon “wing” glow (stylized but looks like arms/wings open)
+    ctx.save();
+    const midY = y + h*0.40;
+    const flap = 0.55 + Math.sin(state.t*10)*0.08;
+
+    // back glow
+    ctx.globalAlpha = 0.28;
+    ctx.fillStyle = sk.accent;
+    ctx.beginPath();
+    ctx.ellipse(x - 18, midY + 4, 52*flap, 22, -0.25, 0, TAU);
+    ctx.ellipse(x + 18, midY + 4, 52*flap, 22, 0.25, 0, TAU);
+    ctx.fill();
+
+    // wing strokes
+    ctx.globalAlpha = 0.85;
+    ctx.strokeStyle = sk.primary;
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+
+    // left wing
+    ctx.beginPath();
+    ctx.moveTo(x - 10, midY);
+    ctx.quadraticCurveTo(x - 62, midY - 18, x - 78, midY + 10);
+    ctx.stroke();
+
+    // right wing
+    ctx.beginPath();
+    ctx.moveTo(x + 10, midY);
+    ctx.quadraticCurveTo(x + 62, midY - 18, x + 78, midY + 10);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawVectorRunner(x, y, w, h, sk, onGround, vy, anim){
+    ctx.save();
+
+    // proportions
+    const torsoH = h * 0.55;
+    const legH = h * 0.42;
+    const headR = 10;
+
+    const torsoTop = y + 6;
+    const torsoBot = torsoTop + torsoH;
+
+    // slight lean forward when boosting
+    const lean = state.boost.active ? -0.12 : -0.06;
+
+    // Glow silhouette
+    ctx.save();
+    ctx.globalAlpha = 0.30;
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = sk.primary;
+    // torso block (silhouette)
+    ctx.translate(x, torsoTop + torsoH/2);
+    ctx.rotate(lean);
+    ctx.fillStyle = "rgba(2,6,23,0.6)";
+    roundRect2(-14, -torsoH/2, 28, torsoH, 10);
+    ctx.fill();
+    ctx.restore();
+
+    // Head
+    const headX = x + 2;
+    const headY = torsoTop + 6;
+    ctx.fillStyle = "rgba(2,6,23,0.92)";
+    ctx.beginPath(); ctx.arc(headX, headY, headR, 0, TAU); ctx.fill();
+    ctx.strokeStyle = sk.primary;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(headX, headY, headR, 0, TAU); ctx.stroke();
+
+    // Face/visor stripe
+    ctx.save();
+    ctx.globalAlpha = 0.85;
+    ctx.strokeStyle = sk.accent;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(headX - 6, headY);
+    ctx.lineTo(headX + 8, headY - 2);
+    ctx.stroke();
+    ctx.restore();
+
+    // Torso
+    ctx.save();
+    ctx.translate(x, torsoTop + torsoH/2);
+    ctx.rotate(lean);
+    ctx.fillStyle = "rgba(2,6,23,0.92)";
+    roundRect2(-14, -torsoH/2, 28, torsoH, 10);
+    ctx.fill();
+    ctx.strokeStyle = sk.primary;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+    // chest highlight
+    ctx.globalAlpha = 0.25;
+    ctx.fillStyle = sk.accent;
+    roundRect2(-10, -torsoH/2 + 10, 20, 14, 8);
+    ctx.fill();
+    ctx.restore();
+
+    // Arms: open in air, pump while running
+    ctx.save();
+    ctx.strokeStyle = sk.accent;
+    ctx.lineWidth = 4;
+    ctx.lineCap = "round";
+
+    const shoulderY = torsoTop + torsoH*0.35;
+    const shoulderX = x;
+
+    if (!onGround){
+      // arms open “wings”
+      ctx.beginPath();
+      ctx.moveTo(shoulderX - 2, shoulderY);
+      ctx.quadraticCurveTo(x - 34, shoulderY - 18, x - 52, shoulderY + 6);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(shoulderX + 2, shoulderY);
+      ctx.quadraticCurveTo(x + 34, shoulderY - 18, x + 52, shoulderY + 6);
+      ctx.stroke();
+    } else {
+      // running arm swing
+      const phase = anim * TAU;
+      const a1 = Math.sin(phase) * 14;
+      const a2 = Math.sin(phase + Math.PI) * 14;
+
+      ctx.beginPath();
+      ctx.moveTo(shoulderX - 4, shoulderY);
+      ctx.lineTo(shoulderX - 18, shoulderY + a1);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(shoulderX + 4, shoulderY);
+      ctx.lineTo(shoulderX + 18, shoulderY + a2);
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    // Legs
+    ctx.save();
+    ctx.strokeStyle = sk.primary;
+    ctx.lineWidth = 5;
+    ctx.lineCap = "round";
+
+    const hipY = torsoBot - 4;
+    const footY = y + h + 10;
+
+    if (!onGround){
+      // tuck knees slightly in air
+      const tuck = clamp((-vy) / 900, 0, 1);
+      ctx.beginPath();
+      ctx.moveTo(x - 6, hipY);
+      ctx.quadraticCurveTo(x - 10, hipY + 14, x - 12, hipY + 18 + tuck*10);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x + 6, hipY);
+      ctx.quadraticCurveTo(x + 10, hipY + 14, x + 12, hipY + 18 + tuck*10);
+      ctx.stroke();
+    } else {
+      const phase = anim * TAU;
+      const swingA = Math.sin(phase) * 16;
+      const swingB = Math.sin(phase + Math.PI) * 16;
+
+      ctx.beginPath();
+      ctx.moveTo(x - 6, hipY);
+      ctx.lineTo(x - 10, footY + swingA);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(x + 6, hipY);
+      ctx.lineTo(x + 10, footY + swingB);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    ctx.restore();
+  }
+
+  function roundRect2(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function drawFX(){
+    for(const p of state.particles){
+      ctx.save();
+      ctx.globalAlpha = clamp(p.life, 0, 1);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.fill();
+      ctx.restore();
+    }
+
+    ctx.save();
+    ctx.font = "12px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+
+    const chips = [];
+    if (effects.shield > 0) chips.push({ label:`🛡 Shield ${effects.shield.toFixed(1)}s`, col: theme.good });
+    if (effects.magnet > 0) chips.push({ label:`🧲 Magnet ${effects.magnet.toFixed(1)}s`, col: theme.neonB });
+
+    let x = 16;
+    let y = 86;
+    for(const ch of chips){
+      const pad = 10;
+      const w = ctx.measureText(ch.label).width + pad*2;
+      const h = 24;
+
+      ctx.fillStyle = "rgba(2,6,23,0.75)";
+      roundRect2(x,y,w,h,12);
+      ctx.fill();
+      ctx.strokeStyle = ch.col;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = theme.text;
+      ctx.fillText(ch.label, x+pad, y+h/2+0.5);
+
+      x += w + 10;
+    }
+    ctx.restore();
+  }
+
+  function drawOverlay(){
+    if (state.mode === "menu"){
+      drawCenterPanel(
+        "NEON RUNNER RUSH",
+        "Tap / Space to jump • Hold to boost • Collect coins • Avoid obstacles\nPress Start to run"
+      );
+    } else if (state.mode === "dead"){
+      drawCenterPanel(
+        "RUN OVER",
+        `Score: ${Math.floor(state.score)}   •   Coins: +${state.sessionCoins}\nTap / Start to play again`
+      );
+    } else if (state.mode === "skins"){
+      drawSkinsUI();
+    }
+  }
+
+  function drawCenterPanel(title, body){
+    ctx.save();
+    ctx.fillStyle = "rgba(2,6,23,0.70)";
+    roundRect2(W*0.12, H*0.20, W*0.76, H*0.46, 18);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(99,102,241,0.45)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = theme.text;
+    ctx.font = "32px system-ui";
+    ctx.fillText(title, W/2, H*0.28);
+
+    ctx.fillStyle = "rgba(203,213,245,0.95)";
+    ctx.font = "14px system-ui";
+    const lines = body.split("\n");
+    for(let i=0;i<lines.length;i++){
+      ctx.fillText(lines[i], W/2, H*0.36 + i*24);
+    }
+
+    ctx.fillStyle = "rgba(156,163,175,0.95)";
+    ctx.font = "12px system-ui";
+    ctx.fillText("Tip: Boost helps you clear tight sequences, but drains energy.", W/2, H*0.52);
+    ctx.restore();
+  }
+
+  // Skins UI layout
+  const skinsUI = { panel:{x:0,y:0,w:0,h:0}, cards:[], btnBuy:null, btnEquip:null };
+
+  function drawSkinsUI(){
+    const panelW = W * 0.80;
+    const panelH = H * 0.62;
+    const px = (W - panelW)/2;
+    const py = H * 0.18;
+
+    skinsUI.panel = { x:px, y:py, w:panelW, h:panelH };
+    skinsUI.cards = [];
+    skinsUI.btnBuy = null;
+    skinsUI.btnEquip = null;
+
+    ctx.save();
+    ctx.fillStyle = "rgba(2,6,23,0.78)";
+    roundRect2(px,py,panelW,panelH,18);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(236,72,153,0.35)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = theme.text;
+    ctx.font = "20px system-ui";
+    ctx.fillText("Skins / Characters", px+20, py+26);
+
+    ctx.fillStyle = "rgba(203,213,245,0.9)";
+    ctx.font = "12px system-ui";
+    ctx.fillText(`Wallet: ${state.coins} coins`, px+20, py+52);
+
+    const cols = 4;
+    const gap = 12;
+    const cardW = (panelW - 20*2 - gap*(cols-1)) / cols;
+    const cardH = 150;
+    const startX = px + 20;
+    const startY = py + 76;
+
+    const sks = state.skins;
+    for(let i=0;i<sks.length;i++){
+      const s = sks[i];
+      const cx = startX + i*(cardW + gap);
+      const cy = startY;
+      const unlocked = state.unlocked.has(s.id);
+      const selected = (state.selectedSkin === s.id);
+
+      ctx.fillStyle = "rgba(15,23,42,0.75)";
+      roundRect2(cx,cy,cardW,cardH,14);
+      ctx.fill();
+      ctx.strokeStyle = selected ? s.primary : "rgba(148,163,184,0.25)";
+      ctx.lineWidth = selected ? 3 : 2;
+      ctx.stroke();
+
+      // mini avatar preview
+      const ax = cx + cardW/2;
+      const ay = cy + 62;
+
+      // show “wing hint” on the preview
+      ctx.save();
+      ctx.globalAlpha = 0.35;
+      ctx.strokeStyle = s.accent;
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(ax - 6, ay);
+      ctx.quadraticCurveTo(ax - 30, ay - 14, ax - 40, ay + 6);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(ax + 6, ay);
+      ctx.quadraticCurveTo(ax + 30, ay - 14, ax + 40, ay + 6);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.fillStyle = "rgba(2,6,23,0.92)";
+      roundRect2(ax-16, ay-24, 32, 50, 12);
+      ctx.fill();
+      ctx.strokeStyle = s.primary;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.globalAlpha = 0.9;
+      roundRect2(ax-11, ay-16, 22, 12, 8);
+      ctx.fillStyle = "rgba(224,242,254,0.12)";
+      ctx.fill();
+      ctx.strokeStyle = s.accent;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = theme.text;
+      ctx.font = "14px system-ui";
+      ctx.fillText(s.name, ax, cy + 118);
+
+      ctx.fillStyle = unlocked ? "rgba(34,197,94,0.95)" : "rgba(250,204,21,0.95)";
+      ctx.font = "12px system-ui";
+      ctx.fillText(unlocked ? "Unlocked" : `${s.price} coins`, ax, cy + 138);
+
+      skinsUI.cards.push({ id:s.id, x:cx, y:cy, w:cardW, h:cardH });
+    }
+
+    const active = currentSkin();
+    const activeUnlocked = state.unlocked.has(active.id);
+
+    const btnY = py + panelH - 58;
+    const btnH = 34;
+
+    const equipLabel = activeUnlocked ? (state.selectedSkin === active.id ? "Equipped" : "Equip") : "Equip (locked)";
+    const equipW = 200;
+    const equipX = px + panelW - equipW - 20;
+
+    drawSmallButton(equipX, btnY, equipW, btnH, equipLabel, activeUnlocked ? active.primary : "rgba(148,163,184,0.35)", activeUnlocked);
+    skinsUI.btnEquip = { x:equipX, y:btnY, w:equipW, h:btnH, enabled: activeUnlocked && state.selectedSkin !== active.id };
+
+    const canBuy = !activeUnlocked && state.coins >= active.price;
+    const buyLabel = activeUnlocked ? "Owned" : (canBuy ? "Unlock" : `Need ${active.price - state.coins} coins`);
+    const buyW = 200;
+    const buyX = equipX - buyW - 12;
+
+    drawSmallButton(buyX, btnY, buyW, btnH, buyLabel, canBuy ? theme.warn : "rgba(148,163,184,0.25)", canBuy);
+    skinsUI.btnBuy = { x:buyX, y:btnY, w:buyW, h:btnH, enabled: canBuy };
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "rgba(203,213,245,0.9)";
+    ctx.font = "12px system-ui";
+    ctx.fillText("Tip: Coins are saved. Unlocks persist across games.", px+20, btnY + btnH/2);
+
+    ctx.restore();
+  }
+
+  function drawSmallButton(x,y,w,h,label,color,enabled){
+    ctx.save();
+    ctx.fillStyle = "rgba(2,6,23,0.75)";
+    roundRect2(x,y,w,h,999);
+    ctx.fill();
+    ctx.strokeStyle = enabled ? color : "rgba(148,163,184,0.25)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = enabled ? theme.text : "rgba(156,163,175,0.85)";
+    ctx.font = "13px system-ui";
+    ctx.fillText(label, x+w/2, y+h/2+0.5);
+    ctx.restore();
+  }
+
+  function handleSkinsClick(x,y){
+    for(const c of skinsUI.cards){
+      if (x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h){
+        state.selectedSkin = c.id;
+        savePersist();
+        return;
+      }
+    }
+
+    if (skinsUI.btnBuy && skinsUI.btnBuy.enabled){
+      const b = skinsUI.btnBuy;
+      if (x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h){
+        const sk = currentSkin();
+        if (!state.unlocked.has(sk.id) && state.coins >= sk.price){
+          state.coins -= sk.price;
+          state.unlocked.add(sk.id);
+          savePersist();
+          puff(W/2, H/2, theme.warn, 18, 1.2);
+        }
+        return;
+      }
+    }
+
+    if (skinsUI.btnEquip && skinsUI.btnEquip.enabled){
+      const b = skinsUI.btnEquip;
+      if (x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h){
+        savePersist();
+        puff(W/2, H/2, currentSkin().primary, 16, 1.1);
+        return;
+      }
+    }
+  }
+
+  // Main loop
+  let last = performance.now();
+  function loop(t){
+    const dt = Math.min(0.033, (t-last)/1000);
+    last = t;
+
+    if (state.mode === "play"){
+      update(dt);
+    }
+
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // Init
+  setHUD();
+  requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>

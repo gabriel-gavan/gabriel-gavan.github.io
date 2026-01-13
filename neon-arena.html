@@ -360,8 +360,8 @@
   window.addEventListener("keyup", (e) => { keys[e.key.toLowerCase()] = false; });
 
   canvas.addEventListener("mousemove", (e) => setMouseFromClient(e.clientX, e.clientY));
-  canvas.addEventListener("mousedown", () => { mouse.down = true; });
-  window.addEventListener("mouseup", () => { mouse.down = false; });
+  //canvas.addEventListener("mousedown", () => { mouse.down = true; });
+  //window.addEventListener("mouseup", () => { mouse.down = false; });
 
   // ---------- Tap handler (desktop + mobile) ----------
   function handleCanvasTap(clientX, clientY) {
@@ -412,7 +412,6 @@ let pStartX = 0, pStartY = 0;
 let pMoved = false;
 
 canvas.addEventListener("pointerdown", (e) => {
-  // If somehow fired from overlay, ignore
   const target = e.target;
   if (target && target.closest && target.closest(".mobile-controls")) return;
 
@@ -424,7 +423,11 @@ canvas.addEventListener("pointerdown", (e) => {
   canvas.setPointerCapture(e.pointerId);
   setMouseFromClient(e.clientX, e.clientY);
 
-  // prevent scroll/zoom gestures interfering
+  // ✅ IMPORTANT: allow desktop mouse hold-to-shoot
+  if (e.pointerType === "mouse" && e.button === 0) {
+    mouse.down = true;
+  }
+
   e.preventDefault();
 }, { passive: false });
 
@@ -444,6 +447,11 @@ canvas.addEventListener("pointerup", (e) => {
   const target = e.target;
   if (target && target.closest && target.closest(".mobile-controls")) return;
 
+  // ✅ stop shooting on mouse release
+  if (e.pointerType === "mouse" && e.button === 0) {
+    mouse.down = false;
+  }
+
   // Treat as TAP only if finger/mouse didn't move much
   if (!pMoved) handleCanvasTap(e.clientX, e.clientY);
 
@@ -451,9 +459,17 @@ canvas.addEventListener("pointerup", (e) => {
   e.preventDefault();
 }, { passive: false });
 
-canvas.addEventListener("pointercancel", () => {
+canvas.addEventListener("pointercancel", (e) => {
   pDown = false;
+  // ✅ safety: stop shooting if canceled
+  if (e && e.pointerType === "mouse") mouse.down = false;
 });
+
+canvas.addEventListener("pointerleave", () => {
+  // ✅ if mouse leaves canvas while held
+  mouse.down = false;
+});
+
 
   // ---------- Mobile controls ----------
   const mobileControls = document.getElementById("mobileControls");
