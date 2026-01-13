@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Neon Auto Battler</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as index.html) -->
+  <script async
+    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+    crossorigin="anonymous"></script>
+
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+
+      /* ✅ IMPORTANT: keep body as normal flow so injected footer stays at bottom */
+      display: block;
+    }
+
+    .page-wrap {
+      display: flex;
+      width: 100%;
+      max-width: 1440px;
+      padding: 12px;
+      gap: 12px;
+
+      /* ✅ centers the whole game frame */
+      margin: 0 auto;
+    }
+
+    .side-banner {
+      flex: 0 0 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      .side-banner { display: none; }
+      .page-wrap { justify-content: center; padding: 10px; }
+    }
+
+    .main-game {
+      flex: 1 1 auto;
+      background: rgba(15,23,42,0.95);
+      border-radius: 16px;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: calc(100vh - 24px);
+    }
+
+    /* Top strip kept for Auto Ads layout (no manual units) */
+    .top-banner {
+      padding: 0.6rem 1.2rem 0.4rem;
+      border-bottom: 1px solid #111827;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+    }
+    .top-banner-inner {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 18px;
+    }
+
+    .game-header {
+      padding: 0.55rem 1.2rem;
+      border-bottom: 1px solid #111827;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
+      font-size: 0.9rem;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .game-header .title {
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .game-header a {
+      color: #e5e7eb;
+      text-decoration: none;
+      font-size: 0.85rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background: rgba(2,6,23,0.35);
+    }
+    .game-header a:hover { border-color: #6366f1; }
+
+    .game-body {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0.75rem 1.2rem 1rem;
+      overflow: auto;
+      gap: 10px;
+    }
+
+    .frame {
+      width: 100%;
+      max-width: 980px;
+      border-radius: 14px;
+      border: 1px solid #334155;
+      background: radial-gradient(circle at top, rgba(2,6,23,0.9), rgba(2,6,23,0.98));
+      box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      height: auto;
+      border-radius: 12px;
+      border: 1px solid #4b5563;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      cursor: pointer;
+      touch-action: none;
+      display: block;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .left-controls, .right-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 1px solid rgba(148,163,184,0.35);
+      background: rgba(2,6,23,0.65);
+      color: #e5e7eb;
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.55);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .btn:hover { border-color: rgba(99,102,241,0.8); }
+    .btn:active { transform: translateY(1px); }
+
+    .pill {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 7px 10px;
+      background: rgba(2,6,23,0.45);
+      color: #cbd5f5;
+      font-size: 12px;
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .hint {
+      width: 100%;
+      max-width: 980px;
+      color: rgba(203,213,245,0.9);
+      font-size: 12px;
+      line-height: 1.35rem;
+      text-align: center;
+      opacity: 0.92;
+    }
+
+    @media (max-width: 700px) {
+      .page-wrap { padding: 8px; gap: 8px; }
+      .top-banner { padding: 0.35rem 0.6rem 0.25rem; }
+      .game-header { padding: 0.5rem 0.7rem; font-size: 0.85rem; }
+      .game-body { padding: 0.55rem 0.7rem 0.85rem; }
+      .btn { width: 100%; justify-content: center; }
+      .controls { gap: 10px; }
+      .left-controls, .right-controls { width: 100%; }
+      .pill { width: 100%; justify-content: space-between; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+  <!-- LEFT COLUMN (kept empty for Auto Ads) -->
+  <aside class="side-banner"></aside>
+
+  <main class="main-game">
+    <div class="top-banner"><div class="top-banner-inner"></div></div>
+
+    <div class="game-header">
+      <div class="title">🧠 Neon Auto Battler <span style="opacity:.65;font-weight:700;">(Mini)</span></div>
+      <div><a href="index.html">⬅ Back to Hub</a></div>
+    </div>
+
+    <div class="game-body">
+      <div class="frame">
+        <canvas id="game" width="960" height="540"></canvas>
+
+        <div class="controls">
+          <div class="left-controls">
+            <button class="btn" id="btnRound">▶ Start Round</button>
+            <button class="btn" id="btnReroll">🔄 Reroll (2g)</button>
+            <button class="btn" id="btnRestart">♻ Restart</button>
+          </div>
+          <div class="right-controls">
+            <div class="pill" id="hudPill">
+              <span>Gold: <b id="hudGold">10</b></span>
+              <span>Round: <b id="hudRound">1</b></span>
+              <span>HP: <b id="hudHP">20</b></span>
+              <span>Shop: <b>Click unit → click tile</b></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hint">
+        <b>How to play:</b> Buy units from the shop (bottom area), place them on your side (lower grid),
+        then press <b>Start Round</b>. Units fight automatically. Combine <b>3 identical</b> units to upgrade (★).
+        <br/>
+        <span style="opacity:.9;">Mobile: tap unit → tap tile. Desktop: click unit → click tile.</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- RIGHT COLUMN (kept empty for Auto Ads) -->
+  <aside class="side-banner"></aside>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const TAU = Math.PI * 2;
+
+  // --- UI / Layout inside canvas ---
+  const PAD = 20;
+  const TOP_H = 70;
+
+  // ✅ FIX 1: Give SHOP more height so title + cards never overlap
+  // (This also helps on smaller screens where text wraps)
+  const SHOP_H = 150;
+
+  const GRID_Y = TOP_H + 10;
+  const GRID_H = H - TOP_H - SHOP_H - 20;
+  const GRID_W = W - PAD*2;
+  const COLS = 7;
+  const ROWS = 4;
+  const CELL = Math.floor(Math.min(GRID_W / COLS, GRID_H / ROWS));
+  const GRID_X = Math.floor((W - CELL * COLS) / 2);
+  const GRID_Y2 = Math.floor(GRID_Y + (GRID_H - CELL * ROWS) / 2);
+
+  const PLAYER_ROWS = [2,3];   // bottom half
+  const ENEMY_ROWS  = [0,1];   // top half
+
+  // --- HUD elements ---
+  const hudGold = document.getElementById("hudGold");
+  const hudRound = document.getElementById("hudRound");
+  const hudHP = document.getElementById("hudHP");
+  const btnRound = document.getElementById("btnRound");
+  const btnReroll = document.getElementById("btnReroll");
+  const btnRestart = document.getElementById("btnRestart");
+
+  // --- Helpers ---
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const dist = (a,b) => Math.hypot(a.x-b.x, a.y-b.y);
+
+  function roundRect(x,y,w,h,r){
+    ctx.beginPath();
+    ctx.moveTo(x+r,y);
+    ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r);
+    ctx.arcTo(x,y+h,x,y,r);
+    ctx.arcTo(x,y,x+w,y,r);
+    ctx.closePath();
+  }
+
+  function cellToXY(c,r){
+    return {
+      x: GRID_X + c*CELL + CELL/2,
+      y: GRID_Y2 + r*CELL + CELL/2
+    };
+  }
+  function xyToCell(x,y){
+    const c = Math.floor((x - GRID_X)/CELL);
+    const r = Math.floor((y - GRID_Y2)/CELL);
+    if (c<0||c>=COLS||r<0||r>=ROWS) return null;
+    const bx = GRID_X + c*CELL;
+    const by = GRID_Y2 + r*CELL;
+    if (x<bx || x>bx+CELL || y<by || y>by+CELL) return null;
+    return {c,r};
+  }
+
+  // --- Game data ---
+  const UNIT_DB = [
+    { id:"spark",  name:"Spark",  color:"#38bdf8", hp:28, atk:7,  spd:1.0, range:110, cost:3, fx:"#38bdf8" },
+    { id:"ember",  name:"Ember",  color:"#f97316", hp:22, atk:10, spd:1.0, range:80,  cost:3, fx:"#f97316" },
+    { id:"viper",  name:"Viper",  color:"#a855f7", hp:18, atk:6,  spd:1.6, range:140, cost:3, fx:"#a855f7" },
+    { id:"bulwark",name:"Bulwark",color:"#22c55e", hp:46, atk:5,  spd:0.8, range:70,  cost:4, fx:"#22c55e" },
+    { id:"nova",   name:"Nova",   color:"#ec4899", hp:20, atk:8,  spd:1.2, range:130, cost:4, fx:"#ec4899" }
+  ];
+
+  function makeUnit(def, team, star=1){
+    const mult = 1 + (star-1)*0.75;
+    return {
+      _id: Math.random().toString(16).slice(2),
+      def,
+      team,
+      star,
+      maxHp: Math.round(def.hp*mult),
+      hp: Math.round(def.hp*mult),
+      atk: Math.round(def.atk*mult),
+      spd: def.spd*(1+(star-1)*0.2),
+      range: def.range*(1+(star-1)*0.1),
+      x: 0, y: 0,
+      cooldown: 0,
+      target: null,
+      alive: true
+    };
+  }
+
+  const state = {
+    mode: "prep", // prep | fight | result
+    round: 1,
+    gold: 10,
+    hp: 20,
+    message: "Buy units, place them, start the round.",
+    selectedShopIndex: null,
+    shop: [],
+    grid: Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null)),
+    enemyGrid: Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null)),
+    fighters: [],
+    projectiles: [],
+    particles: [],
+    resultTimer: 0,
+  };
+
+  function updateHUD(){
+    hudGold.textContent = state.gold;
+    hudRound.textContent = state.round;
+    hudHP.textContent = state.hp;
+  }
+
+  // ✅ FIX 2: Ensure Nova always appears in shop by using a "guaranteed unique" shop roll.
+  // This removes the “Nova not appearing” complaint caused by pure RNG.
+  function rollShop(){
+    const pool = UNIT_DB.slice();
+    // shuffle
+    for(let i=pool.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]] = [pool[j],pool[i]];
+    }
+    // take first 4 unique
+    state.shop = pool.slice(0,4);
+    state.selectedShopIndex = null;
+  }
+
+  function resetAll(){
+    state.mode = "prep";
+    state.round = 1;
+    state.gold = 10;
+    state.hp = 20;
+    state.message = "Buy units, place them, start the round.";
+    state.selectedShopIndex = null;
+    state.grid = Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null));
+    state.enemyGrid = Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null));
+    state.fighters = [];
+    state.projectiles = [];
+    state.particles = [];
+    state.resultTimer = 0;
+    rollShop();
+    updateHUD();
+  }
+
+  // --- Placement rules ---
+  function isPlayerCell(r){ return PLAYER_ROWS.includes(r); }
+  function isEnemyCell(r){ return ENEMY_ROWS.includes(r); }
+
+  function tryAutoUpgrade(defId){
+    let did = true;
+    while(did){
+      did = false;
+
+      // ★★ -> ★★★
+      const twoSpots = [];
+      for(let r=0;r<ROWS;r++){
+        for(let c=0;c<COLS;c++){
+          const u = state.grid[r][c];
+          if (u && u.def.id === defId && u.star === 2) twoSpots.push({r,c});
+        }
+      }
+      if (twoSpots.length >= 3){
+        const keep = twoSpots[0];
+        const a = state.grid[keep.r][keep.c];
+        state.grid[twoSpots[1].r][twoSpots[1].c] = null;
+        state.grid[twoSpots[2].r][twoSpots[2].c] = null;
+        state.grid[keep.r][keep.c] = makeUnit(a.def, "player", 3);
+        did = true;
+        continue;
+      }
+
+      // ★ -> ★★
+      const oneSpots = [];
+      for(let r=0;r<ROWS;r++){
+        for(let c=0;c<COLS;c++){
+          const u = state.grid[r][c];
+          if (u && u.def.id === defId && u.star === 1) oneSpots.push({r,c});
+        }
+      }
+      if (oneSpots.length >= 3){
+        const keep = oneSpots[0];
+        const a = state.grid[keep.r][keep.c];
+        state.grid[oneSpots[1].r][oneSpots[1].c] = null;
+        state.grid[oneSpots[2].r][oneSpots[2].c] = null;
+        state.grid[keep.r][keep.c] = makeUnit(a.def, "player", 2);
+        did = true;
+      }
+    }
+  }
+
+  // --- Enemy generation per round ---
+  function generateEnemyBoard(){
+    state.enemyGrid = Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null));
+
+    const budget = 7 + state.round * 2;
+    let spent = 0;
+    let tries = 0;
+
+    while(spent < budget && tries < 120){
+      tries++;
+      const def = UNIT_DB[Math.floor(Math.random()*UNIT_DB.length)];
+      const cost = def.cost;
+      if (spent + cost > budget) continue;
+
+      const r = ENEMY_ROWS[Math.floor(Math.random()*ENEMY_ROWS.length)];
+      const c = Math.floor(Math.random()*COLS);
+
+      if (state.enemyGrid[r][c]) continue;
+      const star = (state.round >= 6 && Math.random()<0.2) ? 2 : 1;
+      state.enemyGrid[r][c] = makeUnit(def, "enemy", star);
+      spent += cost + (star-1)*2;
+    }
+  }
+
+  // --- Fight setup ---
+  function gatherFighters(){
+    state.fighters = [];
+    // player
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const u = state.grid[r][c];
+        if (u){
+          const pos = cellToXY(c,r);
+          u.x = pos.x; u.y = pos.y;
+          u.hp = u.maxHp;
+          u.alive = true;
+          u.cooldown = 0;
+          u.target = null;
+          state.fighters.push(u);
+        }
+      }
+    }
+    // enemy
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const u = state.enemyGrid[r][c];
+        if (u){
+          const pos = cellToXY(c,r);
+          u.x = pos.x; u.y = pos.y;
+          u.hp = u.maxHp;
+          u.alive = true;
+          u.cooldown = 0;
+          u.target = null;
+          state.fighters.push(u);
+        }
+      }
+    }
+  }
+
+  function anyTeamAlive(team){
+    return state.fighters.some(u => u.alive && u.team === team);
+  }
+
+  // --- Combat ---
+  function shoot(from, to){
+    const ang = Math.atan2(to.y-from.y, to.x-from.x);
+    const spd = 520;
+    state.projectiles.push({
+      x: from.x,
+      y: from.y,
+      vx: Math.cos(ang)*spd,
+      vy: Math.sin(ang)*spd,
+      r: 4,
+      life: 1.1,
+      team: from.team,
+      color: from.def.fx,
+      dmg: from.atk
+    });
+
+    // muzzle fx
+    for(let i=0;i<10;i++){
+      const a = Math.random()*TAU;
+      const s = 30 + Math.random()*140;
+      state.particles.push({
+        x: from.x + Math.cos(ang)*12,
+        y: from.y + Math.sin(ang)*12,
+        vx: Math.cos(a)*s,
+        vy: Math.sin(a)*s,
+        life: 0.25 + Math.random()*0.25,
+        r: 1.4 + Math.random()*2.4,
+        color: from.def.fx
+      });
+    }
+  }
+
+  function updateFight(dt){
+    // units AI
+    for(const u of state.fighters){
+      if(!u.alive) continue;
+
+      // acquire target
+      if(!u.target || !u.target.alive || u.target.team === u.team){
+        let best = null;
+        let bestD = Infinity;
+        for(const other of state.fighters){
+          if(!other.alive) continue;
+          if(other.team === u.team) continue;
+          const d = Math.hypot(other.x-u.x, other.y-u.y);
+          if(d < bestD){
+            bestD = d;
+            best = other;
+          }
+        }
+        u.target = best;
+      }
+
+      if(!u.target) continue;
+
+      const d = Math.hypot(u.target.x-u.x, u.target.y-u.y);
+
+      // move
+      const want = Math.max(0, d - (u.range*0.75));
+      if(want > 10){
+        const dx = (u.target.x-u.x) / (d||1);
+        const dy = (u.target.y-u.y) / (d||1);
+        const speed = 60 * u.spd;
+        u.x += dx*speed*dt;
+        u.y += dy*speed*dt;
+      }
+
+      // shoot
+      u.cooldown -= dt;
+      if(d <= u.range && u.cooldown <= 0){
+        shoot(u, u.target);
+        u.cooldown = 0.85 / u.spd;
+      }
+    }
+
+    // projectiles
+    for(let i=state.projectiles.length-1;i>=0;i--){
+      const p = state.projectiles[i];
+      p.x += p.vx*dt;
+      p.y += p.vy*dt;
+      p.life -= dt;
+      if(p.life <= 0){
+        state.projectiles.splice(i,1);
+        continue;
+      }
+
+      // hit nearest opposite team
+      let hit = null;
+      for(const u of state.fighters){
+        if(!u.alive) continue;
+        if(u.team === p.team) continue;
+        const d = Math.hypot(u.x-p.x, u.y-p.y);
+        if(d < 14){
+          hit = u;
+          break;
+        }
+      }
+      if(hit){
+        hit.hp -= p.dmg;
+
+        // hit fx
+        for(let k=0;k<18;k++){
+          const a = Math.random()*TAU;
+          const s = 60 + Math.random()*180;
+          state.particles.push({
+            x: p.x, y: p.y,
+            vx: Math.cos(a)*s,
+            vy: Math.sin(a)*s,
+            life: 0.25 + Math.random()*0.35,
+            r: 1.2 + Math.random()*2.5,
+            color: p.color
+          });
+        }
+
+        if(hit.hp <= 0){
+          hit.alive = false;
+          for(let k=0;k<26;k++){
+            const a = Math.random()*TAU;
+            const s = 80 + Math.random()*240;
+            state.particles.push({
+              x: hit.x, y: hit.y,
+              vx: Math.cos(a)*s,
+              vy: Math.sin(a)*s,
+              life: 0.35 + Math.random()*0.45,
+              r: 1.5 + Math.random()*3.2,
+              color: hit.def.fx
+            });
+          }
+        }
+
+        state.projectiles.splice(i,1);
+      }
+    }
+
+    // particles
+    for(let i=state.particles.length-1;i>=0;i--){
+      const p = state.particles[i];
+      p.x += p.vx*dt;
+      p.y += p.vy*dt;
+      p.vx *= 0.92;
+      p.vy *= 0.92;
+      p.life -= dt;
+      if(p.life <= 0) state.particles.splice(i,1);
+    }
+
+    // end
+    const playerAlive = anyTeamAlive("player");
+    const enemyAlive = anyTeamAlive("enemy");
+    if(!playerAlive || !enemyAlive){
+      state.mode = "result";
+      state.resultTimer = 1.0;
+      if(playerAlive && !enemyAlive){
+        state.message = "✅ Victory! +5 gold";
+        state.gold += 5;
+      } else {
+        state.message = "❌ Defeat! -1 HP";
+        state.hp -= 1;
+      }
+      updateHUD();
+    }
+  }
+
+  function startRound(){
+    let any = false;
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        if(state.grid[r][c]) { any = true; break; }
+      }
+      if(any) break;
+    }
+    if(!any){
+      state.message = "Place at least 1 unit before starting!";
+      return;
+    }
+
+    generateEnemyBoard();
+    gatherFighters();
+    state.projectiles = [];
+    state.particles = [];
+    state.mode = "fight";
+    state.message = "Fight!";
+  }
+
+  function nextPrep(){
+    if(state.hp <= 0){
+      state.message = "💥 Game over. Press Restart.";
+      state.mode = "prep";
+      return;
+    }
+    state.round += 1;
+    state.gold += 3;
+    rollShop();
+    state.selectedShopIndex = null;
+    state.mode = "prep";
+    state.message = "Buy & place units. Combine 3 identical to upgrade.";
+    updateHUD();
+  }
+
+  // --- Buying / placing ---
+  function buyUnit(shopIndex){
+    const def = state.shop[shopIndex];
+    if(!def) return;
+
+    if(state.gold < def.cost){
+      state.message = "Not enough gold.";
+      return;
+    }
+    state.selectedShopIndex = shopIndex;
+    state.message = `Selected: ${def.name}. Tap a bottom tile to place.`;
+  }
+
+  function placeSelectedOn(cell){
+    const def = state.shop[state.selectedShopIndex];
+    if(!def) return;
+
+    if(!isPlayerCell(cell.r)){
+      state.message = "Place units on your side (bottom grid).";
+      return;
+    }
+    if(state.grid[cell.r][cell.c]){
+      state.message = "Tile occupied.";
+      return;
+    }
+    if(state.gold < def.cost){
+      state.message = "Not enough gold.";
+      return;
+    }
+
+    state.gold -= def.cost;
+    state.grid[cell.r][cell.c] = makeUnit(def, "player", 1);
+
+    tryAutoUpgrade(def.id);
+
+    // remove from shop slot
+    state.shop[state.selectedShopIndex] = null;
+    state.selectedShopIndex = null;
+
+    state.message = "Placed. Buy more or start round.";
+    updateHUD();
+  }
+
+  function reroll(){
+    if(state.gold < 2){
+      state.message = "Need 2 gold to reroll.";
+      return;
+    }
+    state.gold -= 2;
+    rollShop();
+    state.message = "Shop rerolled.";
+    updateHUD();
+  }
+
+  // --- Input ---
+  function getPos(e){
+    const r = canvas.getBoundingClientRect();
+    const sx = canvas.width / r.width;
+    const sy = canvas.height / r.height;
+    return {
+      x: (e.clientX - r.left) * sx,
+      y: (e.clientY - r.top) * sy
+    };
+  }
+
+  canvas.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const p = getPos(e);
+
+    // shop area
+    const shopTop = H - SHOP_H;
+
+    if(p.y >= shopTop){
+      const slots = getShopSlots();
+      for(let i=0;i<slots.length;i++){
+        const s = slots[i];
+        if(p.x >= s.x && p.x <= s.x+s.w && p.y >= s.y && p.y <= s.y+s.h){
+          if(state.mode !== "prep"){ state.message = "Shop is disabled during fights."; return; }
+          if(state.shop[i]) buyUnit(i);
+          return;
+        }
+      }
+    }
+
+    // grid placement
+    const cell = xyToCell(p.x,p.y);
+    if(cell && state.mode === "prep" && state.selectedShopIndex != null){
+      placeSelectedOn(cell);
+      return;
+    }
+  }, {passive:false});
+
+  // --- Buttons ---
+  btnRound.addEventListener("click", () => {
+    if(state.mode === "prep") startRound();
+    else if(state.mode === "fight") state.message = "Round in progress...";
+    else if(state.mode === "result") nextPrep();
+  });
+
+  btnReroll.addEventListener("click", () => {
+    if(state.mode !== "prep"){ state.message = "Reroll only in prep."; return; }
+    reroll();
+  });
+
+  btnRestart.addEventListener("click", resetAll);
+
+  // --- Drawing ---
+  function drawBackground(){
+    ctx.save();
+    ctx.fillStyle = "#020617";
+    ctx.fillRect(0,0,W,H);
+
+    ctx.globalAlpha = 0.15;
+    ctx.strokeStyle = "#111827";
+    ctx.lineWidth = 1;
+    const gs = 40;
+    for(let x=0;x<=W;x+=gs){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for(let y=0;y<=H;y+=gs){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  function drawTopBar(){
+    ctx.save();
+    ctx.fillStyle = "rgba(15,23,42,0.92)";
+    ctx.fillRect(0,0,W,TOP_H);
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0,TOP_H); ctx.lineTo(W,TOP_H); ctx.stroke();
+
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "18px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Neon Auto Battler", 18, 26);
+
+    ctx.fillStyle = "#9ca3af";
+    ctx.font = "12px system-ui";
+    ctx.fillText(state.message, 18, 52);
+
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "12px system-ui";
+    ctx.fillText(`Gold ${state.gold}  •  Round ${state.round}  •  HP ${state.hp}`, W - 18, 26);
+
+    ctx.restore();
+  }
+
+  function drawBoard(){
+    ctx.save();
+    const bx = GRID_X-8, by = GRID_Y2-8, bw = CELL*COLS+16, bh = CELL*ROWS+16;
+
+    const grad = ctx.createLinearGradient(bx,by,bx+bw,by+bh);
+    grad.addColorStop(0,"rgba(79,70,229,0.18)");
+    grad.addColorStop(1,"rgba(236,72,153,0.10)");
+    ctx.fillStyle = grad;
+    roundRect(bx,by,bw,bh,14);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(148,163,184,0.25)";
+    ctx.lineWidth = 2;
+    roundRect(bx,by,bw,bh,14);
+    ctx.stroke();
+
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const x = GRID_X + c*CELL;
+        const y = GRID_Y2 + r*CELL;
+
+        const isP = isPlayerCell(r);
+        const isE = isEnemyCell(r);
+
+        ctx.save();
+        ctx.fillStyle = isP ? "rgba(34,197,94,0.07)" : isE ? "rgba(239,68,68,0.06)" : "rgba(2,6,23,0.35)";
+        ctx.fillRect(x,y,CELL,CELL);
+
+        ctx.strokeStyle = "rgba(15,23,42,0.85)";
+        ctx.strokeRect(x,y,CELL,CELL);
+        ctx.restore();
+      }
+    }
+
+    ctx.fillStyle = "rgba(203,213,245,0.85)";
+    ctx.font = "11px system-ui";
+    ctx.textAlign = "left";
+    ctx.fillText("ENEMY", GRID_X, GRID_Y2 - 10);
+    ctx.textAlign = "right";
+    ctx.fillText("YOU", GRID_X + CELL*COLS, GRID_Y2 + CELL*ROWS + 18);
+
+    ctx.restore();
+  }
+
+  function drawUnit(u){
+    if(!u || !u.alive) return;
+    ctx.save();
+
+    // glow
+    const glow = ctx.createRadialGradient(u.x,u.y,0,u.x,u.y,36);
+    glow.addColorStop(0, "rgba(99,102,241,0.25)");
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = glow;
+    ctx.beginPath(); ctx.arc(u.x,u.y,34,0,TAU); ctx.fill();
+
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = "rgba(2,6,23,0.9)";
+    ctx.beginPath(); ctx.arc(u.x,u.y,18,0,TAU); ctx.fill();
+
+    ctx.strokeStyle = u.def.color;
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(u.x,u.y,18,0,TAU); ctx.stroke();
+
+    // stars
+    ctx.fillStyle = "#e5e7eb";
+    ctx.font = "11px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    const stars = u.star === 1 ? "★" : u.star === 2 ? "★★" : "★★★";
+    ctx.fillText(stars, u.x, u.y - 26);
+
+    // hp
+    const w = 34, h = 4;
+    const ratio = clamp(u.hp/u.maxHp,0,1);
+    ctx.fillStyle = "#020617";
+    ctx.fillRect(u.x - w/2, u.y + 22, w, h);
+    ctx.fillStyle = ratio > 0.5 ? "#22c55e" : ratio > 0.25 ? "#facc15" : "#f97316";
+    ctx.fillRect(u.x - w/2, u.y + 22, w*ratio, h);
+
+    // team dot
+    ctx.fillStyle = u.team === "player" ? "rgba(34,197,94,0.9)" : "rgba(239,68,68,0.9)";
+    ctx.beginPath(); ctx.arc(u.x+18, u.y-18, 5, 0, TAU); ctx.fill();
+
+    ctx.restore();
+  }
+
+  // ✅ FIX 3: Place shop title ABOVE cards, and cards begin lower.
+  function getShopSlots(){
+    const y0 = H - SHOP_H;
+
+    // title row height
+    const titleH = 26;
+
+    // cards start after title row + padding
+    const shopTop = y0 + titleH + 10;
+
+    const cardH = SHOP_H - titleH - 22;
+    const gap = 10;
+    const count = 4;
+
+    const totalW = Math.min(W - 40, 860);
+    const cardW = Math.floor((totalW - gap*(count-1)) / count);
+    const startX = Math.floor((W - (cardW*count + gap*(count-1))) / 2);
+
+    const slots = [];
+    for(let i=0;i<count;i++){
+      slots.push({
+        x: startX + i*(cardW+gap),
+        y: shopTop,
+        w: cardW,
+        h: cardH
+      });
+    }
+    return slots;
+  }
+
+  function drawShop(){
+    ctx.save();
+    const y0 = H - SHOP_H;
+
+    ctx.fillStyle = "rgba(15,23,42,0.92)";
+    ctx.fillRect(0,y0,W,SHOP_H);
+    ctx.strokeStyle = "#0f172a";
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(W,y0); ctx.stroke();
+
+    // title row
+    ctx.fillStyle = "#cbd5f5";
+    ctx.font = "12px system-ui";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.fillText("SHOP (tap to select)", 18, y0 + 14);
+
+    const slots = getShopSlots();
+    for(let i=0;i<slots.length;i++){
+      const s = slots[i];
+      const def = state.shop[i];
+      const selected = (state.selectedShopIndex === i);
+
+      ctx.save();
+      const grad = ctx.createLinearGradient(s.x,s.y,s.x+s.w,s.y+s.h);
+      grad.addColorStop(0, "rgba(2,6,23,0.85)");
+      grad.addColorStop(1, selected ? "rgba(30,64,175,0.55)" : "rgba(15,23,42,0.75)");
+      ctx.fillStyle = grad;
+      ctx.strokeStyle = selected ? "#60a5fa" : "rgba(148,163,184,0.25)";
+      ctx.lineWidth = 2;
+      roundRect(s.x,s.y,s.w,s.h,12);
+      ctx.fill(); ctx.stroke();
+
+      if(def){
+        const cx = s.x + 26, cy = s.y + 28;
+        ctx.fillStyle = "rgba(2,6,23,0.9)";
+        ctx.beginPath(); ctx.arc(cx,cy,16,0,TAU); ctx.fill();
+        ctx.strokeStyle = def.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(cx,cy,16,0,TAU); ctx.stroke();
+
+        ctx.fillStyle = "#e5e7eb";
+        ctx.font = "14px system-ui";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "top";
+        ctx.fillText(def.name, s.x + 52, s.y + 14);
+
+        ctx.fillStyle = "#9ca3af";
+        ctx.font = "11px system-ui";
+        ctx.fillText(`HP ${def.hp}  •  ATK ${def.atk}`, s.x + 52, s.y + 34);
+        ctx.fillText(`Range ${def.range}  •  SPD ${def.spd.toFixed(1)}`, s.x + 52, s.y + 50);
+
+        ctx.textAlign = "right";
+        ctx.fillStyle = "#facc15";
+        ctx.font = "12px system-ui";
+        ctx.fillText(`${def.cost}g`, s.x + s.w - 12, s.y + 16);
+
+        if(selected){
+          ctx.textAlign = "center";
+          ctx.fillStyle = "rgba(224,242,254,0.9)";
+          ctx.font = "11px system-ui";
+          ctx.fillText("Tap a bottom tile to place", s.x + s.w/2, s.y + s.h - 18);
+        }
+      } else {
+        ctx.fillStyle = "rgba(148,163,184,0.35)";
+        ctx.font = "12px system-ui";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Sold", s.x + s.w/2, s.y + s.h/2);
+      }
+
+      ctx.restore();
+    }
+
+    ctx.restore();
+  }
+
+  function drawProjectiles(){
+    for(const p of state.projectiles){
+      ctx.save();
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawParticles(){
+    for(const p of state.particles){
+      ctx.save();
+      ctx.globalAlpha = clamp(p.life,0,1);
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function drawPrepUnits(){
+    for(let r=0;r<ROWS;r++){
+      for(let c=0;c<COLS;c++){
+        const u = state.grid[r][c];
+        if(!u) continue;
+        const pos = cellToXY(c,r);
+        u.x = pos.x; u.y = pos.y;
+        u.alive = true;
+        drawUnit(u);
+      }
+    }
+  }
+
+  function drawEnemyPreview(){
+    ctx.save();
+    ctx.globalAlpha = 0.08;
+    for(let r of ENEMY_ROWS){
+      for(let c=0;c<COLS;c++){
+        const pos = cellToXY(c,r);
+        ctx.fillStyle = "#f43f5e";
+        ctx.beginPath(); ctx.arc(pos.x,pos.y,14,0,TAU); ctx.fill();
+      }
+    }
+    ctx.restore();
+  }
+
+  function drawFightUnits(){
+    for(const u of state.fighters){
+      drawUnit(u);
+    }
+  }
+
+  function drawOverlayIfNeeded(){
+    if(state.mode === "result"){
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.75)";
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = "#e5e7eb";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "28px system-ui";
+      ctx.fillText(
+        state.message.includes("Victory") ? "VICTORY!" :
+        state.message.includes("Defeat") ? "DEFEAT!" : "ROUND END",
+        W/2, H/2 - 30
+      );
+      ctx.font = "14px system-ui";
+      ctx.fillStyle = "#cbd5f5";
+      ctx.fillText("Press Next Round to continue to next round", W/2, H/2 + 10);
+      ctx.restore();
+    }
+    if(state.hp <= 0){
+      ctx.save();
+      ctx.fillStyle = "rgba(15,23,42,0.82)";
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = "#f97373";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "28px system-ui";
+      ctx.fillText("GAME OVER", W/2, H/2 - 20);
+      ctx.fillStyle = "#e5e7eb";
+      ctx.font = "14px system-ui";
+      ctx.fillText("Press Restart to try again", W/2, H/2 + 18);
+      ctx.restore();
+    }
+  }
+
+  function draw(){
+    drawBackground();
+    drawTopBar();
+    drawBoard();
+
+    if(state.mode === "prep"){
+      drawEnemyPreview();
+      drawPrepUnits();
+    } else {
+      drawProjectiles();
+      drawFightUnits();
+      drawParticles();
+    }
+
+    drawShop();
+    drawOverlayIfNeeded();
+  }
+
+  // --- Main loop ---
+  let last = performance.now();
+  function loop(t){
+    const dt = Math.min(0.033, (t-last)/1000);
+    last = t;
+
+    if(state.mode === "fight"){
+      updateFight(dt);
+    } else if(state.mode === "result"){
+      state.resultTimer -= dt;
+      if(state.resultTimer <= 0) state.resultTimer = 0;
+
+      for(let i=state.particles.length-1;i>=0;i--){
+        const p = state.particles[i];
+        p.x += p.vx*dt;
+        p.y += p.vy*dt;
+        p.vx *= 0.92;
+        p.vy *= 0.92;
+        p.life -= dt;
+        if(p.life<=0) state.particles.splice(i,1);
+      }
+    }
+
+    if(state.mode === "prep") btnRound.textContent = "▶ Start Round";
+    else if(state.mode === "fight") btnRound.textContent = "⏳ Fighting...";
+    else if(state.mode === "result") btnRound.textContent = "➡ Next Round";
+
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // --- Init ---
+  resetAll();
+  requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+<script src="footer.js"></script>
+</html>
