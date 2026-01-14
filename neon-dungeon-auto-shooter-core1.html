@@ -408,31 +408,24 @@ const TAU = Math.PI * 2;
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.65;
       this.master.connect(this.ctx.destination);
-
-      // simple ambient "music" (safe: starts only after user gesture)
-      this.musicGain = this.ctx.createGain();
-      this.musicGain.gain.value = 0.10;
-      this.musicGain.connect(this.master);
-
-      this.musicOsc = this.ctx.createOscillator();
-      this.musicOsc.type = "sine";
-      this.musicOsc.frequency.value = 110;
-      const lfo = this.ctx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.14;
-      const lfoGain = this.ctx.createGain();
-      lfoGain.gain.value = 26;
-      lfo.connect(lfoGain);
-      lfoGain.connect(this.musicOsc.frequency);
-
-      this.musicOsc.connect(this.musicGain);
-      this.musicOsc.start();
-      lfo.start();
+      // Note: background ambience is handled via an HTMLAudioElement (looped WAV) to avoid oscillator buzz.
     },
     setEnabled(v){
       this.enabled = v;
-      if (!this.ctx) return;
-      this.master.gain.value = v ? 0.65 : 0.0;
+      if (this.ctx && this.master){
+        this.master.gain.value = v ? 0.65 : 0.0;
+      }
+      // Ambient loop (WAV) sync
+      if (window.__ndsAmbient){
+        try{
+          if (v){
+            window.__ndsAmbient.play().catch(()=>{});
+          } else {
+            window.__ndsAmbient.pause();
+            window.__ndsAmbient.currentTime = 0;
+          }
+        }catch(e){}
+      }
     },
     beep(freq=440, dur=0.06, type="square", gain=0.16){
       if (!this.enabled) return;
@@ -469,6 +462,25 @@ const TAU = Math.PI * 2;
       this.beep(110, 0.14, "sine", 0.20);
     }
   };
+
+  // ============= Ambient loop (WAV) =============
+  // Place `neon_dungeon_ambient.wav` next to this HTML file.
+  const __ambient = new Audio("neon_dungeon_ambient.mp3");
+  __ambient.loop = true;
+  __ambient.preload = "auto";
+  __ambient.volume = 0.32;
+  // expose for audio.setEnabled()
+  window.__ndsAmbient = __ambient;
+
+  function __ensureAmbient(){
+    if (!window.__ndsAmbient) return;
+    if (audio.enabled){
+      window.__ndsAmbient.play().catch(()=>{});
+    } else {
+      window.__ndsAmbient.pause();
+      window.__ndsAmbient.currentTime = 0;
+    }
+  }
 
   // ============= Persistence =============
   const KEY_META = "nds_meta_v1";
@@ -1232,8 +1244,9 @@ state.kills = 0;
 
   canvas.addEventListener("pointerdown", (e)=>{
     e.preventDefault();
-    audio.init(); // user gesture => allow audio
+    audio.init();
     audio.setEnabled(audio.enabled);
+    __ensureAmbient();
 
     const p = getPos(e);
     state.pointer.down = true;
