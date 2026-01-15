@@ -7,6 +7,8 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as your hub & other games) -->
 <script async="" crossorigin="anonymous" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"></script>
+
+
 <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -263,7 +265,11 @@ ins.adsbygoogle,
 <aside class="side-banner"></aside>
 </div>
 <script>
-
+// ===== Background Music (MP3) =====
+const bgMusic = new Audio("neon_dungeon_ambient.mp3");
+bgMusic.loop = true;
+bgMusic.volume = 0.35;
+bgMusic.preload = "auto";
 
 
   // ===== Canvas bootstrap =====
@@ -408,24 +414,16 @@ const TAU = Math.PI * 2;
       this.master = this.ctx.createGain();
       this.master.gain.value = 0.65;
       this.master.connect(this.ctx.destination);
-      // Note: background ambience is handled via an HTMLAudioElement (looped WAV) to avoid oscillator buzz.
+
+      // simple ambient "music" (safe: starts only after user gesture)
+      
     },
     setEnabled(v){
       this.enabled = v;
-      if (this.ctx && this.master){
-        this.master.gain.value = v ? 0.65 : 0.0;
-      }
-      // Ambient loop (WAV) sync
-      if (window.__ndsAmbient){
-        try{
-          if (v){
-            window.__ndsAmbient.play().catch(()=>{});
-          } else {
-            window.__ndsAmbient.pause();
-            window.__ndsAmbient.currentTime = 0;
-          }
-        }catch(e){}
-      }
+      if (!this.ctx) return;
+      this.master.gain.value = v ? 0.65 : 0.0;
+	  if (!v) this.ctx.suspend();
+		else this.ctx.resume();
     },
     beep(freq=440, dur=0.06, type="square", gain=0.16){
       if (!this.enabled) return;
@@ -445,9 +443,14 @@ const TAU = Math.PI * 2;
       this.beep(90, 0.09, "sine", 0.22);
     },
     shoot(){
-      this.beep(650, 0.04, "square", 0.14);
-      this.beep(420, 0.05, "sawtooth", 0.05);
-    },
+	  if (!this.enabled || !this.ctx) return;
+
+	  const now = performance.now();
+	  if (now - this._lastShootSfx < 120) return; // ⬅️ CRITICAL
+	  this._lastShootSfx = now;
+
+	  this.beep(650, 0.035, "square", 0.12);
+	},
     pickup(){
       this.beep(880, 0.06, "triangle", 0.12);
       this.beep(1320, 0.05, "sine", 0.08);
@@ -462,25 +465,6 @@ const TAU = Math.PI * 2;
       this.beep(110, 0.14, "sine", 0.20);
     }
   };
-
-  // ============= Ambient loop (WAV) =============
-  // Place `neon_dungeon_ambient.wav` next to this HTML file.
-  const __ambient = new Audio("neon_dungeon_ambient.mp3");
-  __ambient.loop = true;
-  __ambient.preload = "auto";
-  __ambient.volume = 0.32;
-  // expose for audio.setEnabled()
-  window.__ndsAmbient = __ambient;
-
-  function __ensureAmbient(){
-    if (!window.__ndsAmbient) return;
-    if (audio.enabled){
-      window.__ndsAmbient.play().catch(()=>{});
-    } else {
-      window.__ndsAmbient.pause();
-      window.__ndsAmbient.currentTime = 0;
-    }
-  }
 
   // ============= Persistence =============
   const KEY_META = "nds_meta_v1";
@@ -685,14 +669,21 @@ const TAU = Math.PI * 2;
   };
 
   function roomIsSafeToShop(){
-    if (state.mode !== "play") return false;
-    const room = roomAt(state.roomX, state.roomY);
-    return !!room && !!room.cleared && state.enemies.length === 0;
-  }
+  // Shopping is allowed when the current room is cleared and there are no living enemies.
+  // This must work while the Meta Shop is open (state.mode may be "meta").
+  const room = roomAt(state.roomX, state.roomY);
+  return !!room && !!room.cleared && state.enemies.length === 0;
+}
 
   function spendGold(cost){
-    if (state.gold < cost) { audio.hurt(); floater(state.player.x, state.player.y-22, "Not enough gold", theme.warn); return false; }
+    const p = state.player || { x: W/2, y: H/2 };
+    if (state.gold < cost){
+      audio.hurt();
+      floater(p.x, p.y-22, "Not enough gold", theme.warn);
+      return false;
+    }
     state.gold -= cost;
+    setHUD();
     return true;
   }
 
@@ -738,6 +729,7 @@ const TAU = Math.PI * 2;
       const before = p.hp;
       p.hp = clamp(p.hp + 25, 0, p.hpMax);
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `+${Math.floor(p.hp - before)} HP (-${cost}g)`, theme.good);
       return;
     }
@@ -748,6 +740,7 @@ const TAU = Math.PI * 2;
       const gained = Math.max(0, p.hpMax - p.hp);
       p.hp = p.hpMax;
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `Full Heal +${Math.floor(gained)} (-${cost}g)`, theme.good);
       return;
     }
@@ -758,6 +751,7 @@ const TAU = Math.PI * 2;
       state.runShop.hpUp += 1;
       applyRunShopBuffsToPlayer(p);
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `Max HP +10 (-${cost}g)`, theme.good);
       return;
     }
@@ -767,6 +761,7 @@ const TAU = Math.PI * 2;
       if (!spendGold(cost)) return;
       state.runShop.dmgUp += 1;
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `Damage +2 (-${cost}g)`, theme.neonA);
       return;
     }
@@ -776,6 +771,7 @@ const TAU = Math.PI * 2;
       if (!spendGold(cost)) return;
       state.runShop.rateUp += 1;
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `Fire rate +5% (-${cost}g)`, theme.neonB);
       return;
     }
@@ -785,6 +781,7 @@ const TAU = Math.PI * 2;
       if (!spendGold(cost)) return;
       state.runShop.wpnUp += 1;
       audio.pickup();
+      setHUD();
       floater(p.x, p.y-22, `Weapon Upgrade Lv${state.runShop.wpnUp} (-${cost}g)`, theme.warn);
       return;
     }
@@ -808,6 +805,7 @@ const TAU = Math.PI * 2;
       }
       best.weapon = rollWeapon();
       audio.pickup();
+      setHUD();
       floater(best.x, best.y-20, "Rerolled!", theme.warn);
       return;
     }
@@ -1111,29 +1109,78 @@ const TAU = Math.PI * 2;
     return 6 + level*5; // gems cost
   }
 
+  
+
+
+  // Spend gems preferring run-earned gems first, then banked gems.
+  // Matches HUD: meta.gems + state.gemsRun
+  function spendGems(cost){
+    const p = state.player || { x: W/2, y: H/2 };
+    const run = (typeof state.gemsRun === "number") ? state.gemsRun : 0;
+    const bank = (typeof meta.gems === "number") ? meta.gems : 0;
+
+    if (run + bank < cost){
+      audio.hurt();
+      floater(p.x, p.y-22, "Not enough diamonds", theme.warn);
+      return false;
+    }
+
+    const useRun = Math.min(run, cost);
+    state.gemsRun = run - useRun;
+    meta.gems = bank - (cost - useRun);
+
+    saveMeta();
+    setHUD();
+    return true;
+  }
+
   function buyUpgrade(kind){
     const level = kind==="hp" ? meta.up_hp : kind==="dmg" ? meta.up_dmg : meta.up_rate;
     const cost = costFor(level);
-    if (meta.gems < cost) { audio.hurt(); return; }
-    meta.gems -= cost;
+    if (!spendGems(cost)) return;
+
     if (kind==="hp") meta.up_hp += 1;
     if (kind==="dmg") meta.up_dmg += 1;
     if (kind==="rate") meta.up_rate += 1;
+
+    // Apply immediately to the CURRENT run so the player sees the effect right away.
+    const p = state.player;
+    if (p){
+      if (kind==="hp"){
+        const ch = CHARACTERS.find(c=>c.id===p.char) || CHARACTERS[0];
+        const newMax = (ch.baseHP + meta.up_hp*15);
+        const delta = newMax - p.hpMax;
+        p.hpMax = newMax;
+        p.hp = clamp(p.hp + delta, 0, p.hpMax);
+        floater(p.x, p.y-22, "+Max HP (Meta)", theme.good);
+      } else {
+        const base = WEAPON_BASE.find(w=>w.id===p.weapon.id) || WEAPON_BASE[0];
+        const rar = RARITIES.find(r=>r.id===p.weapon.rarity) || RARITIES[0];
+        p.weapon = makeWeapon(rar, base);
+        floater(p.x, p.y-22, "Weapon updated (Meta)", theme.good);
+      }
+    }
+
     saveMeta();
     audio.pickup();
+    setHUD();
   }
 
   function unlockChar(charId){
     if (meta.charUnlocked[charId]) return;
     const cost = 18; // gems
-    if (meta.gems < cost) { audio.hurt(); return; }
-    meta.gems -= cost;
+    if (!spendGems(cost)) return;
+
     meta.charUnlocked[charId] = true;
     saveMeta();
     audio.pickup();
+
+    const p = state.player || { x: W/2, y: H/2 };
+    floater(p.x, p.y-22, "Character unlocked!", theme.good);
+    setHUD();
   }
 
-  // ============= Leaderboards (Local) =============
+// ============= Leaderboards (Local) =============
   function recordRun(){
     const roomBest = state.roomN;
     const gemGain = state.gemsRun;
@@ -1244,9 +1291,12 @@ state.kills = 0;
 
   canvas.addEventListener("pointerdown", (e)=>{
     e.preventDefault();
-    audio.init();
+    audio.init(); // user gesture => allow audio
+	if (audio.enabled && bgMusic.paused) {
+	  bgMusic.play().catch(()=>{});
+	}
+
     audio.setEnabled(audio.enabled);
-    __ensureAmbient();
 
     const p = getPos(e);
     state.pointer.down = true;
@@ -1364,12 +1414,19 @@ state.kills = 0;
   });
 
   btnSound.addEventListener("click", ()=>{
-    audio.init();
-    audio.enabled = !audio.enabled;
-    audio.setEnabled(audio.enabled);
-    btnSound.textContent = audio.enabled ? "🔊 Sound: On" : "🔇 Sound: Off";
-    audio.pickup();
-  });
+  audio.init();
+  audio.enabled = !audio.enabled;
+  audio.setEnabled(audio.enabled);
+
+  if (audio.enabled) {
+    bgMusic.play().catch(()=>{});
+  } else {
+    bgMusic.pause();
+  }
+
+  btnSound.textContent = audio.enabled ? "🔊 Sound: On" : "🔇 Sound: Off";
+});
+
 
   // ============= Core Loop =============
   function setHUD(){
@@ -2216,7 +2273,7 @@ function drawOverlays(){
 
     ctx.fillStyle = "rgba(203,213,245,0.92)";
     ctx.font = "12px system-ui";
-    ctx.fillText(`Wallet: ${meta.gems}💎  •  Best Rooms: ${meta.best.rooms}`, px+20, py+52);
+    ctx.fillText(`Wallet: ${meta.gems + (state.gemsRun||0)}💎 (bank ${meta.gems} + run ${state.gemsRun||0})  •  Best Rooms: ${meta.best.rooms}`, px+20, py+52);
 
     // Tabs
     const tabs = [
@@ -2246,7 +2303,7 @@ function drawOverlays(){
     }
 
     // Close button
-    drawSmallButton(px+pw-120-18, py+18, 120, 30, "Close", theme.neonB, true);
+    drawSmallButton(px+pw-120-18, py+18, 120, 20, "Close", theme.neonB, true);
     metaUI.buttons.push({ type:"close", x:px+pw-120-18, y:py+18, w:120, h:30, enabled:true });
 
     ctx.restore();
@@ -2294,64 +2351,86 @@ function drawOverlays(){
   }
 
   // ================= Run Shop (Gold, Run-only) =================
-  function drawRunShop(px,py,pw,ph){
-    const p = state.player;
-    const safe = roomIsSafeToShop(); // only after clearing room
-    const x0 = px + 20;
-    const y0 = py + 112;
+  function drawRunShop(px, py, pw, ph){
+  const pad = 12;
+  const colGap = 14;
+  const rowH = 56;
+  const btnW = 96;
 
-    ctx.fillStyle = "rgba(203,213,245,0.92)";
-    ctx.font = "13px system-ui";
-    ctx.fillText("Spend 🪙 Gold on run-only power-ups (available after you clear a room).", x0, py+102);
+  const cols = 2;
+  const colW = (pw - pad*2 - colGap) / cols;
 
-    // Wallet line
-    ctx.fillStyle = "rgba(203,213,245,0.85)";
-    ctx.font = "12px system-ui";
-    ctx.fillText(`Gold: ${state.gold}  •  Room Cleared: ${safe ? "Yes" : "No"}`, x0, py+126);
+  let x0 = px + pad;
+  let y0 = py + pad + 100;
 
-    const items = [
-      { id:"heal25",   label:"Heal +25 HP",              desc:"Quick top-up",            cost: 25 },
-      { id:"healFull", label:"Full Heal",                desc:"Restore to max HP",      cost: 40 },
-      { id:"hpUp",     label:`Max HP +10 (Lv ${state.runShop.hpUp})`,  desc:"+10 max HP this run", cost: 35 + state.runShop.hpUp*10 },
-      { id:"dmgUp",    label:`Damage +2 (Lv ${state.runShop.dmgUp})`,  desc:"+2 damage this run",  cost: 30 + state.runShop.dmgUp*12 },
-      { id:"rateUp",   label:`Fire Rate +5% (Lv ${state.runShop.rateUp})`, desc:"Faster shooting this run", cost: 30 + state.runShop.rateUp*12 },
-      { id:"wpnUp",    label:`Upgrade Weapon (Lv ${state.runShop.wpnUp})`, desc:"+12% dmg, +6% speed, -3% spread per level", cost: getWeaponUpgradeCost() },
-      { id:"rerollDrop", label:"Reroll Nearest Weapon Drop", desc:"Change a weapon drop into a new roll", cost: 20 },
-    ];
+  ctx.font = "13px system-ui";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "middle";
 
-    const rowH = 74;
-    for(let i=0;i<items.length;i++){
-      const it = items[i];
-      const y = y0 + i*rowH;
+  const items = [
+    { id:"heal25",    label:"Heal +25 HP", desc:"Quick top-up", cost:25 },
+    { id:"healFull",  label:"Full Heal", desc:"Restore to max HP", cost:40 },
+    { id:"hpUp",      label:"Max HP +10", desc:"+10 max HP this run", cost:35 },
+    { id:"dmgUp",     label:"Damage +2", desc:"+2 damage this run", cost:30 },
+    { id:"rateUp",    label:"Fire Rate +5%", desc:"Faster shooting", cost:30 },
+    { id:"wpnUp",     label:"Upgrade Weapon", desc:"+12% dmg, +6% speed", cost:getWeaponUpgradeCost() },
+    { id:"rerollDrop",label:"Reroll Weapon Drop", desc:"Nearest drop", cost:20 },
+  ];
 
-      // card
-      ctx.fillStyle = "rgba(15,23,42,0.68)";
-      roundRect(x0, y, pw-40, 60, 14); ctx.fill();
-      ctx.strokeStyle = "rgba(148,163,184,0.22)";
-      ctx.lineWidth = 2; ctx.stroke();
+  metaUI.buttons = metaUI.buttons || [];
 
-      ctx.fillStyle = theme.text;
-      ctx.font = "14px system-ui";
-      ctx.fillText(it.label, x0+14, y+20);
+  items.forEach((it, i)=>{
+    const col = i % cols;
+    const row = Math.floor(i / cols);
 
-      ctx.fillStyle = "rgba(203,213,245,0.85)";
-      ctx.font = "12px system-ui";
-      ctx.fillText(it.desc, x0+14, y+42);
+    const x = x0 + col * (colW + colGap);
+    const y = y0 + row * (rowH + 10);
 
-      const canAfford = state.gold >= it.cost;
-      const enabled = !!p && safe && canAfford;
+    const canAfford = state.gold >= it.cost;
+    const canBuy = roomIsSafeToShop() && canAfford;
 
-      const bx = x0 + (pw-40) - 170;
-      drawSmallButton(bx, y+16, 150, 30, `Buy (${it.cost}g)`, enabled ? theme.warn : "rgba(148,163,184,0.22)", enabled);
-      metaUI.buttons.push({ type:"runBuy", id:it.id, x:bx, y:y+16, w:150, h:30, enabled:enabled });
-    }
+    // card
+    ctx.fillStyle = "rgba(2,6,23,0.65)";
+    roundRect(x, y, colW, rowH, 12);
+    ctx.fill();
 
-    // small hint
-    ctx.fillStyle = "rgba(156,163,175,0.90)";
+    ctx.strokeStyle = canBuy ? theme.neonA : "rgba(148,163,184,0.25)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // text
+    ctx.fillStyle = theme.text;
+    ctx.fillText(it.label, x+12, y+18);
+    ctx.fillStyle = theme.sub;
     ctx.font = "11px system-ui";
-    ctx.fillText("Tip: Gold is run-only. Gems (💎) are permanent.", x0, py+ph-28);
+    ctx.fillText(it.desc, x+12, y+36);
+    ctx.font = "13px system-ui";
 
-  }
+    // buy button
+    const bx = x + colW - btnW - 10;
+    const by = y + 14;
+
+    ctx.fillStyle = canBuy ? "rgba(34,197,94,0.9)" : "rgba(148,163,184,0.25)";
+    roundRect(bx, by, btnW, 28, 10);
+    ctx.fill();
+
+    ctx.fillStyle = canBuy ? "#052e16" : theme.sub;
+    ctx.textAlign = "center";
+    ctx.fillText(`Buy (${it.cost}g)`, bx + btnW/2, by + 14);
+    ctx.textAlign = "left";
+
+    metaUI.buttons.push({
+      type: "runBuy",
+      id: it.id,
+      x: bx,
+      y: by,
+      w: btnW,
+      h: 28,
+      enabled: canBuy
+    });
+  });
+}
+
 
   function drawCharShop(px,py,pw,ph){
     ctx.fillStyle = "rgba(203,213,245,0.92)";
@@ -2389,12 +2468,12 @@ function drawOverlays(){
 
       if (unlocked){
         drawSmallButton(x+cardW-150, y+20, 136, 28, selected ? "Selected" : "Select", selected?theme.good:theme.warn, !selected);
-        metaUI.buttons.push({ type:"selectChar", id:c.id, x:x+cardW-150, y:y+20, w:136, h:28, enabled:!selected });
+        metaUI.buttons.push({ type:"selectChar", id:c.id, x:x+cardW-150, y:y+54, w:136, h:28, enabled:!selected });
       } else {
         const cost = 18;
         const can = meta.gems >= cost;
         drawSmallButton(x+cardW-150, y+20, 136, 28, `Unlock (${cost}💎)`, can?theme.warn:"rgba(148,163,184,0.22)", can);
-        metaUI.buttons.push({ type:"unlockChar", id:c.id, x:x+cardW-150, y:y+20, w:136, h:28, enabled:can });
+        metaUI.buttons.push({ type:"unlockChar", id:c.id, x:x+cardW-150, y:y+54, w:136, h:28, enabled:can });
       }
 
       idx++;
@@ -2433,7 +2512,7 @@ function drawOverlays(){
 
     // reset button
     const can = leads.length>0;
-    drawSmallButton(px+pw-160, py+90, 140, 28, "Reset Scores", can?theme.danger:"rgba(148,163,184,0.22)", can);
+    drawSmallButton(px+pw-140, py+100, 120, 20, "Reset Scores", can?theme.danger:"rgba(148,163,184,0.22)", can);
     metaUI.buttons.push({ type:"resetLead", x:px+pw-160, y:py+102, w:140, h:28, enabled:can });
   }
 
@@ -2456,65 +2535,94 @@ function drawOverlays(){
     return x>=b.x && x<=b.x+b.w && y>=b.y && y<=b.y+b.h;
   }
 
-  function handleMetaClick(x,y){
-    for(const b of metaUI.buttons){
-      if (!hitBtn(x,y,b)) continue;
-      if (!b.enabled){ audio.hurt(); return; }
+  
+function handleMetaClick(x, y){
+  if (!metaUI || !metaUI.buttons) return;
 
-      if (b.type === "close"){
-        closeMeta();
-        audio.pickup();
-        return;
-      }
-      if (b.type === "tab"){
-        shop.page = b.id;
-        audio.beep(520, 0.04, "triangle", 0.10);
-        return;
-      }
-      if (b.type === "buy"){
-        buyUpgrade(b.k);
-        return;
-      }
-      if (b.type === "unlockChar"){
-        unlockChar(b.id);
-        return;
-      }
-      if (b.type === "selectChar"){
-        state.selectedChar = b.id;
-        saveMeta();
-        audio.pickup();
-        return;
-      }
+  const pp = state.player || { x: W/2, y: H/2 };
+
+  for (const b of metaUI.buttons){
+    if (!hitBtn(x, y, b)) continue;
+
+    // Disabled button feedback (do not block tabs/close unless they explicitly set enabled:false)
+    if (b.enabled === false){
+      audio.hurt();
+
       if (b.type === "runBuy"){
-        buyRunShop(b.id);
-        return;
+        // Run shop is gated by room clear + gold affordability
+        floater(pp.x, pp.y - 22, roomIsSafeToShop() ? "Not enough gold" : "Clear room first", theme.warn);
+      } else if (b.type === "buy" || b.type === "unlockChar"){
+        floater(pp.x, pp.y - 22, "Not enough diamonds", theme.warn);
+      } else {
+        floater(pp.x, pp.y - 22, "Unavailable", theme.sub);
       }
-      if (b.type === "resetLead"){
-        saveLeads([]);
-        audio.hurt();
-        return;
-      }
+      return;
     }
 
-    // also allow character quick select on menu overlay
-    if (state.mode === "menu"){
-      const cards = menuCharCards(W*0.18+16, H*0.62+30);
-      for(const c of cards){
-        if (x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h){
-          if (isUnlocked(c.id)){
-            state.selectedChar = c.id;
-            saveMeta();
-            audio.pickup();
-          } else {
-            audio.hurt();
-          }
-        }
-      }
+    // Actions
+    if (b.type === "close"){
+      closeMeta();
+      audio.pickup();
+      return;
+    }
+
+    if (b.type === "tab"){
+      shop.page = b.id;
+      audio.beep(520, 0.04, "triangle", 0.10);
+      return;
+    }
+
+    if (b.type === "buy"){
+      // Support both shapes used in different builds: b.k or b.kind
+      buyUpgrade(b.k ?? b.kind);
+      return;
+    }
+
+    if (b.type === "unlockChar"){
+      unlockChar(b.id);
+      return;
+    }
+
+    if (b.type === "selectChar"){
+      state.selectedChar = b.id;
+      saveMeta();
+      audio.pickup();
+      return;
+    }
+
+    if (b.type === "runBuy"){
+      buyRunShop(b.id);
+      return;
+    }
+
+    if (b.type === "resetLead"){
+      saveLeads([]);
+      audio.hurt();
+      return;
     }
   }
 
+  // Also allow character quick select on the menu overlay
+  if (state.mode === "menu"){
+    const cards = menuCharCards(W*0.18+16, H*0.62+30);
+    for (const c of cards){
+      if (x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h){
+        if (isUnlocked(c.id)){
+          state.selectedChar = c.id;
+          saveMeta();
+          audio.pickup();
+        } else {
+          audio.hurt();
+        }
+        return;
+      }
+    }
+  }
+}
 
-  // ============= Menu character selection clicks =============
+
+
+// ============= Menu character selection clicks =============
   canvas.addEventListener("click", (e)=>{
     const p = getPos(e);
     if (state.mode === "menu"){
