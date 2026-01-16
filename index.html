@@ -1,12 +1,4 @@
 
-<!--
-AdSense placement guidelines:
-- Place ads BETWEEN sections, never over game cards or canvases
-- Recommended locations:
-  • Above the game grid
-  • Between category sections
-  • Below the content text block
--->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -15,27 +7,30 @@ AdSense placement guidelines:
   <title>Mini Game Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="google-adsense-account" content="ca-pub-5482914432517813" />
+  <meta name="google-adsense-account" content="ca-pub-5482914432517813">
 
-  <!-- Consent Mode v2 (basic). For EEA/UK/CH you still need a Google-certified CMP (TCF). -->
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-    // Default deny until user makes a choice.
-    gtag('consent', 'default', {
-      ad_storage: 'denied',
-      ad_user_data: 'denied',
-      ad_personalization: 'denied',
-      analytics_storage: 'denied',
-      wait_for_update: 500
-    });
-  </script>
+<!-- Global site tag - Google Analytics (needed for Consent Mode) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){ dataLayer.push(arguments); }
+
+  // DO NOT deny consent by default during verification
+  gtag('consent', 'default', {
+    ad_storage: 'granted',
+    ad_user_data: 'granted',
+    ad_personalization: 'granted',
+    analytics_storage: 'granted',
+  });
+</script>
+
+<!-- AdSense Auto Ads -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
+        crossorigin="anonymous"></script>
 
 
   <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (Option A: always load) -->
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
-    crossorigin="anonymous"></script>
+  
 
   <style>
     :root { color-scheme: dark; }
@@ -1489,23 +1484,7 @@ html, body {
 
 
   <!-- Cookie/Consent banner (simple fallback). Replace with a Google-certified CMP for EEA/UK/CH compliance. -->
-  <div id="consentBanner" style="
-    position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 99999;
-    max-width: 980px; margin: 0 auto;
-    background: rgba(2,6,23,0.92);
-    border: 1px solid rgba(148,163,184,0.25);
-    border-radius: 16px;
-    box-shadow: 0 18px 50px rgba(0,0,0,0.65);
-    padding: 14px 14px 12px;
-    display: none;
-  ">
-    <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between;">
-      <div style="flex: 1 1 520px; color: rgba(203,213,245,0.95); font-size: 13px; line-height: 1.35rem;">
-        We use cookies for ads and analytics. You can accept or decline. You can change this anytime by clearing site data.
-        <span style="opacity:0.85">See</span>
-        <a href="privacy.html" style="color:#93c5fd; text-decoration:none;">Privacy Policy</a>.
-      </div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+  <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button id="btnConsentDecline" style="
           border: 1px solid rgba(148,163,184,0.35);
           background: rgba(2,6,23,0.65);
@@ -1528,55 +1507,7 @@ html, body {
     </div>
   </div>
 
-  <script>
-    (function(){
-      const KEY = 'cmp_consent_v1';
-      const banner = document.getElementById('consentBanner');
-      const btnA = document.getElementById('btnConsentAccept');
-      const btnD = document.getElementById('btnConsentDecline');
-
-      function applyConsent(v){
-        // v: 'granted' | 'denied'
-        try { localStorage.setItem(KEY, v); } catch(e){}
-        if (typeof gtag === 'function'){
-          if (v === 'granted'){
-            gtag('consent', 'update', {
-              ad_storage: 'granted',
-              ad_user_data: 'granted',
-              ad_personalization: 'granted',
-              analytics_storage: 'granted'
-            });
-          } else {
-            gtag('consent', 'update', {
-              ad_storage: 'denied',
-              ad_user_data: 'denied',
-              ad_personalization: 'denied',
-              analytics_storage: 'denied'
-            });
-          }
-        }
-        if (banner) banner.style.display = 'none';
-      }
-
-      function init(){
-        let v = null;
-        try { v = localStorage.getItem(KEY); } catch(e){}
-        if (!v){
-          if (banner) banner.style.display = 'block';
-          return;
-        }
-        // apply stored choice
-        applyConsent(v);
-      }
-
-      if (btnA) btnA.addEventListener('click', ()=>applyConsent('granted'));
-      if (btnD) btnD.addEventListener('click', ()=>applyConsent('denied'));
-
-      // show after DOM ready to avoid layout jank
-      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
-      else init();
-    })();
-  </script>
+  
 
 </body>
 </html>

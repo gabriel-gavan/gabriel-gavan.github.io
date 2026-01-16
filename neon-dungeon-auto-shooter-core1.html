@@ -134,7 +134,7 @@
       height: auto;
       border-radius: 12px;
       border: 1px solid #4b5563;
-      background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+      background: #000;
       cursor: pointer;
       touch-action: none;
       display: block;
@@ -313,26 +313,48 @@ const TAU = Math.PI * 2;
   //   images/neondungeonautoshooter/player.png
   //   images/neondungeonautoshooter/enemy.png
   // ============================================================
+  // ===== Room Background =====
+  const roomBg = new Image();
+	roomBg.src = "images/neondungeonautoshooter/bg_room_01.png";
+
   const SPRITE_PATHS = {
-    player: "images/neondungeonautoshooter/player.png",
+    player_n:  "images/neondungeonautoshooter/player_n.png",
+    player_ne: "images/neondungeonautoshooter/player_ne.png",
+    player_e:  "images/neondungeonautoshooter/player_e.png",
+    player_se: "images/neondungeonautoshooter/player_se.png",
+    player_s:  "images/neondungeonautoshooter/player_s.png",
+    player_sw: "images/neondungeonautoshooter/player_sw.png",
+    player_w:  "images/neondungeonautoshooter/player_w.png",
+    player_nw: "images/neondungeonautoshooter/player_nw.png",
+
+    player_n_fire1:  "images/neondungeonautoshooter/player_n_fire1.png",
+    player_ne_fire1: "images/neondungeonautoshooter/player_ne_fire1.png",
+    player_e_fire1:  "images/neondungeonautoshooter/player_e_fire1.png",
+    player_se_fire1: "images/neondungeonautoshooter/player_se_fire1.png",
+    player_s_fire1:  "images/neondungeonautoshooter/player_s_fire1.png",
+    player_sw_fire1: "images/neondungeonautoshooter/player_sw_fire1.png",
+    player_w_fire1:  "images/neondungeonautoshooter/player_w_fire1.png",
+    player_nw_fire1: "images/neondungeonautoshooter/player_nw_fire1.png",
+
+    player_n_fire2:  "images/neondungeonautoshooter/player_n_fire2.png",
+    player_ne_fire2: "images/neondungeonautoshooter/player_ne_fire2.png",
+    player_e_fire2:  "images/neondungeonautoshooter/player_e_fire2.png",
+    player_se_fire2: "images/neondungeonautoshooter/player_se_fire2.png",
+    player_s_fire2:  "images/neondungeonautoshooter/player_s_fire2.png",
+    player_sw_fire2: "images/neondungeonautoshooter/player_sw_fire2.png",
+    player_w_fire2:  "images/neondungeonautoshooter/player_w_fire2.png",
+    player_nw_fire2: "images/neondungeonautoshooter/player_nw_fire2.png",
+
+    muzzle: "images/neondungeonautoshooter/muzzle_flash.png",
     enemy:  "images/neondungeonautoshooter/enemy.png",
   };
 
-  const sprites = {
-    player: new Image(),
-    enemy: new Image(),
-    ready: { player:false, enemy:false }
-  };
-
-  // Load sprite images (safe even if files don't exist; fallback rendering will be used)
-  sprites.player.onload = () => sprites.ready.player = true;
-  sprites.enemy.onload  = () => sprites.ready.enemy  = true;
-  sprites.player.onerror = () => sprites.ready.player = false;
-  sprites.enemy.onerror  = () => sprites.ready.enemy  = false;
-  sprites.player.src = SPRITE_PATHS.player;
-  sprites.enemy.src  = SPRITE_PATHS.enemy;
-
-  function drawSpriteCentered(img, x, y, size){
+  const sprites = {};
+  for (const k in SPRITE_PATHS){
+    sprites[k] = new Image();
+    sprites[k].src = SPRITE_PATHS[k];
+  }
+function drawSpriteCentered(img, x, y, size){
     ctx.drawImage(img, x - size/2, y - size/2, size, size);
   }
 
@@ -1838,10 +1860,111 @@ function drawRoomClearMessage(){
   ctx.restore();
 }
 
+function drawDrops(){
+    for(const d of state.drops){
+      ctx.save();
+      const col = d.rarColor || theme.warn;
+
+      // core
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "rgba(2,6,23,0.92)";
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r+2,0,TAU); ctx.fill();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r+2,0,TAU); ctx.stroke();
+
+      ctx.fillStyle = "rgba(229,231,235,0.92)";
+      ctx.font = "12px system-ui";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      if (d.kind==="coin") ctx.fillText("¢", d.x, d.y+0.5);
+      else if (d.kind==="gem") ctx.fillText("💎", d.x, d.y+0.5);
+      else ctx.fillText("🔫", d.x, d.y+0.5);
+
+      // label
+      if (d.kind==="weapon" && d.weapon){
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = d.weapon.rColor;
+        ctx.font = "11px system-ui";
+        ctx.fillText(d.weapon.rarity + " " + d.weapon.id, d.x, d.y - 20);
+      }
+      ctx.restore();
+    }
+  }
+
+// ✅ UPDATED: draw ENEMIES as sprite (fallback to circle+icon if missing)
+  function drawEnemies(){
+    for(const e of state.enemies){
+      ctx.save();
+      const col = e.kind==="boss" ? theme.danger : (e.kind==="tank" ? "rgba(34,197,94,1)" : (e.kind==="shooter" ? "rgba(250,204,21,1)" : theme.bad));
+
+      if (sprites.enemy && sprites.enemy.complete){
+        ctx.shadowBlur = 12;
+        ctx.shadowColor = "rgba(239,68,68,0.55)";
+        const size = e.kind==="boss" ? 74 : (e.kind==="tank" ? 56 : 50);
+        drawSpriteCentered(sprites.enemy, e.x, e.y, size);
+      } else {
+        // fallback old look
+        ctx.fillStyle = "rgba(2,6,23,0.92)";
+        ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,TAU); ctx.fill();
+        ctx.strokeStyle = col;
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,TAU); ctx.stroke();
+
+        ctx.fillStyle = "rgba(229,231,235,0.9)";
+        ctx.font = "12px system-ui";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        const ic = e.kind==="boss"?"👑":(e.kind==="tank"?"🛡":(e.kind==="shooter"?"🎯":"👾"));
+        ctx.fillText(ic, e.x, e.y+0.5);
+      }
+
+      // HP bar
+      const bw = e.kind==="boss" ? 120 : 66;
+      const bh = 7;
+      const bx = e.x - bw/2;
+      const by = e.y + e.r + 10;
+      ctx.fillStyle = "rgba(2,6,23,0.75)";
+      //roundRect(bx,by,bw,bh,999); ctx.fill();
+      const t = clamp(e.hp/e.hpMax,0,1);
+      ctx.fillStyle = col;
+     // roundRect(bx,by,bw*t,bh,999); ctx.fill();
+
+      ctx.restore();
+    }
+  }
+
+  function drawBullets(){
+    for(const b of state.bullets){
+      ctx.save();
+      ctx.fillStyle = b.color;
+      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
 
 
-  
 function draw(){
+	// ===== Draw room background =====
+	
+	if (roomBg.complete && roomBg.naturalWidth > 0){
+	  ctx.drawImage(roomBg, 0, 0, W, H);
+	} else {
+	  // fallback if image not loaded yet
+	  ctx.fillStyle = "#020617";
+	  ctx.fillRect(0, 0, W, H);
+	}
+	// Subtle vignette for depth
+	const grd = ctx.createRadialGradient(
+	  W/2, H/2, W*0.2,
+	  W/2, H/2, W*0.75
+	);
+	grd.addColorStop(0, "rgba(0,0,0,0)");
+	grd.addColorStop(1, "rgba(0,0,0,0.55)");
+	ctx.fillStyle = grd;
+	ctx.fillRect(0,0,W,H);
+
   const shopLike = (state.mode === "meta" || state.mode === "menu" || state.mode === "dead");
 
   ctx.setTransform(1,0,0,1,0,0);
@@ -1886,26 +2009,33 @@ function draw(){
 }
  
 function drawBackground
-(){
-    // Always dark; never theme-dependent bright fills
-    ctx.save();
-      ctx.setTransform(1,0,0,1,0,0);
-  ctx.globalAlpha = 1;
-  ctx.globalCompositeOperation = "source-over";
-  ctx.filter = "none";
-  ctx.shadowBlur = 0;
+(){ctx.save();
 
-  ctx.fillStyle = "#05060a";
-  ctx.fillRect(0,0,W,H);
-    const seed = (state.roomX*73856093 ^ state.roomY*19349663 ^ 0x9e3779b9) >>> 0;
-    for(let i=0;i<60;i++){
-      const t = (seed + i*2654435761) >>> 0;
-      const x = (t % W);
-      const y = ((t / W) % H);
-      ctx.fillRect(x, y, 1, 1);
-    }
-    ctx.restore();
+  // ALWAYS reset state (important!)
+  ctx.globalAlpha = 1;
+  ctx.setTransform(1,0,0,1,0,0);
+
+  if (roomBg.complete && roomBg.naturalWidth > 0){
+    const imgW = roomBg.width;
+    const imgH = roomBg.height;
+
+    // cover canvas without distortion (CSS background-size: cover)
+    const scale = Math.max(W / imgW, H / imgH);
+    const dw = imgW * scale;
+    const dh = imgH * scale;
+
+    const dx = (W - dw) * 0.5;
+    const dy = (H - dh) * 0.5;
+
+    ctx.drawImage(roomBg, dx, dy, dw, dh);
+  } else {
+    // fallback: dark neon tone
+    ctx.fillStyle = "#020617";
+    ctx.fillRect(0, 0, W, H);
   }
+
+  ctx.restore();
+}
 // ===== Door Sprites (Horizontal + Vertical) =====
 		const doorSprites = {
 		  lockedH: new Image(),
@@ -1958,152 +2088,45 @@ function drawBackground
 
 
   // ✅ UPDATED: draw PLAYER as sprite (fallback to circle+emoji if missing)
-  function drawPlayer(){
-    const p = state.player;
-    if (!p) return;
+  
+function drawPlayer(){
+  const p = state.player;
+  if (!p) return;
 
-    // sprite
-    if (sprites.ready.player){
-      ctx.save();
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = "rgba(99,102,241,0.55)";
-      drawSpriteCentered(sprites.player, p.x, p.y, 44);
-      ctx.restore();
-    } else {
-      // fallback old look
-      ctx.save();
-      ctx.fillStyle = "rgba(2,6,23,0.92)";
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.fill();
-      ctx.strokeStyle = "rgba(56,189,248,0.95)";
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,TAU); ctx.stroke();
-
-      ctx.fillStyle = "rgba(229,231,235,0.92)";
-      ctx.font = "12px system-ui";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      const ch = CHARACTERS.find(c=>c.id===p.char);
-      ctx.fillText(ch ? ch.emoji : "🟦", p.x, p.y+0.5);
-      ctx.restore();
-    }
-
-		// invuln ring
-		if (p.invuln > 0){
-		  ctx.save();
-		  ctx.globalAlpha = 0.8;
-		  ctx.globalCompositeOperation = "source-over";
-		  ctx.filter = "none";
-		  ctx.shadowBlur = 0;
-
-		  ctx.strokeStyle = "rgba(56,189,248,0.9)"; // or any neutral
-		  ctx.lineWidth = 2;
-		  ctx.beginPath();
-		  ctx.arc(p.x,p.y, p.r+7 , 0, TAU);
-		  ctx.stroke();
-		  ctx.restore();
-		}
-
-
-    // HP bar
-    ctx.save();
-    const bw = 64, bh = 8;
-    const bx = p.x - bw/2;
-    const by = p.y + 24;
-    ctx.fillStyle = "rgba(2,6,23,0.75)";
-    //roundRect(bx,by,bw,bh,999); ctx.fill();
-    
-    //ctx.fillStyle = hpT>0.5?theme.good:(hpT>0.25?theme.warn:theme.danger);
-	const hpT = clamp(p.hp/p.hpMax, 0, 1);
-    ctx.fillStyle = "rgba(34,197,94,0.9)"; // green HP
-    //roundRect(bx,by,bw*hpT,bh,999); ctx.fill();
-    ctx.restore();
+  let dir = "s";
+  const t = findTarget(p);
+  if (t){
+    const a = (Math.atan2(t.y-p.y, t.x-p.x) + TAU) % TAU;
+    if (a < 0.39 || a > 5.89) dir = "e";
+    else if (a < 1.18) dir = "se";
+    else if (a < 1.96) dir = "s";
+    else if (a < 2.75) dir = "sw";
+    else if (a < 3.53) dir = "w";
+    else if (a < 4.32) dir = "nw";
+    else if (a < 5.11) dir = "n";
+    else dir = "ne";
   }
 
-  // ✅ UPDATED: draw ENEMIES as sprite (fallback to circle+icon if missing)
-  function drawEnemies(){
-    for(const e of state.enemies){
-      ctx.save();
-      const col = e.kind==="boss" ? theme.danger : (e.kind==="tank" ? "rgba(34,197,94,1)" : (e.kind==="shooter" ? "rgba(250,204,21,1)" : theme.bad));
+  const firing = state.shootT > 0;
+  let img = sprites[`player_${dir}`];
 
-      if (sprites.ready.enemy){
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = "rgba(239,68,68,0.55)";
-        const size = e.kind==="boss" ? 74 : (e.kind==="tank" ? 56 : 50);
-        drawSpriteCentered(sprites.enemy, e.x, e.y, size);
-      } else {
-        // fallback old look
-        ctx.fillStyle = "rgba(2,6,23,0.92)";
-        ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,TAU); ctx.fill();
-        ctx.strokeStyle = col;
-        ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,TAU); ctx.stroke();
-
-        ctx.fillStyle = "rgba(229,231,235,0.9)";
-        ctx.font = "12px system-ui";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        const ic = e.kind==="boss"?"👑":(e.kind==="tank"?"🛡":(e.kind==="shooter"?"🎯":"👾"));
-        ctx.fillText(ic, e.x, e.y+0.5);
-      }
-
-      // HP bar
-      const bw = e.kind==="boss" ? 120 : 66;
-      const bh = 7;
-      const bx = e.x - bw/2;
-      const by = e.y + e.r + 10;
-      ctx.fillStyle = "rgba(2,6,23,0.75)";
-      //roundRect(bx,by,bw,bh,999); ctx.fill();
-      const t = clamp(e.hp/e.hpMax,0,1);
-      ctx.fillStyle = col;
-     // roundRect(bx,by,bw*t,bh,999); ctx.fill();
-
-      ctx.restore();
-    }
+  if (firing){
+    img = state.shootT > 0.08
+      ? sprites[`player_${dir}_fire1`]
+      : sprites[`player_${dir}_fire2`];
   }
 
-  function drawBullets(){
-    for(const b of state.bullets){
-      ctx.save();
-      ctx.fillStyle = b.color;
-      ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,TAU); ctx.fill();
-      ctx.restore();
-    }
+  const breath = !firing ? 1 + Math.sin(state.t * 3) * 0.03 : 1;
+  drawSpriteCentered(img, p.x, p.y, p.r * 3.2 * breath);
+
+  if (firing && sprites.muzzle && t){
+    const ang = Math.atan2(t.y-p.y, t.x-p.x);
+    const dx = Math.cos(ang) * p.r * 2.2;
+    const dy = Math.sin(ang) * p.r * 2.2;
+    drawSpriteCentered(sprites.muzzle, p.x + dx, p.y + dy, p.r * 2);
   }
-
-  function drawDrops(){
-    for(const d of state.drops){
-      ctx.save();
-      const col = d.rarColor || theme.warn;
-
-      // core
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = "rgba(2,6,23,0.92)";
-      ctx.beginPath(); ctx.arc(d.x,d.y,d.r+2,0,TAU); ctx.fill();
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(d.x,d.y,d.r+2,0,TAU); ctx.stroke();
-
-      ctx.fillStyle = "rgba(229,231,235,0.92)";
-      ctx.font = "12px system-ui";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-
-      if (d.kind==="coin") ctx.fillText("¢", d.x, d.y+0.5);
-      else if (d.kind==="gem") ctx.fillText("💎", d.x, d.y+0.5);
-      else ctx.fillText("🔫", d.x, d.y+0.5);
-
-      // label
-      if (d.kind==="weapon" && d.weapon){
-        ctx.globalAlpha = 0.95;
-        ctx.fillStyle = d.weapon.rColor;
-        ctx.font = "11px system-ui";
-        ctx.fillText(d.weapon.rarity + " " + d.weapon.id, d.x, d.y - 20);
-      }
-      ctx.restore();
-    }
-  }
-
-  function drawParticles(){
+}
+function drawParticles(){
   for(const p of state.particles){
     ctx.save();
     ctx.beginPath();          // 🔒 CRITICAL
@@ -2728,24 +2751,6 @@ function handleMetaClick(x, y){
   setHUD();
   requestAnimationFrame(loop);
 
-  // ====== Hub card snippet (for your index.html) ======
-  // Add this card inside your "Top Picks" <section class="grid">:
-  //
-  // <div class="card game-card"
-  //      data-id="neon-dungeon-auto-shooter"
-  //      data-url="neon-dungeon-auto-shooter-core.html"
-  //      data-title="Neon Dungeon Auto Shooter"
-  //      data-tags="arcade,shooter,roguelike,featured"
-  //      data-desc="Auto-shooter roguelike dungeon crawler with rooms, doors, minimap, loot drops, meta upgrades and characters.">
-  //   <div class="card-header-row">
-  //     <a href="neon-dungeon-auto-shooter-core.html">🔫 Neon Dungeon Auto Shooter</a>
-  //     <span class="badge-new">New</span>
-  //   </div>
-  //   <p class="card-desc">Clear rooms to open doors, grab loot drops, upgrade permanently in the meta shop, and chase best runs.</p>
-  //   <div class="tag-row">
-  //     <span class="tag">shooter</span><span class="tag">roguelike</span><span class="tag">arcade</span><span class="tag">featured</span>
-  //   </div>
-  // </div>
 
 </script>
 </body>
