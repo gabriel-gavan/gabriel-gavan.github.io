@@ -1,10 +1,11 @@
+<!-- Character Details: Ranger(HP100,Speed240), Tank(HP140,Speed205), Rogue(HP92,Speed268) -->
 <!DOCTYPE html>
 
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
 <title>Neon Dungeon Auto Shooter (Core)</title>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (same as your hub & other games) -->
 <script async="" crossorigin="anonymous" src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"></script>
 
@@ -176,17 +177,39 @@
     .btn:active { transform: translateY(1px); }
 
     .pill {
-      border-radius: 999px;
-      border: 1px solid #374151;
-      padding: 7px 10px;
-      background: rgba(2,6,23,0.45);
-      color: #cbd5f5;
-      font-size: 12px;
-      display: inline-flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+  border-radius: 22px;
+  padding: 10px 22px;
+  font-size: 22px;
+  gap: 16px;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(99, 102, 241, 0.65);
+  box-shadow:
+    0 0 18px rgba(99, 102, 241, 0.45),
+    inset 0 0 12px rgba(56, 189, 248, 0.25);
+
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  color: #e0e7ff;
+  letter-spacing: 0.5px;
+
+  transform: translateY(4px);
+  animation: hudPulse 3s ease-in-out infinite;
+}
+
+@keyframes hudPulse {
+  0%, 100% { box-shadow: 0 0 18px rgba(99, 102, 241, 0.45), inset 0 0 12px rgba(56, 189, 248, 0.25); }
+  50%      { box-shadow: 0 0 28px rgba(56, 189, 248, 0.65), inset 0 0 16px rgba(99, 102, 241, 0.4); }
+}
+
+.pill span b {
+  color: #7dd3fc;
+  text-shadow: 0 0 6px rgba(56,189,248,0.75);
+}
+
 
     .hint {
       width: 100%;
@@ -247,6 +270,8 @@ ins.adsbygoogle,
 <div class="right-controls">
 <div class="pill" id="hudPill">
 <span>HP: <b id="hudHP">0</b></span>
+<span>Damage: <b id="hudDmg">0</b></span>
+<span>FireRate: <b id="hudRate">0</b></span>
 <span>Room: <b id="hudRoom">0</b></span>
 <span>Gold: <b id="hudGold">0</b></span>
 <span>Weapon: <b id="hudWpn">—</b></span>
@@ -265,6 +290,32 @@ ins.adsbygoogle,
 <aside class="side-banner"></aside>
 </div>
 <script>
+
+// --- FIX PACK E: unified menu click handler ---
+
+// UI Upgrade Pack additions
+let uiRipples = [];
+let uiHoverSfx = new Audio('sounds/ui_hover.wav'); uiHoverSfx.volume=0.25;
+let lastHover=null;
+function handleMenuClick(mx, my){
+  const px = W*0.03, py = H*0.62;
+  const cards = menuCharCards(px+16, py+30);
+  for(const c of cards){
+    if (mx>=c.x && mx<=c.x+c.w && my>=c.y && my<=c.y+c.h){
+      if (isUnlocked(c.id)){
+        state.selectedChar = c.id;
+        audio.chime();
+      } else {
+        audio.hurt();
+        floater(W/2, py-10, "Locked (Meta Shop)", theme.sub);
+      }
+      return;
+    }
+  }
+}
+
+function hit(a,b){ return circleHit(a.x,a.y,a.r, b.x,b.y,b.r); }
+
 // ===== Background Music (MP3) =====
 const bgMusic = new Audio("neon_dungeon_ambient.mp3");
 bgMusic.loop = true;
@@ -317,37 +368,82 @@ const TAU = Math.PI * 2;
   const roomBg = new Image();
 	roomBg.src = "images/neondungeonautoshooter/bg_room_01.png";
 
+// ===== UNIQUE ROOM BACKGROUND SYSTEM =====
+const uniqueRoomBGs = [
+  "images/neondungeonautoshooter/bg_room_02.png",
+  "images/neondungeonautoshooter/bg_room_03.png",
+  "images/neondungeonautoshooter/bg_room_04.png",
+  "images/neondungeonautoshooter/bg_room_05.png",
+  "images/neondungeonautoshooter/bg_room_06.png",
+  "images/neondungeonautoshooter/bg_room_07.png",
+  "images/neondungeonautoshooter/bg_room_08.png",
+  "images/neondungeonautoshooter/bg_room_09.png",
+  "images/neondungeonautoshooter/bg_room_10.png",
+  "images/neondungeonautoshooter/bg_room_11.png",
+  "images/neondungeonautoshooter/bg_room_12.png",
+  "images/neondungeonautoshooter/bg_room_13.png",
+  "images/neondungeonautoshooter/bg_room_14.png",
+  "images/neondungeonautoshooter/bg_room_15.png",
+  "images/neondungeonautoshooter/bg_room_16.png"
+];
+let uniqueBGQueue = [];
+
+
   const SPRITE_PATHS = {
-    player_n:  "images/neondungeonautoshooter/player_n.png",
-    player_ne: "images/neondungeonautoshooter/player_ne.png",
-    player_e:  "images/neondungeonautoshooter/player_e.png",
-    player_se: "images/neondungeonautoshooter/player_se.png",
-    player_s:  "images/neondungeonautoshooter/player_s.png",
-    player_sw: "images/neondungeonautoshooter/player_sw.png",
-    player_w:  "images/neondungeonautoshooter/player_w.png",
-    player_nw: "images/neondungeonautoshooter/player_nw.png",
+    player_n: new Image(),
+    player_ne: new Image(),
+    player_e: new Image(),
+    player_se: new Image(),
+    player_s: new Image(),
+    player_sw: new Image(),
+    player_w: new Image(),
+    player_nw: new Image(),
 
-    player_n_fire1:  "images/neondungeonautoshooter/player_n_fire1.png",
-    player_ne_fire1: "images/neondungeonautoshooter/player_ne_fire1.png",
-    player_e_fire1:  "images/neondungeonautoshooter/player_e_fire1.png",
-    player_se_fire1: "images/neondungeonautoshooter/player_se_fire1.png",
-    player_s_fire1:  "images/neondungeonautoshooter/player_s_fire1.png",
-    player_sw_fire1: "images/neondungeonautoshooter/player_sw_fire1.png",
-    player_w_fire1:  "images/neondungeonautoshooter/player_w_fire1.png",
-    player_nw_fire1: "images/neondungeonautoshooter/player_nw_fire1.png",
+    player_n_fire1: new Image(),
+    player_ne_fire1: new Image(),
+    player_e_fire1: new Image(),
+    player_se_fire1: new Image(),
+    player_s_fire1: new Image(),
+    player_sw_fire1: new Image(),
+    player_w_fire1: new Image(),
+    player_nw_fire1: new Image(),
 
-    player_n_fire2:  "images/neondungeonautoshooter/player_n_fire2.png",
-    player_ne_fire2: "images/neondungeonautoshooter/player_ne_fire2.png",
-    player_e_fire2:  "images/neondungeonautoshooter/player_e_fire2.png",
-    player_se_fire2: "images/neondungeonautoshooter/player_se_fire2.png",
-    player_s_fire2:  "images/neondungeonautoshooter/player_s_fire2.png",
-    player_sw_fire2: "images/neondungeonautoshooter/player_sw_fire2.png",
-    player_w_fire2:  "images/neondungeonautoshooter/player_w_fire2.png",
-    player_nw_fire2: "images/neondungeonautoshooter/player_nw_fire2.png",
+    player_n_fire2: new Image(),
+    player_ne_fire2: new Image(),
+    player_e_fire2: new Image(),
+    player_se_fire2: new Image(),
+    player_s_fire2: new Image(),
+    player_sw_fire2: new Image(),
+    player_w_fire2: new Image(),
+    player_nw_fire2: new Image(),
 
     muzzle: "images/neondungeonautoshooter/muzzle_flash.png",
     enemy:  "images/neondungeonautoshooter/enemy.png",
-  };
+    enemy1: "images/neondungeonautoshooter/enemy_01.png",
+    enemy2: "images/neondungeonautoshooter/enemy_02.png",
+    enemy3: "images/neondungeonautoshooter/enemy_03.png",    boss1: "images/neondungeonautoshooter/enemy_boss_01.png",
+    boss2: "images/neondungeonautoshooter/enemy_boss_02.png",
+    boss3: "images/neondungeonautoshooter/enemy_boss_03.png",
+};
+
+// Dynamic sprite prefix
+function getPlayerSpritePrefix(){
+  if (state.selectedChar === "Rogue") return "player_rogue_";
+  if (state.selectedChar === "Tank") return "player_tank_";
+  return "player_";
+}
+
+// Load sprites
+function loadPlayerSprites(){
+  const p = "images/neondungeonautoshooter/" + getPlayerSpritePrefix();
+  const dirs=["n","ne","e","se","s","sw","w","nw"];
+  dirs.forEach(d=>{
+    sprites["player_"+d].src = p + d + ".png";
+    sprites["player_"+d+"_fire1"].src = p + d + "_fire1.png";
+    sprites["player_"+d+"_fire2"].src = p + d + "_fire2.png";
+  });
+}
+
 
   const sprites = {};
   for (const k in SPRITE_PATHS){
@@ -372,6 +468,22 @@ function drawSpriteCentered(img, x, y, size){
   const btnSound = document.getElementById("btnSound");
 
   // ============= Helpers =============
+
+function angleToDir8(a){
+    if (a < 0) a += Math.PI*2;
+
+    if (a >= 0 && a < 0.39) return "e";            // 0° → 22.5°
+    if (a >= 0.39 && a < 1.18) return "se";        // 22.5° → 67.5°
+    if (a >= 1.18 && a < 1.96) return "s";         // 67.5° → 112.5°
+    if (a >= 1.96 && a < 2.75) return "sw";        // 112.5° → 157.5°
+    if (a >= 2.75 && a < 3.53) return "w";         // 157.5° → 202.5°
+    if (a >= 3.53 && a < 4.32) return "nw";        // 202.5° → 247.5°
+    if (a >= 4.32 && a < 5.11) return "n";         // 247.5° → 292.5°
+    return "ne";                                   // 292.5° → 337.5°
+}
+
+
+
   const clamp = (v,a,b)=> v<a?a:v>b?b:v;
   const rand = (a,b)=> a + Math.random()*(b-a);
   const irand = (a,b)=> Math.floor(rand(a,b+1));
@@ -384,6 +496,279 @@ function drawSpriteCentered(img, x, y, size){
     const dx = ax-bx, dy = ay-by;
     return (dx*dx+dy*dy) <= (ar+br)*(ar+br);
   }
+
+
+  // ============= Enemy/Boss Helpers =============
+  function enemyBullet(x,y,ang,speed,dmg,color,life=2.6,r=4) {
+  const b = {
+    from:"enemy",
+    x, y,
+    vx: Math.cos(ang)*speed,
+    vy: Math.sin(ang)*speed,
+    r,
+    dmg,
+    color,
+    life,
+    pierce: 0
+  };
+  state.bullets.push(b);
+}
+
+  function spawnHazard(kind,x,y,r,life,dps=0,strength=0){
+    state.hazards.push({kind,x,y,r,life,dps,strength,t:0});
+  }
+
+  function triggerBossIntro(name){
+    state.bossIntro.active = true;
+    state.bossIntro.t = 0;
+    state.bossIntro.text = `⚠️ ${name.toUpperCase()} ⚠️`;
+    state.shake = Math.max(state.shake, 0.22);
+  }
+
+  // Boss HP bar rendering (top center)
+  function drawBossUI(){
+    const boss = state.enemies.find(e=>e.kind==="boss");
+    if (!boss) return;
+
+    const padTop = 18;
+    const w = Math.min(520, W*0.62);
+    const h = 16;
+    const x = (W - w)/2;
+    const y = padTop;
+
+    // back
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = "rgba(2,6,23,0.75)";
+    roundRect(x-8, y-16, w+16, h+34, 12);
+    ctx.fill();
+
+    // name
+    ctx.fillStyle = theme.text;
+    ctx.font = "900 14px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(boss.bossName || "BOSS", W/2, y-6);
+
+    // bar bg
+    ctx.fillStyle = "rgba(239,68,68,0.25)";
+    roundRect(x, y+8, w, h, 10);
+    ctx.fill();
+
+    // bar fg (smooth)
+    boss._hpVis = (boss._hpVis==null)?boss.hp:lerp(boss._hpVis, boss.hp, 1-Math.pow(0.0001, dtForUI*60));
+    const frac = clamp(boss._hpVis / Math.max(1,boss.hpMax), 0, 1);
+    ctx.fillStyle = "rgba(239,68,68,0.95)";
+    roundRect(x, y+8, w*frac, h, 10);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  
+  function drawReviveBanner(){
+    const rb = state.reviveBanner;
+    if (!rb || !rb.active) return;
+    rb.t += dtForUI;
+    if (rb.t > rb.duration){ rb.active = false; return; }
+
+    const alpha = Math.min(1, rb.t / 0.2);
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    const txt = "⚡ SECOND CHANCE! ⚡";
+    ctx.font = "900 32px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#22c55e";
+    ctx.strokeStyle = "rgba(2,6,23,0.9)";
+    ctx.lineWidth = 6;
+    ctx.strokeText(txt, W/2, H/2);
+    ctx.fillText(txt, W/2, H/2);
+    ctx.restore();
+  }
+
+function drawBossIntroBanner(){
+    const bi = state.bossIntro;
+    if (!bi || !bi.active) return;
+    bi.t += dtForUI;
+    const t = bi.t / bi.duration;
+    if (t >= 1){ bi.active = false; return; }
+
+    const ease = t<0.5 ? (t*2) : (1-(t-0.5)*2); // in/out
+    const alpha = clamp( ease, 0, 1);
+    const y = 86 + Math.sin(bi.t*14)*2;
+
+    ctx.save();
+    ctx.globalAlpha = 0.95*alpha;
+    const bw = Math.min(700, W*0.78);
+    const bh = 56;
+    const bx = (W-bw)/2;
+
+    ctx.fillStyle = "rgba(2,6,23,0.78)";
+    roundRect(bx, y-bh/2, bw, bh, 16);
+    ctx.fill();
+
+    ctx.strokeStyle = "rgba(250,204,21,0.85)";
+    ctx.lineWidth = 2;
+    roundRect(bx+2, y-bh/2+2, bw-4, bh-4, 14);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(250,204,21,0.95)";
+    ctx.font = "900 22px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(bi.text, W/2, y);
+
+    ctx.restore();
+  }
+
+  // dt proxy used by UI draw (set each frame in draw())
+  let dtForUI = 1/60;
+
+  // === Advanced Boss Behavior System ===
+  function updateBoss(b, dt){
+  const hpFrac = (Number.isFinite(b.hp) && Number.isFinite(b.hpMax) && b.hpMax>0) ? (b.hp / b.hpMax) : 1;
+  if (hpFrac < 0.7 && b.phase === 1) b.phase = 2;
+  if (hpFrac < 0.4 && b.phase === 2) b.phase = 3;
+  if (hpFrac < 0.25 && !b.enraged){ b.enraged = true; b.speed *= 1.3; }
+
+    if (!b || b.kind !== "boss") return;
+    if (!b.ai) b.ai = {t:0, cd1:rand(0.3,0.9), cd2:rand(0.8,1.6), cd3:rand(1.2,2.4), dash:0, wind:0};
+
+    b.ai.t += dt;
+    b.ai.cd1 -= dt;
+    b.ai.cd2 -= dt;
+    b.ai.cd3 -= dt;
+    b.ai.dash = Math.max(0, b.ai.dash - dt);
+    b.ai.wind = Math.max(0, b.ai.wind - dt);
+
+    const p = state.player;
+    // --- SAFETY: prevent NaN HP / freeze ---
+    if (p && !Number.isFinite(p.hp)){
+      p.hp = p.hpMax;
+    }
+
+    const dx = p.x - b.x;
+    const dy = p.y - b.y;
+    const d = Math.hypot(dx,dy) || 1;
+    const ang = Math.atan2(dy,dx);
+
+  // === Basic boss shooting (universal) ===
+  if (!b.shootCD) b.shootCD = 0;
+  b.shootCD -= dt;
+  if (b.shootCD <= 0){
+    state.bullets.push({
+      from: "enemy",
+      x: b.x, y: b.y,
+      vx: Math.cos(ang) * 340,
+      vy: Math.sin(ang) * 340,
+      r: 5,
+      dmg: 12 + state.roomN * 0.6,
+      color: theme.danger,
+      life: 2.8,
+      pierce: 0
+    });
+    b.shootCD = 0.9;
+  }
+
+
+    // === Universal boss basic shooting ===
+    if (!b.ai.basic) b.ai.basic = rand(0.8,1.2);
+    b.ai.basic -= dt;
+    if (b.ai.basic <= 0){
+      enemyBullet(
+        b.x, b.y,
+        ang,
+        360,
+        8 + state.roomN * 0.35,
+        "rgba(255,80,80,0.9)",
+        2.6,
+        4
+      );
+      b.ai.basic = Math.max(0.65, 1.1 - state.roomN * 0.02);
+    }
+
+
+    // Plague Titan: poison spread + stomp ring + puddles
+    if (b.bossName === "Plague Titan"){
+      if (b.ai.cd1 <= 0){
+        enemyBullet(b.x, b.y, ang, 360, 10+state.roomN*0.5, "rgba(34,197,94,0.9)", 2.4);
+        enemyBullet(b.x, b.y, ang-0.35, 330, 10+state.roomN*0.5, "rgba(34,197,94,0.9)", 2.4);
+        enemyBullet(b.x, b.y, ang+0.35, 330, 10+state.roomN*0.5, "rgba(34,197,94,0.9)", 2.4);
+        b.ai.cd1 = 1.65;
+      }
+      if (b.ai.cd2 <= 0){
+        // stomp ring
+        const n = 14;
+        for(let i=0;i<n;i++){
+          const a = (i/n)*Math.PI*2;
+          enemyBullet(b.x, b.y, a, 280, 9+state.roomN*0.4, "rgba(132,204,22,0.85)", 2.2, 4);
+        }
+        b.ai.cd2 = 4.2;
+      }
+      if (b.ai.cd3 <= 0){
+        spawnHazard("puddle", b.x, b.y, 62, 5.5, 8+state.roomN*0.15, 0);
+        b.ai.cd3 = 3.0;
+      }
+    }
+
+    // Venom Warlord: windup dash + cone spray + venom puddle
+    if (b.bossName === "Venom Warlord"){
+      if (b.ai.cd1 <= 0){
+        b.ai.wind = 0.35;     // telegraph
+        b.ai.dash = 0.22;     // dash duration
+        b.ai.dashAng = ang;
+        b.ai.cd1 = 4.0;
+      }
+      if (b.ai.wind > 0){
+        // subtle telegraph particles
+        if (Math.random()<0.25) puff(b.x,b.y,"rgba(34,197,94,0.65)",2,0.6);
+      } else if (b.ai.dash > 0){
+        // dash movement applied in main chase too; add extra burst
+        b.x += Math.cos(b.ai.dashAng) * 780 * dt;
+        b.y += Math.sin(b.ai.dashAng) * 780 * dt;
+      }
+      if (b.ai.cd2 <= 0){
+        // cone spray
+        for(let i=-4;i<=4;i++){
+          enemyBullet(b.x, b.y, ang + i*0.13, 380, 8+state.roomN*0.35, "rgba(16,185,129,0.9)", 2.3);
+        }
+        b.ai.cd2 = 3.2;
+      }
+      if (b.ai.cd3 <= 0){
+        spawnHazard("puddle", b.x, b.y, 54, 4.8, 7+state.roomN*0.12, 0);
+        b.ai.cd3 = 3.4;
+      }
+    }
+
+    // Eldritch Devourer: teleport + spiral barrage + gravity well
+    if (b.bossName === "Eldritch Devourer"){
+      if (b.ai.cd1 <= 0){
+        // teleport near player, clamped
+        const tx = clamp(p.x + rand(-220,220), 72, W-72);
+        const ty = clamp(p.y + rand(-180,180), 72, H-72);
+        puff(b.x,b.y, "rgba(236,72,153,0.75)", 16, 1.1);
+        b.x = tx; b.y = ty;
+        puff(b.x,b.y, "rgba(99,102,241,0.75)", 16, 1.1);
+        b.ai.cd1 = 5.0;
+      }
+      if (b.ai.cd2 <= 0){
+        // spiral barrage
+        const n = 18;
+        const base = b.ai.t*2.2;
+        for(let i=0;i<n;i++){
+          const a = (i/n)*Math.PI*2 + base;
+          enemyBullet(b.x, b.y, a, 300, 9+state.roomN*0.4, "rgba(168,85,247,0.95)", 2.6, 4);
+        }
+        b.ai.cd2 = 4.3;
+      }
+      if (b.ai.cd3 <= 0){
+        spawnHazard("gravity", b.x, b.y, 150, 2.2, 0, 780);
+        b.ai.cd3 = 6.0;
+      }
+    }
+  }
+
 
   function roundRect(x, y, w, h, r){
   // Guard bad values
@@ -554,7 +939,7 @@ function drawSpriteCentered(img, x, y, size){
   }
 
   const WEAPON_BASE = [
-    { id:"Pistol",     desc:"Balanced",     dmg: 8,  rate: 0.30, speed: 520, spread: 0.02, pellets: 1 },
+    { id:"Pistol",     desc:"Balanced",     dmg: 8,  rate: 0.30, speed: 624.0, spread: 0.02, pellets: 1 },
     { id:"SMG",        desc:"Fast spray",   dmg: 5,  rate: 0.12, speed: 500, spread: 0.09, pellets: 1 },
     { id:"Shotgun",    desc:"Close burst",  dmg: 4,  rate: 0.48, speed: 470, spread: 0.34, pellets: 6 },
     { id:"Rail",       desc:"Piercing",     dmg: 12, rate: 0.42, speed: 820, spread: 0.00, pellets: 1, pierce: 2 },
@@ -622,6 +1007,7 @@ function drawSpriteCentered(img, x, y, size){
 
   // ============= Game State =============
   const state = {
+  charHP: {},
     mode: "menu",   // menu | play | trans | dead | meta | char | ad
     t: 0,
 
@@ -661,12 +1047,21 @@ function drawSpriteCentered(img, x, y, size){
     bullets: [],
     drops: [], // {x,y,kind,amount,weapon,rarColor,life}
     particles: [],
+    hazards: [], // {kind,x,y,r,dps,life,strength}
+
     floaters: [], // damage numbers
 
     // UI selection
-    selectedChar: "Ranger",
+    selectedChar: null,
 
-    roomClearMsg: { active:false, t:0, duration:5, skipped:false },
+    // menu hover (character cards)
+    menuHoverChar: null,
+
+
+        bossIntro: { active:false, t:0, duration:1.8, text:"" },
+
+roomClearMsg: { active:false, t:0, duration:5, skipped:false },
+    reviveBanner: { active:false, t:0, duration:2.2 },
   };
 
   // ================= Input Safety (prevents "stuck movement") =================
@@ -700,6 +1095,7 @@ function drawSpriteCentered(img, x, y, size){
   // Shopping is allowed when the current room is cleared and there are no living enemies.
   // This must work while the Meta Shop is open (state.mode may be "meta").
   const room = roomAt(state.roomX, state.roomY);
+
   return !!room && !!room.cleared && state.enemies.length === 0;
 }
 
@@ -840,53 +1236,88 @@ function drawSpriteCentered(img, x, y, size){
   }
 
   function applyWeaponUpgradesToShot(wpn){
-    // Return derived shot parameters without mutating the base weapon object.
-    const up = state.runShop.wpnUp || 0;
-    const dmg = (wpn.dmgFinal + getRunShopDmgBonus()) * (1 + up * 0.12);
-    const speed = wpn.speedFinal * (1 + up * 0.06);
-    const spread = Math.max(0, wpn.spreadFinal * (1 - up * 0.03));
-    return { dmg, speed, spread };
-  }
+		// Return derived shot parameters without mutating the base weapon object.
+		const up = state.runShop.wpnUp || 0;
+		const baseDmg = Number(wpn.dmgFinal);
+	const bonus = Number(getRunShopDmgBonus());
+	const mult  = 1 + Number(up) * 0.12;
+
+	const dmgBase = (Number.isFinite(baseDmg) ? baseDmg : 0) +
+					(Number.isFinite(bonus) ? bonus : 0);
+
+	const dmg = dmgBase * (Number.isFinite(mult) ? mult : 1);
+		const speed = wpn.speedFinal * (1 + up * 0.06);
+		const spread = Math.max(0, wpn.spreadFinal * (1 - up * 0.03));
+		//const saved = (state.charHP && state.charHP[charId]!==undefined) ? state.charHP[charId] : hp;
+	  return { dmg, speed, spread };
+	  }
 
   // ============= Player/Enemy =============
   function makePlayer(charId){
     const ch = CHARACTERS.find(c=>c.id===charId) || CHARACTERS[0];
-    const hp = ch.baseHP + meta.up_hp*15;
+    const maxHP = ch.baseHP + meta.up_hp*15;
+    
+    const savedHP = (state.charHP && state.charHP[charId] !== undefined)
+        ? state.charHP[charId]
+        : maxHP;
+
     return {
-      char: ch.id,
-      x: W/2, y: H/2,
-      r: 14,
-      hpMax: hp,
-      hp: hp,
-      speed: ch.speed,
-      aimRange: ch.aimRange,
-      resist: ch.id==="Tank" ? 0.15 : 0.0,
-      crit: ch.id==="Rogue" ? 0.10 : 0.0,
-      invuln: 0,
-      fireCD: 0,
-      burstCD: 0,
-      weapon: makeWeapon(RARITIES[0], WEAPON_BASE[0]), // common pistol
+        char: ch.id,
+        x: W/2, y: H/2,
+         r:
+			ch.id === "Tank"  ? 25 :
+			ch.id === "Rogue" ? 20 :
+			14,
+        hpMax: maxHP,
+        hp: savedHP,
+        speed: ch.speed,
+        aimRange: ch.aimRange,
+        resist: ch.id==="Tank" ? 0.15 : 0.0,
+        crit: ch.id==="Rogue" ? 0.10 : 0.0,
+        invuln: 0,
+        secondChance: true,
+        fireCD: 0,
+        burstCD: 0,
+        weapon: makeWeapon(RARITIES[0], WEAPON_BASE[0]),
     };
-  }
+}
+
 
   function spawnEnemiesForRoom(room, roomNumber){
     const isBoss = !!room.boss;
     const baseCount = isBoss ? 1 : clamp(3 + Math.floor(roomNumber*0.8), 3, 14);
     const enemies = [];
 
-    if (isBoss){
-      enemies.push({
-        kind:"boss",
-        x: W/2, y: H*0.28,
-        r: 34,
-        hpMax: 260 + roomNumber*40,
-        hp: 260 + roomNumber*40,
-        speed: 62,
-        touchDmg: 34,
-        shoot: 0.0,
-      });
-      return enemies;
-    }
+    
+
+if (isBoss){
+  const bossDefs = [
+    {name:"Plague Titan", sprite:"boss1", r:35, hp:480},
+    {name:"Venom Warlord", sprite:"boss2", r:45, hp:520},
+    {name:"Eldritch Devourer", sprite:"boss3", r:50, hp:560}
+  ];
+  const idx = room && Number.isFinite(room.bossId) ? room.bossId : 0;
+  const bd = bossDefs[idx];
+
+  enemies.push({
+    kind:"boss",
+    bossName: bd.name,
+    sprite: bd.sprite,
+    x: W/2, y: H*0.28,
+    r: bd.r,
+    hpMax: (bd.hp + roomNumber*40) * 3,
+        hp: (bd.hp + roomNumber*40) * 3,
+        dmgReduce: 0.2,
+    speed: 70,
+    touchDmg: 24,
+    shoot: 0.0,
+        phase: 1,
+        enraged: false
+  });
+  return enemies;
+}
+
+
 
     for(let i=0;i<baseCount;i++){
       const roll = Math.random();
@@ -907,6 +1338,8 @@ function drawSpriteCentered(img, x, y, size){
         shootCD: rand(0.2, 0.7),
       };
       e.hp = e.hpMax;
+      const _choices=['enemy1','enemy2','enemy3'];
+      e.sprite=_choices[Math.floor(Math.random()*_choices.length)];
       enemies.push(e);
     }
     return enemies;
@@ -943,6 +1376,7 @@ function drawSpriteCentered(img, x, y, size){
       seen: false,
       cleared: false,
       boss,
+      bossId: null,
       lootSeed: Math.random()*1e9
     };
   }
@@ -952,7 +1386,7 @@ function drawSpriteCentered(img, x, y, size){
       Array.from({length: state.gridW}, (_,x)=>makeRoom(false))
     );
 
-    // Place boss rooms (a few) far-ish from center
+    // Place boss rooms (3) randomly, far-ish from center
     const bossCount = 3;
     const candidates = [];
     for(let y=0;y<state.gridH;y++){
@@ -961,16 +1395,35 @@ function drawSpriteCentered(img, x, y, size){
         if (d >= 4) candidates.push({x,y,d});
       }
     }
-    candidates.sort((a,b)=>b.d-a.d);
+
+    // Shuffle candidates for random placement each run
+    for (let i=candidates.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      const tmp = candidates[i]; candidates[i] = candidates[j]; candidates[j] = tmp;
+    }
+
+    // Assign bosses to rooms (also shuffled so bosses move around)
+    const bossIds = [0,1,2];
+    for (let i=bossIds.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      const tmp = bossIds[i]; bossIds[i] = bossIds[j]; bossIds[j] = tmp;
+    }
+
     for(let i=0;i<bossCount && i<candidates.length;i++){
-      const p = candidates[i*2] || candidates[i];
-      state.rooms[p.y][p.x].boss = true;
+      const p = candidates[i];
+      const r = state.rooms[p.y][p.x];
+      r.boss = true;
+      r.bossId = bossIds[i % bossIds.length];
     }
 
     // start room
     state.roomX = 3;
     state.roomY = 3;
     state.rooms[state.roomY][state.roomX].seen = true;
+
+// === Initial Room Background Selection ===
+roomBg.src = "images/neondungeonautoshooter/bg_room_01.png";
+
     state.rooms[state.roomY][state.roomX].boss = false;
   }
 
@@ -1068,14 +1521,33 @@ function drawSpriteCentered(img, x, y, size){
     state.particles.length = 0;
     state.floaters.length = 0;
 
-    // If room not cleared, spawn enemies (if first time or if not cleared)
-    if (!room.cleared){
-      state.roomN += 1; // count rooms visited as progression
-      state.enemies = spawnEnemiesForRoom(room, state.roomN);
-      if (room.boss) audio.boss();
-    } else {
-      state.enemies = [];
-    }
+		// === ALWAYS SET BACKGROUND ===
+	if (room.boss){
+	  if (room.bossId === 0) roomBg.src = "images/neondungeonautoshooter/bg_room_boss1.png";
+	  else if (room.bossId === 1) roomBg.src = "images/neondungeonautoshooter/bg_room_boss2.png";
+	  else if (room.bossId === 2) roomBg.src = "images/neondungeonautoshooter/bg_room_boss3.png";
+	} else {
+	  if (!room.bgAssigned){
+	    room.bgAssigned = uniqueBGQueue.length > 0
+	      ? uniqueBGQueue.pop()
+	      : "images/neondungeonautoshooter/bg_room_01.png";
+	  }
+	  roomBg.src = room.bgAssigned;
+	}
+
+	// === Enemy spawn logic ===
+	if (!room.cleared){
+		state.roomN += 1;
+		state.enemies = spawnEnemiesForRoom(room, state.roomN);
+
+		if (room.boss){
+		  audio.boss();
+		  triggerBossIntro((state.enemies.find(e=>e.kind==="boss")||{}).bossName || "BOSS");
+		}
+	} else {
+		state.enemies = [];
+	}
+
 
     computeDoors();
   }
@@ -1255,7 +1727,16 @@ state.kills = 0;
     state.floaters = [];
 
     initDungeon();
+
+    // Shuffle unique room backgrounds (once per run)
+    uniqueBGQueue = [...uniqueRoomBGs];
+    for (let i = uniqueBGQueue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [uniqueBGQueue[i], uniqueBGQueue[j]] = [uniqueBGQueue[j], uniqueBGQueue[i]];
+    }
+
     state.player = makePlayer(state.selectedChar);
+    loadPlayerSprites();
 
     
     applyRunShopBuffsToPlayer(state.player);
@@ -1263,6 +1744,15 @@ state.kills = 0;
     const room = roomAt(state.roomX, state.roomY);
     room.cleared = false;
     state.enemies = spawnEnemiesForRoom(room, state.roomN);
+    // === Room Background Selection ===
+    if (room.boss){
+      if (room.bossId === 0) roomBg.src = "images/neondungeonautoshooter/bg_room_boss1.png";
+      else if (room.bossId === 1) roomBg.src = "images/neondungeonautoshooter/bg_room_boss2.png";
+      else if (room.bossId === 2) roomBg.src = "images/neondungeonautoshooter/bg_room_boss3.png";
+    } else {
+      roomBg.src = "images/neondungeonautoshooter/bg_room_01.png";
+    }
+
     computeDoors();
 
     setHUD();
@@ -1271,12 +1761,15 @@ state.kills = 0;
   // ============= Input =============
   window.addEventListener("keydown", (e)=>{
     state.keys[e.key.toLowerCase()] = true;
+
     if (e.code === "Space"){
       e.preventDefault();
-      // space to interact in menus
-      if (state.mode === "menu") startGame();
-      if (state.mode === "dead") startGame();
+      // Space no longer auto-starts the menu (prevents accidental character switching on keypress).
+      if (state.mode === "menu") return;
     }
+
+    if (state.mode === "dead") startGame();
+
     if (e.code === "KeyM"){
       if (state.mode === "play"){
         state.modeBeforeMeta = "play";
@@ -1285,7 +1778,7 @@ state.kills = 0;
         closeMeta();
       }
     }
-  
+
     // ==== RUN SHOP HOTKEYS (Gold; only when room is cleared) ====
     // 1: Heal +25 (25g)
     // 2: Full heal (40g)
@@ -1333,13 +1826,34 @@ state.kills = 0;
     state.pointer.y = p.y;
     state.pointer.startX = p.x;
     state.pointer.startY = p.y;
+    uiRipples.push({x:p.x,y:p.y,r:0,max:120,alpha:0.4});
     state.pointer.dx = 0;
     state.pointer.dy = 0;
 
-    if (state.mode === "menu"){
-      // quick start tap
-      startGame();
-    } else if (state.mode === "dead"){
+
+if (state.mode === "menu"){
+  // Character selection click handling
+  const cards = menuCharCards(W*0.03+16, H*0.62+30);
+  for (const c of cards){
+    if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h){
+      if (isUnlocked(c.id)){
+	    // Save current HP for the old character
+		if (state.player && state.player.char) {
+			state.charHP[state.player.char] = state.player.hp;
+		}
+        state.selectedChar = c.id;
+		state.player = makePlayer(c.id);   // ← update HP + stats
+		setHUD();                          // ← update HUD immediately
+		audio.chime();
+      } else {
+        audio.hurt();
+        floater(W/2, H*0.62 - 10, "Locked (Meta Shop)", theme.sub);
+      }
+      break;
+    }
+  }
+  return;
+} else if (state.mode === "dead"){
       // No death overlay (avoids big shapes). Use HUD + buttons to restart.
       return;
     }
@@ -1353,21 +1867,53 @@ state.kills = 0;
   }, {passive:false});
 
   canvas.addEventListener("pointermove", (e)=>{
-    if (!state.pointer.down || e.pointerId !== state.pointer.id) return;
     const p = getPos(e);
+
+    // Always track last pointer position for hover FX (even if not dragging).
     state.pointer.x = p.x;
     state.pointer.y = p.y;
+
+    // Update hover target in menu (character cards)
+    if (state.mode === "menu"){
+      const cards = menuCharCards(W*0.03+16, H*0.62+30);
+      let hoverId = null;
+      for (const c of cards){
+        if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h){
+          hoverId = c.id;
+          break;
+        }
+      }
+      state.menuHoverChar = hoverId;
+    }
+
+    // Virtual stick only when actively dragging
+    if (!state.pointer.down || e.pointerId !== state.pointer.id) return;
+
+    state.pointer.startX = state.pointer.startX || p.x;
+    state.pointer.startY = state.pointer.startY || p.y;
+
     state.pointer.dx = p.x - state.pointer.startX;
     state.pointer.dy = p.y - state.pointer.startY;
-  });
 
-  canvas.addEventListener("pointerup", (e)=>{
+    const max = 55;
+    const d = Math.hypot(state.pointer.dx, state.pointer.dy) || 1;
+    if (d > max){
+      state.pointer.dx = state.pointer.dx / d * max;
+      state.pointer.dy = state.pointer.dy / d * max;
+    }
+  }, {passive:true});
+
+  canvas.addEventListener("pointerup", (e) => {
+    if (state.mode === "menu") {
+        state.menuHoverChar = null;
+    }
     if (e.pointerId !== state.pointer.id) return;
     state.pointer.down = false;
     state.pointer.id = null;
     state.pointer.dx = 0;
     state.pointer.dy = 0;
-  });
+});
+
   canvas.addEventListener("pointercancel", ()=>{
     state.pointer.down = false;
     state.pointer.id = null;
@@ -1378,6 +1924,9 @@ state.kills = 0;
   
   // ---- EXTRA SAFETY: release pointer even if the finger/mouse leaves the canvas ----
   window.addEventListener("pointerup", (e)=>{
+	if (state.mode === "menu") {
+	state.menuHoverChar = null;
+		}
     if (e.pointerId !== state.pointer.id) return;
     clearInputState();
   }, {passive:true});
@@ -1408,6 +1957,9 @@ state.kills = 0;
       btnStart.textContent = "▶ Resume";
     } else if (state.mode === "menu"){
       if (btnStart.textContent.includes("Resume")){
+        // recreate player on resume
+        state.player = makePlayer(state.selectedChar);
+        loadPlayerSprites();
         state.mode = "play";
         btnStart.textContent = "⏸ Pause";
       } else {
@@ -1460,6 +2012,8 @@ state.kills = 0;
   function setHUD(){
     if (!state.player) return;
     hudHP.textContent = String(Math.max(0, Math.floor(state.player.hp)));
+	hudDmg.textContent = Math.floor(state.player.weapon.dmgFinal + getRunShopDmgBonus());
+    hudRate.textContent = (state.player.weapon.rateFinal * getRunShopRateMult()).toFixed(2);
     hudRoom.textContent = String(state.roomN);
     hudGold.textContent = String(state.gold) + " | 💎" + String(meta.gems + state.gemsRun);
     hudWpn.textContent = state.player.weapon.id;
@@ -1487,6 +2041,16 @@ state.kills = 0;
 }
 
   function update(dt){
+    // movement direction detection
+    if(state.player){
+      const p=state.player;
+      if(Math.abs(p.vx)>0.1||Math.abs(p.vy)>0.1){
+        const ang=Math.atan2(p.vy,p.vx);
+        p.moveDir=angleToDir8(ang);
+      }
+    }
+
+    if (state.player && !Number.isFinite(state.player.hp)) state.player.hp = state.player.hpMax;
   // 🚫 ABSOLUTE AD MODE KILL SWITCH
 	if (state.mode === "ad") {
 	  state.mode = "trans";
@@ -1525,10 +2089,20 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
 
     const mlen = Math.hypot(mx,my);
     if (mlen > 0){
-      mx /= mlen; my /= mlen;
-      p.x += mx * p.speed * dt;
-      p.y += my * p.speed * dt;
-    }
+	  mx /= mlen;
+	  my /= mlen;
+
+	  // FIX: record velocity for direction logic
+	  p.vx = mx * p.speed;
+	  p.vy = my * p.speed;
+
+	  p.x += p.vx * dt;
+	  p.y += p.vy * dt;
+	} else {
+	  p.vx = 0;
+	  p.vy = 0;
+	}
+
 
     // boundaries (room walls)
     const margin = 44;
@@ -1583,6 +2157,7 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
       // hit enemies
       let hit = false;
       for(let j=state.enemies.length-1;j>=0;j--){
+        if (b.from === "enemy") continue;
         const e = state.enemies[j];
         if (circleHit(b.x,b.y,b.r, e.x,e.y,e.r)){
           // damage
@@ -1618,6 +2193,8 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
 
     // --- Enemy update
     for(const e of state.enemies){
+    
+      if (e.kind === "boss") updateBoss(e, dt);
       const dx = p.x - e.x;
       const dy = p.y - e.y;
       const d = Math.hypot(dx,dy) || 1;
@@ -1663,7 +2240,7 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
         let dmg = e.touchDmg;
         if (e.kind==="boss") dmg += 10;
         dmg *= (1 - p.resist);
-        p.hp -= dmg;
+        p.hp -= Number.isFinite(dmg) ? dmg : 0;
         p.invuln = 0.55;
         state.shake = 0.20;
 		audio.hurt();
@@ -1677,7 +2254,7 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
       if (b.from !== "enemy") continue;
       if (circleHit(b.x,b.y,b.r, p.x,p.y,p.r) && p.invuln <= 0){
         const dmg = b.dmg * (1 - p.resist);
-        p.hp -= dmg;
+        p.hp -= Number.isFinite(dmg) ? dmg : 0;
         p.invuln = 0.45;
         state.shake = 0.18;
         audio.hurt();
@@ -1687,7 +2264,41 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
       }
     }
 
-    // --- Drops pickup
+    
+    // --- Hazards update (boss abilities)
+    for(let i=state.hazards.length-1;i>=0;i--){
+      const hz = state.hazards[i];
+      hz.life -= dt;
+      hz.t += dt;
+
+      // gravity pull
+      if (hz.kind === "gravity"){
+        const dx = hz.x - p.x;
+        const dy = hz.y - p.y;
+        const d = Math.hypot(dx,dy) || 1;
+        if (d < hz.r){
+          const pull = (1 - d/hz.r) * hz.strength * 0.75;
+          p.x += (dx/d) * pull * dt;
+          p.y += (dy/d) * pull * dt;
+          if (Math.random()<0.12) puff(p.x,p.y,"rgba(99,102,241,0.25)",1,0.5);
+        }
+      }
+
+      // poison puddle damage
+      if (hz.kind === "puddle"){
+        const d = Math.hypot(hz.x - p.x, hz.y - p.y);
+        if (d < hz.r && p.invuln <= 0){
+          const dmg = (hz.dps * 0.8 * dt) * (1 - p.resist);
+          // apply tiny damage without invuln lock (but clamp)
+          p.hp -= Number.isFinite(dmg) ? dmg : 0;
+          if (Math.random()<0.12) puff(p.x,p.y,"rgba(34,197,94,0.22)",1,0.5);
+        }
+      }
+
+      if (hz.life <= 0) state.hazards.splice(i,1);
+    }
+
+// --- Drops pickup
     for(let i=state.drops.length-1;i>=0;i--){
       const d = state.drops[i];
       d.life -= dt;
@@ -1772,7 +2383,17 @@ state.ad.cooldown = Math.max(0, state.ad.cooldown - dt);
     }
 
     // --- Death
-    if (p.hp <= 0){
+    if (p.hp <= 0 && Number.isFinite(p.hp)){
+      if (p.secondChance){
+        p.secondChance = false;
+        // 🔔 FORCE revive banner
+        state.reviveBanner.active = true;
+        state.reviveBanner.t = 0;
+        p.hp = p.maxHp * 0.3;
+        p.invuln = 1.5;
+        (audio.power ? audio.power() : (audio.pickup ? audio.pickup() : null));
+        return;
+      }
       killGame();
     }
 
@@ -1903,7 +2524,7 @@ function drawDrops(){
         ctx.shadowBlur = 12;
         ctx.shadowColor = "rgba(239,68,68,0.55)";
         const size = e.kind==="boss" ? 74 : (e.kind==="tank" ? 56 : 50);
-        drawSpriteCentered(sprites.enemy, e.x, e.y, size);
+        drawSpriteCentered(sprites[e.sprite] || sprites.enemy, e.x, e.y, size);
       } else {
         // fallback old look
         ctx.fillStyle = "rgba(2,6,23,0.92)";
@@ -1946,6 +2567,8 @@ function drawDrops(){
 
 
 function draw(){
+  dtForUI = 1/60;
+
 	// ===== Draw room background =====
 	
 	if (roomBg.complete && roomBg.naturalWidth > 0){
@@ -2002,6 +2625,9 @@ function draw(){
   drawEnemies();
   drawPlayer();
   drawRoomClearMessage();
+  drawBossUI();
+  drawBossIntroBanner();
+    drawReviveBanner();
   drawParticles();
   drawMinimap();
 
@@ -2093,19 +2719,23 @@ function drawPlayer(){
   const p = state.player;
   if (!p) return;
 
-  let dir = "s";
-  const t = findTarget(p);
-  if (t){
-    const a = (Math.atan2(t.y-p.y, t.x-p.x) + TAU) % TAU;
-    if (a < 0.39 || a > 5.89) dir = "e";
-    else if (a < 1.18) dir = "se";
-    else if (a < 1.96) dir = "s";
-    else if (a < 2.75) dir = "sw";
-    else if (a < 3.53) dir = "w";
-    else if (a < 4.32) dir = "nw";
-    else if (a < 5.11) dir = "n";
-    else dir = "ne";
-  }
+  let dir;
+
+	// 1. Aim at target if one exists
+	const t = findTarget(p);
+	if (t){
+		const a = (Math.atan2(t.y - p.y, t.x - p.x) + TAU) % TAU;
+		dir = angleToDir8(a);  // ✔ Uses your 8-direction helper
+	}
+	// 2. No target? Face movement direction
+	else if (p.moveDir){
+		dir = p.moveDir;       // ✔ Uses movement direction from update()
+	}
+	// 3. Idle fallback
+	else {
+		dir = "s";             // ✔ Default facing
+	}
+
 
   const firing = state.shootT > 0;
   let img = sprites[`player_${dir}`];
@@ -2185,14 +2815,43 @@ function drawParticles(){
         if (!r.seen){
           ctx.fillStyle = "rgba(15,23,42,0.55)";
           ctx.fillRect(cx, cy, cell-2, cell-2);
-          continue;
+
+// --- Boss minimap marker (red outline + skull) ---
+if (r.boss) {
+    ctx.save();
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx-1, cy-1, cell, cell);
+
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "10px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("☠", cx + (cell-2)/2, cy + (cell-2)/2);
+    ctx.restore();
+}
+continue;
         }
 
         // seen room
         ctx.fillStyle = r.cleared ? "rgba(34,197,94,0.28)" : "rgba(56,189,248,0.22)";
         ctx.fillRect(cx, cy, cell-2, cell-2);
 
-        // boss marker
+// --- Boss minimap marker (red outline + skull) ---
+if (r.boss) {
+    ctx.save();
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(cx-1, cy-1, cell, cell);
+
+    ctx.fillStyle = "#ef4444";
+    ctx.font = "10px system-ui";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("☠", cx + (cell-2)/2, cy + (cell-2)/2);
+    ctx.restore();
+}
+// boss marker
         if (r.boss){
           ctx.fillStyle = "rgba(239,68,68,0.9)";
           ctx.fillRect(cx+4, cy+4, 4, 4);
@@ -2253,7 +2912,7 @@ function drawOverlays(){
   function drawCenterPanel(title, body){
     ctx.save();
     ctx.fillStyle = "rgba(2,6,23,0.74)";
-    roundRect(W*0.08, H*0.18, W*0.85, H*0.65, 18);
+    roundRect(W*0.02, H*0.10, W*0.96, H*0.78, 18);
     ctx.fill();
     ctx.strokeStyle = "rgba(99,102,241,0.45)";
     ctx.lineWidth = 2;
@@ -2280,7 +2939,7 @@ function drawOverlays(){
 
   // Menu mini buttons (character quick-select)
   function drawMiniButtonsMenu(){
-    const px = W*0.09, py = H*0.62, w = W*0.83, h = 70;
+    const px = W*0.03, py = H*0.62, w = W*0.94, h = 70;
     ctx.save();
     ctx.fillStyle = "rgba(2,6,23,0.58)";
     roundRect(px, py, w, h, 16); ctx.fill();
@@ -2296,34 +2955,102 @@ function drawOverlays(){
     const cards = menuCharCards(px+16, py+30);
     for(const c of cards){
       const unlocked = isUnlocked(c.id);
+      
+      let hovered = (state.menuHoverChar === c.id);
       const selected = state.selectedChar === c.id;
-      ctx.fillStyle = "rgba(15,23,42,0.75)";
-      roundRect(c.x,c.y,c.w,c.h,12); ctx.fill();
-      ctx.strokeStyle = selected ? theme.warn : (unlocked ? "rgba(56,189,248,0.35)" : "rgba(148,163,184,0.20)");
-      ctx.lineWidth = selected ? 3 : 2;
+      if (selected) hovered = false;
+
+      // Per-character glow colors
+      const glow = (c.id==="Ranger") ? "rgba(56,189,248,1)" :
+                   (c.id==="Tank")   ? "rgba(34,197,94,1)" :
+                   (c.id==="Rogue")  ? "rgba(168,85,247,1)" :
+                                       "rgba(99,102,241,1)";
+
+      const t = performance.now()*0.001;
+      const pulse = selected ? (0.55 + 0.45*Math.sin(t*6.0)) : (hovered ? (0.35 + 0.25*Math.sin(t*8.0)) : 0.0);
+      const scale = selected ? (1.06 + 0.02*Math.sin(t*6.0)) : (hovered ? 1.03 : 1.0);
+      const lift  = hovered ? -2.0 : 0.0;
+
+      const cx = c.x + c.w/2;
+      const cy = c.y + c.h/2 + lift;
+
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(scale, scale);
+      ctx.translate(-cx, -cy);
+
+      // Card background (gradient)
+      const g = ctx.createLinearGradient(c.x, c.y, c.x, c.y + c.h);
+      if (selected){
+        g.addColorStop(0, "rgba(15,23,42,0.92)");
+        g.addColorStop(1, "rgba(2,6,23,0.92)");
+      } else {
+        g.addColorStop(0, hovered ? "rgba(30,41,59,0.86)" : "rgba(15,23,42,0.78)");
+        g.addColorStop(1, hovered ? "rgba(2,6,23,0.86)"  : "rgba(2,6,23,0.78)");
+      }
+      ctx.fillStyle = g;
+
+      // Soft glow backplate
+      ctx.save();
+      ctx.globalAlpha = 0.35 + 0.35*pulse;
+      ctx.shadowColor = glow;
+      ctx.shadowBlur  = selected ? 26 : (hovered ? 18 : 10);
+      roundRect(c.x, c.y, c.w, c.h, 12);
+      ctx.fill();
+      ctx.restore();
+
+      // Main fill
+      ctx.globalAlpha = 1;
+      roundRect(c.x, c.y, c.w, c.h, 12);
+      ctx.fill();
+
+      // Neon stroke
+      ctx.save();
+      ctx.shadowColor = glow;
+      ctx.shadowBlur  = selected ? 22 : (hovered ? 14 : 0);
+      ctx.strokeStyle = selected ? glow : (unlocked ? "rgba(56,189,248,0.35)" : "rgba(148,163,184,0.20)");
+      ctx.lineWidth   = selected ? 3 : (hovered ? 2.5 : 2);
+      roundRect(c.x, c.y, c.w, c.h, 12);
       ctx.stroke();
 
+      // Inner highlight line
+      ctx.globalAlpha = 0.28 + 0.22*pulse;
+      ctx.strokeStyle = "rgba(255,255,255,0.22)";
+      ctx.lineWidth   = 1;
+      roundRect(c.x+2, c.y+2, c.w-4, c.h-4, 10);
+      ctx.stroke();
+      ctx.restore();
+
+      // Text
       ctx.fillStyle = unlocked ? theme.text : "rgba(156,163,175,0.85)";
       ctx.textAlign = "center";
-      ctx.font = "12px system-ui";
-      ctx.fillText(c.emoji+" "+c.id, c.x + c.w/2, c.y + c.h/2 - 8);
+      ctx.textBaseline = "middle";
+      ctx.font = selected ? "900 12px system-ui" : "12px system-ui";
+      ctx.fillText(c.emoji+" "+c.id, c.x + c.w/2, c.y + c.h/2 - 9);
+
+      // Stats line (HP uses saved HP if present; else base+meta)
+      const hpBase = c.baseHP + (meta.up_hp||0)*15;
+      const hpShown = (state.charHP && state.charHP[c.id] !== undefined) ? Math.max(0, Math.floor(state.charHP[c.id])) : hpBase;
+
       ctx.font = "11px system-ui";
       ctx.fillStyle = unlocked ? "rgba(203,213,245,0.9)" : "rgba(156,163,175,0.9)";
-      ctx.fillText(unlocked ? c.desc : "Locked (Meta)", c.x + c.w/2, c.y + c.h/2 + 10);
-    }
+      ctx.fillText(unlocked ? (`HP ${hpShown} • SPD ${c.speed}`) : "Locked (Meta)", c.x + c.w/2, c.y + c.h/2 + 10);
+
+      ctx.restore();
+}
 
     ctx.restore();
   }
 
   function menuCharCards(x0,y0){
     const cardW = 180;
-    const cardH = 34;
+    const cardH = 38;
     const gap = 10;
     const arr = [];
     for(let i=0;i<CHARACTERS.length;i++){
       const c = CHARACTERS[i];
       arr.push({
-        id: c.id, emoji: c.emoji, desc: c.desc,
+        id: c.id, baseHP: c.baseHP, speed: c.speed, emoji: c.emoji, desc: c.desc,
         x: x0 + i*(cardW+gap),
         y: y0,
         w: cardW,
@@ -2340,7 +3067,7 @@ function drawOverlays(){
     // --- Responsive Meta Shop layout fixes ---
     metaUI.buttons = [];
 
-    const px = W*0.12, py = H*0.02, pw = W*0.76, ph = H*0.92;
+    const px = W*0.03, py = H*0.02, pw = W*0.96, ph = H*0.977;
 
     ctx.save();
     ctx.fillStyle = "rgba(2,6,23,0.82)";
@@ -2437,7 +3164,7 @@ function drawOverlays(){
   function drawRunShop(px, py, pw, ph){
   const pad = 12;
   const colGap = 14;
-  const rowH = 56;
+  const rowH = 50;
   const btnW = 96;
 
   const cols = 2;
@@ -2551,12 +3278,12 @@ function drawOverlays(){
 
       if (unlocked){
         drawSmallButton(x+cardW-150, y+20, 136, 28, selected ? "Selected" : "Select", selected?theme.good:theme.warn, !selected);
-        metaUI.buttons.push({ type:"selectChar", id:c.id, x:x+cardW-150, y:y+54, w:136, h:28, enabled:!selected });
+        metaUI.buttons.push({ type:"selectChar", id:c.id, x:x+cardW-150, y:y+20, w:136, h:28, enabled:!selected });
       } else {
         const cost = 18;
         const can = meta.gems >= cost;
         drawSmallButton(x+cardW-150, y+20, 136, 28, `Unlock (${cost}💎)`, can?theme.warn:"rgba(148,163,184,0.22)", can);
-        metaUI.buttons.push({ type:"unlockChar", id:c.id, x:x+cardW-150, y:y+54, w:136, h:28, enabled:can });
+        metaUI.buttons.push({ type:"unlockChar", id:c.id, x:x+cardW-150, y:y+20, w:136, h:28, enabled:can });
       }
 
       idx++;
@@ -2571,7 +3298,7 @@ function drawOverlays(){
 
     const x0 = px+20, y0 = py+126;
     ctx.fillStyle = "rgba(15,23,42,0.62)";
-    roundRect(x0,y0,pw-40,ph-170,14); ctx.fill();
+    roundRect(x0,y0,pw-40,ph-128,14); ctx.fill();
     ctx.strokeStyle = "rgba(148,163,184,0.18)";
     ctx.lineWidth = 2; ctx.stroke();
 
@@ -2691,9 +3418,13 @@ function handleMetaClick(x, y){
     for (const c of cards){
       if (x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h){
         if (isUnlocked(c.id)){
-          state.selectedChar = c.id;
-          saveMeta();
-          audio.pickup();
+          if(state.player) state.charHP[state.player.char] = state.player.hp;
+            state.selectedChar = c.id;
+            saveMeta();
+            audio.pickup();
+            const chObj = CHARACTERS.find(cc=>cc.id===c.id);
+            const maxHP = chObj.baseHP + meta.up_hp*15;
+            hudHP.textContent = state.charHP[c.id] ?? maxHP;
         } else {
           audio.hurt();
         }
@@ -2708,25 +3439,24 @@ function handleMetaClick(x, y){
 // ============= Menu character selection clicks =============
   canvas.addEventListener("click", (e)=>{
     const p = getPos(e);
-    if (state.mode === "menu"){
-      // detect character cards
-      const cards = menuCharCards(W*0.18+16, H*0.62+30);
-      for(const c of cards){
-        if (p.x>=c.x && p.x<=c.x+c.w && p.y>=c.y && p.y<=c.y+c.h){
-          if (isUnlocked(c.id)){
-            state.selectedChar = c.id;
-            saveMeta();
-            audio.pickup();
-          } else {
-            audio.hurt();
-          }
-          return;
-        }
-      }
+
+    // IMPORTANT: menu character selection is handled on pointerdown only.
+    if (state.mode === "menu") return;
+
+    if (state.mode === "meta"){
+      handleMetaClick(p.x,p.y);
+      return;
+    }
+
+    if (state.mode === "ad"){
+      // tap to skip placeholder ad
+      state.ad.active = false;
+      state.mode = "trans";
+      return;
     }
   });
 
-  // ============= Main loop =============
+// ============= Main loop =============
   let last = performance.now();
   function loop(now){
     const dt = Math.min(0.033, (now-last)/1000);
@@ -2743,8 +3473,17 @@ function handleMetaClick(x, y){
   // init HUD
   // Ensure dungeon + player exist even on the menu screen
   initDungeon();
+
+    // Shuffle unique room backgrounds (once per run)
+    uniqueBGQueue = [...uniqueRoomBGs];
+    for (let i = uniqueBGQueue.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [uniqueBGQueue[i], uniqueBGQueue[j]] = [uniqueBGQueue[j], uniqueBGQueue[i]];
+    }
+
   state.enemies = [];
   state.player = makePlayer(state.selectedChar);
+    loadPlayerSprites();
   computeDoors();
 
   btnSound.textContent = audio.enabled ? "🔊 Sound: On" : "🔇 Sound: Off";
