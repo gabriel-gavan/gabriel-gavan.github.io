@@ -488,6 +488,91 @@ ins.adsbygoogle,
 .adsbygoogle {
   z-index: 0 !important;
 }
+
+@media screen and (orientation: landscape) and (max-width: 900px) {
+    canvas {
+        height: 100vh !important;
+        width: auto !important;
+        max-width: none !important;
+        aspect-ratio: auto !important;
+    }
+    #joystick {
+        position: absolute;
+        bottom: 30px !important;
+        left: 30px !important;
+        transform: scale(1.2);
+        z-index: 999999;
+    }
+    .controls {
+        flex-wrap: nowrap !important;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        gap: 6px !important;
+    }
+    .controls .btn {
+        padding: 6px 10px !important;
+        font-size: 14px !important;
+    }
+    .pill {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        padding: 6px 10px !important;
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+        font-size: 12px !important;
+        z-index: 99999;
+    }
+}
+
+
+/* Safe-area support for iPhone */
+@supports(padding: max(0px)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Bigger joystick on mobile */
+@media screen and (max-width:900px){
+  #joystick {
+    transform: scale(1.5) !important;
+    opacity: 0.95;
+  }
+}
+
+/* HUD compact top-right */
+@media screen and (max-width:900px){
+  .pill {
+    top: 10px !important;
+    bottom: auto !important;
+    right: 10px !important;
+    flex-direction: row !important;
+    background: rgba(0,0,0,0.35) !important;
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Buttons neon mobile */
+@media screen and (max-width:900px){
+  .btn {
+    border-radius:12px !important;
+    box-shadow:0 0 12px rgba(0,200,255,0.4);
+  }
+}
+
+/* Scale canvas on portrait */
+@media screen and (orientation:portrait){
+  canvas{
+    width:100% !important;
+    height:auto !important;
+  }
+}
+
 </style>
 </head>
 <body>
