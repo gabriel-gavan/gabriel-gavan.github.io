@@ -638,6 +638,20 @@ ins.adsbygoogle,
     }
 }
 
+
+/* === PC FIX: restore original PC layout === */
+@media screen and (min-width: 901px) {
+    canvas {
+        width: 960px !important;
+        height: 540px !important;
+        max-width: 100% !important;
+        aspect-ratio: 16/9 !important;
+    }
+    .game-header {
+        display: flex !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -3323,7 +3337,7 @@ function drawIntroPanel() {
 
     ctx.font = "14px 'Segoe UI'";
     ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Tip: Clear rooms to open doors. Loot drops weapons and gems.", W/2, y + 205);
+    ctx.fillText("Tip: Clear rooms to open doors. Loot drops weapons and gems!!!", W/2, y + 205);
     ctx.restore();
 }
 
@@ -3989,6 +4003,21 @@ function startNeonParticles() {
 }
 
 </script>
+
+<script>
+(function(){
+  function fixCanvasSize(){
+    var c=document.getElementById('game');
+    if(!c) return;
+    var h= window.innerHeight;
+    c.style.height = h + "px";
+  }
+  window.addEventListener('resize', fixCanvasSize);
+  window.addEventListener('orientationchange', fixCanvasSize);
+  fixCanvasSize();
+})();
+</script>
+
 </body>
 <script src="footer.js"></script>
 
