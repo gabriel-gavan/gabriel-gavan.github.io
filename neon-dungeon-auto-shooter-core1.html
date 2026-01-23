@@ -23,6 +23,113 @@
       min-height: 100vh;
       display: block;
     }
+	.game-title {
+	  font-size: 28;   /* redus de la 50px */
+	  font-weight: 900;
+	  text-align: center;
+	  letter-spacing: 1px;
+
+	  color: #fca5a5;
+	  text-shadow:
+		0 0 10px rgba(239,68,68,0.9),
+		0 0 28px rgba(220,38,38,0.7),
+		0 0 45px rgba(185,28,28,0.7),
+		3px 3px 1px black;
+
+	  animation: firePulse 2.3s ease-in-out infinite;
+	}
+
+/* === BADASS INTRO PANEL === */
+.intro-panel {
+    position: relative;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto 18px auto;
+    padding: 40px 28px;
+    text-align: center;
+
+    background: rgba(2, 6, 23, 0.55);
+    border: 1px solid rgba(99,102,241,0.35);
+    border-radius: 18px;
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 0 22px rgba(56,189,248,0.35),
+        inset 0 0 28px rgba(56,189,248,0.25);
+
+    overflow: hidden;
+}
+
+/* subtle animated hologram lines */
+.intro-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.015) 0px,
+        rgba(255,255,255,0.015) 1px,
+        rgba(0,0,0,0) 3px
+    );
+    animation: introScan 6s linear infinite;
+    opacity: 0.25;
+}
+@keyframes introScan {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-6px); }
+}
+
+/* floating blue glow behind the panel */
+.intro-glow {
+    position: absolute;
+    inset: -40px;
+    background: radial-gradient(circle, rgba(56,189,248,0.25), transparent 70%);
+    filter: blur(40px);
+    animation: introGlowPulse 4.5s ease-in-out infinite;
+}
+@keyframes introGlowPulse {
+    0%,100% { opacity: 0.35; }
+    50% { opacity: 0.75; }
+}
+
+/* Title */
+.intro-title {
+    font-size: 46px;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    color: #e0f2fe;
+    text-shadow:
+        0 0 14px #38bdf8,
+        0 0 28px #0ea5e9,
+        0 0 50px #0284c7;
+
+    animation: neonPulse 3.8s ease-in-out infinite, neonShimmer 4s linear infinite;
+}
+@keyframes neonShimmer {
+    0%   { text-shadow: 0 0 20px #00eaff, 0 0 40px #00aaff; }
+    50%  { text-shadow: 0 0 30px #79f0ff, 0 0 60px #33bbff; }
+    100% { text-shadow: 0 0 20px #00eaff, 0 0 40px #00aaff; }
+}
+
+/* Subtitle lines */
+.intro-sub {
+    margin-top: 16px;
+    font-size: 16px;
+    color: #cbd5e1;
+    line-height: 1.5rem;
+    text-shadow: 0 0 8px rgba(56,189,248,0.45);
+}
+
+/* TIP text */
+.intro-tip {
+    margin-top: 22px;
+    font-size: 13px;
+    color: #94a3b8;
+    opacity: 0.85;
+}
+
+
 
     .page-wrap {
       display: flex;
@@ -142,12 +249,13 @@
     }
 
     .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      justify-content: space-between;
-      align-items: center;
-    }
+	  display: flex;
+	  flex-wrap: wrap;
+	  gap: 12px;
+	  justify-content: center;   /* <-- CENTRARE */
+	  align-items: center;
+	  width: 100%;
+	}
 
     .left-controls, .right-controls {
       display: flex;
@@ -155,60 +263,194 @@
       gap: 8px;
       align-items: center;
     }
+	/* ===== NEON FX PACK – VISUAL EFFECTS ===== */
 
-    .btn {
-      border: 1px solid rgba(148,163,184,0.35);
-      background: rgba(2,6,23,0.65);
-      color: #e5e7eb;
-      padding: 10px 12px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.55);
-      user-select: none;
-      -webkit-user-select: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: center;
-    }
-    .btn:hover { border-color: rgba(99,102,241,0.8); }
-    .btn:active { transform: translateY(1px); }
+	/* Scanline CRT overlay */
+	.fx-scanlines {
+	  pointer-events: none;
+	  position: fixed;
+	  inset: 0;
+	  background: repeating-linear-gradient(
+		  to bottom,
+		  rgba(255,255,255,0.03) 0px,
+		  rgba(255,255,255,0.03) 1px,
+		  rgba(0,0,0,0) 2px
+	  );
+	  opacity: 0.25;
+	  animation: scanMove 6s linear infinite;
+	  z-index: 99999;
+	}
+	@keyframes scanMove {
+	  0% { transform: translateY(0); }
+	  100% { transform: translateY(-5px); }
+	}
+
+	/* Neon pulse */
+	.neon-pulse {
+	  animation: neonPulse 2.5s ease-in-out infinite;
+	}
+	@keyframes neonPulse {
+	  0%,100% { filter: drop-shadow(0 0 6px #60a5fa); }
+	  50%     { filter: drop-shadow(0 0 16px #38bdf8); }
+	}
+
+	/* Meta Shop slide-in */
+	#metaShop.fx-slide-in {
+	  transform: translateX(0);
+	  opacity: 1;
+	}
+	#metaShop {
+	  transition: 0.35s ease;
+	  transform: translateX(160%);
+	  opacity: 0;
+	}
+
+	/* Fade + zoom for Start cinematic */
+	.fx-start-cine {
+	  animation: startCine 0.9s ease forwards;
+	}
+	@keyframes startCine {
+	  0% { opacity: 0; transform: scale(0.88); filter: brightness(0.3); }
+	  100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+	}
+
+	/* Glitch effect for Retry */
+	.fx-glitch {
+	  animation: glitchAnim 0.25s steps(2) forwards;
+	}
+	@keyframes glitchAnim {
+	  0% { transform: translate(0,0); filter: hue-rotate(0deg); }
+	  50% { transform: translate(-4px,3px); filter: hue-rotate(70deg); }
+	  100% { transform: translate(0,0); filter: hue-rotate(0deg); }
+	}
+
+	/* Neon portal room transition */
+	.fx-portal {
+	  position: fixed;
+	  inset: 0;
+	  background: radial-gradient(circle, rgba(56,189,248,0.5), rgba(0,0,0,1));
+	  opacity: 0;
+	  animation: portalFX 0.35s ease forwards;
+	  pointer-events: none;
+	  z-index: 999999;
+	}
+	@keyframes portalFX {
+	  0% { opacity: 1; }
+	  100% { opacity: 0; }
+	}
+
+	/* WARNING banner for Boss intro */
+	.boss-banner {
+	  position: fixed;
+	  top: 35%;
+	  left: 50%;
+	  transform: translateX(-50%);
+	  padding: 18px 40px;
+	  font-size: 42px;
+	  font-weight: 900;
+	  background: rgba(0,0,0,0.65);
+	  border: 2px solid #f87171;
+	  color: #fee2e2;
+	  text-shadow: 0 0 18px red;
+	  opacity: 0;
+	  animation: bossIntro 1s ease forwards;
+	  z-index: 999999;
+	}
+	@keyframes bossIntro {
+	  0% { opacity: 0; transform: translate(-50%, -30%); }
+	  100% { opacity: 1; transform: translate(-50%, 0%); }
+	}
+
+
+	/* ===== Neon Character-Style Buttons ===== */
+	.btn {
+	  border-radius: 22px;
+	  padding: 12px 26px;
+	  font-size: 20px;
+	  font-weight: 900;
+	  letter-spacing: 0.5px;
+
+	  background: rgba(15, 23, 42, 0.55);
+	  backdrop-filter: blur(6px);
+
+	  border: 1px solid rgba(99, 102, 241, 0.65);
+	  box-shadow:
+		0 0 18px rgba(99, 102, 241, 0.45),
+		inset 0 0 12px rgba(56, 189, 248, 0.25);
+
+	  color: #e0e7ff;
+	  cursor: pointer;
+	  display: inline-flex;
+	  align-items: center;
+	  justify-content: center;
+	  gap: 10px;
+	  user-select: none;
+
+	  transition: 0.2s ease;
+	  animation: btnPulse 3s ease-in-out infinite;
+	}
+
+	.btn:hover {
+	  border-color: rgba(56, 189, 248, 0.85);
+	  box-shadow:
+		0 0 26px rgba(56, 189, 248, 0.65),
+		inset 0 0 14px rgba(99, 102, 241, 0.35);
+	  transform: translateY(-2px);
+	}
+
+	.btn:active {
+	  transform: translateY(1px) scale(0.97);
+	  box-shadow:
+		0 0 14px rgba(99, 102, 241, 0.35),
+		inset 0 0 18px rgba(56, 189, 248, 0.45);
+	}
+
+	@keyframes btnPulse {
+	  0%, 100% {
+		box-shadow:
+		  0 0 15px rgba(99, 102, 241, 0.40),
+		  inset 0 0 10px rgba(56, 189, 248, 0.25);
+	  }
+	  50% {
+		box-shadow:
+		  0 0 28px rgba(56, 189, 248, 0.65),
+		  inset 0 0 16px rgba(99, 102, 241, 0.4);
+	  }
+}
 
     .pill {
-  border-radius: 22px;
-  padding: 10px 22px;
-  font-size: 22px;
-  gap: 16px;
+	  border-radius: 22px;
+	  padding: 10px 22px;
+	  font-size: 19px;
+	  gap: 16px;
 
-  background: rgba(15, 23, 42, 0.55);
-  backdrop-filter: blur(6px);
+	  background: rgba(15, 23, 42, 0.55);
+	  backdrop-filter: blur(6px);
 
-  border: 1px solid rgba(99, 102, 241, 0.65);
-  box-shadow:
-    0 0 18px rgba(99, 102, 241, 0.45),
-    inset 0 0 12px rgba(56, 189, 248, 0.25);
+	  border: 1px solid rgba(99, 102, 241, 0.65);
+	  box-shadow:
+		0 0 18px rgba(99, 102, 241, 0.45),
+		inset 0 0 12px rgba(56, 189, 248, 0.25);
 
-  display: inline-flex;
-  align-items: center;
-  flex-wrap: wrap;
-  color: #e0e7ff;
-  letter-spacing: 0.5px;
+	  display: inline-flex;
+	  align-items: center;
+	  flex-wrap: wrap;
+	  color: #e0e7ff;
+	  letter-spacing: 0.5px;
 
-  transform: translateY(4px);
-  animation: hudPulse 3s ease-in-out infinite;
-}
+	  transform: translateY(4px);
+	  animation: hudPulse 3s ease-in-out infinite;
+	}
 
-@keyframes hudPulse {
-  0%, 100% { box-shadow: 0 0 18px rgba(99, 102, 241, 0.45), inset 0 0 12px rgba(56, 189, 248, 0.25); }
-  50%      { box-shadow: 0 0 28px rgba(56, 189, 248, 0.65), inset 0 0 16px rgba(99, 102, 241, 0.4); }
-}
+	@keyframes hudPulse {
+	  0%, 100% { box-shadow: 0 0 18px rgba(99, 102, 241, 0.45), inset 0 0 12px rgba(56, 189, 248, 0.25); }
+	  50%      { box-shadow: 0 0 28px rgba(56, 189, 248, 0.65), inset 0 0 16px rgba(99, 102, 241, 0.4); }
+	}
 
-.pill span b {
-  color: #7dd3fc;
-  text-shadow: 0 0 6px rgba(56,189,248,0.75);
-}
+	.pill span b {
+	  color: #7dd3fc;
+	  text-shadow: 0 0 6px rgba(56,189,248,0.75);
+	}
 
 
     .hint {
@@ -254,11 +496,15 @@ ins.adsbygoogle,
 <main class="main-game">
 <div class="top-banner"><div class="top-banner-inner"></div></div>
 <div class="game-header">
-<div class="title">🔫 Neon Dungeon Auto Shooter <span style="opacity:.65;font-weight:800;">(Core Build)</span></div>
+<div class="game-title">Neon Dungeon Auto Shooter</div>
+
 <div><a href="index.html">⬅ Back to Hub</a></div>
 </div>
 <div class="game-body">
+
 <div class="frame">
+
+
 <canvas height="540" id="game" width="960"></canvas>
 <div class="controls">
 <div class="left-controls">
@@ -269,14 +515,16 @@ ins.adsbygoogle,
 </div>
 <div class="right-controls">
 <div class="pill" id="hudPill">
-<span>HP: <b id="hudHP">0</b></span>
-<span>Damage: <b id="hudDmg">0</b></span>
-<span>FireRate: <b id="hudRate">0</b></span>
-<span>Room: <b id="hudRoom">0</b></span>
-<span>Gold: <b id="hudGold">0</b></span>
-<span>Weapon: <b id="hudWpn">—</b></span>
-<span>Rarity: <b id="hudRar">—</b></span>
+  <span title="HP (Health Points)">❤️ <b id="hudHP">0</b></span>
+  <span title="Damage per shot">🔫 <b id="hudDmg">0</b></span>
+  <span title="Fire Rate (shots per second)">⚡ <b id="hudRate">0</b></span>
+  <span title="Current Room Number">🏛 <b id="hudRoom">0</b></span>
+  <span title="Gold collected this run">💰 <b id="hudGold">0</b></span>
+  
+  <span title="Current Weapon Equipped">🔰 <b id="hudWpn">—</b></span>
+  <span title="Weapon Rarity">⭐ <b id="hudRar">—</b></span>
 </div>
+
 </div>
 </div>
 </div>
@@ -298,7 +546,7 @@ let uiRipples = [];
 let uiHoverSfx = new Audio('sounds/ui_hover.wav'); uiHoverSfx.volume=0.25;
 let lastHover=null;
 function handleMenuClick(mx, my){
-  const px = W*0.03, py = H*0.62;
+  const px = W*0.03, py = H*0.76;
   const cards = menuCharCards(px+60, py+30);
   for(const c of cards){
     if (mx>=c.x && mx<=c.x+c.w && my>=c.y && my<=c.y+c.h){
@@ -1833,7 +2081,7 @@ state.kills = 0;
 
 if (state.mode === "menu"){
   // Character selection click handling
-  const cards = menuCharCards(W*0.03+16, H*0.62+30);
+  const cards = menuCharCards(W*0.03+16, H*0.76+30);
   for (const c of cards){
     if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h){
       if (isUnlocked(c.id)){
@@ -1847,7 +2095,7 @@ if (state.mode === "menu"){
 		audio.chime();
       } else {
         audio.hurt();
-        floater(W/2, H*0.62 - 10, "Locked (Meta Shop)", theme.sub);
+        floater(W/2, H*0.76 - 10, "Locked (Meta Shop)", theme.sub);
       }
       break;
     }
@@ -1875,7 +2123,7 @@ if (state.mode === "menu"){
 
     // Update hover target in menu (character cards)
     if (state.mode === "menu"){
-      const cards = menuCharCards(W*0.03+16, H*0.62+30);
+      const cards = menuCharCards(W*0.03+16, H*0.76+30);
       let hoverId = null;
       for (const c of cards){
         if (p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h){
@@ -1973,7 +2221,7 @@ if (state.mode === "menu"){
     }
   });
 
-  btnRetry.addEventListener("click", ()=> startGame());
+  btnRetry.addEventListener("click", ()=> {fxRetryGlitch();startGame()});
 
   btnMeta.addEventListener("click", ()=>{
     audio.init();
@@ -2029,6 +2277,7 @@ if (state.mode === "menu"){
     resetRun();
     state.mode = "play";
     btnStart.textContent = "⏸ Pause";
+	fxStartCinematic();
   }
 
   function killGame(){
@@ -2889,6 +3138,44 @@ if (r.boss) {
   }
 
       ctx.restore();
+function drawIntroPanel() {
+    const w = W * 0.7;
+    const h = 240;
+    const x = (W - w) / 2;
+    const y = H * 0.15;
+
+    // background glass
+    ctx.save();
+    ctx.fillStyle = "rgba(2, 6, 23, 0.65)";
+    roundRect(x, y, w, h, 20);
+    ctx.fill();
+
+    // border glow
+    ctx.strokeStyle = "rgba(56,189,248,0.45)";
+    ctx.lineWidth = 3;
+    roundRect(x, y, w, h, 20);
+    ctx.stroke();
+
+    // title glow
+    ctx.font = "bold 48px 'Segoe UI'";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#e0f2fe";
+    ctx.shadowColor = "#38bdf8";
+    ctx.shadowBlur = 28;
+    ctx.fillText("NEON DUNGEON", W/2, y + 80);
+
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "18px 'Segoe UI'";
+    ctx.fillText("Auto-shooter roguelike.", W/2, y + 120);
+    ctx.fillText("Pick character, loot weapons, clear rooms.", W/2, y + 145);
+    ctx.fillText("Press Start or tap canvas.", W/2, y + 170);
+
+    ctx.font = "14px 'Segoe UI'";
+    ctx.fillStyle = "#94a3b8";
+    ctx.fillText("Tip: Clear rooms to open doors. Loot drops weapons and gems.", W/2, y + 205);
+    ctx.restore();
+}
 
 function drawOverlays(){
   if (state.mode === "menu" || state.mode === "meta") {
@@ -2898,7 +3185,8 @@ function drawOverlays(){
     ctx.restore();
   }
     if (state.mode === "menu"){
-      drawCenterPanel("NEON DUNGEON", "Auto-shooter roguelike core build.\nPick character, loot weapons, clear rooms.\nPress Start or tap canvas.");
+	drawIntroPanel();
+      //drawCenterPanel("NEON DUNGEON", "Auto-shooter roguelike core build.\nPick character, loot weapons, clear rooms.\nPress Start or tap canvas.");
       drawMiniButtonsMenu();
     } else if (state.mode === "dead"){
       const leads = loadLeads() || [];
@@ -2939,7 +3227,7 @@ function drawOverlays(){
 
   // Menu mini buttons (character quick-select)
   function drawMiniButtonsMenu(){
-    const px = W*0.03, py = H*0.62, w = W*0.94, h = 80;
+    const px = W*0.03, py = H*0.76, w = W*0.94, h = 80;
     ctx.save();
     ctx.fillStyle = "rgba(2,6,23,0.58)";
     roundRect(px, py, w, h, 16); ctx.fill();
@@ -3414,7 +3702,7 @@ function handleMetaClick(x, y){
 
   // Also allow character quick select on the menu overlay
   if (state.mode === "menu"){
-    const cards = menuCharCards(W*0.18+16, H*0.62+30);
+    const cards = menuCharCards(W*0.18+16, H*0.76+30);
     for (const c of cards){
       if (x>=c.x && x<=c.x+c.w && y>=c.y && y<=c.y+c.h){
         if (isUnlocked(c.id)){
@@ -3489,9 +3777,136 @@ function handleMetaClick(x, y){
   btnSound.textContent = audio.enabled ? "🔊 Sound: On" : "🔇 Sound: Off";
   setHUD();
   requestAnimationFrame(loop);
+/* ===== NEON FX PACK – JS ENGINE ===== */
 
+function fxStartCinematic() {
+  canvas.classList.add("fx-start-cine");
+  setTimeout(() => canvas.classList.remove("fx-start-cine"), 1200);
+}
+
+function fxRetryGlitch() {
+  canvas.classList.add("fx-glitch");
+  setTimeout(() => canvas.classList.remove("fx-glitch"), 400);
+}
+
+function fxPortal() {
+  const p = document.createElement("div");
+  p.className = "fx-portal";
+  document.body.appendChild(p);
+  setTimeout(() => p.remove(), 400);
+}
+
+function fxBossIntro(name="BOSS") {
+  const b = document.createElement("div");
+  b.className = "boss-banner";
+  b.innerText = "⚠ " + name + " IS HERE ⚠";
+  document.body.appendChild(b);
+  fxShake(700);
+  setTimeout(()=>b.remove(), 1800);
+}
+
+/* Camera shake */
+function fxShake(ms=300) {
+  const start = Date.now();
+  function loop() {
+    let t = Date.now() - start;
+    if (t > ms) { canvas.style.transform = ""; return; }
+    canvas.style.transform =
+      `translate(${(Math.random()*12-6)}px, ${(Math.random()*12-6)}px)`;
+    requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* Neon particles */
+function startNeonParticles() {
+  const amount = 18;
+  for (let i=0;i<amount;i++){
+    const s = document.createElement("div");
+    s.style.position="fixed";
+    s.style.width="6px";
+    s.style.height="6px";
+    s.style.borderRadius="50%";
+    s.style.background="rgba(56,189,248,0.6)";
+    s.style.filter="blur(2px)";
+    s.style.left=(Math.random()*100)+"vw";
+    s.style.top=(Math.random()*100)+"vh";
+    s.style.zIndex=5;
+    s.style.animation=
+      `float${i} ${4+Math.random()*4}s linear infinite`;
+    document.body.appendChild(s);
+  }
+}
 
 </script>
 </body>
 <script src="footer.js"></script>
+
+<!-- === LEADERBOARD SYSTEM ADDED (v2) === -->
+<script>
+// Leaderboard v2
+const KEY_LEADER='nds_leader_v2';
+
+function loadLeads(){
+  try { return JSON.parse(localStorage.getItem(KEY_LEADER))||[]; }
+  catch(e){ return []; }
+}
+
+function saveLeads(arr){
+  localStorage.setItem(KEY_LEADER, JSON.stringify(arr));
+}
+
+function calcScore(r){
+  return r.rooms*100 + r.gems*10 + r.kills*2 + r.boss*500;
+}
+
+function addLeaderboardEntry(entry){
+  let L = loadLeads();
+  entry.score = calcScore(entry);
+  entry.at = new Date().toISOString();
+  L.push(entry);
+  L.sort((a,b)=>b.score - a.score || b.rooms - a.rooms || b.kills - a.kills || new Date(b.at)-new Date(a.at));
+  if (L.length>500) L=L.slice(0,500);
+  saveLeads(L);
+}
+
+function getTop10(){
+  return loadLeads().slice(0,10).map((e,i)=>({...e, rank:i+1}));
+}
+</script>
+<!-- === END LEADERBOARD SYSTEM === -->
+
+
+<!-- === LEADERBOARD UI PATCH === -->
+<script>
+// Draw leaderboard tab (simple neon style)
+function drawLeaderboardTab(){
+    ctx.save();
+    ctx.fillStyle="rgba(2,6,23,0.85)";
+    roundRect(W*0.02, H*0.10, W*0.96, H*0.78, 18);
+    ctx.fill();
+    ctx.strokeStyle="rgba(99,102,241,0.45)";
+    ctx.stroke();
+
+    ctx.textAlign="center";
+    ctx.fillStyle="#9cf";
+    ctx.font="26px system-ui";
+    ctx.fillText("GLOBAL LEADERBOARD (Top 10)", W/2, H*0.16);
+
+    const top = getTop10();
+    ctx.font="14px system-ui";
+    let y = H*0.24;
+
+    for(const e of top){
+        const row =
+          `${e.rank}. ${e.name} | Score:${e.score} | Rooms:${e.rooms} | Gems:${e.gems} | Kills:${e.kills} | Boss:${e.boss} | ${e.char}`;
+        ctx.fillText(row, W/2, y);
+        y += 24;
+    }
+
+    ctx.restore();
+}
+</script>
+<!-- === END LEADERBOARD UI PATCH === -->
+
 </html>
