@@ -299,7 +299,7 @@ let uiHoverSfx = new Audio('sounds/ui_hover.wav'); uiHoverSfx.volume=0.25;
 let lastHover=null;
 function handleMenuClick(mx, my){
   const px = W*0.03, py = H*0.62;
-  const cards = menuCharCards(px+16, py+30);
+  const cards = menuCharCards(px+60, py+30);
   for(const c of cards){
     if (mx>=c.x && mx<=c.x+c.w && my>=c.y && my<=c.y+c.h){
       if (isUnlocked(c.id)){
@@ -2939,7 +2939,7 @@ function drawOverlays(){
 
   // Menu mini buttons (character quick-select)
   function drawMiniButtonsMenu(){
-    const px = W*0.03, py = H*0.62, w = W*0.94, h = 70;
+    const px = W*0.03, py = H*0.62, w = W*0.94, h = 80;
     ctx.save();
     ctx.fillStyle = "rgba(2,6,23,0.58)";
     roundRect(px, py, w, h, 16); ctx.fill();
@@ -2952,7 +2952,7 @@ function drawOverlays(){
     ctx.textBaseline = "middle";
     ctx.fillText("Character:", px+16, py+18);
 
-    const cards = menuCharCards(px+16, py+30);
+    const cards = menuCharCards(px+60, py+30);
     for(const c of cards){
       const unlocked = isUnlocked(c.id);
       
