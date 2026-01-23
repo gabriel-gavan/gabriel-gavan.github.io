@@ -652,6 +652,78 @@ ins.adsbygoogle,
     }
 }
 
+
+/* === MOBILE ONLY CLEAN LAYOUT (PC unaffected) === */
+
+/* Portrait */
+@media (max-width: 900px) and (orientation: portrait) {
+    canvas#game {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100% !important;
+    }
+    .game-header { display: flex !important; }
+    #joystick {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        transform: scale(1.4);
+        z-index: 9999;
+    }
+    .pill {
+        position: absolute !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        z-index: 9999;
+    }
+    .controls {
+        position: absolute !important;
+        top: 10px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 9999;
+        display: flex;
+        gap: 6px;
+    }
+}
+
+/* Landscape */
+@media (max-width: 900px) and (orientation: landscape) {
+    .game-header { display: none !important; }
+
+    canvas#game {
+        height: 100dvh !important;
+        width: auto !important;
+        max-width: none !important;
+        aspect-ratio: auto !important;
+    }
+
+    #joystick {
+        position: absolute !important;
+        bottom: 20px !important;
+        left: 20px !important;
+        transform: scale(1.5);
+        z-index: 10000;
+    }
+
+    .controls {
+        position: absolute !important;
+        top: 8px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 10000 !important;
+        display: flex;
+        gap: 6px;
+    }
+
+    .pill {
+        position: absolute !important;
+        top: 60px !important;
+        right: 20px !important;
+        z-index: 10000 !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -3337,7 +3409,7 @@ function drawIntroPanel() {
 
     ctx.font = "14px 'Segoe UI'";
     ctx.fillStyle = "#94a3b8";
-    ctx.fillText("Tip: Clear rooms to open doors. Loot drops weapons and gems!!!", W/2, y + 205);
+    ctx.fillText("Tip: Clear rooms to open doors. Loot drops weapons and gems!!!!", W/2, y + 205);
     ctx.restore();
 }
 
