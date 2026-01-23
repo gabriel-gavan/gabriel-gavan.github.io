@@ -488,6 +488,46 @@ ins.adsbygoogle,
 .adsbygoogle {
   z-index: 0 !important;
 }
+
+@media screen and (orientation: landscape) and (max-width: 900px) {
+    canvas {
+        height: 100vh !important;
+        width: auto !important;
+        max-width: none !important;
+        aspect-ratio: auto !important;
+    }
+    #joystick {
+        position: absolute;
+        bottom: 30px !important;
+        left: 30px !important;
+        transform: scale(1.2);
+        z-index: 999999;
+    }
+    .controls {
+        flex-wrap: nowrap !important;
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        gap: 6px !important;
+    }
+    .controls .btn {
+        padding: 6px 10px !important;
+        font-size: 14px !important;
+    }
+    .pill {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        padding: 6px 10px !important;
+        gap: 8px !important;
+        flex-wrap: nowrap !important;
+        font-size: 12px !important;
+        z-index: 99999;
+    }
+}
+
 </style>
 </head>
 <body>
