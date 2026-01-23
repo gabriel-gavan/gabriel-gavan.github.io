@@ -528,6 +528,51 @@ ins.adsbygoogle,
     }
 }
 
+
+/* Safe-area support for iPhone */
+@supports(padding: max(0px)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-top: env(safe-area-inset-top);
+  }
+}
+
+/* Bigger joystick on mobile */
+@media screen and (max-width:900px){
+  #joystick {
+    transform: scale(1.5) !important;
+    opacity: 0.95;
+  }
+}
+
+/* HUD compact top-right */
+@media screen and (max-width:900px){
+  .pill {
+    top: 10px !important;
+    bottom: auto !important;
+    right: 10px !important;
+    flex-direction: row !important;
+    background: rgba(0,0,0,0.35) !important;
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Buttons neon mobile */
+@media screen and (max-width:900px){
+  .btn {
+    border-radius:12px !important;
+    box-shadow:0 0 12px rgba(0,200,255,0.4);
+  }
+}
+
+/* Scale canvas on portrait */
+@media screen and (orientation:portrait){
+  canvas{
+    width:100% !important;
+    height:auto !important;
+  }
+}
+
 </style>
 </head>
 <body>
