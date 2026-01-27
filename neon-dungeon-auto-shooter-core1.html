@@ -609,8 +609,8 @@ ins.adsbygoogle,
        ===================================== */
     .pill {
 		position: absolute !important;
-		top: -28px !important;   /* directly under the header */
-		right: 65px !important;
+		top: 30px !important;   /* directly under the header */
+		right: 190px !important;
 
 		height: 22px !important;
 		display: flex !important;
@@ -780,8 +780,8 @@ const MOBILE_LANDSCAPE_Y_OFFSET = 50;
       window.matchMedia("(max-width: 900px)").matches;
 
     // Backing-store size for crispness
-    const pxW = Math.max(1, Math.round(rect.width  * dpr));
-    const pxH = Math.max(1, Math.round(rect.height * dpr));
+    const pxW = Math.max(1, Math.round(rect.width ));
+    const pxH = Math.max(1, Math.round(rect.height));
     if (canvas.width !== pxW || canvas.height !== pxH){
       canvas.width  = pxW;
       canvas.height = pxH;
@@ -789,7 +789,7 @@ const MOBILE_LANDSCAPE_Y_OFFSET = 50;
 
     if (isMobileLandscape){
       // Use CSS-pixel coordinates (so DPR doesn't make everything look tiny) + small zoom.
-      const zoom = 1.12;
+      const zoom = 1;
       ctx.setTransform(dpr * zoom, 0, 0, dpr * zoom, 0, 0);
       W = rect.width  / zoom;
       H = rect.height / zoom;
