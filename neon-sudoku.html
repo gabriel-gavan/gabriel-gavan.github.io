@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Neon Arena – Sudoku Deluxe</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+body{
+  background:#020617;
+  color:#e5e7eb;
+  font-family:system-ui;
+  margin:0;
+  display:flex;
+  justify-content:center;
+  min-height:100vh;
+}
+.page-wrap{display:flex;width:100%;max-width:1440px;padding:12px;gap:12px;}
+.side-banner{flex:0 0 162px;}
+.main-game{
+  flex:1;
+  background:rgba(15,23,42,0.95);
+  border-radius:14px;
+  border:1px solid #1f2937;
+  box-shadow:0 16px 50px rgba(0,0,0,0.7);
+  display:flex;flex-direction:column;
+}
+.top-banner{padding:0.6rem 1.2rem 0.4rem;border-bottom:1px solid #111827;}
+.game-header{
+  padding:0.55rem 1.2rem;border-bottom:1px solid #111827;
+  color:#38bdf8;font-size:26px;font-weight:800;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.game-header .sub{font-size:13px;color:#94a3b8;font-weight:600}
+.game-body{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:1rem;}
+.sudoku-wrap{display:flex;gap:25px;align-items:flex-start;flex-wrap:wrap;justify-content:center;width:100%;}
+/* grid */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(9,50px);
+  grid-template-rows:repeat(9,50px);
+  border:4px solid #38bdf8;
+  border-radius:12px;
+  padding:3px;
+  box-shadow:0 0 25px rgba(56,189,248,0.55);
+  animation:pulse 2.8s infinite alternate;
+}
+@keyframes pulse{
+  0%{box-shadow:0 0 16px rgba(56,189,248,0.35);}
+  100%{box-shadow:0 0 42px rgba(56,189,248,0.55);}
+}
+.cell{
+  border:1px solid #334155;
+  background:#0f172a;
+  display:flex;justify-content:center;align-items:center;
+  font-size:24px;
+  cursor:pointer;
+  color:white;
+  transition:0.12s;
+  user-select:none;
+}
+.cell.prefill{
+  color:#38bdf8;
+  font-weight:800;
+}
+.cell.selected{
+  background:rgba(56,189,248,0.35);
+  box-shadow:0 0 14px #38bdf8 inset,0 0 12px #38bdf8;
+}
+.cell.cross{background:rgba(56,189,248,0.18);}
+.cell.block{background:rgba(168,85,247,0.22);box-shadow:0 0 12px #a855f7 inset;}
+.cell.bad{
+  background:rgba(239,68,68,0.25) !important;
+  box-shadow:0 0 16px rgba(239,68,68,0.8) inset, 0 0 12px rgba(239,68,68,0.75);
+}
+/* thicker 3x3 borders (subtle, as requested earlier) */
+.cell{ border-width:1px; }
+.cell.bR{ border-right:3px solid #64748b; }
+.cell.bB{ border-bottom:3px solid #64748b; }
+
+/* sidebar */
+.sidebar{
+  width:260px;
+  display:flex;flex-direction:column;gap:12px;
+  background:#0f172a;border:1px solid #334155;
+  padding:14px;border-radius:12px;
+  box-shadow:0 0 16px rgba(56,189,248,0.25);
+}
+.sbtitle{
+  font-weight:900;
+  color:#e2e8f0;
+  display:flex;justify-content:space-between;align-items:baseline;
+}
+.badge{
+  font-size:12px;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid #334155;
+  color:#94a3b8;
+}
+.metric{
+  display:flex;gap:8px;justify-content:space-between;
+  font-size:14px;color:#cbd5e1;
+}
+.metric b{color:#e2e8f0}
+.row{display:flex;gap:10px}
+.sbbtn, .sbsel{
+  background:#1e293b;border:1px solid #475569;color:white;
+  padding:10px 16px;border-radius:8px;cursor:pointer;
+  font-size:14px;
+}
+.sbbtn:hover, .sbsel:hover{border-color:#38bdf8;}
+.sbbtn.secondary{background:#0b1222;}
+.sbbtn.danger:hover{border-color:#ef4444;}
+.sbsep{height:1px;background:#1f2937;margin:2px 0;}
+.small{font-size:12px;color:#94a3b8;line-height:1.35}
+.toast{
+  position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
+  background:rgba(2,6,23,0.85);border:1px solid #334155;color:#e5e7eb;
+  padding:10px 12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  display:none;z-index:99999;max-width:min(520px,92vw);
+}
+.toast.show{display:block;}
+/* leaderboard modal */
+#lbOverlay{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.55);z-index:99999;
+}
+#lbPanel{
+  width:min(720px,92vw);
+  max-height:min(80vh,720px);
+  overflow:auto;
+  background:#0b1120;
+  border:2px solid #38bdf8;
+  border-radius:14px;
+  box-shadow:0 0 25px rgba(56,189,248,0.55);
+  padding:14px;
+}
+#lbPanel h2{margin:0 0 10px;color:#38bdf8;text-shadow:0 0 8px #38bdf8;}
+.lbTabs{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.lbTab{padding:8px 12px;border-radius:999px;border:1px solid #334155;background:#0f172a;color:#e2e8f0;cursor:pointer}
+.lbTab.active{border-color:#38bdf8;box-shadow:0 0 12px rgba(56,189,248,0.35)}
+.lbTable{width:100%;border-collapse:collapse;font-size:14px;}
+.lbTable th,.lbTable td{padding:8px 6px;border-bottom:1px solid #1f2937;text-align:left;}
+.lbTable th{color:#93c5fd}
+.lbRight{text-align:right}
+.lbFooter{display:flex;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+@media (max-width: 1050px){
+  .grid{grid-template-columns:repeat(9, min(10vw,50px)); grid-template-rows:repeat(9, min(10vw,50px));}
+  .cell{font-size:min(5vw,24px);}
+  .sidebar{width:min(420px, 92vw);}
+}
+
+body {
+  background:
+    linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+    url("images/hub-bg.jpg") center center / cover no-repeat fixed !important;
+}
+</style>
+</head>
+
+<body>
+<div class="page-wrap">
+  <aside class="side-banner"></aside>
+
+  <main class="main-game">
+    <div class="top-banner"></div>
+    <div class="game-header">
+  <div>
+    <div>Neon Sudoku Deluxe</div>
+    <div class="sub" id="modeLabel">Classic</div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:14px;position:relative;">
+    <div class="sub" id="statusLabel">Autosave: ON</div>
+
+    <a id="backToHub" href="index.html"
+       style="
+         color:#38bdf8;
+         font-size:14px;
+         text-decoration:none;
+         font-weight:700;
+         padding:4px 10px;
+         border:1px solid #38bdf8;
+         border-radius:8px;
+         box-shadow:0 0 10px rgba(56,189,248,0.45);
+       ">
+      ⬅ Back to Hub
+    </a>
+  </div>
+</div>
+
+    <div class="game-body">
+      <div class="sudoku-wrap">
+        <div id="grid" class="grid" aria-label="Sudoku grid"></div>
+
+        <div class="sidebar">
+          <div class="sbtitle">
+            <span>Controls</span>
+            <span class="badge" id="difficultyBadge">Medium</span>
+          </div>
+
+          <div class="metric"><span>Time</span><b id="timeTxt">00:00</b></div>
+          <div class="metric"><span>Moves</span><b id="movesTxt">0</b></div>
+
+          <div class="row">
+            <button class="sbbtn" onclick="newClassic()">New Game</button>
+            <button class="sbbtn secondary" onclick="startDaily()">Daily</button>
+          </div>
+
+          <select id="diff" class="sbsel" onchange="setDifficulty(this.value)">
+            <option value="40">Easy (40 clues)</option>
+            <option value="35" selected>Medium (35 clues)</option>
+            <option value="30">Hard (30 clues)</option>
+            <option value="25">Expert (25 clues)</option>
+          </select>
+
+          <div class="row">
+            <button class="sbbtn" onclick="checkWin()">Check</button>
+            <button class="sbbtn" onclick="solvePuzzle()">Solve</button>
+          </div>
+
+          <div class="sbsep"></div>
+
+          <div class="row">
+            <button class="sbbtn secondary" onclick="showLeaderboard()">Leaderboard</button>
+            <button class="sbbtn danger secondary" onclick="clearAutosave()">Clear Autosave</button>
+          </div>
+
+          <div class="small" id="hintTxt">
+            Tip: click a cell then type 1–9. Backspace to clear.
+          </div>
+        </div>
+<div class="sbsep"></div>
+<div class="small" style=
+	"line-height:1.35;
+	  margin-top:-110px;
+	  margin-left:530px;      /* mai spre dreapta */
+	  margin-bottom:-10px;   /* mai sus */
+	  font-size:10px;
+	">
+  <b style="color:#38bdf8;">How to Play</b><br>
+  • Click a cell to select it<br>
+  • Press 1–9 to fill<br>
+  • Backspace to clear<br>
+  • Check = validate<br>
+  • Solve = auto-complete<br>
+  <button class="sbbtn secondary" onclick="openHTP()" style=
+    "margin-top:-50px;
+	padding:6px 12px;
+	margin-left:200px; 
+	margin-bottom:-10px;
+	font-size:12px;">More…</button>
+</div>
+
+      </div>
+    </div>
+  </main>
+
+  <aside class="side-banner"></aside>
+</div>
+
+<div id="lbOverlay" onclick="closeLB()">
+  <div id="lbPanel" onclick="event.stopPropagation()"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+/* ==========================
+   State
+========================== */
+let puzzle=[...Array(9)].map(()=>Array(9).fill(0));
+let solution=[...Array(9)].map(()=>Array(9).fill(0));
+let fixed=[...Array(9)].map(()=>Array(9).fill(false));
+let selected=null;
+let moves=0;
+
+let mode="classic"; // classic | daily
+let currentDifficultyClues=35; // clues count
+let timerInt=null;
+let seconds=0;
+
+const AUTOSAVE_KEY="neon_sudoku_autosave_v2";
+const LB_KEY="neon_sudoku_leaderboard_v2";
+
+/* ==========================
+   UI helpers
+========================== */
+function fmtTime(s){
+  const m=Math.floor(s/60);
+  const ss=s%60;
+  return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss;
+}
+function setModeLabel(){
+  const el=document.getElementById("modeLabel");
+  if(mode==="daily"){
+    el.textContent="Daily • "+dailySeed();
+  } else {
+    el.textContent="Classic";
+  }
+}
+function setDifficultyBadge(){
+  const badge=document.getElementById("difficultyBadge");
+  const v=currentDifficultyClues;
+  badge.textContent = (v>=40?"Easy":v>=35?"Medium":v>=30?"Hard":"Expert");
+}
+function toast(msg){
+  const t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(toast._tm);
+  toast._tm=setTimeout(()=>t.classList.remove("show"), 1800);
+}
+function startTimer(){
+  stopTimer();
+  timerInt=setInterval(()=>{
+    seconds++;
+    document.getElementById("timeTxt").textContent=fmtTime(seconds);
+  },1000);
+}
+function stopTimer(){
+  if(timerInt){ clearInterval(timerInt); timerInt=null; }
+}
+function resetCounters(){
+  moves=0; seconds=0;
+  document.getElementById("movesTxt").textContent="0";
+  document.getElementById("timeTxt").textContent="00:00";
+}
+
+/* ==========================
+   Grid build
+========================== */
+const grid=document.getElementById("grid");
+for(let r=0;r<9;r++){
+  for(let c=0;c<9;c++){
+    let d=document.createElement("div");
+    d.className="cell";
+    d.dataset.r=r; d.dataset.c=c;
+    if((c+1)%3===0 && c!==8) d.classList.add("bR");
+    if((r+1)%3===0 && r!==8) d.classList.add("bB");
+    d.onclick=()=>selectCell(r,c);
+    grid.appendChild(d);
+  }
+}
+
+function render(){
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      const d=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+      const v=puzzle[r][c];
+      d.textContent = v===0 ? "" : v;
+      d.classList.toggle("prefill", fixed[r][c] && v!==0);
+    }
+  }
+}
+
+function selectCell(r,c){
+  selected={r,c};
+  document.querySelectorAll(".cell").forEach(e=>e.classList.remove("selected","cross","block","bad"));
+  // cross highlight
+  for(let i=0;i<9;i++){
+    document.querySelector(`.cell[data-r="${r}"][data-c="${i}"]`).classList.add("cross");
+    document.querySelector(`.cell[data-r="${i}"][data-c="${c}"]`).classList.add("cross");
+  }
+  // block highlight
+  let br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
+  for(let rr=br;rr<br+3;rr++){
+    for(let cc=bc;cc<bc+3;cc++){
+      document.querySelector(`.cell[data-r="${rr}"][data-c="${cc}"]`).classList.add("block");
+    }
+  }
+  document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`).classList.add("selected");
+}
+
+/* ==========================
+   Input handling
+========================== */
+document.addEventListener("keydown",e=>{
+  if(!selected) return;
+  const {r,c}=selected;
+  if(fixed[r][c]) { toast("This cell is fixed."); return; }
+
+  if(e.key>='1' && e.key<='9'){
+    const n=parseInt(e.key);
+    puzzle[r][c]=n;
+    moves++;
+    document.getElementById("movesTxt").textContent=String(moves);
+    render(); selectCell(r,c);
+    autosaveSoon();
+  }
+  if(e.key==="Backspace" || e.key==="Delete"){
+    puzzle[r][c]=0;
+    moves++;
+    document.getElementById("movesTxt").textContent=String(moves);
+    render(); selectCell(r,c);
+    autosaveSoon();
+  }
+});
+
+/* ==========================
+   Sudoku generator/solver
+========================== */
+function isValid(b,r,c,n){
+  for(let i=0;i<9;i++) if(b[r][i]===n || b[i][c]===n) return false;
+  const br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
+  for(let rr=br;rr<br+3;rr++) for(let cc=bc;cc<bc+3;cc++) if(b[rr][cc]===n) return false;
+  return true;
+}
+function solveBoard(b){
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      if(b[r][c]===0){
+        for(let n=1;n<=9;n++){
+          if(isValid(b,r,c,n)){
+            b[r][c]=n;
+            if(solveBoard(b)) return true;
+            b[r][c]=0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+// Seeded RNG for Daily
+function dailySeed(){
+  const d=new Date();
+  const yyyy=d.getFullYear();
+  const mm=String(d.getMonth()+1).padStart(2,'0');
+  const dd=String(d.getDate()).padStart(2,'0');
+  return `${yyyy}${mm}${dd}`;
+}
+function rng(seed){
+  // LCG
+  let s=seed % 2147483647;
+  if(s<=0) s+=2147483646;
+  return function(){
+    s = s * 16807 % 2147483647;
+    return (s-1)/2147483646;
+  }
+}
+function shuffled(arr, rand){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(rand()* (i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function generateSolvedWithSeed(seedInt){
+  const rand=rng(seedInt);
+  const b=[...Array(9)].map(()=>Array(9).fill(0));
+  function fill(){
+    for(let r=0;r<9;r++){
+      for(let c=0;c<9;c++){
+        if(b[r][c]===0){
+          const nums=shuffled([1,2,3,4,5,6,7,8,9], rand);
+          for(const n of nums){
+            if(isValid(b,r,c,n)){
+              b[r][c]=n;
+              if(fill()) return true;
+              b[r][c]=0;
+            }
+          }
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  fill();
+  return b;
+}
+function makePuzzleFromSolution(sol, clues, seedInt){
+  const rand=rng(seedInt+1337);
+  const p=JSON.parse(JSON.stringify(sol));
+  let removed=81-clues;
+  while(removed>0){
+    const r=Math.floor(rand()*9);
+    const c=Math.floor(rand()*9);
+    if(p[r][c]!==0){
+      p[r][c]=0;
+      removed--;
+    }
+  }
+  return p;
+}
+function buildFixedFromPuzzle(p){
+  fixed=[...Array(9)].map(()=>Array(9).fill(false));
+  for(let r=0;r<9;r++) for(let c=0;c<9;c++) fixed[r][c]=p[r][c]!==0;
+}
+
+/* ==========================
+   Game start modes
+========================== */
+function setDifficulty(v){
+  currentDifficultyClues=parseInt(v);
+  setDifficultyBadge();
+  if(mode==="classic"){
+    newClassic();
+  } else {
+    startDaily(); // daily respects difficulty too
+  }
+}
+
+function newClassic(){
+  mode="classic";
+  setModeLabel();
+  setDifficultyBadge();
+  resetCounters();
+  const b=[...Array(9)].map(()=>Array(9).fill(0));
+  solveBoard(b);
+  solution=JSON.parse(JSON.stringify(b));
+  puzzle=JSON.parse(JSON.stringify(b));
+  // remove to get clues
+  let rem=81-currentDifficultyClues;
+  while(rem>0){
+    const r=Math.floor(Math.random()*9), c=Math.floor(Math.random()*9);
+    if(puzzle[r][c]!==0){ puzzle[r][c]=0; rem--; }
+  }
+  buildFixedFromPuzzle(puzzle);
+  render();
+  startTimer();
+  autosaveSoon(true);
+  toast("New classic puzzle");
+}
+
+function startDaily(){
+  mode="daily";
+  setModeLabel();
+  setDifficultyBadge();
+  resetCounters();
+  const seedStr=dailySeed();
+  const seedInt=parseInt(seedStr,10);
+  solution=generateSolvedWithSeed(seedInt);
+  puzzle=makePuzzleFromSolution(solution, currentDifficultyClues, seedInt);
+  buildFixedFromPuzzle(puzzle);
+  render();
+  startTimer();
+  autosaveSoon(true);
+  toast("Daily puzzle loaded");
+}
+
+/* ==========================
+   Check, Solve
+========================== */
+function markErrors(){
+  let badCount=0;
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      if(puzzle[r][c]!==0 && puzzle[r][c]!==solution[r][c]){
+        const d=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+        d.classList.add("bad");
+        badCount++;
+      }
+    }
+  }
+  if(badCount>0) toast(`${badCount} incorrect cell(s) highlighted`);
+  return badCount;
+}
+
+function checkWin(){
+  // clear previous bad flags (keep selection highlight done by selectCell)
+  document.querySelectorAll(".cell").forEach(e=>e.classList.remove("bad"));
+
+  // fast validate
+  let ok=true;
+  for(let r=0;r<9;r++){
+    for(let c=0;c<9;c++){
+      if(puzzle[r][c]!==solution[r][c]){ ok=false; }
+    }
+  }
+  if(!ok){
+    markErrors();
+    alert("❌ Incorrect. I highlighted wrong cells.");
+    return;
+  }
+
+  stopTimer();
+  const time=seconds;
+  const entry={
+    mode:mode,
+    date: mode==="daily" ? dailySeed() : null,
+    difficulty: currentDifficultyClues,
+    time: time,
+    moves: moves,
+    finishedAt: Date.now()
+  };
+  addToLeaderboard(entry);
+  clearAutosave(true);
+  alert(`🎉 Correct!\nTime: ${fmtTime(time)}\nMoves: ${moves}`);
+}
+
+function solvePuzzle(){
+  if(!confirm("Solve will fill in the entire puzzle. Continue?")) return;
+  puzzle=JSON.parse(JSON.stringify(solution));
+  buildFixedFromPuzzle(puzzle);
+  render();
+  stopTimer();
+  autosaveSoon(true);
+  toast("Solved");
+}
+
+/* ==========================
+   Leaderboard
+========================== */
+function loadLB(){
+  try{
+    const raw=localStorage.getItem(LB_KEY);
+    if(!raw) return {classic:[], daily:[]};
+    const lb=JSON.parse(raw);
+    if(!lb.classic) lb.classic=[];
+    if(!lb.daily) lb.daily=[];
+    return lb;
+  }catch(e){
+    return {classic:[], daily:[]};
+  }
+}
+function saveLB(lb){
+  localStorage.setItem(LB_KEY, JSON.stringify(lb));
+}
+function addToLeaderboard(entry){
+  const lb=loadLB();
+  if(entry.mode==="daily"){
+    lb.daily.push(entry);
+    // keep best (lowest time) per date+difficulty (top 10)
+    lb.daily.sort((a,b)=>a.time-b.time || a.moves-b.moves);
+    if(lb.daily.length>50) lb.daily.length=50;
+  }else{
+    lb.classic.push(entry);
+    lb.classic.sort((a,b)=>a.time-b.time || a.moves-b.moves);
+    if(lb.classic.length>50) lb.classic.length=50;
+  }
+  saveLB(lb);
+}
+function showLeaderboard(tab){
+  const lb=loadLB();
+  const overlay=document.getElementById("lbOverlay");
+  const panel=document.getElementById("lbPanel");
+
+  let current=tab || "classic";
+  function tabBtn(name,label){
+    return `<button class="lbTab ${current===name?'active':''}" data-tab="${name}">${label}</button>`;
+  }
+
+  const rows = (current==="daily"? lb.daily : lb.classic);
+  const title = current==="daily" ? "🏆 Daily Leaderboard" : "🏆 Classic Leaderboard";
+
+  let html = `
+    <h2>${title}</h2>
+    <div class="lbTabs">
+      ${tabBtn("classic","Classic")}
+      ${tabBtn("daily","Daily")}
+    </div>
+    <table class="lbTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>${current==="daily" ? "Date" : "Mode"}</th>
+          <th>Difficulty</th>
+          <th class="lbRight">Time</th>
+          <th class="lbRight">Moves</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows.length? rows.map((e,i)=>`
+          <tr>
+            <td>${i+1}</td>
+            <td>${current==="daily" ? (e.date||"-") : "Classic"}</td>
+            <td>${e.difficulty} clues</td>
+            <td class="lbRight">${fmtTime(e.time)}</td>
+            <td class="lbRight">${e.moves}</td>
+          </tr>
+        `).join("") : `<tr><td colspan="5" style="color:#94a3b8;padding:10px;">No scores yet. Finish a puzzle to record one.</td></tr>`}
+      </tbody>
+    </table>
+    <div class="lbFooter">
+      <button class="sbbtn secondary" id="lbClose">Close</button>
+      <button class="sbbtn danger secondary" id="lbClear">Clear Leaderboard</button>
+    </div>
+  `;
+  panel.innerHTML=html;
+  overlay.style.display="flex";
+
+  panel.querySelectorAll(".lbTab").forEach(b=>{
+    b.onclick=()=>showLeaderboard(b.dataset.tab);
+  });
+  panel.querySelector("#lbClose").onclick=closeLB;
+  panel.querySelector("#lbClear").onclick=()=>{
+    if(confirm("Clear leaderboard?")){
+      localStorage.removeItem(LB_KEY);
+      showLeaderboard(current);
+    }
+  };
+}
+function closeLB(){
+  document.getElementById("lbOverlay").style.display="none";
+}
+
+/* ==========================
+   Autosave
+========================== */
+let autosaveTimer=null;
+function autosaveSoon(force=false){
+  if(force){
+    autosaveNow();
+    return;
+  }
+  clearTimeout(autosaveTimer);
+  autosaveTimer=setTimeout(autosaveNow, 350);
+}
+function autosaveNow(){
+  const data={
+    v:2,
+    savedAt: Date.now(),
+    mode,
+    difficulty: currentDifficultyClues,
+    seconds,
+    moves,
+    puzzle,
+    solution,
+    fixed
+  };
+  try{
+    localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(data));
+    document.getElementById("statusLabel").textContent="Autosave: ON";
+  }catch(e){
+    document.getElementById("statusLabel").textContent="Autosave: FAILED";
+  }
+}
+function loadAutosave(){
+  const raw=localStorage.getItem(AUTOSAVE_KEY);
+  if(!raw) return false;
+  try{
+    const data=JSON.parse(raw);
+    if(!data || !data.puzzle || !data.solution) return false;
+
+    // If daily, ensure it's today's daily. Otherwise ignore to avoid stale daily.
+    if(data.mode==="daily"){
+      // Only restore if same daily seed (today)
+      const today=dailySeed();
+      // We don't store date separately; infer by regenerating solution with today's seed and comparing first row
+      // Safer: accept restore only if solution matches today's seed-generated solution
+      const seedInt=parseInt(today,10);
+      const todaySol=generateSolvedWithSeed(seedInt);
+      if(JSON.stringify(todaySol)!==JSON.stringify(data.solution)){
+        return false;
+      }
+    }
+
+    mode=data.mode||"classic";
+    currentDifficultyClues=parseInt(data.difficulty||35);
+    seconds=parseInt(data.seconds||0);
+    moves=parseInt(data.moves||0);
+    puzzle=data.puzzle;
+    solution=data.solution;
+    fixed=data.fixed || buildFixedFromPuzzle(puzzle);
+
+    setModeLabel();
+    setDifficultyBadge();
+    document.getElementById("diff").value=String(currentDifficultyClues);
+    document.getElementById("timeTxt").textContent=fmtTime(seconds);
+    document.getElementById("movesTxt").textContent=String(moves);
+    render();
+    startTimer();
+    toast("Autosave restored");
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+function clearAutosave(silent=false){
+  localStorage.removeItem(AUTOSAVE_KEY);
+  if(!silent) toast("Autosave cleared");
+}
+
+/* ==========================
+   Boot
+========================== */
+setModeLabel();
+setDifficultyBadge();
+document.getElementById("diff").value=String(currentDifficultyClues);
+
+if(!loadAutosave()){
+  newClassic();
+}
+</script>
+
+
+
+
+
+<div id="htpOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;justify-content:center;align-items:center;z-index:99999;">
+  <div style="background:#0f172a;padding:20px;border-radius:12px;border:2px solid #38bdf8;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 0 25px rgba(56,189,248,0.55);color:white;">
+    <h2 style="color:#38bdf8;text-align:center;margin-bottom:10px;">How to Play Sudoku</h2>
+    <p><b>Goal:</b> Fill the 9×9 grid so every row, column, and 3×3 block contains digits 1 to 9 exactly once.</p>
+    <p><b>Select:</b> Click a cell. Its row, column and block will highlight.</p>
+    <p><b>Enter Numbers:</b> Press keys 1–9 on your keyboard.</p>
+    <p><b>Erase:</b> Press Backspace/Delete to clear the selected cell.</p>
+    <p><b>Fixed Cells:</b> Blue numbers cannot be changed.</p>
+    <p><b>Daily Mode:</b> Generates a new puzzle every day (same for everyone).</p>
+    <p><b>Check:</b> Highlights incorrect cells.</p>
+    <p><b>Solve:</b> Instantly completes the board.</p>
+    <p><b>Autosave:</b> Your progress auto-loads when you return.</p>
+    <p><b>Leaderboard:</b> Tracks fastest times (Classic & Daily).</p>
+    <div style="text-align:center;margin-top:12px;">
+      <button class="sbbtn" onclick="closeHTP()">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openHTP(){ document.getElementById('htpOverlay').style.display='flex'; }
+function closeHTP(){ document.getElementById('htpOverlay').style.display='none'; }
+</script>
+
+</body>
+</html>
