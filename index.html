@@ -779,7 +779,158 @@ html, body {
   border-color: #a5b4fc;
   transform: translateY(-1px);
 }
+/* ---------- FEEDBACK COMMENT THREAD FIX ---------- */
+.feedback-comment {
+    text-align: left !important;
+    margin-left: 22px;
+    padding: 2px 8px;
+    border-left: 2px solid #4ea1ff33;
+    background: rgba(255,255,255,0.015);
+    border-radius: 6px;
+	margin-top: 32px;
+	 opacity: 0.8;
+	 font-size: 12px;
+}
 
+
+
+.feedback-user {
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 2px;
+}
+
+.feedback-date {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+.feedback-text {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+.feedback-reply-btn {
+    float: right;
+    margin-top: 32px;
+    padding: 2px 8px;
+    background: none;
+    border: none;
+    color: #4ea1ff;
+    cursor: pointer;
+    font-size: 12px;
+    opacity: 0.8;
+}
+.feedback-reply-btn:hover {
+    opacity: 1;
+}
+
+.feedback-reply-thread {
+    margin-left: 24px;
+    border-left: 2px solid #4ea1ff11;
+    padding-left: 16px;
+    margin-top: 10px;
+}
+
+/* ====== NEON COMMENT DESIGN ====== */
+
+.feedback-comment,
+.feedback-reply-thread {
+    background: rgba(0, 0, 0, 0.35);
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(0, 255, 255, 0.28);
+    box-shadow: 0 0 10px rgba(0,255,255,0.15);
+    backdrop-filter: blur(4px);
+	
+
+    opacity: 0.9;
+}
+
+/* Stronger glow on hover */
+.feedback-comment:hover,
+.feedback-reply-thread:hover {
+    box-shadow: 0 0 14px rgba(0,255,255,0.45);
+    border-color: rgba(0,255,255,0.55);
+}
+
+/* USER + DATE on same row */
+.feedback-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.feedback-user {
+    font-weight: 600;
+    color: #4eeaff;
+    font-size: 14px;
+}
+
+.feedback-date {
+    font-size: 12px;
+    opacity: 0.75;
+    color: #cfffef;
+}
+
+/* Comment text */
+.feedback-text {
+    white-space: pre-wrap;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    color: #e5e5e5;
+}
+
+/* Reply button left-aligned */
+
+/* FORCE reply comments to be left aligned */
+/* Replies should be clearly indented deeper than parent comment */
+.feedback-reply-thread {
+    text-align: left !important;
+    margin-left: 38px; /* was 22px – now replies move further right */
+    padding: 8px 12px;
+    border-left: 2px solid #4ea1ff33;
+    background: rgba(255,255,255,0.02); /* lighter than parent comment */
+    border-radius: 6px;
+
+    /* Thinner look */
+    font-size: 13px;
+    line-height: 1.3;
+    opacity: 0.9;
+}
+
+/* Username inside replies */
+.feedback-reply-thread .feedback-user {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 2px;
+    color: #7ec8ff;
+}
+
+/* Timestamp inside replies */
+.feedback-reply-thread .feedback-date {
+    font-size: 10px;
+    opacity: 0.6;
+    margin-bottom: 4px;
+}
+
+/* Reply text */
+.feedback-reply-thread .feedback-text {
+    font-size: 13px;
+}
+
+/* Reply button inside replies */
+.feedback-reply-thread .feedback-reply-btn {
+    font-size: 11px;
+    margin-top: 24px;
+}
+
+.reply-level {
+    margin-left: 34px; /* every recursion shifts further right */
+}
 </style>
 <link rel="icon" href="data:,">
 
@@ -805,6 +956,7 @@ html, body {
     padding:10px 0;
     color:#93c5fd;
   }
+  
 }
 </style>
 <script>
@@ -902,7 +1054,29 @@ function toggleMobileMenu(){
 		</div>
 		<section class="grid">
 
+		
+				<!-- Neon Sudoku (Logic Puzzle) -->
+		<div class="card game-card"
+			 data-id="neon-sudoku"
+			 data-url="neon-sudoku.html"
+			 data-title="Neon Sudoku Deluxe"
+			 data-tags="logic,puzzle,classic"
+			 data-desc="Clean neon-style Sudoku with difficulty levels, mobile numpad, auto-check and smooth design.">
+		  <div class="card-header-row">
+			<a href="neon-sudoku-deluxe.html">🔢 Neon Sudoku Deluxe</a>
+		  </div>
+		  <p class="card-desc">
+			 A glowing neon-style Sudoku experience with smooth animations, mobile support,
+        difficulty selector, and leaderboard. Challenge your logic in a cyber grid!
+		  </p>
+		  <div class="tag-row">
+			<span class="tag">logic</span>
+			<span class="tag">puzzle</span>
+			<span class="tag">classic</span>
+		  </div>
+		</div>
 
+		
 		  <div class="card game-card"
 			 data-id="neon-dungeon-auto-shooter"
 			 data-url="neon-dungeon-auto-shooter-core1.html"
@@ -911,7 +1085,7 @@ function toggleMobileMenu(){
 			 data-desc="Auto-shooter roguelike dungeon crawler with rooms, doors, minimap, loot drops, meta upgrades and characters.">
 		  <div class="card-header-row">
 			<a href="neon-dungeon-auto-shooter-core1.html">🔫 Neon Dungeon Auto Shooter</a>
-			<span class="badge-new">New</span>
+			
 		  </div>
 <p class="card-desc">
 			 — enhanced neon gameplay with improved user experience.</p>
@@ -934,7 +1108,7 @@ function toggleMobileMenu(){
 				 data-desc="Tap lanes in time with the beat. Combos, accuracy and difficulty levels.">
 			  <div class="card-header-row">
 				<a href="neon-beat-tap.html">🎵 Neon Beat Tap</a>
-				<span class="badge-new">New</span>
+				
 			  </div>
 <p class="card-desc">
 				 — enhanced neon gameplay with improved user experience.</p>
@@ -952,7 +1126,7 @@ function toggleMobileMenu(){
 			 data-desc="Drag units to the grid and watch them fight automatically each round. Combine 3 to upgrade.">
 		  <div class="card-header-row">
 			<a href="auto-battler.html">🧠 Neon Auto Battler</a>
-			<span class="badge-new">New</span>
+			
 		  </div>
 <p class="card-desc">
 			 — enhanced neon gameplay with improved user experience.</p>
@@ -969,7 +1143,7 @@ function toggleMobileMenu(){
 			 data-desc="Endless neon runner: jump, boost, collect coins, unlock skins.">
 		  <div class="card-header-row">
 			<a href="neon-runner-rush.html">🏃 Neon Runner Rush (Endless)</a>
-			<span class="badge-new">New</span>
+			
 		  </div>
 <p class="card-desc">
 			 — enhanced neon gameplay with improved user experience.</p>
@@ -988,7 +1162,7 @@ function toggleMobileMenu(){
 			 data-desc="Survive waves in a shrinking safe zone. Upgrade between waves and unlock skins.">
 		  <div class="card-header-row">
 			<a href="survivor-arena.html">🟣 Survivor Arena</a>
-			<span class="badge-new">New</span>
+			
 		  </div>
 <p class="card-desc">
 			 — enhanced neon gameplay with improved user experience.</p>
@@ -1006,7 +1180,7 @@ function toggleMobileMenu(){
              data-desc="Dash, shoot and survive waves of enemies in a neon arena.">
           <div class="card-header-row">
             <a href="neon-arena.html">🌌 Neon Arena</a>
-            <span class="badge-new">New</span>
+           
           </div>
 <p class="card-desc">
              — enhanced neon gameplay with improved user experience.</p>
@@ -1024,7 +1198,7 @@ function toggleMobileMenu(){
              data-desc="Run over obstacles and avoid enemies.">
           <div class="card-header-row">
             <a href="neo-runner.html">🛰 Neo Runner</a>
-            <span class="badge-new">New</span>
+           
           </div>
 <p class="card-desc">
              — enhanced neon gameplay with improved user experience.</p>
@@ -1042,7 +1216,7 @@ function toggleMobileMenu(){
              data-desc="Vertical shmup: dodge bullets, grab powerups, defeat bosses.">
           <div class="card-header-row">
             <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
-            <span class="badge-new">New</span>
+            
           </div>
 <p class="card-desc">
              — enhanced neon gameplay with improved user experience.</p>
@@ -1060,7 +1234,7 @@ function toggleMobileMenu(){
              data-desc="Build towers along the path and stop enemy waves.">
           <div class="card-header-row">
             <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
-            <span class="badge-new">New</span>
+           
           </div>
 <p class="card-desc">
              — enhanced neon gameplay with improved user experience.</p>
@@ -1455,6 +1629,198 @@ function toggleMobileMenu(){
 <p>Thank you for visiting Neon Mini Game Hub. Bookmark the site, explore new genres, and enjoy the growing collection of neon-powered arcade games!</p>
 </section>
 
+
+
+
+
+<!-- ============================
+      💬 COMMUNITY FEEDBACK
+     ============================ -->
+<section class="category-title" style="margin-top:40px;">
+    <span class="label">💬 Community Feedback</span>
+</section>
+
+<section id="feedback-widget" class="neon-feedback"
+    style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
+           background: rgba(2,6,23,0.65);
+           border: 1px solid rgba(148,163,184,0.25);
+           border-radius: 16px;">
+
+    <h2 style="margin-top:0; color:#e5e7eb;">Share your thoughts!</h2>
+    <p style="color:#cbd5f5; opacity:0.85; margin-bottom:16px;">
+        Leave a comment or reply—no login needed.
+    </p>
+
+    <!-- Username -->
+    <input id="fb-username" type="text" placeholder="Your name"
+        style="width:100%; padding:10px 14px; border-radius:8px;
+               border:1px solid #334155; background:#0f172a;
+               color:#e5e7eb; margin-bottom:10px;">
+
+    <!-- Comment Text -->
+    <textarea id="fb-text" rows="3" placeholder="Write your comment..."
+        style="width:100%; padding:10px 14px; border-radius:8px;
+               border:1px solid #334155; background:#0f172a;
+               color:#e5e7eb;"></textarea>
+
+    <button id="fb-submit"
+        style="margin-top:10px; padding:10px 16px; border-radius:8px;
+               background:#4f46e5; border:none; color:white; font-weight:600;
+               cursor:pointer;">
+        Post Comment
+    </button>
+
+    <!-- Comment List -->
+    <div id="fb-comments" style="margin-top:30px;"></div>
+</section>
+
+
+<!-- FEEDBACK LOGIC -->
+<script>
+(function() {
+    const API = "https://neon-feedback.gabi-gabz.workers.dev/";
+    const ARTICLE_ID = "homepage-feedback";
+
+    const elUser = document.getElementById("fb-username");
+    const elText = document.getElementById("fb-text");
+    const elSubmit = document.getElementById("fb-submit");
+    const elList = document.getElementById("fb-comments");
+
+    // Create UUID (v4)
+    function uuid() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+            const r = Math.random()*16|0;
+            const v = c === 'x' ? r : (r&0x3)|0x8;
+            return v.toString(16);
+        });
+    }
+
+    // POST Comment
+    async function postComment(parentId=null) {
+        const username = elUser.value.trim();
+        const text = elText.value.trim();
+
+        if (!username || !text) {
+            alert("Please enter a username and comment.");
+            return;
+        }
+
+        const payload = {
+            id: uuid(),
+            username,
+            text,
+            parentId,
+            timestamp: Date.now()
+        };
+
+        await fetch(API + "?article=" + ARTICLE_ID, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(payload)
+        });
+
+        elText.value = "";
+        loadComments();
+    }
+
+    // Render Comments + Replies
+function renderComment(c) {
+    return `
+    <div class="${c.parentId ? "feedback-reply-thread" : "feedback-comment"}">
+
+        <div class="feedback-head">
+            <div class="feedback-meta">
+                <span class="feedback-user">${c.username}</span>
+                <span class="feedback-on"> commented on </span>
+                <span class="feedback-date">${new Date(c.time).toLocaleString()}</span>
+            </div>
+
+            <button class="feedback-reply-btn" data-id="${c.id}">Reply</button>
+        </div>
+
+        <div class="feedback-text">${c.text}</div>
+    </div>
+    `;
+}
+function renderReply(c) {
+    return `
+    <div class="feedback-reply-thread">
+
+        <div class="feedback-head">
+            <div class="feedback-meta">
+                <span class="feedback-user">@${c.username}</span>
+                <span class="feedback-on"> replied on </span>
+                <span class="feedback-date">${new Date(c.time).toLocaleString()}</span>
+            </div>
+
+            <button class="feedback-reply-btn" data-id="${c.id}">Reply</button>
+        </div>
+
+        <div class="feedback-text">${c.text}</div>
+    </div>
+    `;
+}
+
+
+
+
+
+    // Load Comments
+   async function loadComments() {
+    const res = await fetch(API + "?article=" + ARTICLE_ID);
+    const data = await res.json();
+    const comments = data.comments || [];
+
+    // Build lookup map by parentId
+    const tree = {};
+    comments.forEach(c => {
+        const parent = c.parentId || "root";
+        if (!tree[parent]) tree[parent] = [];
+        tree[parent].push(c);
+    });
+
+    // Recursive function
+    function renderThread(parentId = "root") {
+        if (!tree[parentId]) return "";
+
+        return tree[parentId]
+            .sort((a,b) => a.timestamp - b.timestamp)
+            .map(c => `
+                ${renderComment(c)}
+                <div class="reply-level">
+                    ${renderThread(c.id)}
+                </div>
+            `)
+            .join("");
+    }
+
+    // Render everything starting from root
+    elList.innerHTML = renderThread("root");
+}
+
+// Attach reply button click handlers
+	document.addEventListener("click", function(e) {
+		if (e.target.classList.contains("feedback-reply-btn")) {
+			const parentId = e.target.getAttribute("data-id");
+			replyTo(parentId);
+		}
+	});
+
+
+    // Reply Handler
+    window.replyTo = function(parentId) {
+        elText.focus();
+        elText.value = "@reply ";
+        elSubmit.onclick = () => postComment(parentId);
+    };
+
+    // Normal comment
+    elSubmit.onclick = () => postComment(null);
+
+    // Initial load
+    loadComments();
+})();
+</script>
 
 <section class="category-title"><span class="label">📰 Latest Articles</span></section>
 <section class="grid">
