@@ -3,6 +3,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<title>Neon Mini Game Hub - Free HTML5 Neon Games</title>
+<meta name="description" content="Play free neon-style HTML5 games instantly. No downloads, no accounts, just fast arcade fun.">
+<meta property="og:title" content="Neon Mini Game Hub">
+<meta property="og:description" content="A free collection of neon-style HTML5 mini-games.">
+<meta property="og:type" content="website">
+
   <meta charset="UTF-8">
   <title>Mini Game Hub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -704,8 +710,111 @@ html, body {
 }
 
 
-  </style>
+  
+.fa-thumb {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border: 1px solid rgba(148,163,184,0.25);
+}
+
+
+/* === Enhanced Neon Article Cards (Medium Glow) === */
+.fa-card {
+  position: relative;
+  background: linear-gradient(145deg, #020617, #0a0f24);
+  border: 1px solid rgba(99,102,241,0.25);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.55);
+  transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  overflow: hidden;
+}
+.fa-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  border-color: #818cf8;
+  box-shadow: 0 20px 45px rgba(56,189,248,0.35), 0 0 25px rgba(99,102,241,0.45);
+}
+.fa-thumb {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  border: 1px solid rgba(148,163,184,0.25);
+  transition: opacity .2s ease;
+}
+.fa-card:hover .fa-thumb {
+  opacity: 0.92;
+}
+.fa-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: #e0e7ff;
+}
+.fa-card p {
+  margin: 0 0 12px;
+  color: #cbd5f5;
+  font-size: .88rem;
+  line-height: 1.28rem;
+  opacity: 0.92;
+}
+.fa-more-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  font-size: .85rem;
+  border-radius: 999px;
+  background: rgba(79,70,229,0.25);
+  border: 1px solid rgba(99,102,241,0.55);
+  color: #e5e7eb;
+  text-decoration: none;
+  transition: background .18s ease, transform .18s ease, border-color .18s ease;
+}
+.fa-card:hover .fa-more-btn {
+  background: rgba(99,102,241,0.35);
+  border-color: #a5b4fc;
+  transform: translateY(-1px);
+}
+
+</style>
 <link rel="icon" href="data:,">
+
+<style>
+.mobile-nav-toggle {
+  display:none;
+  cursor:pointer;
+  font-size:22px;
+  color:#93c5fd;
+  padding:10px;
+}
+@media(max-width:768px){
+  nav.desktop-nav { display:none; }
+  .mobile-nav-toggle { display:block; }
+  .mobile-menu {
+    display:none;
+    background:#0a0f1f;
+    padding:15px;
+    border-top:1px solid #1e293b;
+  }
+  .mobile-menu a {
+    display:block;
+    padding:10px 0;
+    color:#93c5fd;
+  }
+}
+</style>
+<script>
+function toggleMobileMenu(){
+  const m=document.getElementById('mobileMenu');
+  m.style.display = (m.style.display==='block'?'none':'block');
+}
+</script>
+
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Website", "name": "Neon Mini Game Hub", "url": "https://neonminigamehub.com", "description": "Play free neon-style HTML5 games instantly in your browser."}</script>
 </head>
 <body>
 
@@ -721,6 +830,15 @@ html, body {
     </div>
 
     <header>
+<nav style="margin-top:10px; display:flex; gap:15px; flex-wrap:wrap;">
+  <a href="index.html" style="color:#93c5fd;">Home</a>
+  <a href="about.html" style="color:#93c5fd;">About</a>
+  <a href="contact.html" style="color:#93c5fd;">Contact</a>
+  <a href="articles.html" style="color:#93c5fd;">Articles</a>
+  <a href="privacy.html" style="color:#93c5fd;">Privacy</a>
+  <a href="terms.html" style="color:#93c5fd;">Terms</a>
+</nav>
+
       <h1>Neon Mini Game Hub</h1>
       <p>Pick a game and play instantly. All games run in your browser as simple HTML files.</p>
       <div class="badge-row">
@@ -729,6 +847,29 @@ html, body {
         <div class="pill">Great for quick breaks</div>
       </div>
     </header>
+<div class="mobile-nav-toggle" onclick="toggleMobileMenu()">☰ Articles</div>
+
+<div class="featured-articles" style="padding:20px; text-align:center;">
+  <h2 style="color:#93c5fd;">Featured Articles</h2>
+  <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+    <div class="fa-card"><img src="images/thumb1.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+      <h3>The Rise of HTML5 Neon Games</h3>
+      <p>A deep dive into why browser arcades are returning in force.</p><a class="fa-more-btn" href="#">Read more →</a>
+      <a href="article1.html" style="color:#93c5fd;">Read more</a>
+    </div>
+    <div class="fa-card"><img src="images/thumb2.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+      <h3>How Modern Browser Games Are Built</h3>
+      <p>Learn how HTML, CSS and JS power fast neon games.</p><a class="fa-more-btn" href="#">Read more →</a>
+      <a href="article2.html" style="color:#93c5fd;">Read more</a>
+    </div>
+    <div class="fa-card"><img src="images/thumb3.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+      <h3>Top 10 Principles of Mini-Game Design</h3>
+      <p>The fundamentals of creating addictive fast-play games.</p><a class="fa-more-btn" href="#">Read more →</a>
+      <a href="article3.html" style="color:#93c5fd;">Read more</a>
+    </div>
+  </div>
+</div>
+
 
     <!-- FILTERS / SEARCH / SHUFFLE -->
     <div class="filters-bar">
@@ -761,6 +902,7 @@ html, body {
 		</div>
 		<section class="grid">
 
+
 		  <div class="card game-card"
 			 data-id="neon-dungeon-auto-shooter"
 			 data-url="neon-dungeon-auto-shooter-core1.html"
@@ -771,7 +913,8 @@ html, body {
 			<a href="neon-dungeon-auto-shooter-core1.html">🔫 Neon Dungeon Auto Shooter</a>
 			<span class="badge-new">New</span>
 		  </div>
-		  <p class="card-desc">Clear rooms to open doors, grab loot drops, upgrade permanently in the meta shop, and chase best runs.</p>
+<p class="card-desc">
+			 — enhanced neon gameplay with improved user experience.</p>
 		  <div class="tag-row">
 			<span class="tag">shooter</span><span class="tag">roguelike</span><span class="tag">arcade</span><span class="tag">featured</span>
 		  </div>
@@ -793,7 +936,8 @@ html, body {
 				<a href="neon-beat-tap.html">🎵 Neon Beat Tap</a>
 				<span class="badge-new">New</span>
 			  </div>
-			  <p class="card-desc">Rhythm game: hit notes on the neon track, build combos, and chase perfect timing.</p>
+<p class="card-desc">
+				 — enhanced neon gameplay with improved user experience.</p>
 			  <div class="tag-row">
 				<span class="tag">arcade</span><span class="tag">skill</span><span class="tag">typing</span>
 			  </div>
@@ -810,7 +954,8 @@ html, body {
 			<a href="auto-battler.html">🧠 Neon Auto Battler</a>
 			<span class="badge-new">New</span>
 		  </div>
-		  <p class="card-desc">Place units on the grid, then auto-fight rounds. Reroll shop, build combos, and upgrade to ★★★.</p>
+<p class="card-desc">
+			 — enhanced neon gameplay with improved user experience.</p>
 		  <div class="tag-row">
 			<span class="tag">strategy</span><span class="tag">AI</span><span class="tag">auto-battler</span>
 		  </div>
@@ -826,7 +971,8 @@ html, body {
 			<a href="neon-runner-rush.html">🏃 Neon Runner Rush (Endless)</a>
 			<span class="badge-new">New</span>
 		  </div>
-		  <p class="card-desc">Side-scroll endless runner with obstacles, power-ups, coins and unlockable characters.</p>
+<p class="card-desc">
+			 — enhanced neon gameplay with improved user experience.</p>
 		  <div class="tag-row">
 			<span class="tag">arcade</span><span class="tag">classic</span><span class="tag">featured</span>
 		  </div>
@@ -844,7 +990,8 @@ html, body {
 			<a href="survivor-arena.html">🟣 Survivor Arena</a>
 			<span class="badge-new">New</span>
 		  </div>
-		  <p class="card-desc">Battle Royale Lite: survive waves, stay inside the shrinking safe zone, pick upgrades, unlock skins.</p>
+<p class="card-desc">
+			 — enhanced neon gameplay with improved user experience.</p>
 		  <div class="tag-row">
 			<span class="tag">arcade</span><span class="tag">shooter</span><span class="tag">strategy</span>
 		  </div>
@@ -861,7 +1008,8 @@ html, body {
             <a href="neon-arena.html">🌌 Neon Arena</a>
             <span class="badge-new">New</span>
           </div>
-          <p class="card-desc">Dash, shoot and survive intense enemy waves in a glowing neon battlefield.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span><span class="tag">campaign</span>
           </div>
@@ -878,7 +1026,8 @@ html, body {
             <a href="neo-runner.html">🛰 Neo Runner</a>
             <span class="badge-new">New</span>
           </div>
-          <p class="card-desc">Run, dodge and time your jumps to survive a futuristic gauntlet of enemies and traps.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">featured</span>
           </div>
@@ -895,7 +1044,8 @@ html, body {
             <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
             <span class="badge-new">New</span>
           </div>
-          <p class="card-desc">Classic vertical shoot ’em up: dodge bullet storms, grab power-ups and crush bosses.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -912,7 +1062,8 @@ html, body {
             <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
             <span class="badge-new">New</span>
           </div>
-          <p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">tower defense</span><span class="tag">strategy</span>
           </div>
@@ -936,7 +1087,8 @@ html, body {
           <div class="card-header-row">
             <a href="rps.html">✊ Rock Paper Scissors</a>
           </div>
-          <p class="card-desc">Pick your move and try to outsmart the computer in this timeless mini duel.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">classic</span>
           </div>
@@ -951,7 +1103,8 @@ html, body {
           <div class="card-header-row">
             <a href="snake.html">🐍 Snake</a>
           </div>
-          <p class="card-desc">Eat the food, grow longer and don’t crash into walls or your own tail.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">classic</span>
           </div>
@@ -966,7 +1119,8 @@ html, body {
           <div class="card-header-row">
             <a href="tictactoe-ai.html">⭕ Tic Tac Toe vs AI</a>
           </div>
-          <p class="card-desc">Play against an AI in this simple but tricky 3×3 grid battle.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">classic</span><span class="tag">AI</span>
           </div>
@@ -981,7 +1135,8 @@ html, body {
           <div class="card-header-row">
             <a href="whack-a-mole.html">🐹 Whack-a-Mole</a>
           </div>
-          <p class="card-desc">Test your reflexes by hitting moles before they vanish from their holes.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">reflex</span>
           </div>
@@ -1005,7 +1160,8 @@ html, body {
           <div class="card-header-row">
             <a href="guess-number.html">🎯 Guess The Number</a>
           </div>
-          <p class="card-desc">Choose a range and try to guess the hidden number in the fewest attempts.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">logic</span><span class="tag">numbers</span>
           </div>
@@ -1020,7 +1176,8 @@ html, body {
           <div class="card-header-row">
             <a href="reaction-test.html">⚡ Reaction Test</a>
           </div>
-          <p class="card-desc">Wait for the signal, then click instantly and see how fast you really are.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">speed</span><span class="tag">reflex</span>
           </div>
@@ -1035,7 +1192,8 @@ html, body {
           <div class="card-header-row">
             <a href="memory-grid.html">🧠 Memory Grid</a>
           </div>
-          <p class="card-desc">Watch the pattern of tiles light up, then repeat it without making a mistake.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">memory</span>
           </div>
@@ -1050,7 +1208,8 @@ html, body {
           <div class="card-header-row">
             <a href="typing-speed.html">⌨ Typing Speed Test</a>
           </div>
-          <p class="card-desc">Type the given text as fast as possible and see your WPM and accuracy.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">typing</span><span class="tag">skill</span>
           </div>
@@ -1065,7 +1224,8 @@ html, body {
           <div class="card-header-row">
             <a href="higher-lower.html">⬆⬇ Higher / Lower</a>
           </div>
-          <p class="card-desc">Predict if the next number drawn will be higher or lower than the current one.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">guessing</span>
           </div>
@@ -1080,7 +1240,8 @@ html, body {
           <div class="card-header-row">
             <a href="minesweeper.html">💣 Minesweeper</a>
           </div>
-          <p class="card-desc">Use number hints to uncover all safe tiles and avoid the hidden mines.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">logic</span><span class="tag">puzzle</span>
           </div>
@@ -1095,7 +1256,8 @@ html, body {
           <div class="card-header-row">
             <a href="simon.html">🎵 Simon Says (Colors)</a>
           </div>
-          <p class="card-desc">Memorize and replay the growing sequence of colorful lights and sounds.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">memory</span>
           </div>
@@ -1110,7 +1272,8 @@ html, body {
           <div class="card-header-row">
             <a href="quiz.html">❓ Mini Quiz</a>
           </div>
-          <p class="card-desc">Answer short questions across random topics and see how many you get right.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">trivia</span>
           </div>
@@ -1125,7 +1288,8 @@ html, body {
           <div class="card-header-row">
             <a href="timer-bomb.html">⏳ Timer Bomb</a>
           </div>
-          <p class="card-desc">Work under pressure to disarm the bomb before the timer reaches zero.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">pressure</span>
           </div>
@@ -1140,7 +1304,8 @@ html, body {
           <div class="card-header-row">
             <a href="pattern-lock.html">🔒 Pattern Lock</a>
           </div>
-          <p class="card-desc">Memorize the pattern, then draw it perfectly to unlock.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">pattern</span>
           </div>
@@ -1155,7 +1320,8 @@ html, body {
           <div class="card-header-row">
             <a href="sliding-puzzle.html">🧩 Sliding Puzzle (3×3)</a>
           </div>
-          <p class="card-desc">Slide tiles around until every piece is in the right place.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">puzzle</span>
           </div>
@@ -1179,7 +1345,8 @@ html, body {
           <div class="card-header-row">
             <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
           </div>
-          <p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">tower defense</span><span class="tag">strategy</span>
           </div>
@@ -1194,7 +1361,8 @@ html, body {
           <div class="card-header-row">
             <a href="neon-arena.html">🌌 Neon Arena</a>
           </div>
-          <p class="card-desc">A fast-paced arena where positioning, timing and upgrades matter for survival.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -1209,7 +1377,8 @@ html, body {
           <div class="card-header-row">
             <a href="neo-runner.html">🛰 Neo Runner</a>
           </div>
-          <p class="card-desc">Plan your jumps and movement to chain safe paths through enemy-infested levels.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">strategy</span>
           </div>
@@ -1224,7 +1393,8 @@ html, body {
           <div class="card-header-row">
             <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
           </div>
-          <p class="card-desc">Pick the right powerups and flight path to survive bullet patterns and boss fights.</p>
+<p class="card-desc">
+             — enhanced neon gameplay with improved user experience.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -1275,7 +1445,34 @@ html, body {
 <!-- ============================================================ -->
 
 © <span id="footer-year"></span> Neo Runner Arcade — All Rights Reserved.</p>
-    </footer>
+    
+<section style="max-width:1100px;margin:40px auto;padding:20px;background:rgba(2,6,23,0.65);border:1px solid rgba(148,163,184,0.25);border-radius:16px;color:#e5e7eb;">
+<h2>About Neon Mini Game Hub</h2>
+<p>Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript. Our mission is to offer fast, lightweight, and engaging gameplay experiences without downloads, accounts, or interruptions.</p>
+<p>Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices. We focus on neon aesthetics, responsive controls, smooth animations, and addictive gameplay loops.</p>
+<p>This hub contains only original titles—not externally embedded games. Every release is built, tested, and improved directly by the developer, ensuring quality and consistency across the entire experience.</p>
+<p>New games are added weekly along with major updates, character expansions, new maps, smarter enemies, and better balance changes. Our top priority is delivering a premium gaming experience available instantly from any browser.</p>
+<p>Thank you for visiting Neon Mini Game Hub. Bookmark the site, explore new genres, and enjoy the growing collection of neon-powered arcade games!</p>
+</section>
+
+
+<section class="category-title"><span class="label">📰 Latest Articles</span></section>
+<section class="grid">
+<div class="card" onclick="location.href='article1.html'">
+<h3>The Rise of HTML5 Neon Games</h3>
+<p>Why neon browser games exploded in popularity in 2025–2026.</p>
+</div>
+<div class="card" onclick="location.href='article2.html'">
+<h3>How Modern Browser Games Are Built</h3>
+<p>A behind‑the‑scenes look at HTML, CSS, JS game engines.</p>
+</div>
+<div class="card" onclick="location.href='article3.html'">
+<h3>Top 10 Design Principles</h3>
+<p>How developers create viral, addictive mini‑games.</p>
+</div>
+</section>
+
+</footer>
 
   </main>
 
