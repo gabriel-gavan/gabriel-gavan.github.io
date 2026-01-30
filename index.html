@@ -79,17 +79,7 @@
     }
 
     /* --------- MAIN CONTENT (HUB) --------- */
-    .main-content {
-      flex: 1 1 auto;
-      background: rgba(15,23,42,0.9);
-      border-radius: 16px;
-      border: 1px solid #1f2937;
-      box-shadow: 0 18px 50px rgba(0,0,0,0.7);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: calc(100vh - 24px);
-    }
+    .main-content { background: rgba(0,0,0,0.6); }
 
     /* --------- TOP STRIP (no manual ad units for Auto Ads) --------- */
     .top-banner {
@@ -109,24 +99,46 @@
       min-height: 20px;
     }
 
-    header {
-      padding: 1.5rem 1.5rem 0.8rem;
-      border-bottom: 1px solid #111827;
-      background: url('images/header-bg.jpg') center/cover no-repeat;
-      color: white;
-      position: relative;
+    header.hero{
+      padding: 12px; /* match page-wrap spacing */
+      border: none;
+      background: none;
+      color: #e5e7eb;
     }
-
-    /* dim overlay for readability */
-    header::before {
-      content: "";
+    .hero-inner{
+      max-width: 1300px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 16px 40px rgba(15,23,42,0.85);
+      position: relative;
+      background: rgba(2,6,23,0.65);
+    }
+    .hero-img{
+      width: 100%;
+      height: auto;          /* show FULL picture (no cropping) */
+      display: block;
+    }
+    .hero-overlay{
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,0.55);
+      background: rgba(0,0,0,0.55); /* readability */
+      pointer-events: none;
     }
-
-    header * { position: relative; z-index: 2; }
-
+    .hero-content{
+      position: absolute;
+      inset: 0;
+      padding: 1.5rem 1.5rem 0.9rem;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      justify-content: flex-start;
+    }
+    .hero-content nav{ margin-top: 10px; display:flex; gap:15px; flex-wrap:wrap; }
+    .hero-content h1{ margin: 0 0 0.4rem; font-size: 1.7rem; letter-spacing: 0.03em; }
+    .hero-content p{ margin: 0; opacity: 0.85; font-size: 0.9rem; max-width: 980px; }
     header h1 {
       margin: 0 0 0.4rem;
       font-size: 1.7rem;
@@ -220,15 +232,15 @@
     .content-scroll {
       overflow: auto;
       padding: 0.4rem 1.5rem 1rem;
-      background-image: url("images/hub-bg.jpg");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
+      
+      
+      
+      
       border-top: 1px solid rgba(255,255,255,0.08);
     }
 
     @media (max-width: 700px) {
-      header { padding: 1.1rem 1rem 0.8rem; }
+      header.hero { padding: 1.1rem 1rem 0.8rem; }
       .content-scroll { padding: 0.4rem 1rem 0.8rem; }
     }
 
@@ -362,7 +374,9 @@
       font-size: .78rem;
       color: #9ca3af;
       border-top: 1px solid #111827;
-      background: #020617;
+        background:
+		linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+		url("images/hub-bg.jpg") center/cover no-repeat fixed;
     }
 
     footer span { opacity: 0.9; }
@@ -495,6 +509,13 @@
       font-size: 0.8rem;
       cursor: pointer;
     }
+header.hero {
+    margin-bottom: 0;
+}
+
+.page-wrap {
+    padding-top: 0;
+}
 
     /* ================== PRIVACY SETTINGS FLOATING BUTTON ================== */
     .privacy-settings-btn {
@@ -543,6 +564,9 @@ html, body {
 
   .main-content {
     border-radius: 14px;
+	background:
+    linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+    url("images/hub-bg.jpg") center/cover no-repeat fixed;
   }
 }
 
@@ -557,7 +581,7 @@ html, body {
   }
 
   /* Header becomes more compact */
-  header {
+  header.hero {
     padding: 1.05rem 0.95rem 0.85rem;
     background-position: center top;
   }
@@ -931,6 +955,62 @@ html, body {
 .reply-level {
     margin-left: 34px; /* every recursion shifts further right */
 }
+header::before{content:"";position:absolute;inset:0;background:none;} 
+.hero-card-section{
+  overflow: auto;
+      padding: 0.4rem 1.5rem 1rem;
+    
+}
+.hero-card{
+ width:100%;
+  max-width:1280px;
+  height: auto;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid rgba(148,163,184,0.25);
+  background:linear-gradient(145deg,#020617,#0a0f24);
+  box-shadow:0 16px 40px rgba(15,23,42,0.85);
+  position:relative;
+  margin-left:180px;   
+}
+.hero-img {
+  width: 100%;
+  height: auto;       /* imaginea își păstrează proporțiile */
+  object-fit: contain; /* NU se taie niciodată */
+}
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.45);
+}
+.hero-content{
+  position:absolute;
+  inset:0;
+  padding:2rem;
+  z-index:2;
+  color:white;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+  justify-content:flex-end;
+}
+.hero-content h1{
+  font-size:2.2rem;
+  margin:0;
+}
+.badge-row{
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.badge{
+  padding:4px 10px;
+  border:1px solid rgba(148,163,184,0.25);
+  border-radius:8px;
+  background:rgba(0,0,0,0.35);
+  font-size:0.85rem;
+}
+
 </style>
 <link rel="icon" href="data:,">
 
@@ -970,6 +1050,40 @@ function toggleMobileMenu(){
 </head>
 <body>
 
+
+
+
+
+<header class="hero-card-section">
+  <div class="hero-card">
+  
+    <img src="images/header-bg.jpg" class="hero-img" alt="">
+	
+    <div class="hero-overlay"></div>
+	
+    <div class="hero-content">
+      <!-- PAGE TITLE + BADGES MOVED HERE -->
+      <nav style="
+				  margin-top:10px;
+				  display:flex;
+				  gap:15px;
+				  flex-wrap:wrap;
+				  position:absolute;
+				  top:10px;
+				  left:20px;
+				  z-index:3;
+				">
+		  <a href="index.html" style="color:#93c5fd;">Home</a>
+		  <a href="about.html" style="color:#93c5fd;">About</a>
+		  <a href="contact.html" style="color:#93c5fd;">Contact</a>
+		  <a href="articles.html" style="color:#93c5fd;">Articles</a>
+		  <a href="privacy.html" style="color:#93c5fd;">Privacy</a>
+		  <a href="terms.html" style="color:#93c5fd;">Terms</a>
+		</nav>
+    </div>
+  </div>
+</header>
+
 <div class="page-wrap">
 
   <!-- LEFT COLUMN (kept empty for Auto Ads) -->
@@ -981,24 +1095,7 @@ function toggleMobileMenu(){
       <div class="top-banner-inner"></div>
     </div>
 
-    <header>
-<nav style="margin-top:10px; display:flex; gap:15px; flex-wrap:wrap;">
-  <a href="index.html" style="color:#93c5fd;">Home</a>
-  <a href="about.html" style="color:#93c5fd;">About</a>
-  <a href="contact.html" style="color:#93c5fd;">Contact</a>
-  <a href="articles.html" style="color:#93c5fd;">Articles</a>
-  <a href="privacy.html" style="color:#93c5fd;">Privacy</a>
-  <a href="terms.html" style="color:#93c5fd;">Terms</a>
-</nav>
-
-      <h1>Neon Mini Game Hub</h1>
-      <p>Pick a game and play instantly. All games run in your browser as simple HTML files.</p>
-      <div class="badge-row">
-        <div class="pill">No download</div>
-        <div class="pill">Keyboard + mouse friendly</div>
-        <div class="pill">Great for quick breaks</div>
-      </div>
-    </header>
+    
 <div class="mobile-nav-toggle" onclick="toggleMobileMenu()">☰ Articles</div>
 
 <div class="featured-articles" style="padding:20px; text-align:center;">
@@ -1046,7 +1143,7 @@ function toggleMobileMenu(){
     </div>
 
     <div class="content-scroll">
-
+		<h2 style="color:#93c5fd;padding:1px; text-align:center;">Neon Games</h2>
       <!-- ===================== TOP PICKS ===================== -->
       <div class="category-title">
         <span class="label">🔥 Top Picks</span>
@@ -1087,8 +1184,7 @@ function toggleMobileMenu(){
 			<a href="neon-dungeon-auto-shooter-core1.html">🔫 Neon Dungeon Auto Shooter</a>
 			
 		  </div>
-<p class="card-desc">
-			 — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Clear rooms to open doors, grab loot drops, upgrade permanently in the meta shop, and chase best runs.</p>
 		  <div class="tag-row">
 			<span class="tag">shooter</span><span class="tag">roguelike</span><span class="tag">arcade</span><span class="tag">featured</span>
 		  </div>
@@ -1110,8 +1206,7 @@ function toggleMobileMenu(){
 				<a href="neon-beat-tap.html">🎵 Neon Beat Tap</a>
 				
 			  </div>
-<p class="card-desc">
-				 — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Rhythm game: hit notes on the neon track, build combos, and chase perfect timing.</p>
 			  <div class="tag-row">
 				<span class="tag">arcade</span><span class="tag">skill</span><span class="tag">typing</span>
 			  </div>
@@ -1128,8 +1223,7 @@ function toggleMobileMenu(){
 			<a href="auto-battler.html">🧠 Neon Auto Battler</a>
 			
 		  </div>
-<p class="card-desc">
-			 — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Place units on the grid, then auto-fight rounds. Reroll shop, build combos, and upgrade to ★★★.</p>
 		  <div class="tag-row">
 			<span class="tag">strategy</span><span class="tag">AI</span><span class="tag">auto-battler</span>
 		  </div>
@@ -1145,8 +1239,7 @@ function toggleMobileMenu(){
 			<a href="neon-runner-rush.html">🏃 Neon Runner Rush (Endless)</a>
 			
 		  </div>
-<p class="card-desc">
-			 — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Side-scroll endless runner with obstacles, power-ups, coins and unlockable characters.</p>
 		  <div class="tag-row">
 			<span class="tag">arcade</span><span class="tag">classic</span><span class="tag">featured</span>
 		  </div>
@@ -1164,8 +1257,7 @@ function toggleMobileMenu(){
 			<a href="survivor-arena.html">🟣 Survivor Arena</a>
 			
 		  </div>
-<p class="card-desc">
-			 — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Battle Royale Lite: survive waves, stay inside the shrinking safe zone, pick upgrades, unlock skins.</p>
 		  <div class="tag-row">
 			<span class="tag">arcade</span><span class="tag">shooter</span><span class="tag">strategy</span>
 		  </div>
@@ -1182,8 +1274,7 @@ function toggleMobileMenu(){
             <a href="neon-arena.html">🌌 Neon Arena</a>
            
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Dash, shoot and survive intense enemy waves in a glowing neon battlefield.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span><span class="tag">campaign</span>
           </div>
@@ -1200,8 +1291,7 @@ function toggleMobileMenu(){
             <a href="neo-runner.html">🛰 Neo Runner</a>
            
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Run, dodge and time your jumps to survive a futuristic gauntlet of enemies and traps.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">featured</span>
           </div>
@@ -1218,8 +1308,7 @@ function toggleMobileMenu(){
             <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
             
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Classic vertical shoot ’em up: dodge bullet storms, grab power-ups and crush bosses</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -1236,8 +1325,7 @@ function toggleMobileMenu(){
             <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
            
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
           <div class="tag-row">
             <span class="tag">tower defense</span><span class="tag">strategy</span>
           </div>
@@ -1261,8 +1349,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="rps.html">✊ Rock Paper Scissors</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Pick your move and try to outsmart the computer in this timeless mini duel.</p>
           <div class="tag-row">
             <span class="tag">classic</span>
           </div>
@@ -1277,8 +1364,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="snake.html">🐍 Snake</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Eat the food, grow longer and don’t crash into walls or your own tail.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">classic</span>
           </div>
@@ -1293,8 +1379,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="tictactoe-ai.html">⭕ Tic Tac Toe vs AI</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Play against an AI in this simple but tricky 3×3 grid battle.</p>
           <div class="tag-row">
             <span class="tag">classic</span><span class="tag">AI</span>
           </div>
@@ -1309,8 +1394,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="whack-a-mole.html">🐹 Whack-a-Mole</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Test your reflexes by hitting moles before they vanish from their holes.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">reflex</span>
           </div>
@@ -1334,8 +1418,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="guess-number.html">🎯 Guess The Number</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Choose a range and try to guess the hidden number in the fewest attempts.</p>
           <div class="tag-row">
             <span class="tag">logic</span><span class="tag">numbers</span>
           </div>
@@ -1350,8 +1433,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="reaction-test.html">⚡ Reaction Test</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Wait for the signal, then click instantly and see how fast you really are.</p>
           <div class="tag-row">
             <span class="tag">speed</span><span class="tag">reflex</span>
           </div>
@@ -1366,8 +1448,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="memory-grid.html">🧠 Memory Grid</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Watch the pattern of tiles light up, then repeat it without making a mistake.</p>
           <div class="tag-row">
             <span class="tag">memory</span>
           </div>
@@ -1382,8 +1463,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="typing-speed.html">⌨ Typing Speed Test</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Type the given text as fast as possible and see your WPM and accuracy.</p>
           <div class="tag-row">
             <span class="tag">typing</span><span class="tag">skill</span>
           </div>
@@ -1398,8 +1478,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="higher-lower.html">⬆⬇ Higher / Lower</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Predict if the next number drawn will be higher or lower than the current one.</p>
           <div class="tag-row">
             <span class="tag">guessing</span>
           </div>
@@ -1414,8 +1493,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="minesweeper.html">💣 Minesweeper</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Use number hints to uncover all safe tiles and avoid the hidden mines.</p>
           <div class="tag-row">
             <span class="tag">logic</span><span class="tag">puzzle</span>
           </div>
@@ -1430,8 +1508,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="simon.html">🎵 Simon Says (Colors)</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Memorize and replay the growing sequence of colorful lights and sounds.</p>
           <div class="tag-row">
             <span class="tag">memory</span>
           </div>
@@ -1446,8 +1523,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="quiz.html">❓ Mini Quiz</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Answer short questions across random topics and see how many you get right.</p>
           <div class="tag-row">
             <span class="tag">trivia</span>
           </div>
@@ -1462,8 +1538,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="timer-bomb.html">⏳ Timer Bomb</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Work under pressure to disarm the bomb before the timer reaches zero.</p>
           <div class="tag-row">
             <span class="tag">pressure</span>
           </div>
@@ -1478,8 +1553,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="pattern-lock.html">🔒 Pattern Lock</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Memorize the pattern, then draw it perfectly to unlock.</p>
           <div class="tag-row">
             <span class="tag">pattern</span>
           </div>
@@ -1494,8 +1568,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="sliding-puzzle.html">🧩 Sliding Puzzle (3×3)</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Slide tiles around until every piece is in the right place.</p>
           <div class="tag-row">
             <span class="tag">puzzle</span>
           </div>
@@ -1519,8 +1592,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="stargrid-defense.html">🛰 Stargrid Defense</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Place and upgrade towers strategically to stop endless waves of enemies.</p>
           <div class="tag-row">
             <span class="tag">tower defense</span><span class="tag">strategy</span>
           </div>
@@ -1535,8 +1607,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="neon-arena.html">🌌 Neon Arena</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">A fast-paced arena where positioning, timing and upgrades matter for survival.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -1551,8 +1622,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="neo-runner.html">🛰 Neo Runner</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Plan your jumps and movement to chain safe paths through enemy-infested levels.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">strategy</span>
           </div>
@@ -1567,8 +1637,7 @@ function toggleMobileMenu(){
           <div class="card-header-row">
             <a href="starfall-squadron.html">🚀 Starfall Squadron</a>
           </div>
-<p class="card-desc">
-             — enhanced neon gameplay with improved user experience.</p>
+<p class="card-desc">Pick the right powerups and flight path to survive bullet patterns and boss fights.</p>
           <div class="tag-row">
             <span class="tag">arcade</span><span class="tag">shooter</span>
           </div>
@@ -1596,7 +1665,7 @@ function toggleMobileMenu(){
   max-width: 1100px;
   margin: 40px auto 20px;
   padding: 20px;
-  background: rgba(2,6,23,0.65);
+  background-image:none;
   border: 1px solid rgba(148,163,184,0.25);
   border-radius: 16px;
   color: #e5e7eb;
@@ -1620,7 +1689,14 @@ function toggleMobileMenu(){
 
 © <span id="footer-year"></span> Neo Runner Arcade — All Rights Reserved.</p>
     
-<section style="max-width:1100px;margin:40px auto;padding:20px;background:rgba(2,6,23,0.65);border:1px solid rgba(148,163,184,0.25);border-radius:16px;color:#e5e7eb;">
+<section style="
+	max-width:1100px;
+	margin:40px auto;
+	padding:20px;
+	background-image:none;
+	border:1px solid rgba(148,163,184,0.25);
+	border-radius:16px;
+	color:#e5e7eb;">
 <h2>About Neon Mini Game Hub</h2>
 <p>Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript. Our mission is to offer fast, lightweight, and engaging gameplay experiences without downloads, accounts, or interruptions.</p>
 <p>Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices. We focus on neon aesthetics, responsive controls, smooth animations, and addictive gameplay loops.</p>
@@ -1642,7 +1718,7 @@ function toggleMobileMenu(){
 
 <section id="feedback-widget" class="neon-feedback"
     style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
-           background: rgba(2,6,23,0.65);
+           background: none;
            border: 1px solid rgba(148,163,184,0.25);
            border-radius: 16px;">
 
@@ -2050,7 +2126,7 @@ function renderReply(c) {
   <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button id="btnConsentDecline" style="
           border: 1px solid rgba(148,163,184,0.35);
-          background: rgba(2,6,23,0.65);
+          background: none;
           color: #e5e7eb;
           padding: 10px 12px;
           border-radius: 12px;
@@ -2059,7 +2135,7 @@ function renderReply(c) {
         ">Decline</button>
         <button id="btnConsentAccept" style="
           border: 1px solid rgba(250,204,21,0.7);
-          background: rgba(2,6,23,0.65);
+          background: none;
           color: #e5e7eb;
           padding: 10px 12px;
           border-radius: 12px;
