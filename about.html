@@ -1,1 +1,301 @@
-<html><body><h1>About Neon Mini Game Hub</h1><p>Full article coming.</p></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>About – Neon Mini Game Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin:0; padding:0; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: block;
+    }
+
+    header {
+      padding: 2rem 2rem 1rem;
+      background: url('images/header-bg.jpg') center/cover no-repeat;
+      color: white;
+      position: relative;
+      border-bottom: 1px solid #111827;
+    }
+
+    header::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+    }
+
+    header * { position: relative; z-index: 2; }
+
+    header h1 {
+      margin: 0 0 0.4rem;
+      font-size: 2rem;
+      letter-spacing: 0.03em;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.85;
+      font-size: 1rem;
+    }
+
+    .content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    /* ---------- TWO COLUMN PRESSKIT LAYOUT ---------- */
+    .presskit-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: start;
+        margin-top: 2.5rem;
+    }
+
+    .presskit-left {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .presskit-block h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.6rem;
+        color: #a5b4ff;
+    }
+
+    .presskit-block ul {
+        margin-left: 1rem;
+        line-height: 1.5rem;
+        opacity: 0.92;
+    }
+
+    .presskit-image {
+        border-radius: 14px;
+        border: 1px solid rgba(0,255,255,0.25);
+        box-shadow: 0 0 20px rgba(0,255,255,0.18);
+        background: rgba(0,0,0,0.4);
+        overflow: hidden;
+    }
+    .presskit-image img {
+        width: 100%;
+        border-radius: 14px;
+        display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .presskit-section {
+            grid-template-columns: 1fr;
+        }
+    }
+	pre {
+        background: rgba(0,0,0,0.4);
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.1);
+        overflow-x: auto;
+    }
+
+    section {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>About Neon Mini Game Hub</h1>
+    <p>Complete media kit, technical documentation, Neon Engine overview, and SEO-optimized brand description.</p>
+	<a id="backToHub" href="index.html"
+       style="
+         color:#38bdf8;
+         font-size:14px;
+         text-decoration:none;
+         font-weight:700;
+         padding:4px 10px;
+         border:1px solid #38bdf8;
+         border-radius:8px;
+         box-shadow:0 0 10px rgba(56,189,248,0.45);
+		 display: inline-block;
+		 margin-top: 14px;
+	
+       ">
+      ⬅ Back to Hub
+    </a>
+</header>
+
+<div class="content">
+
+    <h2>⭐ Press / Media Kit</h2>
+
+    <p>
+      <strong>Neon Mini Game Hub</strong> is a modern HTML5 arcade platform offering instant-play games with neon cyberpunk visuals.  
+      All titles are optimized for speed, mobile responsiveness, and low CPU/GPU usage.
+    </p>
+
+    <!-- =========================================== -->
+    <!-- TWO COLUMN PRESSKIT (Layout C)              -->
+    <!-- =========================================== -->
+    <div class="presskit-section">
+
+        <!-- LEFT SIDE -->
+        <div class="presskit-left">
+
+            <!-- Brand Identity -->
+            <div class="presskit-block">
+                <h3>Brand Identity</h3>
+                <ul>
+                    <li><strong>Name:</strong> Neon Mini Game Hub</li>
+                    <li><strong>Genre:</strong> HTML5 Arcade Games</li>
+                    <li><strong>Style:</strong> Neon, cyberpunk, retro-arcade fusion</li>
+                    <li><strong>Audience:</strong> Casual / mobile / browser gamers</li>
+                    <li><strong>Tech Stack:</strong> HTML5 Canvas, Pure JavaScript, Cloudflare CDN/Workers</li>
+                </ul>
+            </div>
+
+            <!-- Press Highlights -->
+            <div class="presskit-block">
+                <h3>Press Highlights</h3>
+                <ul>
+                    <li>Instant gameplay — zero downloads</li>
+                    <li>Custom-built engines per title</li>
+                    <li>Mobile-optimized UI & touch controls</li>
+                    <li>Ultra-fast global loading via Cloudflare</li>
+                    <li>Growing ecosystem of dev logs & tech articles</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE: PRESSKIT IMAGE -->
+        <div class="presskit-image">
+            <img src="/images/presskit/presskit_v1.png" alt="Neon Mini Game Hub Press Kit">
+        </div>
+
+    </div>
+
+   <!-- =========================
+      BEHIND THE SCENES
+========================= -->
+<section>
+<h2>⭐ Behind the Scenes: The Neon Engine</h2>
+<p>The <strong>Neon Engine</strong> powers advanced titles such as Neon Dungeon Auto Shooter. It's lightweight, modular, and optimized for real-time gameplay.</p>
+
+<h3>Core Systems</h3>
+<ul>
+    <li><strong>Rendering:</strong> Batched HTML5 Canvas pipeline</li>
+    <li><strong>Game Loop:</strong> rAF-driven 60 FPS with delta smoothing</li>
+    <li><strong>Physics:</strong> Grid-optimized collider system</li>
+    <li><strong>AI:</strong> State machines + behavior trees</li>
+    <li><strong>UI:</strong> Canvas HUD & CSS hybrid overlays</li>
+</ul>
+
+<h3>Performance Optimizations</h3>
+<ul>
+    <li>OffscreenCanvas pre-rendering where supported</li>
+    <li>Object pooling for projectiles and enemies</li>
+    <li>Integer-math movement paths to reduce jitter</li>
+    <li>Layer partitioning to reduce overdraw</li>
+</ul>
+
+<h3>Tools & Debug Interfaces</h3>
+<ul>
+    <li>Hitbox & collision inspector</li>
+    <li>Real-time FPS overlay</li>
+    <li>AI vision / aggro radius visualizer</li>
+    <li>Room loader & boundary inspector</li>
+</ul>
+</section>
+
+
+<!-- =========================
+      TECHNICAL DOCUMENTATION
+========================= -->
+<section>
+<h2>⭐ Technical Documentation</h2>
+
+<h3>Folder Structure</h3>
+<pre><code>/game/
+    engine.js
+    renderer.js
+    input.js
+    player.js
+    enemies.js
+    projectiles.js
+/assets/
+    sprites/
+    fx/
+    ui/
+index.html
+</code></pre>
+
+<h3>Main Game Loop</h3>
+<pre><code>
+function gameLoop(ts) {
+    update(ts);
+    render();
+    requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+</code></pre>
+
+<h3>Cloudflare Worker (Feedback System)</h3>
+<pre><code>
+await env.FEEDBACK.put(articleId + ":" + uuid, JSON.stringify(comment));
+</code></pre>
+
+</section>
+
+
+<!-- =========================
+      SEO OPTIMIZED DESCRIPTION
+========================= -->
+<section>
+<h2>⭐ SEO-Optimized Homepage Description</h2>
+
+<p><strong>Neon Mini Game Hub</strong> offers fast, neon-styled HTML5 games playable instantly on desktop, mobile, and tablet. No downloads and no logins required — just pure browser arcade gameplay.</p>
+
+<h3>SEO Strategy</h3>
+<ul>
+    <li>Long-form articles with strong internal linking</li>
+    <li>Clean semantic structure (H1, H2, schema-ready)</li>
+    <li>Mobile-first responsive layout</li>
+    <li>Lazy-loaded media & compressed assets</li>
+    <li>Keyword-focused game descriptions</li>
+</ul>
+
+<h3>Primary Keywords</h3>
+<ul>
+    <li>html5 arcade games</li>
+    <li>browser games free</li>
+    <li>mobile html5 gaming</li>
+    <li>cyberpunk mini games</li>
+    <li>fast online arcade</li>
+</ul>
+</section>
+
+</body>
+</html>
