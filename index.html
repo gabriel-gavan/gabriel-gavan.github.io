@@ -1010,6 +1010,21 @@ header::before{content:"";position:absolute;inset:0;background:none;}
   background:rgba(0,0,0,0.35);
   font-size:0.85rem;
 }
+.hero-nav {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+  display:flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-nav a {
+  color:#93c5fd;
+  font-size: 14px;
+  text-shadow:0 0 6px #000;
+}
 
 </style>
 <link rel="icon" href="data:,">
@@ -1036,8 +1051,52 @@ header::before{content:"";position:absolute;inset:0;background:none;}
     padding:10px 0;
     color:#93c5fd;
   }
-  
+  .hero-card {
+    margin-left: 0 !important;
+    border-radius: 12px;
+  }
+    .hero-nav {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    padding: 6px 10px;
+    
+    
+    border-radius: 6px;
+    z-index: 10;
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    max-width: 90%;
+  }
+
+  .hero-nav a {
+    font-size: 8px;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 768px) and (orientation: portrait) {
+
+  .hero-nav {
+    position: absolute;
+    top: -2px !important;     /* move more up */
+    left: -2px !important;    /* move more left */
+    padding: 4px 6px !important;
+    gap: 2px !important;
+    max-width: 85%;
+   
+    border-radius: 6px;
+    z-index: 20;
+  }
+
+  .hero-nav a {
+    font-size: 5px !important;   /* smaller text */
+    line-height: 1 !important;    
+    padding: 0;
+    white-space: nowrap;
+  }
 }
+
 </style>
 <script>
 function toggleMobileMenu(){
@@ -1063,23 +1122,14 @@ function toggleMobileMenu(){
 	
     <div class="hero-content">
       <!-- PAGE TITLE + BADGES MOVED HERE -->
-      <nav style="
-				  margin-top:10px;
-				  display:flex;
-				  gap:15px;
-				  flex-wrap:wrap;
-				  position:absolute;
-				  top:10px;
-				  left:20px;
-				  z-index:3;
-				">
-		  <a href="index.html" style="color:#93c5fd;">Home</a>
-		  <a href="about.html" style="color:#93c5fd;">About</a>
-		  <a href="contact.html" style="color:#93c5fd;">Contact</a>
-		  <a href="articles.html" style="color:#93c5fd;">Articles</a>
-		  <a href="privacy.html" style="color:#93c5fd;">Privacy</a>
-		  <a href="terms.html" style="color:#93c5fd;">Terms</a>
-		</nav>
+<nav class="hero-nav">
+  <a href="index.html">Home</a>
+  <a href="about.html">About</a>
+  <a href="contact.html">Contact</a>
+  <a href="articles.html">Articles</a>
+  <a href="privacy.html">Privacy</a>
+  <a href="terms.html">Terms</a>
+</nav>
     </div>
   </div>
 </header>
