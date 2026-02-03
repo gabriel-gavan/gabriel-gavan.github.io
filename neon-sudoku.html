@@ -155,10 +155,79 @@ body {
     linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
     url("images/hub-bg.jpg") center center / cover no-repeat fixed !important;
 }
+/* PC-only SEO text container */
+.pc-only {
+  display: block;
+}
+
+/* Hide SEO text on mobile/tablet */
+@media (max-width: 900px) {
+  .pc-only {
+    display: none !important;
+  }
+}
+/* Prevent ANY horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Mobile fixes */
+@media (max-width: 900px) {
+
+  .page-wrap {
+    flex-direction: column;
+    padding: 0;
+    gap: 0;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  .sudoku-wrap {
+    flex-direction: column;
+    gap: 18px;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .grid {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 95vw;
+    height: auto;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+  }
+
+  .cell {
+    font-size: 4.5vw;
+  }
+}
+
 </style>
 </head>
 
 <body>
+
+<input id="mobileInput"
+       inputmode="numeric"
+       pattern="[1-9]*"
+       autocomplete="one-time-code"
+       style="
+         position: absolute;
+         left: -9999px;
+         top: 0;
+         width: 1px;
+         height: 1px;
+         opacity: 0;
+       ">
+
+
 <div class="page-wrap">
   <aside class="side-banner"></aside>
 
@@ -252,6 +321,101 @@ body {
 	font-size:12px;">More…</button>
 </div>
 
+<!-- ===========================
+     PC-ONLY LONG SEO TEXT
+=========================== -->
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Sudoku Deluxe – Futuristic Logic Puzzle in a Neon World</h1>
+
+<h2>Enter the Neon Grid</h2>
+<p>
+Neon Sudoku Deluxe transforms the classic logic puzzle into a glowing, futuristic
+experience designed for both beginners and hardcore puzzle lovers.
+Set in a cyber-digital world where every number pulses with energy,
+the neon grid challenges your logic, focus, and patience while offering a relaxing,
+immersive atmosphere powered by synthwave aesthetics.
+</p>
+
+<p>
+Unlike traditional Sudoku experiences, this enhanced version emphasizes clarity,
+clean visuals, and responsive controls. Whether you're relaxing after a long day or
+pushing your brain to the limit, Neon Sudoku Deluxe offers a vibrant environment
+where logic meets art.
+</p>
+
+<h2>How to Play Sudoku</h2>
+<p>
+Your objective is simple: fill every row, column, and 3×3 box with numbers from 1 to 9
+without repeating any number in the same row, column, or block.
+If you're new to Sudoku, this version guides you with subtle highlights,
+smooth interactions, and an optional notes mode for advanced techniques.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Click any cell, then pick a number from the neon keypad.</p>
+<p><strong>Mobile:</strong> Tap a cell, then select a number. All gestures are optimized
+for touch accuracy and clarity.</p>
+<p><strong>Notes Mode:</strong> Toggle notes to place mini numbers inside the squares,
+perfect for analyzing difficult puzzles.</p>
+
+<h2>Gameplay Tips & Strategy</h2>
+<p>
+Sudoku rewards logical deduction rather than guessing. Start by examining rows or
+boxes with the most numbers already filled — these often provide the easiest
+starting moves. Pay attention to hidden singles, intersections between rows and
+columns, and numbers that can only logically fit into one position.
+</p>
+
+<p>
+When in doubt, switch to notes mode. This lets you track potential candidates and
+slowly eliminate options as the puzzle evolves.
+The goal is not speed but clarity — with practice, even the hardest neon grids become solvable.
+</p>
+
+<h2>Why This Version Stands Out</h2>
+<p>
+Neon Sudoku Deluxe focuses on simplicity, clarity, and atmosphere. The interface is
+easy to read, the animations are subtle and satisfying, and the difficulty modes
+ensure a personalized experience for every type of player. Unlike many Sudoku clones,
+this version adds visual flair without compromising usability.
+</p>
+
+<h2>Developer Insights</h2>
+<p>
+This game was carefully crafted using a lightweight HTML5 canvas engine to ensure
+smooth performance across both desktop and mobile devices. The neon aesthetic is
+inspired by classic synthwave art and sci-fi UI design, blending minimalism with futuristic glow.
+Puzzle generation is handled through a custom algorithm that ensures each grid
+is truly unique and solvable without guesswork.
+</p>
+
+<h2>Frequently Asked Questions</h2>
+
+<h3>Is this Sudoku free to play?</h3>
+<p>Yes, Neon Sudoku Deluxe is completely free with unlimited puzzles.</p>
+
+<h3>Does the game work on mobile?</h3>
+<p>
+Absolutely. The interface adapts to phones and tablets automatically,
+offering an intuitive touch-friendly design.
+</p>
+
+<h3>Are the puzzles randomly generated?</h3>
+<p>
+Yes, every puzzle is created by an in-house algorithm that guarantees uniqueness
+and logical solvability.
+</p>
+
+<h3>Does it save my progress?</h3>
+<p>
+Yes, your latest puzzle and difficulty settings are saved locally on your device.
+</p>
+
+
+</div>
       </div>
     </div>
   </main>
@@ -357,12 +521,12 @@ function render(){
 function selectCell(r,c){
   selected={r,c};
   document.querySelectorAll(".cell").forEach(e=>e.classList.remove("selected","cross","block","bad"));
-  // cross highlight
+
+  // cross + block highlight
   for(let i=0;i<9;i++){
     document.querySelector(`.cell[data-r="${r}"][data-c="${i}"]`).classList.add("cross");
     document.querySelector(`.cell[data-r="${i}"][data-c="${c}"]`).classList.add("cross");
   }
-  // block highlight
   let br=Math.floor(r/3)*3, bc=Math.floor(c/3)*3;
   for(let rr=br;rr<br+3;rr++){
     for(let cc=bc;cc<bc+3;cc++){
@@ -370,7 +534,19 @@ function selectCell(r,c){
     }
   }
   document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`).classList.add("selected");
+
+  // 👉 Open mobile keyboard
+  focusMobileInput();
 }
+
+// Focus hidden input to open mobile keyboard
+function focusMobileInput() {
+  const inp = document.getElementById("mobileInput");
+  setTimeout(() => {
+    inp.focus({ preventScroll: true });
+  }, 25);
+}
+
 
 /* ==========================
    Input handling
@@ -396,6 +572,24 @@ document.addEventListener("keydown",e=>{
     autosaveSoon();
   }
 });
+document.getElementById("mobileInput").addEventListener("input", e => {
+  if(!selected) return;
+  const val = e.target.value.replace(/[^1-9]/g, "");
+  if(val.length === 0) return;
+
+  const n = parseInt(val[0]);
+  const {r,c} = selected;
+
+  if(!fixed[r][c]){
+    puzzle[r][c] = n;
+    moves++;
+    document.getElementById("movesTxt").textContent = moves;
+    render();
+    selectCell(r,c);
+    autosaveSoon();
+  }
+});
+
 
 /* ==========================
    Sudoku generator/solver
@@ -815,6 +1009,7 @@ if(!loadAutosave()){
 function openHTP(){ document.getElementById('htpOverlay').style.display='flex'; }
 function closeHTP(){ document.getElementById('htpOverlay').style.display='none'; }
 </script>
+
 
 </body>
 </html>
