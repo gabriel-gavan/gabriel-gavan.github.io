@@ -1,127 +1,183 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Terms of Use - Neo Runner Arcade</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Terms of Use – Neon Mini Game Hub</title>
+  <meta name="description" content="Terms of use for Neon Mini Game Hub: gameplay, content guidelines, intellectual property, disclaimers, and contact details." />
+  <meta name="robots" content="index,follow" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Terms of Use – Neon Mini Game Hub" />
+  <meta property="og:description" content="Terms of use for Neon Mini Game Hub: gameplay, content guidelines, intellectual property, disclaimers, and contact details." />
+  <meta property="og:url" content="https://neonminigamehub.com/terms.html" />
+  <meta property="og:site_name" content="Neon Mini Game Hub" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="canonical" href="https://neonminigamehub.com/terms.html" />
+  <link rel="icon" href="data:," />
 <style>
-body {
-  font-family: system-ui;
-  background:
-    linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
-    url("images/hub-bg.jpg") center center / cover no-repeat fixed;
-  color:#e5e7eb;
-  padding:30px;
-  line-height:1.6;
-}
-h1 { font-size:1.6rem; }
-h2 { font-size:1.2rem; margin-top:20px; }
-section { margin-bottom:20px; }
-a { color:#60a5fa; }
-.back { margin-top:30px; display:block; }
+
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:
+        linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+      color:#e5e7eb;
+      min-height:100vh;
+    }
+    .wrap{ max-width: 980px; margin: 18px auto 40px; padding: 0 14px; }
+    header.hero{
+      position:relative; border-radius: 16px; overflow:hidden;
+      border:1px solid rgba(148,163,184,0.18);
+      background: rgba(148,163,184,0.18)
+    }
+    header.hero::before{ content:""; position:absolute; inset:0; background: rgba(0,0,0,0.62); }
+    header.hero .inner{ position:relative; padding: 22px 18px 16px; }
+    h1{ margin:0 0 6px; font-size: 1.65rem; letter-spacing: 0.02em; }
+    header.hero p{
+      margin:0; color:#cbd5f5; opacity:.95; line-height:1.45rem;
+      font-size:.95rem; max-width: 68ch;
+    }
+    nav.top{ display:flex; flex-wrap:wrap; gap:12px; margin-top: 12px; align-items:center; }
+    nav.top a{
+      color:#93c5fd; text-decoration:none; font-weight:700; font-size: 14px;
+      padding: 6px 10px; border-radius: 10px;
+      border: 1px solid rgba(147,197,253,0.25);
+      background: rgba(2,6,23,0.55);
+      box-shadow: 0 0 14px rgba(56,189,248,0.10);
+    }
+    nav.top a:hover{ border-color: rgba(56,189,248,0.55); box-shadow: 0 0 18px rgba(56,189,248,0.22); }
+
+    .panel{
+      margin-top: 14px; background: rgba(2,6,23,0.72);
+      border:1px solid rgba(148,163,184,0.18);
+      border-radius: 16px; box-shadow: 0 18px 55px rgba(0,0,0,0.55);
+      padding: 18px; backdrop-filter: blur(4px);
+    }
+    .panel h2{ margin: 0 0 8px; color:#38bdf8; font-size: 1.1rem; }
+    .panel h3{ margin: 16px 0 8px; color:#a5b4fc; font-size: 1rem; }
+    .panel p, .panel li{ color:#e5e7eb; opacity:.92; line-height:1.7; font-size: .95rem; }
+    .panel ul{ margin: 8px 0 0; padding-left: 18px; }
+    .note{
+      font-size:.86rem; color:#cbd5f5; opacity:.85;
+      border-left: 3px solid rgba(56,189,248,0.35);
+      padding: 10px 12px; border-radius: 10px;
+      background: rgba(56,189,248,0.06); margin-top: 10px;
+    }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 820px){ .grid2{ grid-template-columns: 1fr; } }
+    .field label{
+      display:block; font-weight:700; font-size:.85rem; margin: 10px 0 6px; color:#c7d2fe;
+    }
+    .input, textarea{
+      width:100%; background:#0b1224; border:1px solid rgba(148,163,184,0.25);
+      color:#e5e7eb; border-radius: 12px; padding: 10px 12px; outline:none; font-size: .95rem;
+    }
+    textarea{ min-height: 120px; resize: vertical; }
+    .btn{
+      margin-top: 12px; display:inline-flex; align-items:center; gap:8px;
+      cursor:pointer; border:none;
+      background: linear-gradient(135deg, rgba(79,70,229,0.85), rgba(56,189,248,0.55));
+      color:#e5e7eb; font-weight:800; padding: 10px 14px;
+      border-radius: 999px; box-shadow: 0 12px 26px rgba(79,70,229,0.25);
+      text-decoration:none; font-size: .95rem;
+    }
+    .btn:hover{ filter: brightness(1.06); }
+    footer{ margin-top: 14px; text-align:center; color:#9ca3af; font-size:.8rem; opacity:.9; }
+    .small{ font-size:.85rem; opacity:.85; }
+    code{
+      background: rgba(15,23,42,0.75); padding: 2px 6px; border-radius: 8px;
+      border:1px solid rgba(148,163,184,0.18);
+    }
+
 </style>
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebPage",
+  "name":"Terms of Use – Neon Mini Game Hub",
+  "url":"https://neonminigamehub.com/terms.html",
+  "isPartOf":{"@type":"WebSite","name":"Neon Mini Game Hub","url":"https://neonminigamehub.com/"}
+}
+</script>
 </head>
 <body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="inner">
+        <h1>Terms of Use</h1>
+        <p>These Terms explain how you may use Neon Mini Game Hub (the “Site”). By using the Site you agree to these Terms.</p>
+        <nav class="top">
+          <a href="index.html">⬅ Back to Hub</a>
+          <a href="articles.html">Articles</a>
+          <a href="about.html">About</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="contact.html">Contact</a>
+        </nav>
+      </div>
+    </header>
 
-<h1>Terms of Use</h1>
-	<a id="backToHub" href="index.html"
-       style="
-         color:#38bdf8;
-         font-size:14px;
-         text-decoration:none;
-         font-weight:700;
-         padding:4px 10px;
-         border:1px solid #38bdf8;
-         border-radius:8px;
-         box-shadow:0 0 10px rgba(56,189,248,0.45);
-		 display: inline-block;
-		 margin-top: 14px;
-	
-       ">
-      ⬅ Back to Hub
-    </a>
-<section>
-  <p>
-    By accessing or using Neo Runner Arcade, you agree to these Terms of Use.
-    If you do not agree, please discontinue use of the site.
-  </p>
-</section>
+    <main class="panel">
+      <h2>1) Who we are</h2>
+      <p><strong>Neon Mini Game Hub</strong> is a browser-based arcade of HTML5 mini-games and technical articles. “We”, “us”, and “our” refer to the site operator.</p>
 
-<section>
-  <h2>Eligibility</h2>
-  <p>
-    This site is intended for users aged 13 and older.
-    By using this site, you confirm that you meet this requirement.
-  </p>
-</section>
+      <h2>2) Acceptable use</h2>
+      <ul>
+        <li>Don’t attempt to hack, scrape aggressively, disrupt, or overload the Site.</li>
+        <li>Don’t upload malware, run automated attacks, or probe for vulnerabilities.</li>
+        <li>Don’t use the Site in a way that violates applicable laws.</li>
+      </ul>
 
-<section>
-  <h2>Gameplay</h2>
-  <p>
-    All games run locally in your browser. Some games store basic progress
-    or settings using <code>localStorage</code>. No personally identifiable
-    information is stored by the games themselves.
-  </p>
-  <p>
-    For details about data handling and cookies, please review our
-    <a href="privacy.html">Privacy Policy</a>.
-  </p>
-</section>
+      <h2>3) Games, scores, and availability</h2>
+      <ul>
+        <li>Games are provided “as is”. We may change, remove, or update games without notice.</li>
+        <li>Leaderboards or local scores may reset during updates or due to browser storage settings.</li>
+      </ul>
 
-<section>
-  <h2>Advertising and Third-Party Services</h2>
-  <p>
-    This site may display advertisements provided by third-party services,
-    including Google AdSense. We do not control the content of third-party ads
-    or the destination of external links.
-  </p>
-  <p>
-    Interaction with advertisements or external websites is at your own risk.
-    Third-party services are governed by their own terms and privacy policies.
-  </p>
-</section>
+      <h2>4) Feedback / comments</h2>
+      <p>If the Site allows comments or feedback, you agree that:</p>
+      <ul>
+        <li>You will not post personal data (emails, phone numbers, addresses) or confidential information.</li>
+        <li>You will not post unlawful, hateful, harassing, violent, or sexually explicit content.</li>
+        <li>You grant us a non-exclusive right to display your submitted text on the Site.</li>
+      </ul>
+      <div class="note">
+        Comments may be stored using third-party infrastructure (e.g., Cloudflare Workers/KV) to enable shared discussions. See the Privacy Policy for details.
+      </div>
 
-<section>
-  <h2>Intellectual Property</h2>
-  <p>
-    All site content, including games, code, graphics, logos, and branding,
-    is the property of Neo Runner Arcade unless otherwise stated.
-    You may not copy, redistribute, or rehost any part of this site
-    without explicit permission.
-  </p>
-</section>
+      <h2>5) Intellectual property</h2>
+      <p>Unless stated otherwise, the Site’s code, visual design, layout, and original content are owned by Neon Mini Game Hub and protected by intellectual property laws.</p>
+      <ul>
+        <li>You may share links to our pages.</li>
+        <li>You may not copy and republish full articles or game assets as your own.</li>
+      </ul>
 
-<section>
-  <h2>Liability</h2>
-  <p>
-    All content and games are provided “as-is”, without warranties of any kind.
-    We are not responsible for losses, damages, or issues resulting from gameplay,
-    bugs, browser limitations, or third-party advertisements.
-  </p>
-</section>
+      <h3>DMCA / Copyright notice</h3>
+      <p>If you believe content on this Site infringes your copyright, contact us at <strong>contact@neonminigamehub.com</strong> with:</p>
+      <ul>
+        <li>Identification of the copyrighted work.</li>
+        <li>The URL of the allegedly infringing content.</li>
+        <li>Your contact information and a statement of good-faith belief.</li>
+      </ul>
 
-<section>
-  <h2>Updates to These Terms</h2>
-  <p>
-    These Terms may be updated from time to time. Continued use of the site
-    constitutes acceptance of the updated Terms.
-  </p>
-</section>
+      <h2>6) Advertising</h2>
+      <p>We may display ads via third-party networks (e.g., Google). Ads are served independently by those networks and may use cookies or similar technologies, subject to your consent settings and our Privacy Policy.</p>
 
-<section>
-  <h2>Governing Law</h2>
-  <p>
-    These Terms are governed by and interpreted in accordance with applicable
-    laws of the European Union and local regulations, without regard to
-    conflict-of-law principles.
-  </p>
-</section>
+      <h2>7) Disclaimer of warranties</h2>
+      <p>The Site is provided on an “as is” and “as available” basis. We do not guarantee uninterrupted access, error-free operation, or that the Site will meet your needs.</p>
 
-<a class="back" href="index.html">⬅ Return to Arcade Hub</a>
+      <h2>8) Limitation of liability</h2>
+      <p>To the maximum extent permitted by law, we are not liable for indirect, incidental, or consequential damages arising from your use of the Site.</p>
 
-<p style="margin-top:30px; font-size:.8rem; color:#9ca3af;">
-  © 2026 Neo Runner Arcade
-</p>
+      <h2>9) Changes</h2>
+      <p>We may update these Terms from time to time. The “Last updated” date below indicates the most recent version.</p>
 
+      <p class="small"><strong>Last updated:</strong> 2026-02-03</p>
+    </main>
+
+    <footer>© 2026 Neon Mini Game Hub • <a href="privacy.html" style="color:#93c5fd;text-decoration:none;">Privacy</a> • <a href="contact.html" style="color:#93c5fd;text-decoration:none;">Contact</a></footer>
+  </div>
 </body>
 </html>

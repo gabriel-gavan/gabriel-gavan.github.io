@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>How Indie Devs Can Scale With Browser-First Games</title>
+
+<style>
+    body {
+        background:
+            linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+            url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+        color:#e5e7eb;
+        font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        min-height:100vh;
+        padding:20px;
+        line-height:1.7;
+    }
+
+    h1,h2 { color:#38bdf8; font-weight:700; }
+    a { color:#38bdf8; }
+
+    .breadcrumb { margin-bottom:20px;font-size:14px; }
+    .breadcrumb a { text-decoration:none;color:#94a3b8; }
+    .breadcrumb span { color:#64748b; }
+
+    /* Comments */
+    .comments-section textarea {
+        background:#0f172a;
+        border:1px solid #334155;
+        color:white;
+        padding:10px;
+        border-radius:8px;
+    }
+
+    .comments-section button {
+        background:#1e40af;
+        border:none;
+        padding:10px 16px;
+        color:white;
+        border-radius:6px;
+        cursor:pointer;
+    }
+    .comments-section button:hover { background:#1e3a8a; }
+</style>
+</head>
+
+<body>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a> <span>›</span>
+  <a href="articles.html">Articles</a> <span>›</span>
+  How Indie Devs Can Scale
+</div>
+
+<a id="backToHub" href="index.html"
+   style="
+     color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;
+     padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
+     box-shadow:0 0 10px rgba(56,189,248,0.45);
+     display:inline-block;margin-top:14px;">
+⬅ Back to Hub
+</a>
+
+<h1>How Indie Devs Can Scale With Browser-First Games</h1>
+
+<p>
+    Browser-first games are experiencing a massive renaissance.  
+    Lightweight engines, instant accessibility, and global reach allow solo and small studios
+    to scale without publishing overhead, expensive engines, or platform restrictions.
+</p>
+
+<h2>1. No Install = Higher Player Conversion</h2>
+
+<p>
+    One of the biggest barriers for indie titles is installation friction.
+    HTML5 eliminates this entirely:
+</p>
+
+<ul>
+    <li>⚡ Instant play</li>
+    <li>📱 Mobile-friendly by default</li>
+    <li>🔗 Shareable via one link</li>
+</ul>
+
+<p>
+    This dramatically increases retention and share-through-messaging.
+</p>
+
+<h2>2. Monetization Without App Stores</h2>
+
+<p>Browser-based games avoid:</p>
+
+<ul>
+    <li>❌ App Store review delays</li>
+    <li>❌ 15–30% revenue cuts</li>
+    <li>❌ Device-specific packaging</li>
+</ul>
+
+<p>
+    Indie developers can monetize through:
+</p>
+
+<ul>
+    <li>✔ Display ads</li>
+    <li>✔ Rewarded ads</li>
+    <li>✔ In-game cosmetic shops</li>
+    <li>✔ Patreon / Ko-fi integrations</li>
+</ul>
+
+<h2>3. Development Speed = Massive Advantage</h2>
+
+<p>
+    Web development is fast — JavaScript, Canvas, PIXI, Phaser, and WebGL  
+    allow for extremely rapid iteration cycles.
+</p>
+
+<ul>
+    <li>💡 Build a prototype in days</li>
+    <li>⚙ Push updates instantly</li>
+    <li>📈 Run A/B tests without store approvals</li>
+</ul>
+
+<h2>4. Cross-Device Performance Is Solved</h2>
+
+<p>
+    Modern browsers offer:
+</p>
+
+<ul>
+    <li>🖥 GPU acceleration</li>
+    <li>📱 High-refresh displays</li>
+    <li>🌐 Off-main-thread rendering</li>
+</ul>
+
+<p>
+    Even complex neon shooters now run at 60–120 FPS on mid-range phones.
+</p>
+
+<h2>5. Browser-First = Global Audience</h2>
+
+<p>
+    Your game becomes playable on:
+</p>
+
+<ul>
+    <li>🌍 Any device</li>
+    <li>🎮 Any controller</li>
+    <li>💻 Any OS</li>
+</ul>
+
+<p>
+    Indie Devs can scale faster than traditional PC/mobile channels.
+</p>
+
+<h2>Conclusion</h2>
+
+<p>
+    Browser-first gaming levels the playing field.
+    For indie developers with creativity, speed, and focus —  
+    HTML5 is the most scalable ecosystem available today.
+</p>
+
+<!-- COMMENTS -->
+<div class="comments-section" style="margin-top:40px;">
+  <h3>💬 Comments</h3>
+  <textarea id="commentInput" placeholder="Write a comment..." 
+    style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+  <button id="postCommentBtn">Post Comment</button>
+  <div id="commentsList" style="margin-top:20px;"></div>
+</div>
+
+<script>
+const ARTICLE_ID="indie-devs-browser-first";
+const COMMENTS_API="https://neon-comments.gabi-gabz.workers.dev";
+
+async function loadComments(){
+  const r = await fetch(COMMENTS_API + "/" + ARTICLE_ID);
+  const list = await r.json();
+  const box = document.getElementById("commentsList");
+  box.innerHTML = "";
+  list.forEach(c => {
+    const d = document.createElement("div");
+    d.style.marginBottom = "12px";
+    d.innerHTML =
+      "<div style='padding:8px;background:#111;border-radius:6px;border:1px solid #333;'>" +
+      c.text +
+      "</div>";
+    box.appendChild(d);
+  });
+}
+
+document.getElementById("postCommentBtn").addEventListener("click", async () => {
+  const text = document.getElementById("commentInput").value.trim();
+  if (!text) return;
+  await fetch(COMMENTS_API + "/" + ARTICLE_ID, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  document.getElementById("commentInput").value = "";
+  loadComments();
+});
+
+loadComments();
+</script>
+
+</body>
+</html>
