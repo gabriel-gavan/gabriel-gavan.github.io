@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Why Neon Aesthetic Works in Web Design & Gaming</title>
+
+    <style>
+        body {
+            background:
+                linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+                url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+            color: #e5e7eb;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.7;
+        }
+        h1, h2 { color:#38bdf8; font-weight:700; }
+        a { color:#38bdf8; }
+        .breadcrumb { margin-bottom:20px;font-size:14px; }
+        .breadcrumb a{ text-decoration:none;color:#94a3b8;}
+        .breadcrumb span{ color:#64748b;}
+
+        .comments-section textarea{
+            background:#0f172a;border:1px solid #334155;
+            color:white;padding:10px;border-radius:8px;
+        }
+        .comments-section button{
+            background:#1e40af;border:none;padding:10px 16px;
+            color:white;border-radius:6px;cursor:pointer;
+        }
+        .comments-section button:hover{ background:#1e3a8a; }
+    </style>
+</head>
+
+<body>
+    <div class="breadcrumb">
+        <a href="index.html">Home</a> <span>›</span>
+        <a href="articles.html">Articles</a> <span>›</span>
+        Why Neon Aesthetic Works
+    </div>
+
+    <a id="backToHub" href="index.html"
+       style="color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;
+              padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
+              box-shadow:0 0 10px rgba(56,189,248,0.45);
+              display:inline-block;margin-top:14px;">
+      ⬅ Back to Hub
+    </a>
+
+    <h1>Why Neon Aesthetic Works in Web Design & Gaming</h1>
+
+    <p>
+        Neon aesthetics are one of the most recognizable trends in modern digital design.
+        They combine bold contrast, vibrant color psychology, and futuristic visual cues
+        that trigger instant emotional engagement.
+    </p>
+
+    <h2>1. Neon Colors Trigger Immediate Attention</h2>
+
+    <p>
+        Neon hues sit close to the visual extremes of human perception.  
+        Their high saturation and strong contrast create a “glow-like illusion,” which:
+    </p>
+
+    <ul>
+        <li>🎯 Directs attention quickly</li>
+        <li>⚡ Enables faster UI navigation</li>
+        <li>💥 Makes buttons feel interactive & alive</li>
+    </ul>
+
+    <h2>2. Dark UI + Neon = Maximum Readability</h2>
+
+    <p>
+        The combination of neon on dark backgrounds increases visual clarity:
+    </p>
+
+    <ul>
+        <li>🌓 Higher contrast ratios</li>
+        <li>💡 Glowing outlines define shapes better</li>
+        <li>🎮 Perfect for fast-paced gameplay readability</li>
+    </ul>
+
+    <h2>3. Why Players Love Neon</h2>
+
+    <p>
+        Game designers use neon because it amplifies emotion:
+    </p>
+
+    <ul>
+        <li>🔵 Blue & cyan → calm, techy, futuristic</li>
+        <li>🟣 Purple → mystery & depth</li>
+        <li>🔴 Pink neon → energy & fun</li>
+    </ul>
+
+    <h2>4. Neon = The Identity of Modern Web Gaming</h2>
+
+    <p>
+        Platforms like <strong>Neon Mini Game Hub</strong> leverage neon not as decoration,  
+        but as a central part of branding, UX clarity, and visual narrative.
+    </p>
+
+    <h2>Conclusion</h2>
+
+    <p>
+        Neon works because it blends psychology, visual engineering, and modern digital trends.  
+        With WebGL, Canvas shadows, and GPU shaders, neon isn’t just pretty — it’s functional.
+    </p>
+
+    <!-- COMMENTS -->
+    <div class="comments-section" style="margin-top:40px;">
+      <h3>💬 Comments</h3>
+      <textarea id="commentInput" placeholder="Write a comment..." 
+        style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+      <button id="postCommentBtn">Post Comment</button>
+      <div id="commentsList" style="margin-top:20px;"></div>
+    </div>
+
+<script>
+const ARTICLE_ID="neon-aesthetic-web-gaming";
+const COMMENTS_API="https://neon-comments.gabi-gabz.workers.dev";
+
+async function loadComments(){
+  const r=await fetch(COMMENTS_API+"/"+ARTICLE_ID);
+  const box=document.getElementById("commentsList");
+  const list=await r.json();
+  box.innerHTML="";
+  list.forEach(c=>{
+    const d=document.createElement("div");
+    d.style.marginBottom="12px";
+    d.innerHTML="<div style='padding:8px;background:#111;border-radius:6px;border:1px solid #333;'>"+c.text+"</div>";
+    box.appendChild(d);
+  });
+}
+
+document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
+  const t=document.getElementById("commentInput").value.trim();
+  if(!t) return;
+  await fetch(COMMENTS_API+"/"+ARTICLE_ID,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text:t})
+  });
+  document.getElementById("commentInput").value="";
+  loadComments();
+});
+loadComments();
+</script>
+
+</body>
+</html>
