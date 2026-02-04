@@ -186,7 +186,17 @@
     }
     .btn:active { transform: translateY(1px); opacity: 1; }
     .btn.restart { border-color: rgba(56,189,248,0.6); }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -320,6 +330,18 @@
         <button class="btn restart" id="btnRestartMobile" type="button">RESTART</button>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Snake – Neon Classic Arcade Challenge</h1>
+
+<p>
+The iconic Snake game gets a neon makeover.
+Control a glowing serpent through a minimal grid and consume energy dots to grow.
+The larger you become, the harder the game gets — one mistake means game over.
+</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

@@ -44,7 +44,17 @@
       align-items: center;
       padding: 4px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 1024px) {
       .side-banner { display: none; }
       .page-wrap { justify-content: center; padding: 10px; }
@@ -252,6 +262,43 @@
         <span style="opacity:.9;">Mobile: tap unit → tap tile. Desktop: click unit → click tile.</span>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Auto Battler – Tactical Combat in a Glowing Arena</h1>
+
+<h2>Build, Upgrade, Dominate</h2>
+<p>
+Neon Auto Battler is a strategy game where the battlefield resolves automatically,
+but your decisions determine everything. Choose units, position them wisely,
+upgrade your frontline, and combine powerful synergies that trigger unique effects.
+Once the battle begins, your squad fights autonomously against your opponent’s formation.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Between rounds, use gold to purchase units, merge duplicates to upgrade them,
+and place them strategically on the board. When the match starts, units attack on
+their own using AI combat logic.
+</p>
+
+<h2>Controls</h2>
+<p>Click or tap units to place or move them on the grid.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Focus on merging duplicates early for quick power boosts.</li>
+  <li>Mix frontline tanks with ranged backline attackers.</li>
+  <li>Use synergies — multiple units of the same type unlock bonuses.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+The AI engine is optimized for predictable but dynamic combat patterns,
+making battles feel lively without overwhelming players.
+</p>
+
   </main>
 
   <!-- RIGHT COLUMN (kept empty for Auto Ads) -->

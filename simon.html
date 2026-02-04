@@ -19,6 +19,17 @@
     #b1 { background:#22c55e; }
     #b2 { background:#3b82f6; }
     #b3 { background:#eab308; }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -39,6 +50,33 @@
   <button id="b2" class="btn" data-i="2"></button>
   <button id="b3" class="btn" data-i="3"></button>
 </div>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Simon – Memory Sequence Pattern Game</h1>
+
+<h2>Follow the Neon Lights</h2>
+<p>
+Neon Simon challenges your memory by playing a sequence of glowing colors.
+Your task is to repeat the exact order. Each successful round extends the
+sequence by one, quickly turning the challenge into a true memory endurance test.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Watch the lights flash. Then tap the squares in the same order to repeat the pattern.
+One mistake ends the game.
+</p>
+
+<h2>Controls</h2>
+<p>Tap the glowing pads in sequence.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Say the color names out loud to enhance retention.</li>
+  <li>Break long sequences into smaller chunks mentally.</li>
+</ul>
 
 <script>
 let seq=[], step=0, accepting=false, level=0;

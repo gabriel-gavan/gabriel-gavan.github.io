@@ -196,7 +196,17 @@
       letter-spacing: 0.02em;
       white-space: nowrap;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -252,6 +262,53 @@
       <p class="msg" id="msg"></p>
       <div class="hint">Tip: Press <b>Enter</b> to submit your guess.</div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Guess the Number – Neon Guessing Challenge</h1>
+
+<h2>Find the Hidden Neon Number</h2>
+<p>
+Guess the Number is a simple yet highly addictive logic game where the goal is to uncover
+a secret number chosen randomly by the system. Ranging from 1 to 100 (or custom ranges
+depending on mode), the game gives you glowing neon hints such as “Higher” or “Lower”
+after each attempt. Your challenge is to correctly guess the mystery number in as few
+tries as possible.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Enter a number into the input box and submit your guess. The game will immediately respond
+with a neon-highlighted hint. Use these clues to narrow down the possibilities until
+you find the exact value.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Type a number and press Enter or click Guess.</p>
+<p><strong>Mobile:</strong> Tap the number field and use the on-screen keyboard.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Use binary search: always guess the middle of the remaining range.</li>
+  <li>Adjust quickly after each hint — don’t repeat impossible numbers.</li>
+  <li>Try to beat your previous best attempt count.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+This neon version highlights each feedback state in glowing colors for instant recognition.
+The random number generator ensures every session feels fresh, while the simple gameplay
+offers endless replay value.
+</p>
+
+<h2>FAQ</h2>
+<h3>What is the best strategy?</h3>
+<p>The optimal method is binary search, which guarantees the number in ~7 guesses.</p>
+
+<h3>Does the game track best scores?</h3>
+<p>Yes — many versions store your lowest attempt count locally.</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

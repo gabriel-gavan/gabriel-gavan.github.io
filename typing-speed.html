@@ -218,7 +218,17 @@
       font-size: 12px;
       color: #9ca3af;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .ad-vertical { display: none; }
       .top-banner { height: 60px; font-size: 11px; }
@@ -289,6 +299,31 @@
         <button class="btn success" id="nextBtn" type="button">Next Sentence ➜</button>
       </div>
     </div>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Typing Speed – Neon Typing Accuracy & WPM Tester</h1>
+
+<h2>How Fast Can You Type?</h2>
+<p>
+Typing Speed is a neon-themed typing test that measures how many words per minute (WPM)
+you can type while maintaining accuracy. Perfect for students, professionals, and gamers
+who want to track and improve typing ability.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Type the text shown on screen as quickly and accurately as possible.
+Your WPM score is calculated based on speed and mistakes.
+</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Focus on accuracy first — speed will follow.</li>
+  <li>Use all fingers for maximum efficiency.</li>
+  <li>Keep your eyes on the text, not the keyboard.</li>
+</ul>
 
   </main>
 

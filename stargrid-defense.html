@@ -74,6 +74,18 @@
       cursor: crosshair;
     }
 
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
+
     /* Mobile / tablet: stack banners so game stays big */
     @media (max-width: 1024px) {
       .layout {
@@ -86,6 +98,7 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="page">
@@ -112,6 +125,7 @@
     <!-- 🎮 GAME CENTER -->
     <main class="game-wrapper">
       <canvas id="gameCanvas" width="960" height="540"></canvas>
+	  
     </main>
 
     <!-- ➡ RIGHT SKYSCRAPER AD SLOT -->
@@ -120,6 +134,29 @@
       Right Side Ad (160×600 / 300×600)
     </aside>
   </div>
+  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  
+  <h1>Stargrid Defense – Strategic Neon Tower Defense</h1>
+
+<h2>Build Your Defense Grid</h2>
+<p>
+Stargrid Defense invites you to organize a glowing defense network
+to stop incoming neon invaders. Every wave becomes stronger,
+requiring smart tower placement and efficient upgrades.
+</p>
+
+<h2>Controls</h2>
+<p>Tap or click to place and upgrade towers.</p>
+
+<h2>Strategy Tips</h2>
+<ul>
+  <li>Place slow-down towers early in the path.</li>
+  <li>Position damage towers near choke points.</li>
+</ul>
+
 </div>
 
 <script>

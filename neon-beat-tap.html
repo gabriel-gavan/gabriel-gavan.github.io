@@ -40,7 +40,17 @@
       align-items:center;
       padding:4px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 1024px){
       .side-banner{ display:none; }
       .page-wrap{ justify-content:center; padding:10px; }
@@ -302,6 +312,48 @@
           Sounds: this version uses REAL samples (not ugly beeps). Put your audio files in <b>/sounds/beat/</b> (see notes inside code).
         </span>
       </div>
+	  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Beat Tap – Rhythm Combat in a Neon Soundscape</h1>
+
+<h2>Feel the Music, Follow the Beat</h2>
+<p>
+Neon Beat Tap transforms your browser into a glowing music arena where rhythm
+and precision determine your score. Notes descend along neon rails in sync
+with pulsating synthwave tracks. Tap them at the exact moment they cross the hit zone
+to chain combos and earn massive points.
+</p>
+
+<p>
+This neon-drenched rhythm experience is built for both casual players
+and hardcore rhythm fans who crave fast-paced timing challenges.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Notes travel down the track toward the hit zone. Tap at the right time to hit them.
+Your accuracy determines your score and combo progress.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Click or press assigned keys per lane.</p>
+<p><strong>Mobile:</strong> Tap directly on the screen.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Focus on timing over speed — accuracy boosts combo multipliers.</li>
+  <li>Memorize note patterns for difficult songs.</li>
+  <li>Keep rhythm with background beats.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+The entire note system is synced using audio time signatures to ensure rhythmic accuracy.
+Visual effects react dynamically to combos and streaks, enhancing immersion.
+</p>
+
     </div>
   </main>
 

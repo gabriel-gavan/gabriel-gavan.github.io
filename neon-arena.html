@@ -41,7 +41,17 @@
       align-items: center;
       padding: 4px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 1024px) {
       .side-banner { display: none; }
       .page-wrap { justify-content: center; padding: 10px; }
@@ -290,6 +300,22 @@
         </div>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Arena – Classic Neon Top-Down Shooter</h1>
+
+<h2>Fight Endless Waves</h2>
+<p>
+Neon Arena blends classic arcade shooter mechanics with a futuristic glow.
+Enemies rush toward you from every direction, forcing you to dodge, circle,
+and shoot your way out while collecting XP for upgrades.
+</p>
+
+<h2>Controls</h2>
+<p>Move with WASD, aim with mouse or auto-aim.</p>
+
   </main>
 
   <aside class="side-banner"></aside>

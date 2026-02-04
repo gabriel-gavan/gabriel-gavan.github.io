@@ -40,7 +40,17 @@
       align-items: center;
       padding: 4px;
     }
+/* PC-only SEO text container */
+.pc-only {
+  display: block;
+}
 
+/* Hide SEO text on mobile/tablet */
+@media (max-width: 900px) {
+  .pc-only {
+    display: none !important;
+  }
+}
     @media (max-width: 1024px) {
       .side-banner { display: none; }
       .page-wrap { justify-content: center; padding: 10px; }
@@ -247,6 +257,61 @@
         <b>Controls:</b> <b>Space / Tap</b> to jump. <b>Hold</b> to boost (short sprint). Collect coins, avoid obstacles.
         Unlock characters in <b>Skins</b>. <span style="opacity:.9;">Mobile: tap/hold anywhere on canvas.</span>
       </div>
+	  	 <!-- ===========================
+     PC-ONLY LONG SEO TEXT
+=========================== -->
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Runner Rush – Endless High-Speed Neon Parkour</h1>
+
+<h2>Run Through the Cyber Metropolis</h2>
+<p>
+Neon Runner Rush plunges you into a futuristic city where every street glows,
+every rooftop hums with energy, and every obstacle threatens to end your run.
+As a cyber-enhanced courier, your mission is simple: survive the longest distance
+possible while collecting energy orbs and avoiding the hazards of the neon megacity.
+</p>
+
+<p>
+Each run becomes progressively faster, more intense, and more visually stunning.
+The synthwave soundtrack heightens the mood, matching the pulse of the glowing
+surroundings as you weave through barriers, leap over gaps, and slide under neon gates.
+</p>
+
+<h2>How to Play</h2>
+<p>
+The runner accelerates automatically, requiring you to react with perfect timing
+to survive. Obstacles appear with increasing frequency, demanding fast reflexes
+and spatial awareness.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Space / Up Arrow to jump.</p>
+<p><strong>Mobile:</strong> Tap to jump.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Jump earlier than you think; obstacles approach quickly.</li>
+  <li>Prioritize safe orb pickups over risky ones.</li>
+  <li>Learn the obstacle patterns to anticipate upcoming threats.</li>
+  <li>Use long jumps to clear multiple hazards at once.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+Neon Runner Rush uses a lightweight physics engine tailored for endless runner
+precision. The reactive animations and smooth hit detection create a
+responsive feel across all devices, ensuring fast gameplay without latency issues.
+</p>
+
+<h2>FAQ</h2>
+<h3>Does the game loop endlessly?</h3>
+<p>Yes — difficulty increases without limit.</p>
+<h3>Does it save my best score?</h3>
+<p>Yes, the game tracks your longest distance locally.</p>
+
     </div>
   </main>
 

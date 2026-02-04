@@ -118,7 +118,17 @@
       user-select: none;
       -webkit-user-select: none;
     }
+		/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -260,6 +270,29 @@
         <button class="mc-btn jump" id="btnJump" type="button">JUMP</button>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neo Runner – High-Speed Neon Obstacle Challenge</h1>
+
+<h2>Dash Through the Neon Maze</h2>
+<p>
+Neo Runner takes the endless running concept and condenses it into a reflex-intensive
+experience where precision determines survival. The world is filled with neon-lit
+platforms, shifting hazards, and razor-thin jump windows. One mistake — and the run ends.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Space or click to jump.</p>
+<p><strong>Mobile:</strong> Tap anywhere to jump.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>React quickly to platform spacing.</li>
+  <li>Look ahead — don't stare directly at your character.</li>
+</ul>
+
   </main>
 
   <!-- RIGHT BANNER -->

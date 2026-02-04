@@ -289,6 +289,18 @@
       justify-content:space-between;
       padding:10px 6px 2px;
     }
+	
+		/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px){
       .layout{ padding:8px; gap:0; }
       .ad-vertical{ display:none; }
@@ -417,6 +429,54 @@
       <button class="mc-btn flag" id="btnFlagMobile" type="button">🚩 Flag: OFF</button>
       <button class="mc-btn reset" id="btnRestartMobile" type="button">Restart</button>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Minesweeper – Futuristic Logic Puzzle Challenge</h1>
+
+<h2>Clear the Grid, Avoid the Neon Mines</h2>
+<p>
+Neon Minesweeper revitalizes the iconic strategy puzzle with a glowing, futuristic
+interface designed for clarity and precision. The objective is simple yet addicting:
+reveal all safe tiles on the grid without triggering a mine. Numbers indicate how many
+mines touch a given tile, requiring careful deduction and logical reasoning.
+</p>
+
+<p>
+Every board is randomly generated, making every round feel fresh and unpredictable.
+The neon aesthetic elevates the classic gameplay into a clean, modern puzzle experience.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Click tiles to reveal them. If you reveal a mine — the game ends instantly.
+Use logic to deduce where mines must be and mark them before revealing new areas.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Left-click to reveal, right-click to flag mines.</p>
+<p><strong>Mobile:</strong> Tap to reveal; long-press to place a flag.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Always start by clearing large empty regions.</li>
+  <li>Flag tiles you are certain contain mines.</li>
+  <li>Use number clusters to triangulate mine positions.</li>
+  <li>Work from the safest known zone outward.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+This version of Minesweeper uses a custom grid engine optimized for instant response,
+smooth animations, and clean neon highlights. The glowing color-coded tiles ensure the
+game remains visually readable even during fast-paced logic solving.
+</p>
+
+<h2>FAQ</h2>
+<h3>Is every grid solvable?</h3>
+<p>Almost all grids are solvable through logic alone, though classic Minesweeper rules allow rare guessing scenarios.</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

@@ -41,7 +41,17 @@
       align-items: center;
       padding: 4px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 1024px) {
       .side-banner { display: none; }
       .page-wrap { justify-content: center; padding: 10px; }
@@ -283,6 +293,28 @@
         </div>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Survivor Arena – Survive the Neon Horde</h1>
+
+<h2>Arenas That Fight Back</h2>
+<p>
+Survivor Arena challenges you to stay alive inside an increasingly hostile neon arena.
+Enemies spawn from all directions, growing stronger with each wave.
+As your kills accumulate, you gain access to new upgrades and powerful abilities.
+</p>
+
+<h2>Controls</h2>
+<p>Move with WASD or joystick. Auto-fire keeps pressure on enemies.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Keep moving — don’t let enemies surround you.</li>
+  <li>Collect power-ups quickly before they expire.</li>
+</ul>
+
   </main>
 
   <aside class="side-banner"></aside>
