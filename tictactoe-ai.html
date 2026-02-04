@@ -209,7 +209,17 @@
       inset: 0;
       pointer-events: none;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -265,6 +275,17 @@
       <div id="board" aria-label="Tic Tac Toe board"></div>
       <p id="msg"></p>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Tic Tac Toe – Neon Edition</h1>
+
+<p>
+The classic 3×3 strategy game returns with glowing visuals.
+Compete against the AI or a local friend and aim for three in a row.
+</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

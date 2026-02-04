@@ -16,6 +16,17 @@
       cursor:pointer;font-size:18px;
     }
     .cell.active { background:#6366f1;border-color:#a5b4fc; }
+		/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -28,6 +39,42 @@
 <div id="grid"></div>
 <p id="msg"></p>
 <button onclick="resetPattern()">Reset input</button>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Pattern Lock – Neon Connect-the-Dots Logic Puzzle</h1>
+
+<h2>Crack the Glowing Security Grid</h2>
+<p>
+Pattern Lock reimagines the classic connect-the-dots unlocking system found on digital
+devices. Your task is to trace a glowing pattern across nodes in the exact sequence shown,
+replicating security locks found in futuristic neon interfaces. With each level, patterns
+grow longer, more complex, and harder to memorize.
+</p>
+
+<h2>How to Play</h2>
+<p>
+A pattern preview appears briefly. Memorize the order, then draw the exact sequence by
+connecting the neon nodes in one continuous gesture.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Click and drag over nodes.</p>
+<p><strong>Mobile:</strong> Swipe continuously over the dots.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Focus on the pattern shape rather than individual points.</li>
+  <li>Start slow until your muscle memory improves.</li>
+  <li>Break long patterns into smaller mental segments.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+This game uses gesture tracking for smooth, accurate pattern recognition,
+ensuring mobile users get a natural lock-screen-style experience.
+</p>
 
 <script>
 const correctPattern = [1,2,5,8,9]; // positions 1-9

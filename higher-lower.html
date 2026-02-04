@@ -12,6 +12,18 @@
     .card-row { display:flex;justify-content:center;gap:1rem;margin:1rem 0; }
     .card { padding:.5rem 1rem;border-radius:.6rem;border:1px solid #374151;background:#111827;font-size:1.4rem;min-width:70px; }
     button { padding:.4rem .9rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin:0 .3rem; }
+	
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -30,6 +42,51 @@
 
 <p id="msg"></p>
 <p id="score">Score: 0</p>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Higher or Lower – Neon Probability Guessing Game</h1>
+
+<h2>Predict the Next Neon Number</h2>
+<p>
+Higher or Lower is a fast-paced guessing game where your task is to predict whether the
+next card, number, or value will be higher or lower than the current one.
+The rules are simple, but the excitement grows quickly as streaks build and pressure rises.
+This neon-themed edition enhances the experience with glowing animations and instant feedback.
+</p>
+
+<h2>How to Play</h2>
+<p>
+A starting number appears on the screen. Choose “Higher” or “Lower” to predict what the
+next number will be. If your prediction is correct, your streak continues. If not, the
+round ends and your score resets.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Click Higher or Lower.</p>
+<p><strong>Mobile:</strong> Tap either button for an instant prediction.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>If the current number is low (1–4), chances favor “Higher.”</li>
+  <li>If the number is high (7–10), “Lower” becomes statistically safer.</li>
+  <li>Play streaks strategically — know when to quit if your version allows it.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+The game uses a random generator with uniform probability, ensuring fairness in every
+round. Animations and transitions are optimized to feel sharp and responsive across both
+desktop and touch devices.
+</p>
+
+<h2>FAQ</h2>
+<h3>Is the game luck-based?</h3>
+<p>Yes, but probability awareness significantly improves your streak potential.</p>
+
+<h3>Can the game adapt difficulty?</h3>
+<p>Some versions include modes with smaller ranges or special modifiers.</p>
 
 <script>
 let current=0, score=0;

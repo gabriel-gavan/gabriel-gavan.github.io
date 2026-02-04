@@ -222,7 +222,17 @@
       font-size: 12px;
       margin-top: 8px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -281,6 +291,40 @@
         </div>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Reaction Test – Neon Reflex Speed Trainer</h1>
+
+<h2>How Fast Are Your Reflexes?</h2>
+<p>
+Reaction Test measures pure reaction speed by challenging you to tap the screen
+the moment the neon background changes color. Perfect for gamers looking to improve
+reflexes or anyone wanting to measure their reaction time scientifically.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Wait for the screen to glow bright. The moment the color changes, tap instantly.
+Your time is recorded in milliseconds.
+</p>
+
+<h2>Controls</h2>
+<p>Tap or click the screen as fast as possible.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Stay focused — don’t anticipate too early.</li>
+  <li>Play multiple rounds to average your best score.</li>
+</ul>
+
+<h2>Developer Notes</h2>
+<p>
+The game uses high-precision timing functions to measure reaction time accurately
+down to the millisecond for consistent results.
+</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

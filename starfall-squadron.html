@@ -114,7 +114,17 @@
       user-select: none;
       -webkit-user-select: none;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -255,7 +265,45 @@
         <button class="mc-btn pause" id="btnPause" type="button">⏸</button>
         <button class="mc-btn fire" id="btnFire" type="button">FIRE</button>
       </div>
-    </div>
+
+    </div>	  
+	  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Starfall Squadron – Neon Space SHMUP Adventure</h1>
+
+<h2>Defend the Neon Galaxy</h2>
+<p>
+Starfall Squadron brings back classic arcade shoot-’em-up gameplay with a vibrant neon twist.
+Pilot your starfighter through cosmic battlefields filled with alien ships,
+asteroids, and projectile storms. Dodge incoming fire, collect power-ups,
+and unleash devastating attacks as you progress through escalating waves.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Move your ship around the screen to dodge enemies while your weapons fire continuously.
+Each enemy destroyed adds to your score and drops potential power-ups.
+</p>
+
+<h2>Controls</h2>
+<p><strong>Desktop:</strong> Arrow keys to move, space to shoot (if manual fire mode).</p>
+<p><strong>Mobile:</strong> Drag finger to steer the ship.</p>
+
+<h2>Tips & Strategy</h2>
+<ul>
+  <li>Stay near the lower area of the screen to maximize reaction time.</li>
+  <li>Target larger enemies first—they fire more dangerous patterns.</li>
+  <li>Collect shield boosts whenever possible.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+The game’s movement uses sub-pixel smoothing for perfect fluidity.
+Enemy patterns are inspired by retro arcade classics but optimized for mobile performance.
+</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

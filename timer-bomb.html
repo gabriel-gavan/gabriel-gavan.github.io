@@ -11,6 +11,17 @@
     a { color:#a5b4fc; }
     input { padding:.3rem .5rem;border-radius:.4rem;border:1px solid #374151;background:#0f172a;color:#fff; }
     button { padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin-left:.3rem; }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -23,6 +34,29 @@
 <input id="code" type="number" placeholder="Enter code">
 <button onclick="tryCode()">Submit</button>
 <p id="hint"></p>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Timer Bomb – Neon Countdown Puzzle Survival</h1>
+
+<h2>Beat the Clock, Defuse the Bomb</h2>
+<p>
+Timer Bomb is a fast-paced challenge where you must solve micro-puzzles before the timer
+hits zero. With each success, the difficulty increases and the available time decreases.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Complete the instructions shown on-screen — tap, match, solve, or react — before the bomb
+timer expires.
+</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Stay calm — panic wastes precious seconds.</li>
+  <li>Expect the rules to change every round.</li>
+</ul>
 
 <script>
 let target = Math.floor(Math.random()*900)+100;

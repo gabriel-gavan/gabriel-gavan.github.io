@@ -312,7 +312,17 @@
       font-size: 12px;
       text-align:center;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px){
       .layout{ padding:8px; gap:0; }
       .ad-vertical{ display:none; }
@@ -403,6 +413,17 @@
           </div>
         </div>
       </div>
+	  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Rock Paper Scissors – Neon Edition</h1>
+<p>
+The timeless game of Rock Paper Scissors returns with a neon aesthetic.
+Pick your move and challenge the AI to quick rounds that test intuition
+and pattern recognition.
+</p>
+
     </main>
 
     <!-- RIGHT BANNER -->

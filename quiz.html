@@ -11,6 +11,17 @@
     a { color:#a5b4fc; }
     main { max-width:600px;margin:1rem auto;padding:0 1rem; }
     button { margin-top:.4rem;padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;display:block; }
+		/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -24,6 +35,45 @@
   <div id="answers"></div>
   <p id="progress"></p>
   <p id="result"></p>
+  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Neon Quiz Master – Interactive Trivia Challenge</h1>
+
+<h2>Test Your Knowledge</h2>
+<p>
+Neon Quiz Master is a vibrant multiple-choice trivia game covering a wide array of topics:
+science, history, gaming, geography, pop culture, and more. With glowing UI elements and
+instant feedback, this game delivers fast-paced learning and entertainment.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Choose the correct answer from four neon-highlighted options. Each correct response
+increases your score and advances you to the next question.
+</p>
+
+<h2>Controls</h2>
+<p>Click or tap an answer to select it instantly.</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Think quickly — many quiz modes reward speed.</li>
+  <li>Eliminate obviously wrong answers first.</li>
+  <li>Stay calm during trick questions.</li>
+</ul>
+
+<h2>Developer Insights</h2>
+<p>
+The quiz engine supports category filtering, timed modes, and randomized questions to
+ensure no two sessions feel identical.
+</p>
+
+<h2>FAQ</h2>
+<h3>Are questions repeated?</h3>
+<p>Questions are randomized and updated regularly.</p>
+
 </main>
 
 <script>

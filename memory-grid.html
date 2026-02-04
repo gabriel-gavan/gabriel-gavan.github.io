@@ -233,7 +233,17 @@
       font-size: 12px;
       margin-top: 8px;
     }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
 
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
     @media (max-width: 900px) {
       .layout { padding: 8px; gap: 0; }
       .ad-vertical { display: none; }
@@ -296,6 +306,17 @@
         </div>
       </div>
     </div>
+	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Memory Grid – Neon Memory Challenge</h1>
+
+<p>
+Flip cards, match identical symbols, and try to clear the grid in the fewest moves.
+This neon-themed memory game trains concentration and pattern recall.
+</p>
+
   </main>
 
   <!-- RIGHT BANNER -->

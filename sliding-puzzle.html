@@ -15,6 +15,17 @@
       background:#111827;border-radius:.6rem;border:1px solid #374151;font-size:20px;cursor:pointer;
     }
     .empty { background:transparent;border:none;cursor:default; }
+	/* PC-only SEO text container */
+	.pc-only {
+	  display: block;
+	}
+
+	/* Hide SEO text on mobile/tablet */
+	@media (max-width: 900px) {
+	  .pc-only {
+		display: none !important;
+	  }
+	}
   </style>
 </head>
 <body>
@@ -26,6 +37,30 @@
 <div id="grid"></div>
 <p id="msg"></p>
 <button onclick="shuffle()">Shuffle</button>
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+  
+  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
+  <!-- Example placeholder: -->
+  <h1>Sliding Puzzle – Neon Tile Rearrangement Challenge</h1>
+
+<h2>Rearrange the Neon Grid</h2>
+<p>
+Sliding Puzzle brings the timeless tile rearrangement challenge into a neon environment.
+Shift tiles around the empty slot to recreate the correct numerical order or complete
+a glowing image. It’s simple in concept, but increasingly difficult as the puzzles grow.
+</p>
+
+<h2>How to Play</h2>
+<p>
+Tap any tile adjacent to the empty space to slide it. Continue sliding until the puzzle
+is fully solved.
+</p>
+
+<h2>Tips</h2>
+<ul>
+  <li>Focus on solving the top row first.</li>
+  <li>Use the final empty space strategically.</li>
+</ul>
 
 <script>
 let tiles=[]; // array of numbers 1..8 and null

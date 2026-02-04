@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://pagead2.googlesyndication.com">
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<link rel="preconnect" href="https://googleads.g.doubleclick.net">
+<link rel="preconnect" href="https://tpc.googlesyndication.com">
+<link rel="preload" href="images/header-bg.webp" as="image">
 <title>Neon Mini Game Hub - Free HTML5 Neon Games</title>
 <meta name="description" content="Play free neon-style HTML5 games instantly. No downloads, no accounts, just fast arcade fun.">
 <meta property="og:title" content="Neon Mini Game Hub">
@@ -15,7 +20,7 @@
 
 <!-- Global site tag - Google Analytics (needed for Consent Mode) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
-<script>
+<script defer>
   window.dataLayer = window.dataLayer || [];
   function gtag(){ dataLayer.push(arguments); }
 
@@ -46,7 +51,7 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background:
         linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
-        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+        url("images/hub-bg.webp") center center / cover no-repeat fixed;
       color: #e5e7eb;
       min-height: 100vh;
       display: block;
@@ -375,7 +380,7 @@
       border-top: 1px solid #111827;
         background:
 		linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
-		url("images/hub-bg.jpg") center/cover no-repeat fixed;
+		url("images/hub-bg.webp") center/cover no-repeat fixed;
     }
 
     footer span { opacity: 0.9; }
@@ -565,7 +570,7 @@ html, body {
     border-radius: 14px;
 	background:
     linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
-    url("images/hub-bg.jpg") center/cover no-repeat fixed;
+    url("images/hub-bg.webp") center/cover no-repeat fixed;
   }
 }
 
@@ -1261,7 +1266,7 @@ header::before{content:"";position:absolute;inset:0;background:none;}
 }
 
 </style>
-<script>
+<script defer>
 function toggleMobileMenu(){
   const m=document.getElementById('mobileMenu');
   m.style.display = (m.style.display==='block'?'none':'block');
@@ -1312,7 +1317,7 @@ function toggleMobileMenu(){
 <header class="hero-card-section">
   <div class="hero-card">
   
-    <img src="images/header-bg.jpg" class="hero-img" alt="">
+    <img src="images/header-bg.webp" class="hero-img" alt="">
 	
     <div class="hero-overlay"></div>
 	
@@ -1348,23 +1353,23 @@ function toggleMobileMenu(){
   <h2 style="color:#93c5fd;">Featured Articles</h2>
   <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
   
-    <div class="fa-card"><img src="images/thumb1.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+    <div class="fa-card"><img src="images/thumb1.webp" class="fa-thumb" loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
       <h3>The Rise of HTML5 Neon Games</h3>
       <p>A deep dive into why browser arcades are returning in force.</p><a class="fa-more-btn" href="article1.html">Read more →</a>
 
     </div>
-    <div class="fa-card"><img src="images/thumb2.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+    <div class="fa-card"><img src="images/thumb2.webp" class="fa-thumb" loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
       <h3>How Modern Browser Games Are Built</h3>
       <p>Learn how HTML, CSS and JS power fast neon games.</p><a class="fa-more-btn" href="article2.html">Read more →</a>
 
     </div>
-    <div class="fa-card"><img src="images/thumb3.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+    <div class="fa-card"><img src="images/thumb3.webp" class="fa-thumb" loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
       <h3>Top 10 Principles of Mini-Game Design</h3>
       <p>The fundamentals of creating addictive fast-play games.</p><a class="fa-more-btn" href="article3.html">Read more →</a>
  
 	</div>
 	
-	<div class="fa-card">  <img src="images/thumb4.png" class="fa-thumb" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+	<div class="fa-card">  <img src="images/thumb4.webp" class="fa-thumb" loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>The Evolution of WebGL for Browser Games</h3>
   <p>A technical deep-dive into how WebGL transformed modern browser gaming.</p>
   <a class="fa-more-btn" href="article4.html">Read more →</a>
@@ -1372,7 +1377,7 @@ function toggleMobileMenu(){
 	</div>
 	
 	<div class="fa-card">
-  <img src="images/thumb5.png" class="fa-thumb" 
+  <img src="images/thumb5.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>How Game Engines Use Canvas Rendering Loops</h3>
   <p>A deep exploration of render cycles, frame timing, and loop scheduling.</p>
@@ -1380,7 +1385,7 @@ function toggleMobileMenu(){
  
 </div>
 <div class="fa-card">
-  <img src="images/thumb6.png" class="fa-thumb" 
+  <img src="images/thumb6.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>Mobile Optimization Techniques for HTML5 Games</h3>
   <p>How to maximize speed, input latency, and visual clarity on smartphones.</p>
@@ -1388,7 +1393,7 @@ function toggleMobileMenu(){
 
 </div>
 <div class="fa-card">
-  <img src="images/thumb7.png" class="fa-thumb" 
+  <img src="images/thumb7.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>Why the Neon Aesthetic Works in Web Design & Gaming</h3>
   <p>An artistic and psychological breakdown of neon’s visual power.</p>
@@ -1396,7 +1401,7 @@ function toggleMobileMenu(){
 
 </div>
 <div class="fa-card">
-  <img src="images/thumb8.png" class="fa-thumb" 
+  <img src="images/thumb8.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>Building Real-Time Hitboxes & Collision Systems</h3>
   <p>The mathematics and techniques behind precision collision engines.</p>
@@ -1404,7 +1409,7 @@ function toggleMobileMenu(){
   
 </div>
 <div class="fa-card">
-  <img src="images/thumb9.png" class="fa-thumb" 
+  <img src="images/thumb9.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>How Indie Devs Can Scale With Browser-First Games</h3>
   <p>Why browser games are becoming a powerful growth path for indie studios.</p>
@@ -1412,7 +1417,7 @@ function toggleMobileMenu(){
   
 </div>
 <div class="fa-card">
-  <img src="images/thumb10.png" class="fa-thumb" 
+  <img src="images/thumb10.webp" class="fa-thumb" loading="lazy"
        style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
   <h3>The Future of WebGPU & High-End Browser Gaming</h3>
   <p>A look at next-gen APIs bringing console-level graphics to the web.</p>
@@ -2131,7 +2136,7 @@ function toggleMobileMenu(){
 
 
 <!-- FEEDBACK LOGIC -->
-<script>
+<script defer>
 (function() {
     const API = "https://neon-feedback.gabi-gabz.workers.dev/";
     const ARTICLE_ID = "homepage-feedback";
@@ -2352,7 +2357,7 @@ function renderReply(c) {
   <span>⚙</span> Privacy &amp; Cookies
 </button>
 
-<script>
+<script defer>
   document.addEventListener('DOMContentLoaded', () => {
     const cards = Array.from(document.querySelectorAll('.game-card'));
     const searchInput = document.getElementById('searchInput');
