@@ -1,0 +1,503 @@
+:root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:#020617
+        
+      color: #e5e7eb;
+      min-height: 100vh;
+      display: block;
+    }
+
+    .hidden { display: none !important; }
+
+    /* --------- LAYOUT WRAPPER: SIDE ADS + MAIN CONTENT --------- */
+    .page-wrap {
+      display: flex;
+      width: 100%;
+      padding: 12px;
+      gap: 12px;
+    }
+
+    /* Side columns kept for layout spacing (Auto Ads can still place ads on the page) */
+    .side-banner {
+      flex: 0 0 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+    }
+
+    /* Hide side columns on small screens */
+    @media (max-width: 1024px) {
+      .side-banner { display: none; }
+      .page-wrap { justify-content: center; }
+    }
+
+    /* --------- MAIN CONTENT (HUB) --------- */
+    .main-content { background: rgba(0,0,0,0.6); }
+
+    /* --------- TOP STRIP (no manual ad units for Auto Ads) --------- */
+    .top-banner {
+      padding: 0.6rem 1.5rem 0.4rem;
+      border-bottom: 1px solid #111827;
+      background: #020617;
+      display: flex;
+      justify-content: center;
+    }
+
+    .top-banner-inner {
+      width: 100%;
+      max-width: 980px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 20px;
+    }
+
+    header.hero{
+      padding: 12px; /* match page-wrap spacing */
+      border: none;
+      background: none;
+      color: #e5e7eb;
+    }
+    .hero-inner{
+      max-width: 1300px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.25);
+      box-shadow: 0 8px 20px rgba(15,23,42,0.6);
+      position: relative;
+      background: rgba(2,6,23,0.65);
+    }
+    .hero-img{
+      width: 100%;
+      height: auto;          /* show FULL picture (no cropping) */
+      display: block;
+    }
+    .hero-overlay{
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55); /* readability */
+      pointer-events: none;
+    }
+    .hero-content{
+      position: absolute;
+      inset: 0;
+      padding: 1.5rem 1.5rem 0.9rem;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+      justify-content: flex-start;
+    }
+    .hero-content nav{ margin-top: 10px; display:flex; gap:15px; flex-wrap:wrap; }
+    .hero-content h1{ margin: 0 0 0.4rem; font-size: 1.7rem; letter-spacing: 0.03em; }
+    .hero-content p{ margin: 0; opacity: 0.85; font-size: 0.9rem; max-width: 980px; }
+    header h1 {
+      margin: 0 0 0.4rem;
+      font-size: 1.7rem;
+      letter-spacing: 0.03em;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.8;
+      font-size: 0.9rem;
+    }
+
+    .badge-row {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      font-size: 0.7rem;
+      color: #9ca3af;
+    }
+
+    .badge-row .pill {
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.15rem 0.6rem;
+      background: rgba(15,23,42,0.85);
+    }
+
+    /* --------- FILTERS BAR --------- */
+    .filters-bar {
+      max-width: 1300px;
+      margin: 0.7rem auto 0.2rem;
+      padding: 0.6rem 0.4rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filters-left,
+    .filters-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .search-input {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.45rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+      min-width: 210px;
+      outline: none;
+    }
+
+    .search-input::placeholder { color: #6b7280; }
+
+    .type-select {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+    }
+
+    .btn-secondary {
+      background: #020617;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .btn-secondary:hover {
+      background: #111827;
+      border-color: #6366f1;
+      transform: translateY(-1px);
+    }
+
+    .content-scroll {
+      overflow: auto;
+      padding: 0.4rem 1.5rem 1rem;
+      
+      
+      
+      
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    @media (max-width: 700px) {
+      header.hero { padding: 1.1rem 1rem 0.8rem; }
+      .content-scroll { padding: 0.4rem 1rem 0.8rem; }
+    }
+
+    /* --------- CATEGORY TITLES (ANIMATED BANNERS) --------- */
+    .category-title {
+      max-width: 1300px;
+      margin: 1.1rem auto 0.4rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      background: linear-gradient(120deg, rgba(79,70,229,0.2), rgba(236,72,153,0.12), rgba(56,189,248,0.16));
+      background-size: 200% 200%;
+      animation: bannerGlow 10s linear infinite;
+      border: 1px solid rgba(99,102,241,0.45);
+      box-shadow: 0 10px 25px rgba(15,23,42,0.8);
+    }
+
+    .category-title span.label { opacity: 0.95; }
+    .category-title span.sub { font-size: 0.8rem; color: #9ca3af; opacity: 0.9; }
+
+    @keyframes bannerGlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .grid {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 1.2rem;
+    }
+
+    .card {
+      position: relative;
+      background: #020617;
+      border-radius: 1rem;
+      padding: 1.5rem 1.8rem;
+      border: 1px solid #111827;
+      cursor: pointer;
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: .6rem;
+      min-height: 200px;
+      font-size: 1rem;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      border-color: #6366f1;
+      background: radial-gradient(circle at top left, rgba(90,70,255,0.25), #020617 40%);
+      box-shadow: 0 16px 32px rgba(15,23,42,0.9);
+    }
+
+    .card-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .card a {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #e5e7eb;
+      text-decoration: none;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      line-height: 1.3rem;
+      color: #cbd5f5;
+    }
+
+    .tag-row { margin-top: 0.2rem; }
+
+    .tag {
+      font-size: 0.7rem;
+      display: inline-block;
+      border: 1px solid #4b5563;
+      padding: 0.15rem .45rem;
+      border-radius: 999px;
+      opacity: 0.93;
+      margin-right: 0.25rem;
+      margin-top: 0.1rem;
+      background: rgba(15,23,42,0.9);
+    }
+
+    .badge-new {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.18rem 0.5rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #22c55e, #a3e635);
+      color: #022c22;
+      border: 1px solid rgba(34,197,94,0.9);
+      box-shadow: 0 0 10px rgba(34,197,94,0.4);
+      white-space: nowrap;
+    }
+
+    .most-played {
+      border-color: #facc15 !important;
+      box-shadow: 0 0 0 1px rgba(250,204,21,0.4), 0 20px 40px rgba(15,23,42,0.95);
+    }
+
+    .badge-most-played {
+      position: absolute;
+      bottom: 0.7rem;
+      right: 1.2rem;
+      font-size: 0.7rem;
+      padding: 0.16rem 0.55rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f97316, #facc15);
+      color: #111827;
+      border: 1px solid rgba(250,204,21,0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      box-shadow: 0 0 12px rgba(250,204,21,0.6);
+    }
+
+    footer {
+      text-align: center;
+      padding: 0.8rem 1rem 1rem;
+      font-size: .78rem;
+      color: #9ca3af;
+      border-top: 1px solid #111827;
+        background:
+		linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+		
+    }
+
+    footer span { opacity: 0.9; }
+
+    /* ================== COOKIE BANNER ================== */
+    .cookie-banner {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background: rgba(15,23,42,0.98);
+      border-top: 1px solid #374151;
+      box-shadow: 0 -12px 30px rgba(0,0,0,0.75);
+      padding: 0.9rem 1rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    .cookie-inner {
+      max-width: 960px;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+    }
+
+    .cookie-text {
+      flex: 1 1 260px;
+      line-height: 1.3rem;
+    }
+
+    .cookie-text a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .cookie-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .btn-cookie-primary {
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border-radius: 999px;
+      border: none;
+      padding: 0.45rem 1.1rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 10px 20px rgba(79,70,229,0.6);
+    }
+
+    .btn-cookie-secondary {
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.45rem 1rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    /* ================== PRIVACY MODAL ================== */
+    .privacy-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+    }
+
+    .privacy-modal {
+      background: #020617;
+      border-radius: 1rem;
+      border: 1px solid #374151;
+      max-width: 540px;
+      width: 100%;
+      padding: 1.5rem 1.6rem 1.2rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.85);
+    }
+
+    .privacy-modal h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .privacy-modal p {
+      font-size: 0.86rem;
+      line-height: 1.4rem;
+      color: #e5e7eb;
+      margin: 0.3rem 0;
+    }
+
+    .privacy-modal ul {
+      margin: 0.4rem 0 0.6rem;
+      padding-left: 1.1rem;
+      font-size: 0.82rem;
+      color: #d1d5db;
+    }
+
+    .privacy-modal a {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+
+    .modal-actions {
+      margin-top: 0.8rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.4rem 0.9rem;
+      color: #e5e7eb;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+header.hero {
+    margin-bottom: 0;
+}
+
+.page-wrap {
+    padding-top: 0;
+}
+
+    /* ================== PRIVACY SETTINGS FLOATING BUTTON ================== */
+    .privacy-settings-btn {
+      position: fixed;
+      bottom: 1.2rem;
+      left: 1rem;
+      z-index: 9998;
+      background: rgba(15,23,42,0.95);
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.78rem;
+      color: #e5e7eb;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .privacy-settings-btn span { font-size: 0.85rem; }
+
+    @media (max-width: 640px) {
+      .privacy-settings-btn { bottom: 3.4rem; }
+    }
+    /* ===========================
+   MOBILE IMPROVEMENTS
+   Paste at the END of
