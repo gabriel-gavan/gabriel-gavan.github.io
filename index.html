@@ -1,6 +1,35 @@
 <!DOCTYPE html>
   <html lang="en">
     <head>
+  <!-- Google CMP (Funding Choices + Consent Mode v2) -->
+  <script async src="https://fundingchoicesmessages.google.com/i/pub-5482914432517813?ers=1" nonce="CMP123"></script>
+
+  <script nonce="CMP123">
+    (function() {
+      function fcCallback() {
+        if (!window.FCF) return;
+        window.FCF.render({
+          messageCallback: function(consent) {
+            console.log("Consent Mode v2 applied:", consent);
+          }
+        });
+      }
+      window.addEventListener("DOMContentLoaded", fcCallback);
+    })();
+  </script>
+
+  <script nonce="CMP123">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+
+    gtag('consent', 'default', {
+      ad_storage: 'denied',
+      analytics_storage: 'denied',
+      ad_personalization: 'denied',
+      ad_user_data: 'denied'
+    });
+  </script>
+
       <link rel="preconnect" href="https://pagead2.googlesyndication.com">
       <link rel="preconnect" href="https://www.googletagmanager.com">
       <link rel="preconnect" href="https://googleads.g.doubleclick.net">
