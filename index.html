@@ -142,9 +142,7 @@
                         <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
                           <div class="fa-card">
                             <img src="images/thumb1.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              The Rise of HTML5 Neon Games
-                            </h3>
+                            <h3> The Rise of HTML5 Neon Games </h3>
                             <p>
                               A deep dive into why browser arcades are returning in force.
                             </p>
@@ -1301,10 +1299,8 @@
         });
 
         elText.value = "";
-        window.addEventListener("load", () => {
-			loadComments();
-		});
-    }
+		loadComments();
+			}
 
     // Render Comments + Replies
 function renderComment(c) {
@@ -1414,10 +1410,11 @@ function renderReply(c) {
     // Normal comment
     elSubmit.onclick = () => postComment(null);
 
-    // Initial load
-    window.addEventListener("load", () => {
-		loadComments();
-	});
+	     window.addEventListener("DOMContentLoaded", () => {
+          requestIdleCallback(() => {
+            loadComments();
+          });
+        });
 })();
                                                                   </script>
                                                                   <section class="category-title">
