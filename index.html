@@ -5,6 +5,7 @@
       <link rel="preconnect" href="https://www.googletagmanager.com">
       <link rel="preconnect" href="https://googleads.g.doubleclick.net">
       <link rel="preconnect" href="https://tpc.googlesyndication.com">
+	  <link rel="preconnect" href="https://neon-feedback.gabi-gabz.workers.dev">
       <link rel="preload" as="image" href="images/header-bg.webp">
       <meta name="description" content="Play free neon-style HTML5 games instantly. No downloads, no accounts, just fast arcade fun.">
       <meta property="og:title" content="Neon Mini Game Hub">
@@ -36,8 +37,12 @@
         crossorigin="anonymous">
           </script>
           <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (Option A: always load) -->
-    <link rel="stylesheet" href="styles.css">
-           
+   
+
+	<link rel="preload" href="styles.css" as="style">
+	<link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
+	<noscript><link rel="stylesheet" href="styles.css"></noscript>
+			   
     <link rel="icon" href="data:,">
 	
 
@@ -1296,7 +1301,9 @@
         });
 
         elText.value = "";
-        loadComments();
+        window.addEventListener("load", () => {
+			loadComments();
+		});
     }
 
     // Render Comments + Replies
@@ -1408,7 +1415,9 @@ function renderReply(c) {
     elSubmit.onclick = () => postComment(null);
 
     // Initial load
-    loadComments();
+    window.addEventListener("load", () => {
+		loadComments();
+	});
 })();
                                                                   </script>
                                                                   <section class="category-title">
