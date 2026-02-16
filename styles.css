@@ -3184,3 +3184,13 @@ header.hero-card-section {
   object-fit: cover !important;
   display: block !important;
 }
+/* ===== FORCE 2 GAME COLUMNS IN PORTRAIT ===== */
+
+@media (max-width: 768px) and (orientation: portrait) {
+
+  .game-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 14px;
+  }
+
+}
