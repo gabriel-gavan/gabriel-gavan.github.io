@@ -3167,3 +3167,20 @@ footer {
 /* ======================================================
    END PRODUCTION FIX
    ====================================================== */
+/* ===== FINAL HERO STABILITY LOCK ===== */
+
+header.hero-card-section {
+  min-height: 420px;      /* adjust if needed */
+  overflow: hidden !important;
+}
+
+.hero-inner {
+  aspect-ratio: 16 / 7 !important;
+}
+
+.hero-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
