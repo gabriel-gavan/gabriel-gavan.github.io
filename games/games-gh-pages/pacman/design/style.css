@@ -1,0 +1,317 @@
+/* -------------------------------------------------------
+   FONT
+------------------------------------------------------- */
+@font-face {
+    font-family: "Whimsy TT";
+    font-style: normal;
+    font-weight: normal;
+    src: local("Whimsy TT"), url("../fonts/whimsytt.ttf") format("truetype");
+}
+
+/* -------------------------------------------------------
+   GLOBAL
+------------------------------------------------------- */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+}
+
+html, body, input {
+    font-family: "Whimsy TT";
+    font-size: 18px;
+    color: white;
+}
+
+body {
+    background:
+        linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+        url("/images/hub-bg.jpg") center center / cover no-repeat fixed !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Prevent clipping */
+body {
+    overflow: visible !important;
+}
+
+/* -------------------------------------------------------
+   HEADINGS & LINKS
+------------------------------------------------------- */
+h1 {
+    font-size: 6em;
+    text-align: center;
+    font-weight: normal;
+}
+
+h2 {
+    font-size: 4.5em;
+    text-align: center;
+}
+
+a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 2em;
+    line-height: 3rem;
+    transition: 0.2s;
+}
+a:hover {
+    color: white;
+    font-size: 2.5em;
+}
+
+/* -------------------------------------------------------
+   GAME CONTAINER (DESKTOP BASE SIZE)
+------------------------------------------------------- */
+#container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 30em;
+    height: 35em;
+    transform: translate(-50%, -50%);
+    border: 1em solid rgba(0, 0, 0, 0.4);
+    box-shadow: inset 0 0 0 999px rgb(0, 0, 0);
+}
+
+/* Wrap for centered scaling */
+.game-scale-wrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* -------------------------------------------------------
+   CANVAS
+------------------------------------------------------- */
+canvas {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    display: block;
+    max-width: 100%;
+    height: auto;
+    image-rendering: pixelated;
+}
+
+/* -------------------------------------------------------
+   MENUS
+------------------------------------------------------- */
+.display {
+    display: none;
+    position: absolute;
+    inset: 0;
+}
+
+.mainScreen .main,
+.gameOver   .input,
+.highScores .high,
+.help       .controls {
+    display: block;
+}
+
+.main ul {
+    margin-top: 21em;
+    text-align: center;
+    padding: 0;
+}
+.main li {
+    list-style: none;
+}
+
+/* -------------------------------------------------------
+   HIGH SCORES
+------------------------------------------------------- */
+.high {
+    text-align: center;
+}
+.scores {
+    font-size: 1.7em;
+}
+.scores .titles {
+    margin-bottom: 0.3em;
+    color: yellow;
+}
+
+/* -------------------------------------------------------
+   GAME OVER INPUT
+------------------------------------------------------- */
+.input {
+    text-align: center;
+}
+.input p {
+    margin-top: 4em;
+    font-size: 2em;
+    color: yellow;
+}
+.input input {
+    background: transparent;
+    border: 2px solid #0033ff;
+    border-radius: 0.6em;
+    padding: 0.5em;
+    font-size: 1.5em;
+}
+
+/* -------------------------------------------------------
+   CONTROLS SCREEN
+------------------------------------------------------- */
+.controls ol {
+    width: 95%;
+    margin: 0 auto;
+    font-size: 2em;
+    color: yellow;
+}
+.controls ol li span {
+    color: white;
+    font-size: 0.7em;
+}
+
+/* -------------------------------------------------------
+   AUDIO BUTTON
+------------------------------------------------------- */
+.audio {
+    position: absolute;
+    bottom: 2em;
+    left: 12em;
+    width: 4em;
+    height: 2.2em;
+    cursor: pointer;
+}
+
+/* -------------------------------------------------------
+   BACK TO HUB BUTTON
+------------------------------------------------------- */
+#backToHub {
+    display: block;
+    width: 110px;
+    text-align: center;
+    margin-top: -720px;
+
+    color: #38bdf8;
+    font-size: 12px;
+    text-decoration: none;
+    font-weight: 700;
+
+    padding: 6px 14px;
+    border: 1px solid #38bdf8;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.35);
+    box-shadow: 0 0 10px rgba(56,189,248,0.45);
+}
+#backToHub:hover {
+    background: rgba(56,189,248,0.15);
+    transform: scale(1.04);
+}
+
+/* -------------------------------------------------------
+   RESPONSIVE — PORTRAIT PHONES
+------------------------------------------------------- */
+@media (max-width: 600px) and (orientation: portrait) {
+
+    #container {
+        width: 92vw;
+        height: 122vw;   /* retains perfect proportion */
+        border-width: 0.6em;
+    }
+
+    .game-scale-wrap {
+        transform: translate(-50%, -50%);
+    }
+
+    h1 { font-size: 3.8em; }
+    h2 { font-size: 3em; }
+    a  { font-size: 1.6em; }
+}
+
+/* -------------------------------------------------------
+   RESPONSIVE — LANDSCAPE MOBILE
+------------------------------------------------------- */
+@media (max-width: 900px) and (orientation: landscape) {
+
+    body {
+        display: block !important;
+        overflow: hidden !important;
+        padding-top: 0 !important;
+    }
+
+    #container {
+        width: 85vh;
+        height: 60vh;          /* ↓ reducer to fit full game */
+        border-width: 0.5em;
+    }
+
+    .game-scale-wrap {
+        top: 0 !important;
+        transform: translate(-50%, 0) !important;
+    }
+
+    canvas {
+        top: 0.5em !important;  /* tighter vertical fit */
+    }
+}
+#backToHub {
+    position: fixed;     /* <— instead of absolute flow */
+    top: 12px;
+    left: 12px;
+    z-index: 99999;
+
+    display: inline-block;
+    padding: 6px 14px;
+
+    font-size: 12px;
+    font-weight: 700;
+    color: #38bdf8;
+    text-decoration: none;
+
+    border: 1px solid #38bdf8;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.35);
+    box-shadow: 0 0 10px rgba(56,189,248,0.45);
+}
+
+#backToHub:hover {
+    background: rgba(56,189,248,0.15);
+    transform: scale(1.04);
+}
+@media (max-width: 900px) and (orientation: landscape) {
+
+    /* Remove inner canvas offset to prevent clipping */
+    canvas {
+        top: 0 !important;
+        left: 0 !important;
+    }
+
+    /* Reduce container height slightly more for perfect fit */
+    #container {
+        height: 58vh !important;   /* ← FINAL MAGIC VALUE */
+    }
+}
+/* FINAL LANDSCAPE FIX — STOP VERTICAL CENTERING COMPLETELY */
+@media (max-width: 900px) and (orientation: landscape) {
+
+    #container {
+        top: 0 !important;              /* attach to very top */
+        transform: translate(-50%, 0) !important; /* remove vertical centering */
+    }
+
+    .game-scale-wrap {
+        transform: translate(-50%, 0) scale(0.70) !important;
+        transform-origin: top center !important;
+        top: 0 !important;
+    }
+  body {
+        overflow: hidden !important;
+        padding: 0 !important;
+    }
+    canvas {
+        top: 0 !important;
+        left: 0 !important;
+    }
+	
+}

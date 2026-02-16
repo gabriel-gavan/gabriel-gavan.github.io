@@ -1,40 +1,37 @@
 <!DOCTYPE html>
-  <html lang="en">
-    <head>
-  <!-- Google CMP (Funding Choices + Consent Mode v2) -->
-  <script async src="https://fundingchoicesmessages.google.com/i/pub-5482914432517813?ers=1" nonce="CMP123"></script>
-
-  <script nonce="CMP123">
-    (function() {
-      function fcCallback() {
-        if (!window.FCF) return;
-        window.FCF.render({
-          messageCallback: function(consent) {
-            console.log("Consent Mode v2 applied:", consent);
-          }
-        });
-      }
-      window.addEventListener("DOMContentLoaded", fcCallback);
-    })();
-  </script>
-
-  <script nonce="CMP123">
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){ dataLayer.push(arguments); }
-
-    gtag('consent', 'default', {
-      ad_storage: 'denied',
-      analytics_storage: 'denied',
-      ad_personalization: 'denied',
-      ad_user_data: 'denied'
-    });
-  </script>
-
+<html lang="en">
+   <head>
+      <!-- Google CMP (Funding Choices + Consent Mode v2) -->
+      <script async src="https://fundingchoicesmessages.google.com/i/pub-5482914432517813?ers=1" nonce="CMP123"></script>
+      <script nonce="CMP123">
+         (function() {
+           function fcCallback() {
+             if (!window.FCF) return;
+             window.FCF.render({
+               messageCallback: function(consent) {
+                 console.log("Consent Mode v2 applied:", consent);
+               }
+             });
+           }
+           window.addEventListener("DOMContentLoaded", fcCallback);
+         })();
+      </script>
+      <script nonce="CMP123">
+         window.dataLayer = window.dataLayer || [];
+         function gtag(){ dataLayer.push(arguments); }
+         
+         gtag('consent', 'default', {
+           ad_storage: 'denied',
+           analytics_storage: 'denied',
+           ad_personalization: 'denied',
+           ad_user_data: 'denied'
+         });
+      </script>
       <link rel="preconnect" href="https://pagead2.googlesyndication.com">
       <link rel="preconnect" href="https://www.googletagmanager.com">
       <link rel="preconnect" href="https://googleads.g.doubleclick.net">
       <link rel="preconnect" href="https://tpc.googlesyndication.com">
-	  <link rel="preconnect" href="https://neon-feedback.gabi-gabz.workers.dev">
+      <link rel="preconnect" href="https://neon-feedback.gabi-gabz.workers.dev">
       <link rel="preload" as="image" href="images/header-bg.webp">
       <meta name="description" content="Play free neon-style HTML5 games instantly. No downloads, no accounts, just fast arcade fun.">
       <meta property="og:title" content="Neon Mini Game Hub">
@@ -42,1711 +39,1123 @@
       <meta property="og:type" content="website">
       <meta charset="UTF-8">
       <title>
-        Mini Game Hub
+         Mini Game Hub
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="google-adsense-account" content="ca-pub-5482914432517813">
       <!-- Global site tag - Google Analytics (needed for Consent Mode) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID">
-        </script>
-        <script defer>
-          window.dataLayer = window.dataLayer || [];
-  function gtag(){ dataLayer.push(arguments); }
+      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
+      <script defer>
+         window.dataLayer = window.dataLayer || [];
+         function gtag(){ dataLayer.push(arguments); }
+         
+         // DO NOT deny consent by default during verification
+         gtag('consent', 'default', {
+         ad_storage: 'granted',
+         ad_user_data: 'granted',
+         ad_personalization: 'granted',
+         analytics_storage: 'granted',
+         });
+      </script>
+ 
+      <link rel="preload" href="styles.css" as="style">
+      <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
+      <noscript>
+         <link rel="stylesheet" href="styles.css">
+      </noscript>
+      <link rel="icon" href="data:,">
+      <script defer>
+         function toggleMobileMenu(){
+         const m=document.getElementById('mobileMenu');
+         m.style.display = (m.style.display==='block'?'none':'block');
+         }
+      </script>
+      <script type="application/ld+json">
+         {"@context": "https://schema.org", "@type": "Website", "name": "Neon Mini Game Hub", "url": "https://neonminigamehub.com", "description": "Play free neon-style HTML5 games instantly in your browser."}
+      </script>
+      <script type="application/ld+json">
+         {
+         "@context": "https://schema.org",
+         "@type": "FAQPage",
+         "mainEntity": [
+         {
+         "@type": "Question",
+         "name": "Do I need to install anything?",
+         "acceptedAnswer": { "@type": "Answer", "text": "No. Neon Mini Game Hub games run directly in your browser. Open a game page and play instantly." }
+         },
+         {
+         "@type": "Question",
+         "name": "Which devices are supported?",
+         "acceptedAnswer": { "@type": "Answer", "text": "Any modern browser on desktop or mobile. For best performance, keep your browser updated and close heavy background tabs." }
+         },
+         {
+         "@type": "Question",
+         "name": "Do you collect personal data?",
+         "acceptedAnswer": { "@type": "Answer", "text": "The site is designed to collect as little as possible. See the Privacy page for details about cookies, analytics, and advertising partners." }
+         },
+         {
+         "@type": "Question",
+         "name": "How can I request a new game or report a bug?",
+         "acceptedAnswer": { "@type": "Answer", "text": "Use the Contact page, or leave feedback on the homepage if feedback is enabled." }
+         }
+         ]
+         }
+      </script>
+	  <script defer src="js/loadGames.js"></script>
+   </head>
+   <body>
+      <a class="skip-link" href="#main">
+      Skip to main content
+      </a>
+      <header class="hero-card-section">
+         <div class="hero-card">
+            <img src="images/header-bg.webp"
+               class="hero-img"
+               width="1600" height="500"
+               fetchpriority="high"
+               decoding="async"
+               alt="">
+            <div class="hero-overlay">
+            </div>
+            <div class="hero-content">
+               <!-- PAGE TITLE + BADGES MOVED HERE -->
+               <nav class="hero-nav">
+                  <a href="index.html">
+                  Home
+                  </a>
+                  <a href="about.html">
+                  About
+                  </a>
+                  <a href="contact.html">
+                  Contact
+                  </a>
+                  <a href="articles.html">
+                  Articles
+                  </a>
+                  <a href="privacy.html">
+                  Privacy
+                  </a>
+                  <a href="terms.html">
+                  Terms
+                  </a>
+               </nav>
+            </div>
+         </div>
+      </header>
+      <div class="page-wrap">
+         <!-- LEFT COLUMN (kept empty for Auto Ads) -->
+         <aside class="side-banner">
+         </aside>
+         <main class="main-content" style="position:relative;">
+					   <!-- DONATE BLOCK -->
+				<div style="
+					position:absolute;
+					top:25px;      /* was 20px → move DOWN */
+					right:150px;    /* was 25px → move LEFT */
+					text-align:right;
+					z-index:50;
+				">
 
-  // DO NOT deny consent by default during verification
-  gtag('consent', 'default', {
-    ad_storage: 'granted',
-    ad_user_data: 'granted',
-    ad_personalization: 'granted',
-    analytics_storage: 'granted',
-  });
-        </script>
-        <!-- AdSense Auto Ads -->
-          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
-        crossorigin="anonymous">
-          </script>
-          <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader (Option A: always load) -->
-   
+				  <div style="
+					  font-size:14px;
+					  margin-bottom:8px;
+					  opacity:0.85;
+					  color:#cbd5f5;
+				  ">
+					Donate to Support the Site
+				  </div>
 
-	<link rel="preload" href="styles.css" as="style">
-	<link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
-	<noscript><link rel="stylesheet" href="styles.css"></noscript>
+				  <a href="https://www.paypal.com/donate?business=gabi.gabz@gmail.com&currency_code=USD"
+					 target="_blank"
+					 rel="noopener"
+					 style="
+						position:relative;
+						display:inline-flex;
+						align-items:center;
+						padding:14px 40px 14px 75px;
+						font-size:18px;
+						font-weight:600;
+						color:#ffffff;
+						text-decoration:none;
+						border-radius:999px;
+						cursor:pointer;
+
+						background:linear-gradient(180deg,#ff7a7a 0%, #ff4d4d 45%, #b00020 100%);
+						box-shadow:
+						  inset 0 4px 8px rgba(255,255,255,0.5),
+						  inset 0 -5px 12px rgba(0,0,0,0.4),
+						  0 12px 30px rgba(0,0,0,0.6);
+					 ">
+
+					<span style="
+						position:absolute;
+						left:12px;
+						width:46px;
+						height:46px;
+						border-radius:50%;
+						background:linear-gradient(180deg,#ff5c5c,#8b0000);
+						display:flex;
+						align-items:center;
+						justify-content:center;
+						font-size:20px;
+						box-shadow:
+						  inset 0 3px 6px rgba(255,255,255,0.5),
+						  0 5px 12px rgba(0,0,0,0.5);
+					">❤</span>
+
+					Donate
+				  </a>
+					<br><br>
+
+				<a href="submit.html"
+				   style="
+					position:relative;
+					display:inline-flex;
+					align-items:center;
+					padding:12px 34px 12px 65px;
+					font-size:16px;
+					font-weight:600;
+					color:#38bdf8;
+					text-decoration:none;
+					border-radius:999px;
+					cursor:pointer;
+
+					background:linear-gradient(180deg,#0f172a 0%, #020617 100%);
+					border:1px solid #38bdf8;
+
+					box-shadow:
+					  inset 0 3px 6px rgba(255,255,255,0.08),
+					  0 8px 20px rgba(0,0,0,0.6);
+				">
+
+					<span style="
+						position:absolute;
+						left:10px;
+						width:40px;
+						height:40px;
+						border-radius:50%;
+						background:linear-gradient(180deg,#38bdf8,#1e40af);
+						display:flex;
+						align-items:center;
+						justify-content:center;
+						font-size:18px;
+						color:white;
+						box-shadow:
+						  inset 0 3px 6px rgba(255,255,255,0.4),
+						  0 5px 12px rgba(0,0,0,0.5);
+					">🎮</span>
+
+					Submit Your Game
+				</a>
+
+				</div>
+
+            <div class="mobile-nav-toggle" onclick="toggleMobileMenu()">
+               ☰ Articles
+            </div>
+            <div class="content-scroll" id="main">
+               <section class="value-wrap" aria-label="About Neon Mini Game Hub">
 			   
-    <link rel="icon" href="data:,">
-	
+         <div class="value-head">
 
-  <script defer>
-                function toggleMobileMenu(){
-  const m=document.getElementById('mobileMenu');
-  m.style.display = (m.style.display==='block'?'none':'block');
-}
-              </script>
-              <script type="application/ld+json">
-                {"@context": "https://schema.org", "@type": "Website", "name": "Neon Mini Game Hub", "url": "https://neonminigamehub.com", "description": "Play free neon-style HTML5 games instantly in your browser."}
-              </script>
-              <script type="application/ld+json">
-                {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Do I need to install anything?",
-      "acceptedAnswer": { "@type": "Answer", "text": "No. Neon Mini Game Hub games run directly in your browser. Open a game page and play instantly." }
-    },
-    {
-      "@type": "Question",
-      "name": "Which devices are supported?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Any modern browser on desktop or mobile. For best performance, keep your browser updated and close heavy background tabs." }
-    },
-    {
-      "@type": "Question",
-      "name": "Do you collect personal data?",
-      "acceptedAnswer": { "@type": "Answer", "text": "The site is designed to collect as little as possible. See the Privacy page for details about cookies, analytics, and advertising partners." }
-    },
-    {
-      "@type": "Question",
-      "name": "How can I request a new game or report a bug?",
-      "acceptedAnswer": { "@type": "Answer", "text": "Use the Contact page, or leave feedback on the homepage if feedback is enabled." }
-    }
-  ]
-}
-              </script>
-            </head>
-            <body>
-              <a class="skip-link" href="#main">
-                Skip to main content
-              </a>
-              <header class="hero-card-section">
-                <div class="hero-card">
-                  <img src="images/header-bg.webp"
-					 class="hero-img"
-					 width="1600" height="500"
-					 fetchpriority="high"
-					 decoding="async"
-					 alt="">
-                  <div class="hero-overlay">
+		   <div class="value-intro">
+			  <h2>⚡ Neon Mini Game Hub — fast browser games, built for mobile</h2>
+			  <p>
+				 Neon Mini Game Hub is a lightweight browser arcade: instant-play HTML5 mini-games that load fast, feel responsive,
+				 and work on both desktop and mobile. Each game is built with modern HTML, CSS, and JavaScript (no installs, no accounts),
+				 with a focus on smooth controls, clear UI, and replayability.
+			  </p>
+		   </div>
+
+		   <div class="value-side">
+			  <div class="value-links" aria-label="Quick links">
+				 <a href="articles.html">📰 Read articles</a>
+				 <a href="about.html">ℹ️ About / Press</a>
+				 <a href="privacy.html">🔒 Privacy</a>
+				 <a href="terms.html">📄 Terms</a>
+			  </div>
+
+
+
+		   </div>
+
+		</div>
+
+
+                  <div class="value-grid">
+                     <div class="value-card">
+                        <h3>
+                           🚀 Instant-play performance
+                        </h3>
+                        <p>
+                           Games are designed to start quickly and stay smooth: minimal blocking scripts, efficient rendering,
+                           and mobile-friendly layouts. If your device supports a modern browser, you can play.
+                        </p>
+                     </div>
+                     <div class="value-card">
+                        <h3>
+                           🎮 Focused game design
+                        </h3>
+                        <p>
+                           Every title is built around a tight core loop: short sessions, clear goals, and meaningful progression.
+                           Perfect for quick breaks, but deep enough to master.
+                        </p>
+                     </div>
+                     <div class="value-card">
+                        <h3>
+                           🧠 Safe, simple UX
+                        </h3>
+                        <p>
+                           No forced sign-ups. No invasive prompts. Clear navigation and accessibility improvements
+                           (including “skip to content”) so users can find games and start playing immediately.
+                        </p>
+                     </div>
                   </div>
-                  <div class="hero-content">
-                    <!-- PAGE TITLE + BADGES MOVED HERE -->
-                      <nav class="hero-nav">
-                        <a href="index.html">
-                          Home
-                        </a>
-                        <a href="about.html">
-                          About
-                        </a>
-                        <a href="contact.html">
-                          Contact
-                        </a>
-                        <a href="articles.html">
-                          Articles
-                        </a>
-                        <a href="privacy.html">
-                          Privacy
-                        </a>
-                        <a href="terms.html">
-                          Terms
-                        </a>
-                      </nav>
+               </section>
+               <section class="faq-wrap" aria-label="Frequently asked questions">
+                  <h2>
+                     ❓ FAQ
+                  </h2>
+                  <div class="faq">
+                     <div class="faq-item">
+                        <h3>
+                           Do I need to install anything?
+                        </h3>
+                        <p>
+                           No. These are browser games. Open a game page and play instantly.
+                        </p>
+                     </div>
+                     <div class="faq-item">
+                        <h3>
+                           Do you collect personal data?
+                        </h3>
+                        <p>
+                           The site aims to collect as little as possible. See the Privacy page for details about cookies, analytics, and ads.
+                        </p>
+                     </div>
+                     <div class="faq-item">
+                        <h3>
+                           Which devices are supported?
+                        </h3>
+                        <p>
+                           Any modern browser on desktop or mobile. If performance is slow, close other tabs and disable battery saver mode.
+                        </p>
+                     </div>
+                     <div class="faq-item">
+                        <h3>
+                           How can I request a game or report a bug?
+                        </h3>
+                        <p>
+                           Use the Contact page, or leave feedback on this homepage if the feedback section is enabled.
+                        </p>
+                     </div>
+                  </div>
+               </section>
+               <!-- FILTERS / SEARCH / SHUFFLE -->
+               <div class="filters-bar">
+                  <div class="filters-left">
+                     <input id="searchInput" class="search-input" type="text" placeholder="Search games by name or description…" />
+                     <select id="typeFilter" class="type-select">
+                        <option value="all">
+                           All types
+                        </option>
+                        <option value="arcade">
+                           Arcade
+                        </option>
+                        <option value="shooter">
+                           Shooter
+                        </option>
+                        <option value="strategy">
+                           Strategy
+                        </option>
+                        <option value="logic">
+                           Logic
+                        </option>
+                        <option value="memory">
+                           Memory
+                        </option>
+                        <option value="classic">
+                           Classic
+                        </option>
+                        <option value="typing">
+                           Typing
+                        </option>
+                        <option value="ai">
+                           AI
+                        </option>
+                     </select>
+                  </div>
+                  <div class="filters-right">
+                     <button id="shuffleBtn" class="btn-secondary">
+                     🔀 Shuffle
+                     </button>
+                     <button id="resetFiltersBtn" class="btn-secondary">
+                     Reset Filters
+                     </button>
+                  </div>
+               </div>
+               <h2 style="color:#93c5fd;padding:1px; text-align:center;">
+                  Neon Games
+               </h2>
+               <!-- ===================== TOP PICKS ===================== -->
+				<div class="category-title">
+				   <span class="label">🔥 Top Picks</span>
+				   <span class="sub">Hand-picked for quick fun and high replay value.</span>
+				</div>
+
+				<div id="grid-topPicks" class="game-grid"></div>
+
+
+               <!-- ===================== CLASSIC QUICK GAMES ===================== -->
+				<div class="category-title">
+				   <span class="label">🎮 Classic Quick Games</span>
+				   <span class="sub">Perfect for short breaks and easy to learn.</span>
+				</div>
+
+				<div id="grid-classic" class="game-grid"></div>
+
+               <!-- ===================== SKILL & LOGIC ===================== -->
+               <div class="category-title">
+				   <span class="label">🧠 Skill & Logic Games</span>
+				   <span class="sub">Train your brain, memory and reaction time.</span>
+				</div>
+
+				<div id="grid-skill" class="game-grid"></div>
+
+               <!-- ===================== STRATEGY & CAMPAIGN ===================== -->
+               <div class="category-title">
+			   <span class="label">🚀 Strategy & Campaign</span>
+			   <span class="sub">Longer sessions, planning and tower defense.</span>
+			</div>
+
+			<div id="grid-strategy" class="game-grid"></div>
+
+            </div>
+			
+			
+			<div class="featured-articles" style="padding:20px; text-align:center;">
+               <h2 style="color:#93c5fd;">
+                  Featured Articles
+               </h2>
+               <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+                  <div class="fa-card">
+                     <img src="images/thumb1.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3> The Rise of HTML5 Neon Games </h3>
+                     <p>
+                        A deep dive into why browser arcades are returning in force.
+                     </p>
+                     <a class="fa-more-btn" href="article1.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb2.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        How Modern Browser Games Are Built
+                     </h3>
+                     <p>
+                        Learn how HTML, CSS and JS power fast neon games.
+                     </p>
+                     <a class="fa-more-btn" href="article2.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb3.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        Top 10 Principles of Mini-Game Design
+                     </h3>
+                     <p>
+                        The fundamentals of creating addictive fast-play games.
+                     </p>
+                     <a class="fa-more-btn" href="article3.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb4.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        The Evolution of WebGL for Browser Games
+                     </h3>
+                     <p>
+                        A technical deep-dive into how WebGL transformed modern browser gaming.
+                     </p>
+                     <a class="fa-more-btn" href="article4.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb5.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        How Game Engines Use Canvas Rendering Loops
+                     </h3>
+                     <p>
+                        A deep exploration of render cycles, frame timing, and loop scheduling.
+                     </p>
+                     <a class="fa-more-btn" href="article5.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb6.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        Mobile Optimization Techniques for HTML5 Games
+                     </h3>
+                     <p>
+                        How to maximize speed, input latency, and visual clarity on smartphones.
+                     </p>
+                     <a class="fa-more-btn" href="article6.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb7.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        Why the Neon Aesthetic Works in Web Design & Gaming
+                     </h3>
+                     <p>
+                        An artistic and psychological breakdown of neon’s visual power.
+                     </p>
+                     <a class="fa-more-btn" href="article7.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb8.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        Building Real-Time Hitboxes & Collision Systems
+                     </h3>
+                     <p>
+                        The mathematics and techniques behind precision collision engines.
+                     </p>
+                     <a class="fa-more-btn" href="article8.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb9.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        How Indie Devs Can Scale With Browser-First Games
+                     </h3>
+                     <p>
+                        Why browser games are becoming a powerful growth path for indie studios.
+                     </p>
+                     <a class="fa-more-btn" href="article9.html">
+                     Read more →
+                     </a>
+                  </div>
+                  <div class="fa-card">
+                     <img src="images/thumb10.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+                     <h3>
+                        The Future of WebGPU & High-End Browser Gaming
+                     </h3>
+                     <p>
+                        A look at next-gen APIs bringing console-level graphics to the web.
+                     </p>
+                     <a class="fa-more-btn" href="article10.html">
+                     Read more →
+                     </a>
+                  </div>
+               </div>
+            </div>
+
+<!-- ===================== End of Games ===================== -->
+            <footer>
+               <p>
+                  🎮 Thanks for playing in our mini arcade!
+               </p>
+               <p>
+                  ⭐ Bookmark this page — new games are added weekly.
+               </p>
+               <p>
+                  💬 Got ideas or feedback? Share the fun with your friends!
+               </p>
+               <hr style="border:1px solid #111827; margin:10px auto; width:60%;">
+               <p>
+                  <a href="privacy.html" style="color:#9ca3af;">
+                  Privacy Policy
+                  </a>
+                  ·
+                  <a href="terms.html" style="color:#9ca3af;">
+                  Terms of Use
+                  </a>
+               </p>
+               <p>
+                  <!-- ================= AdSense Content Section ================= -->
+               <section style="
+                  max-width: 1100px;
+                  margin: 40px auto 20px;
+                  padding: 20px;
+                  background-image:none;
+                  border: 1px solid rgba(148,163,184,0.25);
+                  border-radius: 16px;
+                  color: #e5e7eb;
+                  ">
+                  <h2 style="margin-top:0;">
+                     Play Free Browser Games
+                  </h2>
+                  <p>
+                     Neon Mini Game Hub offers a curated collection of free browser games that
+                     run instantly without downloads or sign-ups. All games are built using
+                     standard web technologies and are playable on desktop and mobile devices.
+                  </p>
+                  <p>
+                     Some games may store basic progress locally in your browser. Advertising,
+                     if enabled, is provided by third-party services such as Google AdSense.
+                     Learn more in our
+                     <a href="privacy.html" style="color:#93c5fd;">
+                     Privacy Policy
+                     </a>
+                     .
+                  </p>
+                  <p>
+                     Choose a game above, click once, and start playing instantly.
+                  </p>
+               </section>
+               <!-- ============================================================ -->
+               ©
+               <span id="footer-year">
+               </span>
+               Neo Runner Arcade — All Rights Reserved.
+               </p>
+               <section style="
+                  max-width:1100px;
+                  margin:40px auto;
+                  padding:20px;
+                  background-image:none;
+                  border:1px solid rgba(148,163,184,0.25);
+                  border-radius:16px;
+                  color:#e5e7eb;">
+                  <h2>
+                     About Neon Mini Game Hub
+                  </h2>
+                  <p>
+                     Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript. Our mission is to offer fast, lightweight, and engaging gameplay experiences without downloads, accounts, or interruptions.
+                  </p>
+                  <p>
+                     Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices. We focus on neon aesthetics, responsive controls, smooth animations, and addictive gameplay loops.
+                  </p>
+                  <p>
+                     This hub contains only original titles—not externally embedded games. Every release is built, tested, and improved directly by the developer, ensuring quality and consistency across the entire experience.
+                  </p>
+                  <p>
+                     New games are added weekly along with major updates, character expansions, new maps, smarter enemies, and better balance changes. Our top priority is delivering a premium gaming experience available instantly from any browser.
+                  </p>
+                  <p>
+                     Thank you for visiting Neon Mini Game Hub. Bookmark the site, explore new genres, and enjoy the growing collection of neon-powered arcade games!
+                  </p>
+               </section>
+               <!-- ============================
+                  💬 COMMUNITY FEEDBACK
+                  ============================ -->
+               <section class="category-title" style="margin-top:40px;">
+                  <span class="label">
+                  💬 Community Feedback
+                  </span>
+               </section>
+               <section id="feedback-widget" class="neon-feedback"
+                  style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
+                  background: none;
+                  border: 1px solid rgba(148,163,184,0.25);
+                  border-radius: 16px;">
+                  <h2 style="margin-top:0; color:#e5e7eb;">
+                     Share your thoughts!
+                  </h2>
+                  <p style="color:#cbd5f5; opacity:0.85; margin-bottom:16px;">
+                     Leave a comment or reply—no login needed.
+                  </p>
+                  <!-- Username -->
+                  <input id="fb-username" type="text" placeholder="Your name"
+                     style="width:100%; padding:10px 14px; border-radius:8px;
+                     border:1px solid #334155; background:#0f172a;
+                     color:#e5e7eb; margin-bottom:10px;">
+                  <!-- Comment Text -->
+                  <textarea id="fb-text" rows="3" placeholder="Write your comment..."
+                     style="width:100%; padding:10px 14px; border-radius:8px;
+                     border:1px solid #334155; background:#0f172a;
+                     color:#e5e7eb;">
+                                                                </textarea>
+                  <button id="fb-submit"
+                     style="margin-top:10px; padding:10px 16px; border-radius:8px;
+                     background:#4f46e5; border:none; color:white; font-weight:600;
+                     cursor:pointer;">
+                  Post Comment
+                  </button>
+                  <!-- Comment List -->
+                  <div id="fb-comments" style="margin-top:30px;">
+                  </div>
+               </section>
+               <!-- FEEDBACK LOGIC -->
+               <script defer>
+                  (function() {
+                  const API = "https://neon-feedback.gabi-gabz.workers.dev/";
+                  const ARTICLE_ID = "homepage-feedback";
+                  
+                  const elUser = document.getElementById("fb-username");
+                  const elText = document.getElementById("fb-text");
+                  const elSubmit = document.getElementById("fb-submit");
+                  const elList = document.getElementById("fb-comments");
+                  
+                  // Create UUID (v4)
+                  function uuid() {
+                  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                  const r = Math.random()*16|0;
+                  const v = c === 'x' ? r : (r&0x3)|0x8;
+                  return v.toString(16);
+                  });
+                  }
+                  
+                  // POST Comment
+                  async function postComment(parentId=null) {
+                  const username = elUser.value.trim();
+                  const text = elText.value.trim();
+                  
+                  if (!username || !text) {
+                  alert("Please enter a username and comment.");
+                  return;
+                  }
+                  
+                  const payload = {
+                  id: uuid(),
+                  username,
+                  text,
+                  parentId,
+                  timestamp: Date.now()
+                  };
+                  
+                  await fetch(API + "?article=" + ARTICLE_ID, {
+                  method: "POST",
+                  headers: {"Content-Type":"application/json"},
+                  body: JSON.stringify(payload)
+                  });
+                  
+                  elText.value = "";
+                  loadComments();
+                  }
+                  
+                  // Render Comments + Replies
+                  function renderComment(c) {
+                  return `
+                  <div class="${c.parentId ? "feedback-reply-thread" : "feedback-comment"}">
+                    <div class="feedback-head">
+                      <div class="feedback-meta">
+                        <span class="feedback-user">
+                          ${c.username}
+                        </span>
+                        <span class="feedback-on">
+                          commented on
+                        </span>
+                        <span class="feedback-date">
+                          ${new Date(c.time).toLocaleString()}
+                        </span>
+                      </div>
+                      <button class="feedback-reply-btn" data-id="${c.id}">
+                        Reply
+                      </button>
+                    </div>
+                    <div class="feedback-text">
+                      ${c.text}
                     </div>
                   </div>
-                </header>
-                <div class="page-wrap">
-                  <!-- LEFT COLUMN (kept empty for Auto Ads) -->
-                    <aside class="side-banner">
-                    </aside>
-                    <main class="main-content">
-                      <div class="top-banner">
-                        <div class="top-banner-inner">
-                        </div>
+                  `;
+                  }
+                  function renderReply(c) {
+                  return `
+                  <div class="feedback-reply-thread">
+                    <div class="feedback-head">
+                      <div class="feedback-meta">
+                        <span class="feedback-user">
+                          @${c.username}
+                        </span>
+                        <span class="feedback-on">
+                          replied on
+                        </span>
+                        <span class="feedback-date">
+                          ${new Date(c.time).toLocaleString()}
+                        </span>
                       </div>
-                      <div class="mobile-nav-toggle" onclick="toggleMobileMenu()">
-                        ☰ Articles
-                      </div>
-                      <div class="featured-articles" style="padding:20px; text-align:center;">
-                        <h2 style="color:#93c5fd;">
-                          Featured Articles
-                        </h2>
-                        <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-                          <div class="fa-card">
-                            <img src="images/thumb1.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3> The Rise of HTML5 Neon Games </h3>
-                            <p>
-                              A deep dive into why browser arcades are returning in force.
-                            </p>
-                            <a class="fa-more-btn" href="article1.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb2.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              How Modern Browser Games Are Built
-                            </h3>
-                            <p>
-                              Learn how HTML, CSS and JS power fast neon games.
-                            </p>
-                            <a class="fa-more-btn" href="article2.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb3.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              Top 10 Principles of Mini-Game Design
-                            </h3>
-                            <p>
-                              The fundamentals of creating addictive fast-play games.
-                            </p>
-                            <a class="fa-more-btn" href="article3.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb4.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              The Evolution of WebGL for Browser Games
-                            </h3>
-                            <p>
-                              A technical deep-dive into how WebGL transformed modern browser gaming.
-                            </p>
-                            <a class="fa-more-btn" href="article4.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb5.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              How Game Engines Use Canvas Rendering Loops
-                            </h3>
-                            <p>
-                              A deep exploration of render cycles, frame timing, and loop scheduling.
-                            </p>
-                            <a class="fa-more-btn" href="article5.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb6.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              Mobile Optimization Techniques for HTML5 Games
-                            </h3>
-                            <p>
-                              How to maximize speed, input latency, and visual clarity on smartphones.
-                            </p>
-                            <a class="fa-more-btn" href="article6.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb7.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              Why the Neon Aesthetic Works in Web Design & Gaming
-                            </h3>
-                            <p>
-                              An artistic and psychological breakdown of neon’s visual power.
-                            </p>
-                            <a class="fa-more-btn" href="article7.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb8.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              Building Real-Time Hitboxes & Collision Systems
-                            </h3>
-                            <p>
-                              The mathematics and techniques behind precision collision engines.
-                            </p>
-                            <a class="fa-more-btn" href="article8.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb9.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              How Indie Devs Can Scale With Browser-First Games
-                            </h3>
-                            <p>
-                              Why browser games are becoming a powerful growth path for indie studios.
-                            </p>
-                            <a class="fa-more-btn" href="article9.html">
-                              Read more →
-                            </a>
-                          </div>
-                          <div class="fa-card">
-                            <img src="images/thumb10.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                            <h3>
-                              The Future of WebGPU & High-End Browser Gaming
-                            </h3>
-                            <p>
-                              A look at next-gen APIs bringing console-level graphics to the web.
-                            </p>
-                            <a class="fa-more-btn" href="article10.html">
-                              Read more →
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="content-scroll" id="main">
-                        <section class="value-wrap" aria-label="About Neon Mini Game Hub">
-                          <div class="value-head">
-                            <div>
-                              <h2>
-                                ⚡ Neon Mini Game Hub — fast browser games, built for mobile
-                              </h2>
-                              <p>
-                                Neon Mini Game Hub is a lightweight browser arcade: instant-play HTML5 mini-games that load fast, feel responsive,
-        and work on both desktop and mobile. Each game is built with modern HTML, CSS, and JavaScript (no installs, no accounts),
-        with a focus on smooth controls, clear UI, and replayability.
-                              </p>
-                            </div>
-                            <div class="value-links" aria-label="Quick links">
-                              <a href="articles.html">
-                                📰 Read articles
-                              </a>
-                              <a href="about.html">
-                                ℹ️ About / Press
-                              </a>
-                              <a href="privacy.html">
-                                🔒 Privacy
-                              </a>
-                              <a href="terms.html">
-                                📄 Terms
-                              </a>
-                            </div>
-                          </div>
-                          <div class="value-grid">
-                            <div class="value-card">
-                              <h3>
-                                🚀 Instant-play performance
-                              </h3>
-                              <p>
-                                Games are designed to start quickly and stay smooth: minimal blocking scripts, efficient rendering,
-        and mobile-friendly layouts. If your device supports a modern browser, you can play.
-                              </p>
-                            </div>
-                            <div class="value-card">
-                              <h3>
-                                🎮 Focused game design
-                              </h3>
-                              <p>
-                                Every title is built around a tight core loop: short sessions, clear goals, and meaningful progression.
-        Perfect for quick breaks, but deep enough to master.
-                              </p>
-                            </div>
-                            <div class="value-card">
-                              <h3>
-                                🧠 Safe, simple UX
-                              </h3>
-                              <p>
-                                No forced sign-ups. No invasive prompts. Clear navigation and accessibility improvements
-        (including “skip to content”) so users can find games and start playing immediately.
-                              </p>
-                            </div>
-                          </div>
-                        </section>
-                        <section class="faq-wrap" aria-label="Frequently asked questions">
-                          <h2>
-                            ❓ FAQ
-                          </h2>
-                          <div class="faq">
-                            <div class="faq-item">
-                              <h3>
-                                Do I need to install anything?
-                              </h3>
-                              <p>
-                                No. These are browser games. Open a game page and play instantly.
-                              </p>
-                            </div>
-                            <div class="faq-item">
-                              <h3>
-                                Do you collect personal data?
-                              </h3>
-                              <p>
-                                The site aims to collect as little as possible. See the Privacy page for details about cookies, analytics, and ads.
-                              </p>
-                            </div>
-                            <div class="faq-item">
-                              <h3>
-                                Which devices are supported?
-                              </h3>
-                              <p>
-                                Any modern browser on desktop or mobile. If performance is slow, close other tabs and disable battery saver mode.
-                              </p>
-                            </div>
-                            <div class="faq-item">
-                              <h3>
-                                How can I request a game or report a bug?
-                              </h3>
-                              <p>
-                                Use the Contact page, or leave feedback on this homepage if the feedback section is enabled.
-                              </p>
-                            </div>
-                          </div>
-                        </section>
-                        <!-- FILTERS / SEARCH / SHUFFLE -->
-                          <div class="filters-bar">
-                            <div class="filters-left">
-                              <input id="searchInput" class="search-input" type="text" placeholder="Search games by name or description…" />
-                              <select id="typeFilter" class="type-select">
-                                <option value="all">
-                                  All types
-                                </option>
-                                <option value="arcade">
-                                  Arcade
-                                </option>
-                                <option value="shooter">
-                                  Shooter
-                                </option>
-                                <option value="strategy">
-                                  Strategy
-                                </option>
-                                <option value="logic">
-                                  Logic
-                                </option>
-                                <option value="memory">
-                                  Memory
-                                </option>
-                                <option value="classic">
-                                  Classic
-                                </option>
-                                <option value="typing">
-                                  Typing
-                                </option>
-                                <option value="ai">
-                                  AI
-                                </option>
-                              </select>
-                            </div>
-                            <div class="filters-right">
-                              <button id="shuffleBtn" class="btn-secondary">
-                                🔀 Shuffle
-                              </button>
-                              <button id="resetFiltersBtn" class="btn-secondary">
-                                Reset Filters
-                              </button>
-                            </div>
-                          </div>
-                          <h2 style="color:#93c5fd;padding:1px; text-align:center;">
-                            Neon Games
-                          </h2>
-                          <!-- ===================== TOP PICKS ===================== -->
-                            <div class="category-title">
-                              <span class="label">
-                                🔥 Top Picks
-                              </span>
-                              <span class="sub">
-                                Hand-picked for quick fun and high replay value.
-                              </span>
-                            </div>
-                            <section class="grid">
-                              <!-- Neon Sudoku (Logic Puzzle) -->
-                                <div class="card game-card"
-			 data-id="neon-sudoku"
-			 data-url="neon-sudoku.html"
-			 data-title="Neon Sudoku Deluxe"
-			 data-tags="logic,puzzle,classic"
-			 data-desc="Clean neon-style Sudoku with difficulty levels, mobile numpad, auto-check and smooth design.">
-                                  <div class="card-header-row">
-                                    <a href="neon-sudoku.html">
-                                      🔢 Neon Sudoku Deluxe
-                                    </a>
-                                  </div>
-                                  <p class="card-desc">
-                                    A glowing neon-style Sudoku experience with smooth animations, mobile support,
-        difficulty selector, and leaderboard. Challenge your logic in a cyber grid!
-                                  </p>
-                                  <div class="tag-row">
-                                    <span class="tag">
-                                      logic
-                                    </span>
-                                    <span class="tag">
-                                      puzzle
-                                    </span>
-                                    <span class="tag">
-                                      classic
-                                    </span>
-                                  </div>
-                                </div>
-                                <div class="card game-card"
-			 data-id="neon-dungeon-auto-shooter"
-			 data-url="neon-dungeon-auto-shooter-core1.html"
-			 data-title="Neon Dungeon Auto Shooter"
-			 data-tags="arcade,shooter,roguelike,featured"
-			 data-desc="Auto-shooter roguelike dungeon crawler with rooms, doors, minimap, loot drops, meta upgrades and characters.">
-                                  <div class="card-header-row">
-                                    <a href="neon-dungeon-auto-shooter-core1.html">
-                                      🔫 Neon Dungeon Auto Shooter
-                                    </a>
-                                  </div>
-                                  <p class="card-desc">
-                                    Clear rooms to open doors, grab loot drops, upgrade permanently in the meta shop, and chase best runs.
-                                  </p>
-                                  <div class="tag-row">
-                                    <span class="tag">
-                                      shooter
-                                    </span>
-                                    <span class="tag">
-                                      roguelike
-                                    </span>
-                                    <span class="tag">
-                                      arcade
-                                    </span>
-                                    <span class="tag">
-                                      featured
-                                    </span>
-                                  </div>
-                                </div>
-                                <!-- ✅ ADD THIS CARD UNDER: 🔥 Top Picks (inside the <section class="grid">
-                                  ...
-                                </section>
-                                ) -->
-                                <!-- Neon Beat Tap (Rhythm) -->
-                                  <div class="card game-card"
-				 data-id="neon-beat-tap"
-				 data-url="neon-beat-tap.html"
-				 data-title="Neon Beat Tap"
-				 data-tags="arcade,typing,skill,featured"
-				 data-desc="Tap lanes in time with the beat. Combos, accuracy and difficulty levels.">
-                                    <div class="card-header-row">
-                                      <a href="neon-beat-tap.html">
-                                        🎵 Neon Beat Tap
-                                      </a>
-                                    </div>
-                                    <p class="card-desc">
-                                      Rhythm game: hit notes on the neon track, build combos, and chase perfect timing.
-                                    </p>
-                                    <div class="tag-row">
-                                      <span class="tag">
-                                        arcade
-                                      </span>
-                                      <span class="tag">
-                                        skill
-                                      </span>
-                                      <span class="tag">
-                                        typing
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <!-- Neon Auto Battler -->
-                                    <div class="card game-card"
-			 data-id="neon-auto-battler"
-			 data-url="neon-auto-battler.html"
-			 data-title="Neon Auto Battler"
-			 data-tags="strategy,ai,featured,new"
-			 data-desc="Drag units to the grid and watch them fight automatically each round. Combine 3 to upgrade.">
-                                      <div class="card-header-row">
-                                        <a href="auto-battler.html">
-                                          🧠 Neon Auto Battler
-                                        </a>
-                                      </div>
-                                      <p class="card-desc">
-                                        Place units on the grid, then auto-fight rounds. Reroll shop, build combos, and upgrade to ★★★.
-                                      </p>
-                                      <div class="tag-row">
-                                        <span class="tag">
-                                          strategy
-                                        </span>
-                                        <span class="tag">
-                                          AI
-                                        </span>
-                                        <span class="tag">
-                                          auto-battler
-                                        </span>
-                                      </div>
-                                    </div>
-                                    <!-- Neon Runner Rush (Endless) -->
-                                      <div class="card game-card"
-			 data-id="neon-runner-rush"
-			 data-url="neon-runner-rush.html"
-			 data-title="Neon Runner Rush"
-			 data-tags="arcade,classic,featured"
-			 data-desc="Endless neon runner: jump, boost, collect coins, unlock skins.">
-                                        <div class="card-header-row">
-                                          <a href="neon-runner-rush.html">
-                                            🏃 Neon Runner Rush (Endless)
-                                          </a>
-                                        </div>
-                                        <p class="card-desc">
-                                          Side-scroll endless runner with obstacles, power-ups, coins and unlockable characters.
-                                        </p>
-                                        <div class="tag-row">
-                                          <span class="tag">
-                                            arcade
-                                          </span>
-                                          <span class="tag">
-                                            classic
-                                          </span>
-                                          <span class="tag">
-                                            featured
-                                          </span>
-                                        </div>
-                                      </div>
-                                      <!-- Survivor Arena (NEW Top Pick) -->
-                                        <div class="card game-card"
-			 data-id="survivor-arena"
-			 data-url="survivor-arena.html"
-			 data-title="Survivor Arena"
-			 data-tags="arcade,shooter,strategy,featured"
-			 data-desc="Survive waves in a shrinking safe zone. Upgrade between waves and unlock skins.">
-                                          <div class="card-header-row">
-                                            <a href="survivor-arena.html">
-                                              🟣 Survivor Arena
-                                            </a>
-                                          </div>
-                                          <p class="card-desc">
-                                            Battle Royale Lite: survive waves, stay inside the shrinking safe zone, pick upgrades, unlock skins.
-                                          </p>
-                                          <div class="tag-row">
-                                            <span class="tag">
-                                              arcade
-                                            </span>
-                                            <span class="tag">
-                                              shooter
-                                            </span>
-                                            <span class="tag">
-                                              strategy
-                                            </span>
-                                          </div>
-                                        </div>
-                                        <!-- Neon Arena -->
-                                          <div class="card game-card"
-             data-id="neon-arena"
-             data-url="neon-arena.html"
-             data-title="Neon Arena"
-             data-tags="arcade,shooter,campaign,featured"
-             data-desc="Dash, shoot and survive waves of enemies in a neon arena.">
-                                            <div class="card-header-row">
-                                              <a href="neon-arena.html">
-                                                🌌 Neon Arena
-                                              </a>
-                                            </div>
-                                            <p class="card-desc">
-                                              Dash, shoot and survive intense enemy waves in a glowing neon battlefield.
-                                            </p>
-                                            <div class="tag-row">
-                                              <span class="tag">
-                                                arcade
-                                              </span>
-                                              <span class="tag">
-                                                shooter
-                                              </span>
-                                              <span class="tag">
-                                                campaign
-                                              </span>
-                                            </div>
-                                          </div>
-                                          <!-- Neo Runner -->
-                                            <div class="card game-card"
-             data-id="neo-runner"
-             data-url="neo-runner.html"
-             data-title="Neo Runner"
-             data-tags="arcade,strategy,featured"
-             data-desc="Run over obstacles and avoid enemies.">
-                                              <div class="card-header-row">
-                                                <a href="neo-runner.html">
-                                                  🛰 Neo Runner
-                                                </a>
-                                              </div>
-                                              <p class="card-desc">
-                                                Run, dodge and time your jumps to survive a futuristic gauntlet of enemies and traps.
-                                              </p>
-                                              <div class="tag-row">
-                                                <span class="tag">
-                                                  arcade
-                                                </span>
-                                                <span class="tag">
-                                                  featured
-                                                </span>
-                                              </div>
-                                            </div>
-                                            <!-- Starfall Squadron -->
-                                              <div class="card game-card"
-             data-id="starfall-squadron"
-             data-url="starfall-squadron.html"
-             data-title="Starfall Squadron"
-             data-tags="arcade,shooter,featured"
-             data-desc="Vertical shmup: dodge bullets, grab powerups, defeat bosses.">
-                                                <div class="card-header-row">
-                                                  <a href="starfall-squadron.html">
-                                                    🚀 Starfall Squadron
-                                                  </a>
-                                                </div>
-                                                <p class="card-desc">
-                                                  Classic vertical shoot ’em up: dodge bullet storms, grab power-ups and crush bosses
-                                                </p>
-                                                <div class="tag-row">
-                                                  <span class="tag">
-                                                    arcade
-                                                  </span>
-                                                  <span class="tag">
-                                                    shooter
-                                                  </span>
-                                                </div>
-                                              </div>
-                                              <!-- Stargrid Defense (Top Picks) -->
-                                                <div class="card game-card"
-             data-id="stargrid-defense-top"
-             data-url="stargrid-defense.html"
-             data-title="Stargrid Defense"
-             data-tags="strategy,tower defense,arcade,featured"
-             data-desc="Build towers along the path and stop enemy waves.">
-                                                  <div class="card-header-row">
-                                                    <a href="stargrid-defense.html">
-                                                      🛰 Stargrid Defense
-                                                    </a>
-                                                  </div>
-                                                  <p class="card-desc">
-                                                    Place and upgrade towers strategically to stop endless waves of enemies.
-                                                  </p>
-                                                  <div class="tag-row">
-                                                    <span class="tag">
-                                                      tower defense
-                                                    </span>
-                                                    <span class="tag">
-                                                      strategy
-                                                    </span>
-                                                  </div>
-                                                </div>
-                                              </section>
-                                              <!-- ===================== CLASSIC QUICK GAMES ===================== -->
-                                                <div class="category-title">
-                                                  <span class="label">
-                                                    🎮 Classic Quick Games
-                                                  </span>
-                                                  <span class="sub">
-                                                    Perfect for short breaks and easy to learn.
-                                                  </span>
-                                                </div>
-                                                <section class="grid">
-                                                  <div class="card game-card"
-             data-id="rps"
-             data-url="rps.html"
-             data-title="Rock Paper Scissors"
-             data-tags="classic,arcade"
-             data-desc="Beat the computer in this timeless classic.">
-                                                    <div class="card-header-row">
-                                                      <a href="rps.html">
-                                                        ✊ Rock Paper Scissors
-                                                      </a>
-                                                    </div>
-                                                    <p class="card-desc">
-                                                      Pick your move and try to outsmart the computer in this timeless mini duel.
-                                                    </p>
-                                                    <div class="tag-row">
-                                                      <span class="tag">
-                                                        classic
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                  <div class="card game-card"
-             data-id="snake"
-             data-url="snake.html"
-             data-title="Snake"
-             data-tags="arcade,classic"
-             data-desc="Grow the snake by eating food, but don’t crash into yourself.">
-                                                    <div class="card-header-row">
-                                                      <a href="snake.html">
-                                                        🐍 Snake
-                                                      </a>
-                                                    </div>
-                                                    <p class="card-desc">
-                                                      Eat the food, grow longer and don’t crash into walls or your own tail.
-                                                    </p>
-                                                    <div class="tag-row">
-                                                      <span class="tag">
-                                                        arcade
-                                                      </span>
-                                                      <span class="tag">
-                                                        classic
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                  <div class="card game-card"
-             data-id="tictactoe-ai"
-             data-url="tictactoe-ai.html"
-             data-title="Tic Tac Toe vs AI"
-             data-tags="classic,ai,logic"
-             data-desc="Can you outsmart the AI in a simple 3×3 grid?">
-                                                    <div class="card-header-row">
-                                                      <a href="tictactoe-ai.html">
-                                                        ⭕ Tic Tac Toe vs AI
-                                                      </a>
-                                                    </div>
-                                                    <p class="card-desc">
-                                                      Play against an AI in this simple but tricky 3×3 grid battle.
-                                                    </p>
-                                                    <div class="tag-row">
-                                                      <span class="tag">
-                                                        classic
-                                                      </span>
-                                                      <span class="tag">
-                                                        AI
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                  <div class="card game-card"
-             data-id="whack-a-mole"
-             data-url="whack-a-mole.html"
-             data-title="Whack-a-Mole"
-             data-tags="arcade,reflex"
-             data-desc="Click moles before they disappear. Don’t miss too many!">
-                                                    <div class="card-header-row">
-                                                      <a href="whack-a-mole.html">
-                                                        🐹 Whack-a-Mole
-                                                      </a>
-                                                    </div>
-                                                    <p class="card-desc">
-                                                      Test your reflexes by hitting moles before they vanish from their holes.
-                                                    </p>
-                                                    <div class="tag-row">
-                                                      <span class="tag">
-                                                        arcade
-                                                      </span>
-                                                      <span class="tag">
-                                                        reflex
-                                                      </span>
-                                                    </div>
-                                                  </div>
-                                                </section>
-                                                <!-- ===================== SKILL & LOGIC ===================== -->
-                                                  <div class="category-title">
-                                                    <span class="label">
-                                                      🧠 Skill & Logic Games
-                                                    </span>
-                                                    <span class="sub">
-                                                      Train your brain, memory and reaction time.
-                                                    </span>
-                                                  </div>
-                                                  <section class="grid">
-                                                    <div class="card game-card"
-             data-id="guess-number"
-             data-url="guess-number.html"
-             data-title="Guess The Number"
-             data-tags="logic,numbers"
-             data-desc="Pick a number range and try to guess it in as few tries as possible.">
-                                                      <div class="card-header-row">
-                                                        <a href="guess-number.html">
-                                                          🎯 Guess The Number
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Choose a range and try to guess the hidden number in the fewest attempts.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          logic
-                                                        </span>
-                                                        <span class="tag">
-                                                          numbers
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="reaction-test"
-             data-url="reaction-test.html"
-             data-title="Reaction Test"
-             data-tags="speed,reflex"
-             data-desc="Wait for the screen to flash, then click as fast as you can.">
-                                                      <div class="card-header-row">
-                                                        <a href="reaction-test.html">
-                                                          ⚡ Reaction Test
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Wait for the signal, then click instantly and see how fast you really are.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          speed
-                                                        </span>
-                                                        <span class="tag">
-                                                          reflex
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="memory-grid"
-             data-url="memory-grid.html"
-             data-title="Memory Grid"
-             data-tags="memory,logic"
-             data-desc="Memorize the highlighted tiles and repeat the pattern.">
-                                                      <div class="card-header-row">
-                                                        <a href="memory-grid.html">
-                                                          🧠 Memory Grid
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Watch the pattern of tiles light up, then repeat it without making a mistake.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          memory
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="typing-speed"
-             data-url="typing-speed.html"
-             data-title="Typing Speed Test"
-             data-tags="typing,skill"
-             data-desc="Type the shown text as fast and accurately as you can.">
-                                                      <div class="card-header-row">
-                                                        <a href="typing-speed.html">
-                                                          ⌨ Typing Speed Test
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Type the given text as fast as possible and see your WPM and accuracy.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          typing
-                                                        </span>
-                                                        <span class="tag">
-                                                          skill
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="higher-lower"
-             data-url="higher-lower.html"
-             data-title="Higher / Lower"
-             data-tags="guessing,logic"
-             data-desc="Guess if the next number will be higher or lower.">
-                                                      <div class="card-header-row">
-                                                        <a href="higher-lower.html">
-                                                          ⬆⬇ Higher / Lower
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Predict if the next number drawn will be higher or lower than the current one.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          guessing
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="minesweeper"
-             data-url="minesweeper.html"
-             data-title="Minesweeper"
-             data-tags="logic,puzzle"
-             data-desc="Clear the field without detonating any hidden mines.">
-                                                      <div class="card-header-row">
-                                                        <a href="minesweeper.html">
-                                                          💣 Minesweeper
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Use number hints to uncover all safe tiles and avoid the hidden mines.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          logic
-                                                        </span>
-                                                        <span class="tag">
-                                                          puzzle
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="simon"
-             data-url="simon.html"
-             data-title="Simon Says (Colors)"
-             data-tags="memory"
-             data-desc="Watch the color sequence and repeat it flawlessly.">
-                                                      <div class="card-header-row">
-                                                        <a href="simon.html">
-                                                          🎵 Simon Says (Colors)
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Memorize and replay the growing sequence of colorful lights and sounds.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          memory
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="quiz"
-             data-url="quiz.html"
-             data-title="Mini Quiz"
-             data-tags="trivia,logic"
-             data-desc="Answer quick questions across random topics.">
-                                                      <div class="card-header-row">
-                                                        <a href="quiz.html">
-                                                          ❓ Mini Quiz
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Answer short questions across random topics and see how many you get right.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          trivia
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="timer-bomb"
-             data-url="timer-bomb.html"
-             data-title="Timer Bomb"
-             data-tags="pressure,logic"
-             data-desc="Defuse the bomb before the countdown hits zero.">
-                                                      <div class="card-header-row">
-                                                        <a href="timer-bomb.html">
-                                                          ⏳ Timer Bomb
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Work under pressure to disarm the bomb before the timer reaches zero.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          pressure
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="pattern-lock"
-             data-url="pattern-lock.html"
-             data-title="Pattern Lock"
-             data-tags="pattern,logic"
-             data-desc="Recreate the shown lock pattern without mistakes.">
-                                                      <div class="card-header-row">
-                                                        <a href="pattern-lock.html">
-                                                          🔒 Pattern Lock
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Memorize the pattern, then draw it perfectly to unlock.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          pattern
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                    <div class="card game-card"
-             data-id="sliding-puzzle"
-             data-url="sliding-puzzle.html"
-             data-title="Sliding Puzzle (3×3)"
-             data-tags="puzzle,logic"
-             data-desc="Rearrange the tiles until the image is complete.">
-                                                      <div class="card-header-row">
-                                                        <a href="sliding-puzzle.html">
-                                                          🧩 Sliding Puzzle (3×3)
-                                                        </a>
-                                                      </div>
-                                                      <p class="card-desc">
-                                                        Slide tiles around until every piece is in the right place.
-                                                      </p>
-                                                      <div class="tag-row">
-                                                        <span class="tag">
-                                                          puzzle
-                                                        </span>
-                                                      </div>
-                                                    </div>
-                                                  </section>
-                                                  <!-- ===================== STRATEGY & CAMPAIGN ===================== -->
-                                                    <div class="category-title">
-                                                      <span class="label">
-                                                        🚀 Strategy & Campaign
-                                                      </span>
-                                                      <span class="sub">
-                                                        Longer sessions, planning and tower defense.
-                                                      </span>
-                                                    </div>
-                                                    <section class="grid">
-                                                      <div class="card game-card"
-             data-id="stargrid-defense"
-             data-url="stargrid-defense.html"
-             data-title="Stargrid Defense"
-             data-tags="strategy,tower defense,arcade"
-             data-desc="Build towers along the path and stop enemy waves.">
-                                                        <div class="card-header-row">
-                                                          <a href="stargrid-defense.html">
-                                                            🛰 Stargrid Defense
-                                                          </a>
-                                                        </div>
-                                                        <p class="card-desc">
-                                                          Place and upgrade towers strategically to stop endless waves of enemies.
-                                                        </p>
-                                                        <div class="tag-row">
-                                                          <span class="tag">
-                                                            tower defense
-                                                          </span>
-                                                          <span class="tag">
-                                                            strategy
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                      <div class="card game-card"
-             data-id="neon-arena-strategy"
-             data-url="neon-arena.html"
-             data-title="Neon Arena"
-             data-tags="arcade,shooter,campaign,strategy"
-             data-desc="Dash, shoot and survive waves of enemies in a neon arena.">
-                                                        <div class="card-header-row">
-                                                          <a href="neon-arena.html">
-                                                            🌌 Neon Arena
-                                                          </a>
-                                                        </div>
-                                                        <p class="card-desc">
-                                                          A fast-paced arena where positioning, timing and upgrades matter for survival.
-                                                        </p>
-                                                        <div class="tag-row">
-                                                          <span class="tag">
-                                                            arcade
-                                                          </span>
-                                                          <span class="tag">
-                                                            shooter
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                      <div class="card game-card"
-             data-id="neo-runner-strategy"
-             data-url="neo-runner.html"
-             data-title="Neo Runner"
-             data-tags="arcade,strategy"
-             data-desc="Run over obstacles and avoid enemies.">
-                                                        <div class="card-header-row">
-                                                          <a href="neo-runner.html">
-                                                            🛰 Neo Runner
-                                                          </a>
-                                                        </div>
-                                                        <p class="card-desc">
-                                                          Plan your jumps and movement to chain safe paths through enemy-infested levels.
-                                                        </p>
-                                                        <div class="tag-row">
-                                                          <span class="tag">
-                                                            arcade
-                                                          </span>
-                                                          <span class="tag">
-                                                            strategy
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                      <div class="card game-card"
-             data-id="starfall-squadron-strategy"
-             data-url="starfall-squadron.html"
-             data-title="Starfall Squadron"
-             data-tags="arcade,shooter,strategy"
-             data-desc="Vertical shmup: dodge bullets, grab powerups, defeat bosses.">
-                                                        <div class="card-header-row">
-                                                          <a href="starfall-squadron.html">
-                                                            🚀 Starfall Squadron
-                                                          </a>
-                                                        </div>
-                                                        <p class="card-desc">
-                                                          Pick the right powerups and flight path to survive bullet patterns and boss fights.
-                                                        </p>
-                                                        <div class="tag-row">
-                                                          <span class="tag">
-                                                            arcade
-                                                          </span>
-                                                          <span class="tag">
-                                                            shooter
-                                                          </span>
-                                                        </div>
-                                                      </div>
-                                                    </section>
-                                                  </div>
-                                                  <footer>
-                                                    <p>
-                                                      🎮 Thanks for playing in our mini arcade!
-                                                    </p>
-                                                    <p>
-                                                      ⭐ Bookmark this page — new games are added weekly.
-                                                    </p>
-                                                    <p>
-                                                      💬 Got ideas or feedback? Share the fun with your friends!
-                                                    </p>
-                                                    <hr style="border:1px solid #111827; margin:10px auto; width:60%;">
-                                                    <p>
-                                                      <a href="privacy.html" style="color:#9ca3af;">
-                                                        Privacy Policy
-                                                      </a>
-                                                      ·
-                                                      <a href="terms.html" style="color:#9ca3af;">
-                                                        Terms of Use
-                                                      </a>
-                                                    </p>
-                                                    <p>
-                                                      <!-- ================= AdSense Content Section ================= -->
-                                                        <section style="
-  max-width: 1100px;
-  margin: 40px auto 20px;
-  padding: 20px;
-  background-image:none;
-  border: 1px solid rgba(148,163,184,0.25);
-  border-radius: 16px;
-  color: #e5e7eb;
-">
-                                                          <h2 style="margin-top:0;">
-                                                            Play Free Browser Games
-                                                          </h2>
-                                                          <p>
-                                                            Neon Mini Game Hub offers a curated collection of free browser games that
-    run instantly without downloads or sign-ups. All games are built using
-    standard web technologies and are playable on desktop and mobile devices.
-                                                          </p>
-                                                          <p>
-                                                            Some games may store basic progress locally in your browser. Advertising,
-    if enabled, is provided by third-party services such as Google AdSense.
-    Learn more in our
-                                                            <a href="privacy.html" style="color:#93c5fd;">
-                                                              Privacy Policy
-                                                            </a>
-                                                            .
-                                                          </p>
-                                                          <p>
-                                                            Choose a game above, click once, and start playing instantly.
-                                                          </p>
-                                                        </section>
-                                                        <!-- ============================================================ -->
-                                                          ©
-                                                          <span id="footer-year">
-                                                          </span>
-                                                          Neo Runner Arcade — All Rights Reserved.
-                                                        </p>
-                                                        <section style="
-	max-width:1100px;
-	margin:40px auto;
-	padding:20px;
-	background-image:none;
-	border:1px solid rgba(148,163,184,0.25);
-	border-radius:16px;
-	color:#e5e7eb;">
-                                                          <h2>
-                                                            About Neon Mini Game Hub
-                                                          </h2>
-                                                          <p>
-                                                            Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript. Our mission is to offer fast, lightweight, and engaging gameplay experiences without downloads, accounts, or interruptions.
-                                                          </p>
-                                                          <p>
-                                                            Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices. We focus on neon aesthetics, responsive controls, smooth animations, and addictive gameplay loops.
-                                                          </p>
-                                                          <p>
-                                                            This hub contains only original titles—not externally embedded games. Every release is built, tested, and improved directly by the developer, ensuring quality and consistency across the entire experience.
-                                                          </p>
-                                                          <p>
-                                                            New games are added weekly along with major updates, character expansions, new maps, smarter enemies, and better balance changes. Our top priority is delivering a premium gaming experience available instantly from any browser.
-                                                          </p>
-                                                          <p>
-                                                            Thank you for visiting Neon Mini Game Hub. Bookmark the site, explore new genres, and enjoy the growing collection of neon-powered arcade games!
-                                                          </p>
-                                                        </section>
-                                                        <!-- ============================
-      💬 COMMUNITY FEEDBACK
-     ============================ -->
-                                                          <section class="category-title" style="margin-top:40px;">
-                                                            <span class="label">
-                                                              💬 Community Feedback
-                                                            </span>
-                                                          </section>
-                                                          <section id="feedback-widget" class="neon-feedback"
-    style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
-           background: none;
-           border: 1px solid rgba(148,163,184,0.25);
-           border-radius: 16px;">
-                                                            <h2 style="margin-top:0; color:#e5e7eb;">
-                                                              Share your thoughts!
-                                                            </h2>
-                                                            <p style="color:#cbd5f5; opacity:0.85; margin-bottom:16px;">
-                                                              Leave a comment or reply—no login needed.
-                                                            </p>
-                                                            <!-- Username -->
-                                                              <input id="fb-username" type="text" placeholder="Your name"
-        style="width:100%; padding:10px 14px; border-radius:8px;
-               border:1px solid #334155; background:#0f172a;
-               color:#e5e7eb; margin-bottom:10px;">
-                                                              <!-- Comment Text -->
-                                                                <textarea id="fb-text" rows="3" placeholder="Write your comment..."
-        style="width:100%; padding:10px 14px; border-radius:8px;
-               border:1px solid #334155; background:#0f172a;
-               color:#e5e7eb;">
-                                                                </textarea>
-                                                                <button id="fb-submit"
-        style="margin-top:10px; padding:10px 16px; border-radius:8px;
-               background:#4f46e5; border:none; color:white; font-weight:600;
-               cursor:pointer;">
-                                                                  Post Comment
-                                                                </button>
-                                                                <!-- Comment List -->
-                                                                  <div id="fb-comments" style="margin-top:30px;">
-                                                                  </div>
-                                                                </section>
-                                                                <!-- FEEDBACK LOGIC -->
-                                                                  <script defer>
-                                                                    (function() {
-    const API = "https://neon-feedback.gabi-gabz.workers.dev/";
-    const ARTICLE_ID = "homepage-feedback";
+                      <button class="feedback-reply-btn" data-id="${c.id}">
+                        Reply
+                      </button>
+                    </div>
+                    <div class="feedback-text">
+                      ${c.text}
+                    </div>
+                  </div>
+                  `;
+                  }
+                  
+                  
+                  
+                  
+                  
+                  // Load Comments
+                  async function loadComments() {
+                  const res = await fetch(API + "?article=" + ARTICLE_ID);
+                  const data = await res.json();
+                  const comments = data.comments || [];
+                  
+                  // Build lookup map by parentId
+                  const tree = {};
+                  comments.forEach(c => {
+                  const parent = c.parentId || "root";
+                  if (!tree[parent]) tree[parent] = [];
+                  tree[parent].push(c);
+                  });
+                  
+                  // Recursive function
+                  function renderThread(parentId = "root") {
+                  if (!tree[parentId]) return "";
+                  
+                  return tree[parentId]
+                  .sort((a,b) => a.timestamp - b.timestamp)
+                  .map(c => `
+                  ${renderComment(c)}
+                  <div class="reply-level">
+                    ${renderThread(c.id)}
+                  </div>
+                  `)
+                  .join("");
+                  }
+                  
+                  // Render everything starting from root
+                  elList.innerHTML = renderThread("root");
+                  }
+                  
+                  // Attach reply button click handlers
+                  document.addEventListener("click", function(e) {
+                  if (e.target.classList.contains("feedback-reply-btn")) {
+                  const parentId = e.target.getAttribute("data-id");
+                  replyTo(parentId);
+                  }
+                  });
+                  
+                  
+                  // Reply Handler
+                  window.replyTo = function(parentId) {
+                  elText.focus();
+                  elText.value = "@reply ";
+                  elSubmit.onclick = () => postComment(parentId);
+                  };
+                  
+                  // Normal comment
+                  elSubmit.onclick = () => postComment(null);
+                  
+                  window.addEventListener("DOMContentLoaded", () => {
+                  requestIdleCallback(() => {
+                  loadComments();
+                  });
+                  });
+                  })();
+               </script>
+               <section class="category-title">
+                  <span class="label">
+                  📰 Latest Articles
+                  </span>
+               </section>
+               <section class="grid">
+                  <div class="card" onclick="location.href='article1.html'">
+                     <h3>
+                        The Rise of HTML5 Neon Games
+                     </h3>
+                     <p>
+                        Why neon browser games exploded in popularity in 2025–2026.
+                     </p>
+                  </div>
+                  <div class="card" onclick="location.href='article2.html'">
+                     <h3>
+                        How Modern Browser Games Are Built
+                     </h3>
+                     <p>
+                        A behind‑the‑scenes look at HTML, CSS, JS game engines.
+                     </p>
+                  </div>
+                  <div class="card" onclick="location.href='article3.html'">
+                     <h3>
+                        Top 10 Design Principles
+                     </h3>
+                     <p>
+                        How developers create viral, addictive mini‑games.
+                     </p>
+                  </div>
+               </section>
+            </footer>
+         </main>
+         <!-- RIGHT COLUMN (kept empty for Auto Ads) -->
+         <aside class="side-banner">
+         </aside>
+      </div>
+      <!-- ============ COOKIE CONSENT BANNER ============ -->
+      <div id="cookie-banner" class="cookie-banner hidden">
+         <div class="cookie-inner">
+            <div class="cookie-text">
+               We use cookies and similar technologies to deliver and improve this arcade, to measure traffic and (if enabled)
+               to show personalized ads via partners like Google AdSense. By clicking
+               <strong>
+               “Accept all”
+               </strong>
+               you consent
+               to the use of cookies for analytics and advertising. You can change your choice at any time in
+               <strong>
+               Privacy &amp; Cookies
+               </strong>
+               .
+               See our
+               <a href="privacy.html" target="_blank" rel="noopener">
+               Privacy Policy
+               </a>
+               .
+            </div>
+            <div class="cookie-actions">
+               <button id="cookie-reject" class="btn-cookie-secondary">
+               Reject non-essential
+               </button>
+               <button id="cookie-accept" class="btn-cookie-primary">
+               Accept all
+               </button>
+            </div>
+         </div>
+      </div>
+      <!-- ============ PRIVACY / GDPR / CCPA MODAL ============ -->
+      <div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
+         <div class="privacy-modal">
+            <h2>
+               Privacy &amp; Cookies
+            </h2>
+            <p>
+               This site uses cookies and similar technologies to:
+            </p>
+            <ul>
+               <li>
+                  Remember your preferences (for example, which games you play most).
+               </li>
+               <li>
+                  Measure traffic and usage to improve the site.
+               </li>
+               <li>
+                  If you enable it, show personalized ads via third-party partners such as Google AdSense.
+               </li>
+            </ul>
+            <p>
+               Under GDPR and similar laws, you can choose whether we may use non-essential cookies (analytics / ads).
+               Under CCPA/CPRA, you may opt out of the
+               <em>
+               sale or sharing
+               </em>
+               of personal information by rejecting
+               non-essential cookies.
+            </p>
+            <p>
+               For full details, please see our
+               <a href="privacy.html" target="_blank" rel="noopener">
+               Privacy Policy
+               </a>
+               and
+               <a href="terms.html" target="_blank" rel="noopener">
+               Terms of Use
+               </a>
+               .
+            </p>
+            <div class="modal-actions">
+               <button id="privacy-reject" class="btn-outline">
+               Reject non-essential
+               </button>
+               <button id="privacy-accept" class="btn-cookie-primary">
+               Accept all cookies
+               </button>
+               <button id="privacy-close" class="btn-outline">
+               Close
+               </button>
+            </div>
+         </div>
+      </div>
+      <!-- Floating privacy settings button -->
+      <button id="privacy-settings-btn" class="privacy-settings-btn">
+      <span>
+      ⚙
+      </span>
+      Privacy &amp; Cookies
+      </button>
+      <script defer>
+         window.addEventListener('load', () => {
 
-    const elUser = document.getElementById("fb-username");
-    const elText = document.getElementById("fb-text");
-    const elSubmit = document.getElementById("fb-submit");
-    const elList = document.getElementById("fb-comments");
-
-    // Create UUID (v4)
-    function uuid() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-            const r = Math.random()*16|0;
-            const v = c === 'x' ? r : (r&0x3)|0x8;
-            return v.toString(16);
-        });
-    }
-
-    // POST Comment
-    async function postComment(parentId=null) {
-        const username = elUser.value.trim();
-        const text = elText.value.trim();
-
-        if (!username || !text) {
-            alert("Please enter a username and comment.");
-            return;
-        }
-
-        const payload = {
-            id: uuid(),
-            username,
-            text,
-            parentId,
-            timestamp: Date.now()
-        };
-
-        await fetch(API + "?article=" + ARTICLE_ID, {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(payload)
-        });
-
-        elText.value = "";
-		loadComments();
+         function getCards() {
+			  return Array.from(document.querySelectorAll('.game-card'));
 			}
 
-    // Render Comments + Replies
-function renderComment(c) {
-    return `
-                                                                    <div class="${c.parentId ? "feedback-reply-thread" : "feedback-comment"}">
-                                                                      <div class="feedback-head">
-                                                                        <div class="feedback-meta">
-                                                                          <span class="feedback-user">
-                                                                            ${c.username}
-                                                                          </span>
-                                                                          <span class="feedback-on">
-                                                                            commented on
-                                                                          </span>
-                                                                          <span class="feedback-date">
-                                                                            ${new Date(c.time).toLocaleString()}
-                                                                          </span>
-                                                                        </div>
-                                                                        <button class="feedback-reply-btn" data-id="${c.id}">
-                                                                          Reply
-                                                                        </button>
-                                                                      </div>
-                                                                      <div class="feedback-text">
-                                                                        ${c.text}
-                                                                      </div>
-                                                                    </div>
-                                                                    `;
-}
-function renderReply(c) {
-    return `
-                                                                    <div class="feedback-reply-thread">
-                                                                      <div class="feedback-head">
-                                                                        <div class="feedback-meta">
-                                                                          <span class="feedback-user">
-                                                                            @${c.username}
-                                                                          </span>
-                                                                          <span class="feedback-on">
-                                                                            replied on
-                                                                          </span>
-                                                                          <span class="feedback-date">
-                                                                            ${new Date(c.time).toLocaleString()}
-                                                                          </span>
-                                                                        </div>
-                                                                        <button class="feedback-reply-btn" data-id="${c.id}">
-                                                                          Reply
-                                                                        </button>
-                                                                      </div>
-                                                                      <div class="feedback-text">
-                                                                        ${c.text}
-                                                                      </div>
-                                                                    </div>
-                                                                    `;
-}
+         const searchInput = document.getElementById('searchInput');
+         const typeFilter = document.getElementById('typeFilter');
+         const shuffleBtn = document.getElementById('shuffleBtn');
+         const resetBtn = document.getElementById('resetFiltersBtn');
+         
+         const cookieBanner = document.getElementById('cookie-banner');
+         const cookieAcceptBtn = document.getElementById('cookie-accept');
+         const cookieRejectBtn = document.getElementById('cookie-reject');
+         
+         const privacyModalBackdrop = document.getElementById('privacy-modal-backdrop');
+         const privacyAcceptBtn = document.getElementById('privacy-accept');
+         const privacyRejectBtn = document.getElementById('privacy-reject');
+         const privacyCloseBtn = document.getElementById('privacy-close');
+         const privacySettingsBtn = document.getElementById('privacy-settings-btn');
+         
+         const footerYearSpan = document.getElementById('footer-year');
+         
+         // ===== Dynamic footer year =====
+         if (footerYearSpan) {
+         footerYearSpan.textContent = new Date().getFullYear();
+         }
+         
+         // ===== Play counts (Most Played) =====
+         let playCounts = {};
+         try {
+         playCounts = JSON.parse(localStorage.getItem('gamePlayCounts')) || {};
+         } catch (e) {
+         playCounts = {};
+         }
+         
+         getCards().forEach(card => {
+		  const id = card.dataset.id;
+		  const link = card.querySelector('.game-link');
 
+		  if (!id || !link) return;
 
+		  link.addEventListener('click', () => {
+			playCounts[id] = (playCounts[id] || 0) + 1;
+			localStorage.setItem('gamePlayCounts', JSON.stringify(playCounts));
+		  });
+		});
 
-
-
-    // Load Comments
-   async function loadComments() {
-    const res = await fetch(API + "?article=" + ARTICLE_ID);
-    const data = await res.json();
-    const comments = data.comments || [];
-
-    // Build lookup map by parentId
-    const tree = {};
-    comments.forEach(c => {
-        const parent = c.parentId || "root";
-        if (!tree[parent]) tree[parent] = [];
-        tree[parent].push(c);
-    });
-
-    // Recursive function
-    function renderThread(parentId = "root") {
-        if (!tree[parentId]) return "";
-
-        return tree[parentId]
-            .sort((a,b) => a.timestamp - b.timestamp)
-            .map(c => `
-                ${renderComment(c)}
-                                                                    <div class="reply-level">
-                                                                      ${renderThread(c.id)}
-                                                                    </div>
-                                                                    `)
-            .join("");
-    }
-
-    // Render everything starting from root
-    elList.innerHTML = renderThread("root");
-}
-
-// Attach reply button click handlers
-	document.addEventListener("click", function(e) {
-		if (e.target.classList.contains("feedback-reply-btn")) {
-			const parentId = e.target.getAttribute("data-id");
-			replyTo(parentId);
-		}
-	});
-
-
-    // Reply Handler
-    window.replyTo = function(parentId) {
-        elText.focus();
-        elText.value = "@reply ";
-        elSubmit.onclick = () => postComment(parentId);
-    };
-
-    // Normal comment
-    elSubmit.onclick = () => postComment(null);
-
-	     window.addEventListener("DOMContentLoaded", () => {
-          requestIdleCallback(() => {
-            loadComments();
-          });
-        });
-})();
-                                                                  </script>
-                                                                  <section class="category-title">
-                                                                    <span class="label">
-                                                                      📰 Latest Articles
-                                                                    </span>
-                                                                  </section>
-                                                                  <section class="grid">
-                                                                    <div class="card" onclick="location.href='article1.html'">
-                                                                      <h3>
-                                                                        The Rise of HTML5 Neon Games
-                                                                      </h3>
-                                                                      <p>
-                                                                        Why neon browser games exploded in popularity in 2025–2026.
-                                                                      </p>
-                                                                    </div>
-                                                                    <div class="card" onclick="location.href='article2.html'">
-                                                                      <h3>
-                                                                        How Modern Browser Games Are Built
-                                                                      </h3>
-                                                                      <p>
-                                                                        A behind‑the‑scenes look at HTML, CSS, JS game engines.
-                                                                      </p>
-                                                                    </div>
-                                                                    <div class="card" onclick="location.href='article3.html'">
-                                                                      <h3>
-                                                                        Top 10 Design Principles
-                                                                      </h3>
-                                                                      <p>
-                                                                        How developers create viral, addictive mini‑games.
-                                                                      </p>
-                                                                    </div>
-                                                                  </section>
-                                                                </footer>
-                                                              </main>
-                                                              <!-- RIGHT COLUMN (kept empty for Auto Ads) -->
-                                                                <aside class="side-banner">
-                                                                </aside>
-                                                              </div>
-                                                              <!-- ============ COOKIE CONSENT BANNER ============ -->
-                                                                <div id="cookie-banner" class="cookie-banner hidden">
-                                                                  <div class="cookie-inner">
-                                                                    <div class="cookie-text">
-                                                                      We use cookies and similar technologies to deliver and improve this arcade, to measure traffic and (if enabled)
-      to show personalized ads via partners like Google AdSense. By clicking
-                                                                      <strong>
-                                                                        “Accept all”
-                                                                      </strong>
-                                                                      you consent
-      to the use of cookies for analytics and advertising. You can change your choice at any time in
-                                                                      <strong>
-                                                                        Privacy &amp; Cookies
-                                                                      </strong>
-                                                                      .
-      See our
-                                                                      <a href="privacy.html" target="_blank" rel="noopener">
-                                                                        Privacy Policy
-                                                                      </a>
-                                                                      .
-                                                                    </div>
-                                                                    <div class="cookie-actions">
-                                                                      <button id="cookie-reject" class="btn-cookie-secondary">
-                                                                        Reject non-essential
-                                                                      </button>
-                                                                      <button id="cookie-accept" class="btn-cookie-primary">
-                                                                        Accept all
-                                                                      </button>
-                                                                    </div>
-                                                                  </div>
-                                                                </div>
-                                                                <!-- ============ PRIVACY / GDPR / CCPA MODAL ============ -->
-                                                                  <div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
-                                                                    <div class="privacy-modal">
-                                                                      <h2>
-                                                                        Privacy &amp; Cookies
-                                                                      </h2>
-                                                                      <p>
-                                                                        This site uses cookies and similar technologies to:
-                                                                      </p>
-                                                                      <ul>
-                                                                        <li>
-                                                                          Remember your preferences (for example, which games you play most).
-                                                                        </li>
-                                                                        <li>
-                                                                          Measure traffic and usage to improve the site.
-                                                                        </li>
-                                                                        <li>
-                                                                          If you enable it, show personalized ads via third-party partners such as Google AdSense.
-                                                                        </li>
-                                                                      </ul>
-                                                                      <p>
-                                                                        Under GDPR and similar laws, you can choose whether we may use non-essential cookies (analytics / ads).
-      Under CCPA/CPRA, you may opt out of the
-                                                                        <em>
-                                                                          sale or sharing
-                                                                        </em>
-                                                                        of personal information by rejecting
-      non-essential cookies.
-                                                                      </p>
-                                                                      <p>
-                                                                        For full details, please see our
-                                                                        <a href="privacy.html" target="_blank" rel="noopener">
-                                                                          Privacy Policy
-                                                                        </a>
-                                                                        and
-                                                                        <a href="terms.html" target="_blank" rel="noopener">
-                                                                          Terms of Use
-                                                                        </a>
-                                                                        .
-                                                                      </p>
-                                                                      <div class="modal-actions">
-                                                                        <button id="privacy-reject" class="btn-outline">
-                                                                          Reject non-essential
-                                                                        </button>
-                                                                        <button id="privacy-accept" class="btn-cookie-primary">
-                                                                          Accept all cookies
-                                                                        </button>
-                                                                        <button id="privacy-close" class="btn-outline">
-                                                                          Close
-                                                                        </button>
-                                                                      </div>
-                                                                    </div>
-                                                                  </div>
-                                                                  <!-- Floating privacy settings button -->
-                                                                    <button id="privacy-settings-btn" class="privacy-settings-btn">
-                                                                      <span>
-                                                                        ⚙
-                                                                      </span>
-                                                                      Privacy &amp; Cookies
-                                                                    </button>
-                                                                    <script defer>
-                                                                      document.addEventListener('DOMContentLoaded', () => {
-    const cards = Array.from(document.querySelectorAll('.game-card'));
-    const searchInput = document.getElementById('searchInput');
-    const typeFilter = document.getElementById('typeFilter');
-    const shuffleBtn = document.getElementById('shuffleBtn');
-    const resetBtn = document.getElementById('resetFiltersBtn');
-
-    const cookieBanner = document.getElementById('cookie-banner');
-    const cookieAcceptBtn = document.getElementById('cookie-accept');
-    const cookieRejectBtn = document.getElementById('cookie-reject');
-
-    const privacyModalBackdrop = document.getElementById('privacy-modal-backdrop');
-    const privacyAcceptBtn = document.getElementById('privacy-accept');
-    const privacyRejectBtn = document.getElementById('privacy-reject');
-    const privacyCloseBtn = document.getElementById('privacy-close');
-    const privacySettingsBtn = document.getElementById('privacy-settings-btn');
-
-    const footerYearSpan = document.getElementById('footer-year');
-
-    // ===== Dynamic footer year =====
-    if (footerYearSpan) {
-      footerYearSpan.textContent = new Date().getFullYear();
-    }
-
-    // ===== Play counts (Most Played) =====
-    let playCounts = {};
-    try {
-      playCounts = JSON.parse(localStorage.getItem('gamePlayCounts')) || {};
-    } catch (e) {
-      playCounts = {};
-    }
-
-    cards.forEach(card => {
-      const id = card.dataset.id;
-      const url = card.dataset.url;
-      if (!id || !url) return;
-
-      card.addEventListener('click', () => {
-        playCounts[id] = (playCounts[id] || 0) + 1;
-        localStorage.setItem('gamePlayCounts', JSON.stringify(playCounts));
-        window.location.href = url;
-      });
-    });
-
-    const sorted = Object.entries(playCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3);
-
-    sorted.forEach(([id]) => {
-      const card = document.querySelector('.game-card[data-id="' + id + '"]');
-      if (card && !card.classList.contains('most-played')) {
-        card.classList.add('most-played');
-        const label = document.createElement('div');
-        label.className = 'badge-most-played';
-        label.textContent = 'Most Played';
-        card.appendChild(label);
-      }
-    });
-
-    // ===== Filters & search =====
-    function applyFilters() {
-      const query = (searchInput.value || '').trim().toLowerCase();
-      const type = typeFilter.value;
-
-      cards.forEach(card => {
-        const title = (card.dataset.title || '').toLowerCase();
-        const desc = (card.dataset.desc || '').toLowerCase();
-        const tagsRaw = (card.dataset.tags || '').toLowerCase();
-        const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
-
-        const matchesSearch =
-          !query ||
-          title.includes(query) ||
-          desc.includes(query);
-
-        const matchesType =
-          type === 'all' ||
-          tags.includes(type);
-
-        card.style.display = (matchesSearch && matchesType) ? '' : 'none';
-      });
-    }
-
-    if (searchInput) searchInput.addEventListener('input', applyFilters);
-    if (typeFilter) typeFilter.addEventListener('change', applyFilters);
-
-    if (shuffleBtn) {
-      shuffleBtn.addEventListener('click', () => {
-        const sections = new Set(cards.map(c => c.parentElement));
-        sections.forEach(section => {
-          const sectionCards = Array.from(section.querySelectorAll('.game-card'));
-          const shuffled = sectionCards
-            .map(c => ({ c, sort: Math.random() }))
-            .sort((a, b) => a.sort - b.sort)
-            .map(x => x.c);
-          shuffled.forEach(card => section.appendChild(card));
-        });
-      });
-    }
-
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        if (searchInput) searchInput.value = '';
-        if (typeFilter) typeFilter.value = 'all';
-        cards.forEach(card => card.style.display = '');
-      });
-    }
-
-    // ===== Cookie / Privacy consent (UI only in this version) =====
-    const CONSENT_KEY = 'nrPrivacyConsent';
-
-    function getConsent() {
-      try { return JSON.parse(localStorage.getItem(CONSENT_KEY)) || null; }
-      catch (e) { return null; }
-    }
-
-    function saveConsent(status) {
-      const value = {
-        status,
-        analytics: status === 'granted',
-        ads: status === 'granted',
-        updatedAt: new Date().toISOString()
-      };
-      localStorage.setItem(CONSENT_KEY, JSON.stringify(value));
-      return value;
-    }
-
-    function showCookieBanner() { if (cookieBanner) cookieBanner.classList.remove('hidden'); }
-    function hideCookieBanner() { if (cookieBanner) cookieBanner.classList.add('hidden'); }
-    function openPrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.remove('hidden'); }
-    function closePrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.add('hidden'); }
-
-    const existingConsent = getConsent();
-    if (!existingConsent) showCookieBanner();
-    else hideCookieBanner();
-
-    if (cookieAcceptBtn) cookieAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); });
-    if (cookieRejectBtn) cookieRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); });
-
-    if (privacySettingsBtn) privacySettingsBtn.addEventListener('click', openPrivacyModal);
-
-    if (privacyAcceptBtn) privacyAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); closePrivacyModal(); });
-    if (privacyRejectBtn) privacyRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); closePrivacyModal(); });
-    if (privacyCloseBtn)  privacyCloseBtn.addEventListener('click', closePrivacyModal);
-  });
-                                                                    </script>
-                                                                    <!-- Cookie/Consent banner (simple fallback). Replace with a Google-certified CMP for EEA/UK/CH compliance. -->
-                                                                      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-                                                                        <button id="btnConsentDecline" style="
-          border: 1px solid rgba(148,163,184,0.35);
-          background: none;
-          color: #e5e7eb;
-          padding: 10px 12px;
-          border-radius: 12px;
-          cursor: pointer;
-          font-weight: 800;
-        ">
-                                                                          Decline
-                                                                        </button>
-                                                                        <button id="btnConsentAccept" style="
-          border: 1px solid rgba(250,204,21,0.7);
-          background: none;
-          color: #e5e7eb;
-          padding: 10px 12px;
-          border-radius: 12px;
-          cursor: pointer;
-          font-weight: 900;
-        ">
-                                                                          Accept
-                                                                        </button>
-                                                                      </div>
-                                                                    </div>
-                                                                  </div>
-                                                                </body>
-                                                              </html>
+         
+         const sorted = Object.entries(playCounts)
+         .sort((a, b) => b[1] - a[1])
+         .slice(0, 3);
+         
+         sorted.forEach(([id]) => {
+         const card = document.querySelector('.game-card[data-id="' + id + '"]');
+         if (card && !card.classList.contains('most-played')) {
+         card.classList.add('most-played');
+         const label = document.createElement('div');
+         label.className = 'badge-most-played';
+         label.textContent = 'Most Played';
+         card.appendChild(label);
+         }
+         });
+         
+         // ===== Filters & search =====
+         function applyFilters() {
+         const query = (searchInput.value || '').trim().toLowerCase();
+         const type = typeFilter.value;
+         
+         getCards().forEach(card => {
+         const title = (card.dataset.title || '').toLowerCase();
+         const desc = (card.dataset.desc || '').toLowerCase();
+         const tagsRaw = (card.dataset.tags || '').toLowerCase();
+         const tags = tagsRaw.split(',').map(t => t.trim()).filter(Boolean);
+         
+         const matchesSearch =
+         !query ||
+         title.includes(query) ||
+         desc.includes(query);
+         
+         const matchesType =
+         type === 'all' ||
+         tags.includes(type);
+         
+         card.style.display = (matchesSearch && matchesType) ? '' : 'none';
+         });
+         }
+         
+         if (searchInput) searchInput.addEventListener('input', applyFilters);
+         if (typeFilter) typeFilter.addEventListener('change', applyFilters);
+         
+         if (shuffleBtn) {
+         shuffleBtn.addEventListener('click', () => {
+         const cards = getCards();
+			const sections = new Set(cards.map(c => c.parentElement));
+         sections.forEach(section => {
+         const sectionCards = Array.from(section.querySelectorAll('.game-card'));
+         const shuffled = sectionCards
+         .map(c => ({ c, sort: Math.random() }))
+         .sort((a, b) => a.sort - b.sort)
+         .map(x => x.c);
+         shuffled.forEach(card => section.appendChild(card));
+         });
+         });
+         }
+         
+         if (resetBtn) {
+         resetBtn.addEventListener('click', () => {
+         if (searchInput) searchInput.value = '';
+         if (typeFilter) typeFilter.value = 'all';
+         getCards().forEach(card => card.style.display = '');
+         });
+         }
+         
+         // ===== Cookie / Privacy consent (UI only in this version) =====
+         const CONSENT_KEY = 'nrPrivacyConsent';
+         
+         function getConsent() {
+         try { return JSON.parse(localStorage.getItem(CONSENT_KEY)) || null; }
+         catch (e) { return null; }
+         }
+         
+         function saveConsent(status) {
+         const value = {
+         status,
+         analytics: status === 'granted',
+         ads: status === 'granted',
+         updatedAt: new Date().toISOString()
+         };
+         localStorage.setItem(CONSENT_KEY, JSON.stringify(value));
+         return value;
+         }
+         
+         function showCookieBanner() { if (cookieBanner) cookieBanner.classList.remove('hidden'); }
+         function hideCookieBanner() { if (cookieBanner) cookieBanner.classList.add('hidden'); }
+         function openPrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.remove('hidden'); }
+         function closePrivacyModal() { if (privacyModalBackdrop) privacyModalBackdrop.classList.add('hidden'); }
+         
+         const existingConsent = getConsent();
+         if (!existingConsent) showCookieBanner();
+         else hideCookieBanner();
+         
+         if (cookieAcceptBtn) cookieAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); });
+         if (cookieRejectBtn) cookieRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); });
+         
+         if (privacySettingsBtn) privacySettingsBtn.addEventListener('click', openPrivacyModal);
+         
+         if (privacyAcceptBtn) privacyAcceptBtn.addEventListener('click', () => { saveConsent('granted'); hideCookieBanner(); closePrivacyModal(); });
+         if (privacyRejectBtn) privacyRejectBtn.addEventListener('click', () => { saveConsent('denied'); hideCookieBanner(); closePrivacyModal(); });
+         if (privacyCloseBtn)  privacyCloseBtn.addEventListener('click', closePrivacyModal);
+         });
+      </script>
+      <!-- Cookie/Consent banner (simple fallback). Replace with a Google-certified CMP for EEA/UK/CH compliance. -->
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+         <button id="btnConsentDecline" style="
+            border: 1px solid rgba(148,163,184,0.35);
+            background: none;
+            color: #e5e7eb;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 800;
+            ">
+         Decline
+         </button>
+         <button id="btnConsentAccept" style="
+            border: 1px solid rgba(250,204,21,0.7);
+            background: none;
+            color: #e5e7eb;
+            padding: 10px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 900;
+            ">
+         Accept
+         </button>
+      </div>
+      </div>
+      </div>
+	  <script src="/js/ads.js"></script>
+   </body>
+</html>
