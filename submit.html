@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Submit Your Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <style>
+body{
+ background:
+    linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+    url("images/hub-bg.jpg") center center / cover no-repeat fixed !important;in-height:100vh;
+}
+
+
+</style>
+</head>
+<body style="background:#020617;color:white;font-family:system-ui;padding:40px;max-width:800px;margin:auto;line-height:1.6;">
+
+<a id="backToHub" href="index.html"
+   style="
+     color:#38bdf8;
+     font-size:14px;
+     text-decoration:none;
+     font-weight:700;
+     padding:4px 10px;
+     border:1px solid #38bdf8;
+     border-radius:8px;
+     box-shadow:0 0 10px rgba(56,189,248,0.45);
+   ">
+  ⬅ Back to Hub
+</a>
+
+<h1 style="margin-top:20px;">🎮 Submit Your Game</h1>
+
+
+<form id="submitForm">
+  <input type="text" name="website" style="display:none;">
+
+  <input type="text" name="title" placeholder="Game Title" required 
+         style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;"><br>
+
+  <textarea name="description" placeholder="Game Description (mention tools, engine, special requirements...)" required
+    style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;"></textarea><br>
+
+  <select name="category" required 
+          style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;">
+    <option value="arcade">Arcade</option>
+    <option value="strategy">Strategy</option>
+    <option value="logic">Logic</option>
+    <option value="shooter">Shooter</option>
+  </select><br>
+
+  <input type="email" name="email" placeholder="Your Email" required 
+         style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;"><br>
+
+  <input type="file" name="file" accept=".zip" required style="margin-bottom:20px;"><br>
+
+  <button type="submit" 
+          style="
+            padding:12px 28px;
+            border-radius:999px;
+            border:1px solid #38bdf8;
+            background:linear-gradient(180deg,#0f172a,#020617);
+            color:#38bdf8;
+            font-weight:600;
+            cursor:pointer;
+          ">
+    🚀 Submit Game
+  </button>
+</form>
+
+<p id="status" style="margin-top:20px;color:#38bdf8;"></p>
+
+<p style="opacity:0.85;">
+Neon Mini Game Hub is building a fast, lightweight browser arcade focused on 
+modern HTML5 experiences. We aim to create a curated collection of instant-play 
+games that work smoothly on desktop and mobile — no installs, no accounts.
+</p>
+
+<hr style="border:1px solid #1e293b;margin:30px 0;">
+
+<h2>🚀 Our Vision</h2>
+<p>
+We are building a performance-focused browser arcade powered by:
+</p>
+
+<ul>
+<li>⚡ Pure HTML, CSS & JavaScript</li>
+<li>🎨 Clean neon UI design</li>
+<li>📱 Mobile-first responsive layouts</li>
+<li>🧠 Tight gameplay loops & replayability</li>
+<li>🔒 Minimal tracking & clean UX</li>
+</ul>
+
+<p>
+We review each submission manually to ensure quality, performance, and originality.
+</p>
+
+<hr style="border:1px solid #1e293b;margin:30px 0;">
+
+<h2>🛠 What We Accept</h2>
+
+<p>
+We accept <strong>any game built with any technology</strong> — as long as it runs directly in the browser.
+</p>
+
+<ul>
+<li>✔ Any engine (Unity WebGL, Phaser, Three.js, Godot Web export, custom JS, etc.)</li>
+<li>✔ Any framework or build system</li>
+<li>✔ Must include a working <strong>index.html</strong> entry file</li>
+<li>✔ Must run in a standard modern browser</li>
+<li>✔ ZIP file containing the complete playable build</li>
+<li>✔ No malicious or hidden external scripts</li>
+<li>✔ Original work or properly licensed assets</li>
+</ul>
+
+<p style="opacity:0.8;font-size:14px;">
+The only requirement: the game must launch by opening <strong>index.html</strong> in a browser.
+<br>
+Maximum ZIP size: 50MB.
+</p>
+
+
+<hr style="border:1px solid #1e293b;margin:30px 0;">
+
+<h2>📦 How To Prepare Your ZIP</h2>
+
+<p>Your ZIP should contain:</p>
+
+<ul>
+<li>index.html (entry file)</li>
+<li>All JS/CSS files included</li>
+<li>Assets folder if needed</li>
+<li>No broken local paths</li>
+</ul>
+
+<p>
+Make sure the game runs by simply opening <strong>index.html</strong>.
+If it requires a server (Node, PHP, etc.), please mention it in the description.
+</p>
+
+<hr style="border:1px solid #1e293b;margin:40px 0;">
+<hr style="border:1px solid #1e293b;margin:40px 0;">
+
+<h2>🏆 Why Submit To Neon Mini Game Hub?</h2>
+
+<ul>
+<li>🔥 Selected games may be featured on the homepage</li>
+<li>🚀 Exposure to a growing browser gaming audience</li>
+<li>🎨 Clean neon UI presentation</li>
+<li>📱 Mobile + Desktop visibility</li>
+<li>💡 Future revenue-sharing opportunities planned</li>
+</ul>
+
+<p>
+We are building a curated browser-first arcade. High-quality submissions
+that demonstrate performance, polish, and replayability may receive:
+</p>
+
+<ul>
+<li>⭐ “Featured” badge</li>
+<li>📌 Priority placement</li>
+<li>📢 Promotion in upcoming updates</li>
+</ul>
+
+<hr style="border:1px solid #1e293b;margin:40px 0;">
+
+<h2>⏱ Review Process</h2>
+
+<p>
+All submissions are manually reviewed.
+Estimated review time: <strong>24–72 hours</strong>.
+</p>
+
+<p>
+We evaluate:
+</p>
+
+<ul>
+<li>⚡ Performance & load speed</li>
+<li>🎮 Gameplay quality & clarity</li>
+<li>📱 Mobile compatibility</li>
+<li>🔒 Security & safe scripting</li>
+<li>🎨 Overall polish</li>
+</ul>
+
+<p style="opacity:0.85;">
+If your game meets our quality standards, we will contact you via email.
+</p>
+<script>
+document.getElementById("submitForm").addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const form = this;
+  const status = document.getElementById("status");
+  const button = form.querySelector("button");
+
+  button.disabled = true;
+  button.innerText = "Uploading...";
+  status.innerHTML = "";
+  status.style.display = "none";
+
+  try {
+    const formData = new FormData(form);
+
+    const response = await fetch("https://neon-submit.gabi-gabz.workers.dev/", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+
+    status.style.display = "block";
+    status.style.padding = "18px";
+    status.style.marginTop = "20px";
+    status.style.borderRadius = "12px";
+    status.style.background = "linear-gradient(135deg,#064e3b,#065f46)";
+    status.style.border = "1px solid #10b981";
+    status.style.color = "#d1fae5";
+    status.style.fontWeight = "600";
+    status.style.boxShadow = "0 0 20px rgba(16,185,129,0.4)";
+
+    status.innerHTML = `
+      🎉 Submission successful!<br><br>
+      <strong>Submission ID:</strong><br>
+      <span style="
+        font-family:monospace;
+        background:#022c22;
+        padding:6px 10px;
+        border-radius:6px;
+        display:inline-block;
+        margin-top:5px;
+      ">
+        ${data.submissionId}
+      </span>
+      <br><br>
+      Your game is now under review (24–72h).
+    `;
+
+    form.reset();
+
+  } catch (err) {
+    status.style.display = "block";
+    status.style.padding = "15px";
+    status.style.marginTop = "20px";
+    status.style.borderRadius = "12px";
+    status.style.background = "linear-gradient(135deg,#7f1d1d,#991b1b)";
+    status.style.border = "1px solid #ef4444";
+    status.style.color = "#fee2e2";
+    status.style.fontWeight = "600";
+    status.innerHTML = "❌ Upload failed. Please try again.";
+  }
+
+  button.disabled = false;
+  button.innerText = "🚀 Submit Game";
+});
+</script>
+
+
+</body>
+</html>

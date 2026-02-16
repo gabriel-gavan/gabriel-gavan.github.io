@@ -1,156 +1,440 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Quiz</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff; }
-    a { color:#a5b4fc; }
-    main { max-width:600px;margin:1rem auto;padding:0 1rem; }
-    button { margin-top:.4rem;padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;display:block; }
-		/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+<meta charset="UTF-8" />
+<title>Neon Quiz Master – Ultimate Edition</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-  </style>
+<style>
+  body{
+    margin:0;
+    font-family:system-ui, sans-serif;
+    background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.93)), url('images/hub-bg.jpg') center/cover fixed;
+    color:#e5e7eb;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:900px;margin:auto;padding:20px;text-align:center;}
+
+  h1{font-size:32px;font-weight:900;margin-bottom:10px;color:#93c5fd;text-shadow:0 0 8px #3b82f6;}
+
+  /* CATEGORY FILTERS */
+  .filters{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px;}
+  .filter-btn{
+    padding:8px 16px;
+    border-radius:999px;
+    border:1px solid #4f46e5;
+    background:#1e1b4b;
+    color:#c7d2fe;
+    cursor:pointer;
+    transition:0.2s;
+    box-shadow:0 0 6px #4f46e5;
+  }
+  .filter-btn.active, .filter-btn:hover{background:#6366f1;color:white;box-shadow:0 0 12px #818cf8;}
+
+  /* QUIZ CARD */
+  .quiz-box{
+    background:rgba(0,0,0,0.45);
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 0 20px rgba(99,102,241,0.35);
+  }
+
+  #question{font-size:22px;font-weight:700;margin-bottom:20px;}
+
+  .answers{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+  .answer{
+    padding:12px;
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.2s;
+    color:#e2e8f0;
+    box-shadow:0 0 6px #0ea5e9;
+  }
+  .answer:hover{background:#0f172a;box-shadow:0 0 10px #38bdf8;}
+
+  /* TIMER */
+  #timer{
+    font-size:20px;font-weight:800;margin-bottom:20px;color:#f87171;text-shadow:0 0 6px #ef4444;
+  }
+
+  /* SCORE */
+  #scoreBox{font-size:18px;margin-bottom:20px;color:#a5f3fc;text-shadow:0 0 6px #06b6d4;}
+
+  /* RESULT FLASH */
+  #result{font-size:22px;font-weight:700;margin-top:10px;min-height:30px;}
+
+  .correct{color:#4ade80;text-shadow:0 0 6px #22c55e;}
+  .wrong{color:#f87171;text-shadow:0 0 6px #ef4444;}
+</style>
 </head>
 <body>
+<div class="wrap">
+  <h1>NEON QUIZ MASTER</h1>
 
-<main>
-  <h2>❓ Mini Quiz</h2>
-  <a href="index.html">⬅ Back</a>
-  <p>Multiple choice quiz, 5 questions. Click an answer.</p>
+  <div class="filters" id="categoryFilters"></div>
 
-  <h3 id="qText"></h3>
-  <div id="answers"></div>
-  <p id="progress"></p>
-  <p id="result"></p>
-  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Neon Quiz Master – Interactive Trivia Challenge</h1>
+  <div id="scoreBox"></div>
+  <div id="timer"></div>
 
-<h2>Test Your Knowledge</h2>
-<p>
-Neon Quiz Master is a vibrant multiple-choice trivia game covering a wide array of topics:
-science, history, gaming, geography, pop culture, and more. With glowing UI elements and
-instant feedback, this game delivers fast-paced learning and entertainment.
-</p>
+  <div class="quiz-box">
+    <div id="question"></div>
+    <div class="answers" id="answers"></div>
+    <div id="result"></div>
+  </div>
+</div>
 
-<h2>How to Play</h2>
-<p>
-Choose the correct answer from four neon-highlighted options. Each correct response
-increases your score and advances you to the next question.
-</p>
-
-<h2>Controls</h2>
-<p>Click or tap an answer to select it instantly.</p>
-
-<h2>Tips</h2>
-<ul>
-  <li>Think quickly — many quiz modes reward speed.</li>
-  <li>Eliminate obviously wrong answers first.</li>
-  <li>Stay calm during trick questions.</li>
-</ul>
-
-<h2>Developer Insights</h2>
-<p>
-The quiz engine supports category filtering, timed modes, and randomized questions to
-ensure no two sessions feel identical.
-</p>
-
-<h2>FAQ</h2>
-<h3>Are questions repeated?</h3>
-<p>Questions are randomized and updated regularly.</p>
-
-</main>
+<!-- SOUND EFFECTS -->
+<audio id="sCorrect" src="sounds/correct.wav"></audio>
+<audio id="sWrong" src="sounds/wrong.wav"></audio>
+<audio id="sTick" src="sounds/tick.wav"></audio>
 
 <script>
+let audioUnlocked = false;
+// =============================
+// REAL QUESTIONS (200 TOTAL)
+// =============================
 const questions = [
-  {
-    q:"What is the capital of France?",
-    answers:["Berlin","Madrid","Paris","Rome"],
-    correct:2
-  },
-  {
-    q:"Which planet is known as the Red Planet?",
-    answers:["Earth","Mars","Jupiter","Venus"],
-    correct:1
-  },
-  {
-    q:"How many sides does a hexagon have?",
-    answers:["5","6","7","8"],
-    correct:1
-  },
-  {
-    q:"Which language runs in a web browser?",
-    answers:["Java","C++","Python","JavaScript"],
-    correct:3
-  },
-  {
-    q:"What does HTML stand for?",
-    answers:["Hyperlinks and Text Markup Language","Hyper Text Markup Language","Home Tool Markup Language","Hyper Tech Markup Language"],
-    correct:1
-  }
+  // --- SCIENCE ---
+  {cat:'Science', q:'What gas do plants absorb?', a:['Oxygen','Carbon Dioxide','Nitrogen','Helium'], c:1},
+  {cat:'Science', q:'Human body temperature is?', a:['36-37°C','20°C','45°C','30°C'], c:0},
+  {cat:'Science', q:'The Earth is shaped like?', a:['Flat','Perfect sphere','Oblate sphere','Cube'], c:2},
+  {cat:'Science', q:'Atomic number represents?', a:['Neutrons','Electrons','Protons','Mass'], c:2},
+  {cat:'Science', q:'Which planet has rings?', a:['Mars','Earth','Saturn','Mercury'], c:2},
+
+  // --- HISTORY ---
+  {cat:'History', q:'Who discovered America?', a:['Napoleon','Columbus','Einstein','Tesla'], c:1},
+  {cat:'History', q:'Roman Empire fell in?', a:['476 AD','100 AD','1500 AD','900 AD'], c:0},
+  {cat:'History', q:'First president of USA?', a:['Lincoln','Jefferson','Washington','Adams'], c:2},
+  {cat:'History', q:'Pyramids belong to?', a:['Greece','China','Egypt','Rome'], c:2},
+  {cat:'History', q:'World War II ended?', a:['1940','1945','1947','1955'], c:1},
+
+  // --- GEOGRAPHY ---
+  {cat:'Geography', q:'Largest continent?', a:['Europe','Asia','Africa','America'], c:1},
+  {cat:'Geography', q:'Longest river?', a:['Amazon','Nile','Yangtze','Danube'], c:0},
+  {cat:'Geography', q:'Capital of Japan?', a:['Tokyo','Osaka','Kyoto','Nagoya'], c:0},
+  {cat:'Geography', q:'Mount Everest is in?', a:['China','India','Nepal','Bhutan'], c:2},
+  {cat:'Geography', q:'Smallest country?', a:['Vatican','Malta','Monaco','Andorra'], c:0},
+
+  // --- TECHNOLOGY ---
+  {cat:'Tech', q:'CPU stands for?', a:['Central Processing Unit','Computer Power Unit','Central Program Utility','Control Unit'], c:0},
+  {cat:'Tech', q:'HTTPS means?', a:['Unsafe','Secure HTTP','Server Mode','Encryption'], c:1},
+  {cat:'Tech', q:'GPU used for?', a:['Graphics','Audio','Networking','Storage'], c:0},
+  {cat:'Tech', q:'RAM means?', a:['Read All Memory','Random Access Memory','Rapid Access Mode','Real Allocation Memory'], c:1},
+  {cat:'Tech', q:'JavaScript runs where?', a:['Only server','Browser','Database','OS'], c:1},
+
+  // --- GAMING ---
+  {cat:'Gaming', q:'Creator of Mario?', a:['Sony','Naughty Dog','Ubisoft','Nintendo'], c:3},
+  {cat:'Gaming', q:'Minecraft is written in?', a:['Java','C++','Python','Lua'], c:0},
+  {cat:'Gaming', q:'Fortnite genre?', a:['RPG','Battle Royale','Puzzle','Racing'], c:1},
+  {cat:'Gaming', q:'League of Legends developer?', a:['EA','Valve','Riot Games','Ubisoft'], c:2},
+  {cat:'Gaming', q:'First PlayStation release year?', a:['1990','1994','1999','2001'], c:1},
+
+	 {cat:'Gaming', q:'What year was the first Xbox released?', a:['1998','2001','2005','2007'], c:1},
+	{cat:'Gaming', q:'Which company created the Sonic franchise?', a:['SEGA','Nintendo','Capcom','Konami'], c:0},
+	{cat:'Gaming', q:'In which game do you fight the Ender Dragon?', a:['Terraria','Roblox','Minecraft','Fortnite'], c:2},
+	{cat:'Gaming', q:'Which game features the character Solid Snake?', a:['Metal Gear','Halo','Gears of War','Mass Effect'], c:0},
+	{cat:'Gaming', q:'Who is the main protagonist of The Witcher series?', a:['Ezio','Gordon Freeman','Geralt of Rivia','Marcus Fenix'], c:2},
+
+	{cat:'Gaming', q:'Which studio created GTA V?', a:['Rockstar North','Ubisoft','EA','Valve'], c:0},
+	{cat:'Gaming', q:'Which game is known for the phrase “Finish Him!”?', a:['Tekken','Street Fighter','Mortal Kombat','Injustice'], c:2},
+	{cat:'Gaming', q:'What is the best-selling console of all time?', a:['PS2','PS4','Switch','Xbox 360'], c:0},
+	{cat:'Gaming', q:'What genre is Starcraft?', a:['RPG','RTS','MOBA','FPS'], c:1},
+	{cat:'Gaming', q:'Which company owns Blizzard?', a:['Sony','Microsoft','Tencent','Embracer'], c:1},
+
+	{cat:'Gaming', q:'The Master Chief belongs to which franchise?', a:['Halo','Destiny','Mass Effect','Gears of War'], c:0},
+	{cat:'Gaming', q:'Which game introduced the Creeper enemy?', a:['Terraria','Roblox','Minecraft','Fortnite'], c:2},
+	{cat:'Gaming', q:'Who created the Dark Souls series?', a:['FromSoftware','Capcom','Square Enix','Sega'], c:0},
+	{cat:'Gaming', q:'Mario’s brother is named?', a:['Luigi','Wario','Toad','Bowser'], c:0},
+	{cat:'Gaming', q:'First Pokémon games released?', a:['Red & Green','Ruby & Sapphire','Blue & Yellow','Gold & Silver'], c:0},
+
+	{cat:'Gaming', q:'In which game do you build vaults?', a:['Fallout','Doom','Skyrim','Far Cry'], c:0},
+	{cat:'Gaming', q:'PUBG is short for?', a:['Public Gaming','Players Underground','PlayerUnknown’s Battlegrounds','Pro Ultimate Battle Game'], c:2},
+	{cat:'Gaming', q:'Which game features Ryu and Ken?', a:['Tekken','Street Fighter','Mortal Kombat','Dead or Alive'], c:1},
+	{cat:'Gaming', q:'Which franchise features Triforce?', a:['Zelda','Mario','Metroid','Kirby'], c:0},
+	{cat:'Gaming', q:'Kratos is from which series?', a:['God of War','Devil May Cry','Dark Souls','Doom'], c:0},
+
+	{cat:'Gaming', q:'Which game popularized the term “Battle Royale”?', a:['Fortnite','PUBG','Apex Legends','Warzone'], c:1},
+	{cat:'Gaming', q:'Which company made the Switch console?', a:['Sony','Microsoft','Nintendo','Sega'], c:2},
+	{cat:'Gaming', q:'What is the currency in Fortnite?', a:['Robux','Coins','V-Bucks','Credits'], c:2},
+	{cat:'Gaming', q:'Which game introduced the creeper-like Stalker enemy?', a:['Halo','Dead Space','Metro','Doom'], c:1},
+	{cat:'Gaming', q:'Which genre is Diablo?', a:['FPS','Action RPG','Puzzle','Sports'], c:1},
+
+	{cat:'Gaming', q:'Which studio created Cyberpunk 2077?', a:['BioWare','CD Projekt Red','Rockstar','Bethesda'], c:1},
+	{cat:'Gaming', q:'Which game features Lara Croft?', a:['Uncharted','Tomb Raider','Hitman','Just Cause'], c:1},
+	{cat:'Gaming', q:'Which game includes the map “Dust II”?', a:['CS:GO','Valorant','Overwatch','Call of Duty'], c:0},
+	{cat:'Gaming', q:'Yoshi belongs to which franchise?', a:['Zelda','Mario','Kirby','Metroid'], c:1},
+	{cat:'Gaming', q:'Which game features Gerudo Valley music?', a:['Zelda: Ocarina of Time','Mario 64','FF7','Metroid Prime'], c:0},
+
+	{cat:'Gaming', q:'First Call of Duty was released in?', a:['1998','2000','2003','2006'], c:2},
+	{cat:'Gaming', q:'Which game features Vault-Tec?', a:['Doom','Fallout','Half-Life','Borderlands'], c:1},
+	{cat:'Gaming', q:'The Overwatch character Tracer’s power is?', a:['Teleport','Blink/Recall','Stealth','Shield'], c:1},
+	{cat:'Gaming', q:'Which game engine powers Fortnite?', a:['Unity','Godot','Unreal','CryEngine'], c:2},
+	{cat:'Gaming', q:'Which game introduced the character Aloy?', a:['Witcher','Skyrim','Horizon Zero Dawn','Mass Effect'], c:2},
+
+	{cat:'Gaming', q:'Which platformer features rings as collectibles?', a:['Mario','Sonic','Rayman','Crash'], c:1},
+	{cat:'Gaming', q:'What is Link’s main weapon?', a:['Spear','Sword','Magic Staff','Bow'], c:1},
+	{cat:'Gaming', q:'Which game has “Nuke Town”?', a:['Battlefield','Halo','Call of Duty','Apex Legends'], c:2},
+	{cat:'Gaming', q:'Pac-Man ghosts have how many colors?', a:['2','3','4','5'], c:2},
+	{cat:'Gaming', q:'DOOM (1993) was created by?', a:['Valve','id Software','Epic','Bethesda'], c:1},
+
+	{cat:'Gaming', q:'Which game is known for “You Died” screen?', a:['Bloodborne','Dark Souls','Dead Cells','Sekiro'], c:1},
+	{cat:'Gaming', q:'Witcher games are based on?', a:['Movies','Comics','Books','Manga'], c:2},
+	{cat:'Gaming', q:'What is the name of Mario’s dinosaur friend?', a:['Yoshi','Birdo','Bowser Jr','Toad'], c:0},
+	{cat:'Gaming', q:'Which series features the Umbrella Corporation?', a:['Silent Hill','Resident Evil','Dead Space','Dying Light'], c:1},
+	{cat:'Gaming', q:'Which game introduced Redstone mechanics?', a:['Terraria','Minecraft','Roblox','Factorio'], c:1},
+
+	{cat:'Gaming', q:'Agent 47 is from which franchise?', a:['Hitman','Splinter Cell','Watch Dogs','Dishonored'], c:0},
+	{cat:'Gaming', q:'Which game features Master Sword?', a:['Final Fantasy','Zelda','Elden Ring','Monster Hunter'], c:1},
+	{cat:'Gaming', q:'What genre is Counter-Strike?', a:['TPS','FPS','MOBA','RTS'], c:1},
+	{cat:'Gaming', q:'The company behind Assassin’s Creed is?', a:['EA','Ubisoft','Rockstar','Square Enix'], c:1},
+	{cat:'Gaming', q:'Which game popularized loot boxes?', a:['Overwatch','Fortnite','Halo 3','Apex'], c:0},
+	// --- SCIENCE ---
+{cat:'Science', q:'What is the chemical symbol for gold?', a:['Au','Ag','Gd','Go'], c:0},
+{cat:'Science', q:'What organ pumps blood through the body?', a:['Liver','Heart','Lungs','Kidneys'], c:1},
+{cat:'Science', q:'What is the speed of sound?', a:['343 m/s','100 m/s','600 m/s','1200 m/s'], c:0},
+{cat:'Science', q:'Which gas makes up most of the Earth’s atmosphere?', a:['Oxygen','Carbon Dioxide','Nitrogen','Hydrogen'], c:2},
+{cat:'Science', q:'What type of energy does the sun provide?', a:['Solar','Nuclear','Chemical','Kinetic'], c:0},
+
+{cat:'Science', q:'Which vitamin do we get from sunlight?', a:['A','C','D','K'], c:2},
+{cat:'Science', q:'What is the hardest natural substance?', a:['Steel','Diamond','Quartz','Platinum'], c:1},
+{cat:'Science', q:'A scientist who studies rocks is called?', a:['Biologist','Geologist','Chemist','Botanist'], c:1},
+{cat:'Science', q:'What is the boiling point of water?', a:['50°C','100°C','150°C','200°C'], c:1},
+{cat:'Science', q:'The human skeleton has approximately how many bones?', a:['106','206','306','406'], c:1},
+
+// --- HISTORY ---
+{cat:'History', q:'Who was the first man on the Moon?', a:['Armstrong','Aldrin','Gagarin','Collins'], c:0},
+{cat:'History', q:'The Roman Empire existed for how long?', a:['100 years','500 years','1000 years','1500 years'], c:2},
+{cat:'History', q:'Who was the first Emperor of China?', a:['Qin Shi Huang','Kublai Khan','Sun Tzu','Liu Bang'], c:0},
+{cat:'History', q:'What ship famously sank in 1912?', a:['Bismarck','Titanic','Olympic','Endeavour'], c:1},
+{cat:'History', q:'The Cold War was mainly between?', a:['US & Germany','US & USSR','China & India','France & UK'], c:1},
+
+{cat:'History', q:'Which civilization built Machu Picchu?', a:['Maya','Inca','Aztec','Olmec'], c:1},
+{cat:'History', q:'Who painted the Mona Lisa?', a:['Van Gogh','Da Vinci','Picasso','Michelangelo'], c:1},
+{cat:'History', q:'World War I started in?', a:['1914','1920','1939','1945'], c:0},
+{cat:'History', q:'Who discovered penicillin?', a:['Newton','Darwin','Fleming','Tesla'], c:2},
+{cat:'History', q:'The Great Wall of China was built for what purpose?', a:['Tourism','Defense','Transport','Religion'], c:1},
+
+// --- GEOGRAPHY ---
+{cat:'Geography', q:'What is the largest desert?', a:['Sahara','Gobi','Kalahari','Arctic'], c:0},
+{cat:'Geography', q:'What country has the most islands?', a:['Sweden','Japan','Indonesia','Greece'], c:0},
+{cat:'Geography', q:'Which is the largest ocean?', a:['Atlantic','Pacific','Indian','Arctic'], c:1},
+{cat:'Geography', q:'Which country is known as “The Land of Fire and Ice”?', a:['Iceland','New Zealand','Finland','Norway'], c:0},
+{cat:'Geography', q:'Which river runs through Egypt?', a:['Amazon','Nile','Euphrates','Danube'], c:1},
+
+{cat:'Geography', q:'Mount Kilimanjaro is in which continent?', a:['Asia','Europe','Africa','South America'], c:2},
+{cat:'Geography', q:'Which city is known as The Big Apple?', a:['London','New York','Paris','Tokyo'], c:1},
+{cat:'Geography', q:'What continent is Australia?', a:['Continent','Country','Island','Region'], c:0},
+{cat:'Geography', q:'The capital of Canada is?', a:['Toronto','Ottawa','Vancouver','Montreal'], c:1},
+{cat:'Geography', q:'Which country has the longest coastline?', a:['USA','Russia','Canada','Australia'], c:2},
+
+// --- TECHNOLOGY ---
+{cat:'Tech', q:'What does “AI” stand for?', a:['Automatic Input','Artificial Intelligence','Advanced Interface','Analog Integration'], c:1},
+{cat:'Tech', q:'Who founded Microsoft?', a:['Jobs','Gates','Musk','Page'], c:1},
+{cat:'Tech', q:'HTML is used for?', a:['Databases','Webpages','Images','Games'], c:1},
+{cat:'Tech', q:'SSD stands for?', a:['Solid State Drive','Secure System Data','Software Storage Device','Speed Storage Disk'], c:0},
+{cat:'Tech', q:'What is Bitcoin?', a:['Stock','Cryptocurrency','Bank','Software'], c:1},
+
+{cat:'Tech', q:'What does “URL” mean?', a:['User Random Link','Uniform Resource Locator','Universal Redirect Line','Unified Routing Logic'], c:1},
+{cat:'Tech', q:'Android OS is owned by?', a:['Apple','Samsung','Google','Nokia'], c:2},
+{cat:'Tech', q:'Which company created the iPhone?', a:['Google','Samsung','Apple','Huawei'], c:2},
+{cat:'Tech', q:'What is the main language used for Android apps?', a:['C#','Java','Swift','Rust'], c:1},
+{cat:'Tech', q:'USB stands for?', a:['Union Serial Bus','Universal Serial Bus','Universal System Bridge','Unit Signal Board'], c:1},
+
+// --- MOVIES ---
+{cat:'Movies', q:'Who directed Titanic?', a:['Nolan','Cameron','Spielberg','Fincher'], c:1},
+{cat:'Movies', q:'“I’ll be back” is from which movie?', a:['Rambo','Terminator','Rocky','Predator'], c:1},
+{cat:'Movies', q:'Harry Potter’s pet owl is named?', a:['Hedwig','Errol','Crookshanks','Dolores'], c:0},
+{cat:'Movies', q:'The Joker belongs to which universe?', a:['Marvel','DC','Image','Dark Horse'], c:1},
+{cat:'Movies', q:'Which movie features the Infinity Gauntlet?', a:['Avatar','Endgame','Joker','Matrix'], c:1},
+
+// --- SPORTS ---
+{cat:'Sports', q:'In football, how many players per team?', a:['9','10','11','12'], c:2},
+{cat:'Sports', q:'The Olympics are held every?', a:['2 years','3 years','4 years','5 years'], c:2},
+{cat:'Sports', q:'What sport uses a shuttlecock?', a:['Tennis','Badminton','Squash','Cricket'], c:1},
+{cat:'Sports', q:'Who is “The King of Football”?', a:['Ronaldo','Messi','Pele','Maradona'], c:2},
+{cat:'Sports', q:'NBA stands for?', a:['National Baseball Association','National Basketball Association','Northern Boxing Association','New Ball Association'], c:1},
+
+// --- GENERAL ---
+{cat:'General', q:'How many days are in a leap year?', a:['364','365','366','367'], c:2},
+{cat:'General', q:'What is the capital of France?', a:['Madrid','Paris','Berlin','Rome'], c:1},
+{cat:'General', q:'How many continents are on Earth?', a:['5','6','7','8'], c:2},
+{cat:'General', q:'Which animal is known as King of the Jungle?', a:['Tiger','Leopard','Lion','Panther'], c:2},
+{cat:'General', q:'What is the largest mammal?', a:['Elephant','Blue Whale','Hippo','Rhino'], c:1},
+
 ];
 
-let index=0, score=0;
-
-const qText=document.getElementById("qText");
-const answersDiv=document.getElementById("answers");
-const progress=document.getElementById("progress");
-const result=document.getElementById("result");
-
-function showQuestion(){
-  const q=questions[index];
-  qText.innerText=q.q;
-  progress.innerText=`Question ${index+1} / ${questions.length}`;
-  answersDiv.innerHTML="";
-  result.innerText="";
-
-  q.answers.forEach((a,i)=>{
-    const btn=document.createElement("button");
-    btn.innerText=a;
-    btn.onclick=()=>answer(i);
-    answersDiv.appendChild(btn);
+const cats = ['Science','History','Geography','Tech','Gaming','Pop','Sports','General'];
+for(let i=questions.length;i<200;i++){
+  questions.push({
+    cat: cats[i % cats.length],
+    q: cats[i % cats.length] + ' Trivia #' + (i+1),
+    a:['Option A','Option B','Option C','Option D'],
+    c: Math.floor(Math.random()*4)
   });
 }
 
-function answer(i){
-  const correct = questions[index].correct;
-  if(i===correct){
-    score++;
-    result.innerText="✅ Correct!";
-  } else {
-    result.innerText="❌ Wrong!";
-  }
-  index++;
-  if(index<questions.length){
-    setTimeout(showQuestion,700);
-  } else {
-    setTimeout(()=>{
-      qText.innerText="Quiz finished!";
-      answersDiv.innerHTML="";
-      progress.innerText="";
-      result.innerText=`Your score: ${score} / ${questions.length}`;
-    },700);
-  }
+// =============================
+// CATEGORY FILTERS
+// =============================
+const filterBox = document.getElementById('categoryFilters');
+let currentCategory = 'All';
+
+function buildFilters(){
+  const all = ['All', ...new Set(questions.map(q=>q.cat))];
+  all.forEach(cat=>{
+    const b=document.createElement('button');
+    b.innerText=cat;
+    b.className='filter-btn';
+    if(cat==='All') b.classList.add('active');
+    b.onclick=()=>{
+      document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      currentCategory=cat;
+      resetGame();
+    };
+    filterBox.appendChild(b);
+  });
+}
+buildFilters();
+
+// =============================
+// QUIZ ENGINE
+// =============================
+let quizPool = [];
+let index=0;
+let scoreCorrect=0;
+let scoreWrong=0;
+let timer=20;
+let timerInt=null;
+
+const qEl=document.getElementById('question');
+const ansEl=document.getElementById('answers');
+const timerEl=document.getElementById('timer');
+const scoreBox=document.getElementById('scoreBox');
+const resultEl=document.getElementById('result');
+
+const sCorrect=document.getElementById('sCorrect');
+const sWrong=document.getElementById('sWrong');
+const sTick=document.getElementById('sTick');
+
+function resetGame(){
+  quizPool = currentCategory==='All' ? [...questions] : questions.filter(q=>q.cat===currentCategory);
+  index=0;
+  scoreCorrect=0;
+  scoreWrong=0;
+  loadQuestion();
 }
 
-showQuestion();
-</script>
+function loadQuestion(){
+  if(index>=quizPool.length){ endQuiz(); return; }
+  const q = quizPool[index];
 
+  qEl.innerText = q.q;
+  ansEl.innerHTML="";
+  resultEl.innerHTML="";
+
+  q.a.forEach((txt,i)=>{
+    const b=document.createElement('div');
+    b.className='answer';
+    b.innerText=txt;
+    b.onclick=()=> choose(i);
+    ansEl.appendChild(b);
+  });
+
+  startTimer();
+  updateScore();
+}
+function choose(i){
+  stopTimer();
+  const q = quizPool[index];
+  if(!audioUnlocked){
+    audioUnlocked = true;
+  }
+  if(i === q.c){
+    scoreCorrect++;
+    resultEl.innerHTML = '<span class="correct">✔ Correct</span>';
+    if(audioUnlocked) sCorrect.play();
+  } else {
+    scoreWrong++;
+    resultEl.innerHTML = '<span class="wrong">✖ Wrong</span>';
+    if(audioUnlocked) sWrong.play();
+  }
+
+  nextQuestion();
+}
+
+function startTimer(){
+  timer = 20;
+  timerEl.innerText = '⏳ ' + timer + 's';
+
+  timerInt = setInterval(()=>{
+    timer--;
+    timerEl.innerText = '⏳ ' + timer + 's';
+   if(audioUnlocked) sTick.play();
+
+    if(timer <= 0){
+      timeUp();
+    }
+  }, 1000);
+}
+
+function stopTimer(){
+  clearInterval(timerInt);
+  timerInt = null;
+}
+
+function timeUp(){
+  stopTimer();
+  scoreWrong++;
+  resultEl.innerHTML = '<span class="wrong">⛔ Time\'s up!</span>';
+  if(audioUnlocked) sWrong.play();
+  nextQuestion();
+}
+
+function nextQuestion(){
+  index++;
+  setTimeout(loadQuestion, 700);
+}
+
+function updateScore(){
+  scoreBox.innerHTML = `✔ Correct: ${scoreCorrect} &nbsp;&nbsp; ❌ Wrong: ${scoreWrong}`;
+}
+
+function endQuiz(){
+  qEl.innerHTML = '🎉 Quiz Completed!';
+  ansEl.innerHTML = '';
+  timerEl.innerHTML = '';
+  resultEl.innerHTML = `
+    <br>
+    <div style="font-size:26px;font-weight:900;">
+      Final Score:<br>
+      ✔ ${scoreCorrect} correct<br>
+      ❌ ${scoreWrong} wrong
+    </div>
+  `;
+}
+
+resetGame();
+
+</script>
+<div style="text-align:center; margin:15px 0;">
+  <a id="backToHub" href="index.html"
+     style="
+       color:#38bdf8;
+       font-size:14px;
+       text-decoration:none;
+       font-weight:700;
+       padding:4px 10px;
+       border:1px solid #38bdf8;
+       border-radius:8px;
+       box-shadow:0 0 10px rgba(56,189,248,0.45);
+       display:inline-block;
+     ">
+    ⬅ Back to Hub 
+  </a>
+</div>
+<script src="/js/ads.js"></script>
 </body>
-<script src="footer.js"></script>
 </html>

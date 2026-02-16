@@ -1,548 +1,460 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Tic Tac Toe vs AI</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tic Tac Toe – Neon Edition</title>
 
-  <!-- ✅ AUTO ADS: keep ONLY this one AdSense loader -->
-  <script async
-    src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
-    crossorigin="anonymous"></script>
+<style>
+/* ---------- GLOBAL ---------- */
+body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: radial-gradient(circle at top, #0b0f1a, #050611 60%);
+    color: #e5e7eb;
+    text-align: center;
+    overflow-x: hidden;
+}
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ---------- WRAPPER ---------- */
+.main-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 30px;
+}
 
-    body {
-      background:
-        linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
-        url("images/hub-bg.jpg") center center / cover no-repeat fixed;
-      color: #e5e7eb;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      min-height: 100vh;
+/* ---------- TITLE ---------- */
+h1 {
+    font-size: 32px;
+    margin-bottom: 15px;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    color: transparent;
+    font-weight: 800;
+}
+
+/* ---------- CONTROL PANEL ---------- */
+.control-panel {
+    margin: 0 auto 25px auto;
+    padding: 14px 20px;
+    width: 420px;
+    background: rgba(17, 24, 39, 0.55);
+    border: 1px solid rgba(56, 189, 248, 0.22);
+    border-radius: 14px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 0 18px rgba(56, 189, 248, 0.18);
+}
+
+.control-panel button {
+    background: rgba(56,189,248,0.15);
+    border: 1px solid #38bdf8;
+    color: #e5e7eb;
+    padding: 9px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+    margin: 5px;
+}
+
+.control-panel button:hover {
+    background: rgba(56,189,248,0.35);
+    transform: translateY(-2px);
+}
+
+/* AI thinking text */
+#aiThinking {
+    opacity: 0;
+    transition: opacity 0.25s;
+    font-size: 14px;
+    color: #ccc;
+    margin-bottom: 10px;
+}
+
+/* ---------- BOARD ---------- */
+.board-frame {
+    width: 420px;
+    margin: 0 auto;
+    padding: 22px;
+    background: url('images/charred-wood.webp');
+    background-size: cover;
+    background-position: center;
+    border-radius: 22px;
+    box-shadow: 0 0 32px rgba(0,0,0,0.6), 0 0 24px rgba(56,189,248,0.25) inset;
+}
+
+#board {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.tile {
+    height: 120px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 18px;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(56,189,248,0.25);
+    box-shadow:
+        0 0 18px rgba(56,189,248,0.25),
+        inset 0 0 14px rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 56px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.22s ease;
+}
+
+.tile:hover {
+    transform: scale(1.06);
+    box-shadow:
+        0 0 28px rgba(56,189,248,0.55),
+        inset 0 0 16px rgba(255,255,255,0.08);
+}
+
+/* AI highlight */
+.ai-flash {
+    background: rgba(255,255,180,0.18) !important;
+    box-shadow: 0 0 18px #ffe28a !important;
+}
+
+/* X and O neon */
+.x {
+    color: #38bdf8;
+    text-shadow: 0 0 16px #38bdf8, 0 0 28px #38bdf8;
+}
+
+.o {
+    color: #f472b6;
+    text-shadow: 0 0 16px #f472b6, 0 0 28px #f472b6;
+}
+
+/* Win line */
+.win-line {
+    position: absolute;
+    height: 8px;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    box-shadow: 0 0 18px #38bdf8;
+    border-radius: 6px;
+    animation: winline 0.4s ease-out forwards;
+}
+
+@keyframes winline {
+    from { opacity: 0; transform: scaleX(0); }
+    to { opacity: 1; transform: scaleX(1); }
+}
+
+/* Particles */
+.particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background: #38bdf8;
+    border-radius: 50%;
+    filter: blur(1px);
+    animation: fall 0.9s linear forwards;
+    opacity: 0.85;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(90px);
+        opacity: 0;
     }
+}
 
-    .layout {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 16px 8px;
-      gap: 12px;
+/* Mobile */
+@media (max-width: 480px) {
+    .board-frame {
+        width: 92vw;
     }
-
-    .ad-vertical {
-      width: 160px;
-      min-height: 600px;
-      border-radius: 12px;
-      border: 1px dashed #1f2937;
-      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      text-align: center;
-      color: #6b7280;
-      padding: 8px;
+    .tile {
+        height: 90px;
+        font-size: 42px;
     }
-
-    .main-column {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      flex: 0 0 auto;
-      width: 100%;
-      max-width: 960px;
-    }
-
-    .top-banner {
-      width: 100%;
-      max-width: 960px;
-      height: 90px;
-      border-radius: 12px;
-      border: 1px dashed #1f2937;
-      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      color: #6b7280;
-      text-align: center;
-      padding: 4px;
-    }
-
-    .game-header {
-      width: 100%;
-      max-width: 960px;
-      padding: 0.55rem 1.0rem;
-      border-radius: 12px;
-      border: 1px solid #111827;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(135deg, #020617 0, #111827 40%, #0b1120 100%);
-      font-size: 0.9rem;
-      gap: 0.8rem;
-      flex-wrap: wrap;
-    }
-    .game-header .title { font-weight: 800; letter-spacing: 0.03em; }
-    .game-header a {
-      color: #e5e7eb;
-      text-decoration: none;
-      font-size: 0.85rem;
-      padding: 0.35rem 0.75rem;
-      border-radius: 999px;
-      border: 1px solid #374151;
-      background: rgba(2,6,23,0.35);
-    }
-    .game-header a:hover { border-color: #6366f1; }
-
-    .panel {
-      width: 100%;
-      max-width: 960px;
-      border-radius: 12px;
-      border: 1px solid rgba(17,24,39,0.9);
-      background: rgba(2,6,23,0.55);
-      padding: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.25);
-      background: rgba(2,6,23,0.35);
-      color: #e5e7eb;
-      font-weight: 900;
-      font-size: 12px;
-      letter-spacing: 0.02em;
-    }
-
-    .btn {
-      appearance: none;
-      border: 1px solid rgba(148,163,184,0.35);
-      background: rgba(2,6,23,0.65);
-      color: #e5e7eb;
-      font-weight: 900;
-      letter-spacing: 0.02em;
-      border-radius: 12px;
-      padding: 10px 14px;
-      box-shadow: 0 12px 26px rgba(0,0,0,0.55);
-      opacity: 0.98;
-      cursor: pointer;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
-    }
-    .btn:active { transform: translateY(1px); opacity: 1; }
-    .btn.primary { border-color: rgba(56,189,248,0.6); }
-    .btn.danger  { border-color: rgba(248,113,113,0.55); }
-
-    .frame {
-      width: 100%;
-      max-width: 960px;
-      border-radius: 14px;
-      border: 1px solid #4b5563;
-      background: radial-gradient(circle at top, #020617 0, #020617 55%, #000 100%);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      padding: 18px 14px 16px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .subtext {
-      color: #9ca3af;
-      font-size: 13px;
-      margin: 4px 0 14px;
-      text-align: center;
-    }
-
-    #board {
-      display: inline-grid;
-      grid-template-columns: repeat(3, 86px);
-      gap: 8px;
-      margin: 6px auto 10px;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    .cell {
-      width: 86px;
-      height: 86px;
-      border-radius: 14px;
-      border: 1px solid rgba(148,163,184,0.25);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 34px;
-      cursor: pointer;
-      background: rgba(17,24,39,0.78);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.35);
-      transition: transform 120ms ease, border-color 120ms ease;
-    }
-    .cell:hover { transform: translateY(-1px); border-color: rgba(99,102,241,0.6); }
-    .cell:active { transform: translateY(0px); }
-
-    .cell.x { color: #38bdf8; border-color: rgba(56,189,248,0.45); }
-    .cell.o { color: #a855f7; border-color: rgba(168,85,247,0.35); }
-    .cell.win { outline: 2px solid rgba(34,197,94,0.8); }
-
-    #msg {
-      min-height: 26px;
-      margin-top: 6px;
-      font-weight: 800;
-      letter-spacing: 0.02em;
-      text-align: center;
-    }
-
-    /* fireworks canvas */
-    #fx {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-	/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
-
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-    @media (max-width: 900px) {
-      .layout { padding: 8px; gap: 0; }
-      .ad-vertical { display: none; }
-      .top-banner { height: 60px; font-size: 11px; }
-      .game-header { font-size: 0.85rem; padding: 0.5rem 0.7rem; }
-      .game-header a { font-size: 0.8rem; padding: 0.3rem 0.65rem; }
-      .frame { padding: 16px 10px 14px; }
-      #board { grid-template-columns: repeat(3, 78px); gap: 8px; }
-      .cell { width: 78px; height: 78px; font-size: 32px; }
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
 
-<div class="layout">
-  <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+<div class="main-wrap">
 
-  <!-- MAIN COLUMN -->
-  <main class="main-column">
-    <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
+    <h1>Tic Tac Toe — Neon Edition</h1>
+
+    <div id="aiThinking">🤖 AI is thinking...</div>
+
+    <div class="control-panel">
+        <button onclick="restartGame()">Restart</button>
+        <button onclick="resetScore()">Reset Score</button>
+        <p style="margin-top:6px;font-size:14px;opacity:0.8;">
+            Score: <span id="scoreX">0</span> – <span id="scoreO">0</span>
+        </p>
     </div>
 
-    <!-- GAME HEADER -->
-    <div class="game-header">
-      <div class="title">⭕ Tic Tac Toe vs AI</div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
+    <div class="board-frame">
+        <div id="board"></div>
     </div>
 
-    <!-- SCORE / CONTROLS -->
-    <div class="panel">
-      <div class="pill" id="scorePill">You: 0 · AI: 0 · Draws: 0</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
-        <button class="btn primary" id="btnRestart" type="button">Restart Round</button>
-        <button class="btn danger" id="btnResetScore" type="button">Reset Score</button>
-      </div>
-    </div>
-
-    <!-- GAME FRAME -->
-    <div class="frame" id="frame">
-      <canvas id="fx"></canvas>
-      <div class="subtext">You are <b style="color:#38bdf8">X</b>. AI is <b style="color:#a855f7">O</b>. Click a cell to play.</div>
-
-      <div id="board" aria-label="Tic Tac Toe board"></div>
-      <p id="msg"></p>
-    </div>
-	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Tic Tac Toe – Neon Edition</h1>
-
-<p>
-The classic 3×3 strategy game returns with glowing visuals.
-Compete against the AI or a local friend and aim for three in a row.
-</p>
-
-  </main>
-
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+    <h2 id="status" style="margin-top:22px;"></h2>
 </div>
 
 <script>
-(() => {
-  // --- Score persistence ---
-  const SCORE_KEY = "ttt_ai_score_v1";
-  const defaultScore = { you: 0, ai: 0, draw: 0 };
+/* GAME STATE */
+let board = ["","","","","","","","",""];
+let current = "X";
+let scoreX = 0, scoreO = 0;
+let gameOver = false;
 
-  function loadScore() {
-    try {
-      const raw = localStorage.getItem(SCORE_KEY);
-      if (!raw) return { ...defaultScore };
-      const s = JSON.parse(raw);
-      return {
-        you: Number(s.you) || 0,
-        ai: Number(s.ai) || 0,
-        draw: Number(s.draw) || 0
-      };
-    } catch {
-      return { ...defaultScore };
-    }
-  }
-  function saveScore() {
-    localStorage.setItem(SCORE_KEY, JSON.stringify(score));
-  }
+const boardEl = document.getElementById("board");
+const statusEl = document.getElementById("status");
+const aiThinking = document.getElementById("aiThinking");
 
-  // --- DOM ---
-  const boardDiv = document.getElementById("board");
-  const msg = document.getElementById("msg");
-  const scorePill = document.getElementById("scorePill");
-  const btnRestart = document.getElementById("btnRestart");
-  const btnResetScore = document.getElementById("btnResetScore");
-
-  // --- Fireworks canvas ---
-  const fx = document.getElementById("fx");
-  const frame = document.getElementById("frame");
-  const fxCtx = fx.getContext("2d");
-  const TAU = Math.PI * 2;
-  const sparks = [];
-
-  function resizeFx() {
-    const r = frame.getBoundingClientRect();
-    fx.width = Math.max(1, Math.floor(r.width));
-    fx.height = Math.max(1, Math.floor(r.height));
-  }
-  window.addEventListener("resize", resizeFx, { passive: true });
-  resizeFx();
-
-  function burst(x, y, count = 60) {
-    for (let i = 0; i < count; i++) {
-      const a = Math.random() * TAU;
-      const sp = 120 + Math.random() * 420;
-      sparks.push({
-        x, y,
-        vx: Math.cos(a) * sp,
-        vy: Math.sin(a) * sp,
-        life: 0.9 + Math.random() * 0.6,
-        r: 1.3 + Math.random() * 2.6
-      });
-    }
-  }
-
-  let fxLast = performance.now();
-  function fxLoop(t) {
-    const dt = Math.min(0.05, (t - fxLast) / 1000);
-    fxLast = t;
-
-    fxCtx.clearRect(0, 0, fx.width, fx.height);
-
-    for (let i = sparks.length - 1; i >= 0; i--) {
-      const p = sparks[i];
-      p.life -= dt;
-      if (p.life <= 0) { sparks.splice(i, 1); continue; }
-      p.vy += 520 * dt;
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
-      p.vx *= 0.985;
-      p.vy *= 0.985;
-
-      fxCtx.globalAlpha = Math.max(0, Math.min(1, p.life));
-      fxCtx.fillStyle = "rgba(34,197,94,1)";
-      fxCtx.beginPath();
-      fxCtx.arc(p.x, p.y, p.r, 0, TAU);
-      fxCtx.fill();
-    }
-    fxCtx.globalAlpha = 1;
-
-    requestAnimationFrame(fxLoop);
-  }
-  requestAnimationFrame(fxLoop);
-
-  function boardCenterPx() {
-    const br = boardDiv.getBoundingClientRect();
-    const fr = frame.getBoundingClientRect();
-    return {
-      x: (br.left - fr.left) + br.width / 2,
-      y: (br.top - fr.top) + br.height / 2
-    };
-  }
-
-  // --- Game ---
-  let board = Array(9).fill(null); // 'X','O'
-  let gameOver = false;
-  let winLine = null;
-
-  let score = loadScore();
-  updateScoreUI();
-
-  function updateScoreUI() {
-    scorePill.textContent = `You: ${score.you} · AI: ${score.ai} · Draws: ${score.draw}`;
-  }
-
-  function lines() {
-    return [
-      [0,1,2],[3,4,5],[6,7,8],
-      [0,3,6],[1,4,7],[2,5,8],
-      [0,4,8],[2,4,6]
-    ];
-  }
-
-  function winner(b) {
-    for (const [a,b1,c] of lines()) {
-      if (b[a] && b[a] === b[b1] && b[a] === b[c]) return { w: b[a], line: [a,b1,c] };
-    }
-    if (b.every(x => x)) return { w: "draw", line: null };
-    return null;
-  }
-
-  function render() {
-    boardDiv.innerHTML = "";
-    for (let i = 0; i < 9; i++) {
-      const v = board[i];
-      const d = document.createElement("div");
-      d.className = "cell" + (v ? (" " + v.toLowerCase()) : "");
-      if (winLine && winLine.includes(i)) d.classList.add("win");
-      d.textContent = v ? v : "";
-      d.addEventListener("click", () => playerMove(i));
-      boardDiv.appendChild(d);
-    }
-  }
-
-  function playerMove(i) {
-    if (gameOver || board[i]) return;
-    board[i] = "X";
-    checkState(true);
-    if (!gameOver) aiMove();
-  }
-
-  function aiMove() {
-    // try win, block, else center, else random
-    let move =
-      bestMoveFor("O") ??
-      bestMoveFor("X") ??
-      (board[4] ? null : 4) ??
-      randomMove();
-
-    if (move != null) {
-      board[move] = "O";
-      checkState(false);
-    }
-  }
-
-  function bestMoveFor(player) {
-    for (let i = 0; i < 9; i++) {
-      if (!board[i]) {
-        const copy = board.slice();
-        copy[i] = player;
-        const res = winner(copy);
-        if (res && res.w === player) return i;
-      }
-    }
-    return null;
-  }
-
-  function randomMove() {
-    const empties = [];
-    for (let i = 0; i < 9; i++) if (!board[i]) empties.push(i);
-    if (!empties.length) return null;
-    return empties[(Math.random() * empties.length) | 0];
-  }
-
-  function checkState(playerJustMoved) {
-    const res = winner(board);
-    render();
-    if (!res) return;
-
-    gameOver = true;
-    winLine = res.line;
-
-    if (res.w === "draw") {
-      score.draw++;
-      saveScore();
-      updateScoreUI();
-      msg.textContent = "It's a draw.";
-      return;
-    }
-
-    if (res.w === "X") {
-      score.you++;
-      saveScore();
-      updateScoreUI();
-      msg.textContent = "You win! 🎉";
-
-      // fireworks burst at board center (inside frame canvas coords)
-      const c = boardCenterPx();
-      burst(c.x, c.y, 90);
-      burst(c.x + 80, c.y - 30, 70);
-      burst(c.x - 80, c.y - 30, 70);
-    } else {
-      score.ai++;
-      saveScore();
-      updateScoreUI();
-      msg.textContent = "AI wins 🤖";
-    }
-
-    render();
-  }
-
-  function resetRound() {
-    board = Array(9).fill(null);
+function init() {
+    boardEl.innerHTML = "";
     gameOver = false;
-    winLine = null;
-    msg.textContent = "";
+    board.forEach((v,i)=>{
+        const t = document.createElement("div");
+        t.className="tile";
+        t.dataset.i=i;
+        t.onclick=tileClick;
+        boardEl.appendChild(t);
+    });
+}
+init();
+
+/* HUMAN MOVE */
+function tileClick() {
+    const i = this.dataset.i;
+    if (board[i] || gameOver) return;
+
+    board[i] = "X";
     render();
-  }
+    if (checkWin()) return;
 
-  function resetScore() {
-    score = { ...defaultScore };
-    saveScore();
-    updateScoreUI();
-  }
+    adaptiveAIMove();
+}
 
-  btnRestart.addEventListener("click", (e) => { e.preventDefault(); resetRound(); });
-  btnResetScore.addEventListener("click", (e) => { e.preventDefault(); resetScore(); });
+/* RENDER BOARD */
+function render() {
+    [...boardEl.children].forEach((t,i)=>{
+        t.innerHTML =
+            board[i]==="X" ? `<span class="x">X</span>` :
+            board[i]==="O" ? `<span class="o">O</span>` : "";
+    });
+}
 
-  // keyboard shortcuts
-  window.addEventListener("keydown", (e) => {
-    const k = e.key.toLowerCase();
-    if (k === "r") resetRound();
-    if (k === "c") resetScore();
-  });
+/* ADAPTIVE AI */
+function adaptiveAIMove() {
+    aiThinking.style.opacity = 1;
 
-  // init
-  resetRound();
-})();
+    setTimeout(()=>{
+        let move;
+
+        // If player is strong → switch to minimax
+        if (playerIsStrong()) {
+            move = aiMoveHard();
+        }
+        else {
+            // Medium intelligent
+            move = aiMoveMedium();
+        }
+
+        if (move == null) return;
+
+        board[move] = "O";
+
+        highlightAIMove(move);
+        render();
+        aiThinking.style.opacity = 0;
+
+        checkWin();
+
+    }, 500);
+}
+
+/* Detect if player is strong */
+function playerIsStrong() {
+    let filled = board.filter(v=>v!=="").length;
+    return filled >= 3; // adaptive trigger
+}
+
+/* MEDIUM AI */
+function aiMoveMedium() {
+    // Try winning move
+    for (let [a,b,c] of wins) {
+        if (board[a]==="O" && board[b]==="O" && board[c]==="") return c;
+        if (board[a]==="O" && board[b]==="" && board[c]==="O") return b;
+        if (board[a]==="" && board[b]==="O" && board[c]==="O") return a;
+    }
+    // Block player
+    for (let [a,b,c] of wins) {
+        if (board[a]==="X" && board[b]==="X" && board[c]=="") return c;
+        if (board[a]==="X" && board[b]=="" && board[c]==="X") return b;
+        if (board[a]=="" && board[b]==="X" && board[c]==="X") return a;
+    }
+
+    // Otherwise random
+    let empty = [];
+    board.forEach((v,i)=>{ if(!v) empty.push(i); });
+    return empty[Math.floor(Math.random()*empty.length)];
+}
+
+/* HARD AI (Minimax) */
+function aiMoveHard() {
+    let bestScore=-Infinity, bestMove=null;
+    for (let i=0;i<9;i++){
+        if (!board[i]) {
+            board[i]="O";
+            let score = minimax(board,0,false);
+            board[i]="";
+            if (score > bestScore) {
+                bestScore=score;
+                bestMove=i;
+            }
+        }
+    }
+    return bestMove;
+}
+
+function minimax(board, depth, isMaximizing) {
+    let winner = silentWinner();
+    if (winner==="O") return 10-depth;
+    if (winner==="X") return depth-10;
+    if (board.every(v=>v)) return 0;
+
+    if (isMaximizing) {
+        let best=-Infinity;
+        for (let i=0;i<9;i++){
+            if (!board[i]) {
+                board[i]="O";
+                best=Math.max(best, minimax(board,depth+1,false));
+                board[i]="";
+            }
+        }
+        return best;
+    } else {
+        let best=Infinity;
+        for (let i=0;i<9;i++){
+            if (!board[i]) {
+                board[i]="X";
+                best=Math.min(best, minimax(board,depth+1,true));
+                board[i]="";
+            }
+        }
+        return best;
+    }
+}
+
+/* AI move highlight */
+function highlightAIMove(i) {
+    const tile = boardEl.children[i];
+    tile.classList.add("ai-flash");
+    setTimeout(()=>tile.classList.remove("ai-flash"),350);
+}
+
+/* CHECK WIN */
+const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+];
+
+function checkWin() {
+    for (const w of wins) {
+        const [a,b,c] = w;
+        if (board[a] && board[a]===board[b] && board[a]===board[c]) {
+            drawWinLine(w);
+
+            gameOver=true;
+            statusEl.innerHTML = `${board[a]} Wins!`;
+
+            if (board[a]==="X") scoreX++; else scoreO++;
+            document.getElementById("scoreX").innerHTML=scoreX;
+            document.getElementById("scoreO").innerHTML=scoreO;
+
+            return true;
+        }
+    }
+    return false;
+}
+
+/* Silent winner (used for minimax) */
+function silentWinner() {
+    for (const [a,b,c] of wins) {
+        if (board[a] && board[a]===board[b] && board[a]===board[c])
+            return board[a];
+    }
+    return null;
+}
+
+/* WIN LINE */
+function drawWinLine(w) {
+    const tiles=[...boardEl.children];
+    const first=tiles[w[0]].getBoundingClientRect();
+    const last=tiles[w[2]].getBoundingClientRect();
+
+    const line=document.createElement("div");
+    line.className="win-line";
+
+    line.style.top=(first.top+last.top)/2+"px";
+    line.style.left=(first.left+last.left)/2+"px";
+    line.style.width=Math.hypot(last.left-first.left,last.top-first.top)+"px";
+    line.style.transform=
+      `translate(-50%, -50%) rotate(${Math.atan2(last.top-first.top,last.left-first.left)}rad)`;
+
+    document.body.appendChild(line);
+}
+
+/* PARTICLES */
+function spawnParticles() {
+    for (let i=0;i<14;i++){
+        const p=document.createElement("div");
+        p.className="particle";
+        p.style.left=(window.innerWidth/2 + (Math.random()*120-60))+"px";
+        p.style.top=(window.innerHeight/2 + (Math.random()*120-60))+"px";
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(),900);
+    }
+}
+
+/* Restart */
+function restartGame() {
+    board=["","","","","","","","",""];
+    current="X";
+    statusEl.innerHTML="";
+    gameOver=false;
+    document.querySelectorAll(".win-line").forEach(l=>l.remove());
+    init();
+}
+
+/* Reset score */
+function resetScore() {
+    scoreX=0;
+    scoreO=0;
+    document.getElementById("scoreX").innerHTML=0;
+    document.getElementById("scoreO").innerHTML=0;
+}
 </script>
-
-<script src="footer.js"></script>
+<div style="text-align:center; margin:15px 0;">
+  <a id="backToHub" href="index.html"
+     style="
+       color:#38bdf8;
+       font-size:14px;
+       text-decoration:none;
+       font-weight:700;
+       padding:4px 10px;
+       border:1px solid #38bdf8;
+       border-radius:8px;
+       box-shadow:0 0 10px rgba(56,189,248,0.45);
+       display:inline-block;
+     ">
+    ⬅ Back to Hub 
+  </a>
+</div>
+<script src="/js/ads.js"></script>
 </body>
 </html>

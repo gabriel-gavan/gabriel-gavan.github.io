@@ -1,0 +1,476 @@
+{
+  "topPicks": [
+    {
+      "id": "neon-sudoku",
+      "title": "Neon Sudoku Deluxe",
+      "url": "neon-sudoku.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Clean neon-style Sudoku with difficulty levels, mobile numpad, auto-check and smooth design.",
+      "tags": [
+        "logic",
+        "puzzle",
+        "classic"
+      ],
+      "category": "top"
+    },
+	    {
+      "id": "HexGL",
+      "title": "HexGL Space Race",
+      "url": "games/HexGL-master/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Spaceship race through skycrapers. Really engaging!!!",
+      "tags": [
+	  "arcade",
+	  "featured",
+        "logic",
+        "skill",
+        "classic"
+      ],
+      "category": "top"
+    },
+	
+	    {
+      "id": "nodulus",
+      "title": "Neon Nodulus",
+      "url": "games/Neon Nodulus/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "puzzle game with a clever twist. Based on the mathematical theory behind plank puzzles, consists of a grid of cubes and rods which can be rotated with a swipe. Turn the activated cubes to reach the end cube and win the level.",
+      "tags": [
+	  "arcade",
+	  "featured",
+        "logic",
+        "skill",
+        "classic"
+      ],
+      "category": "top"
+    },
+	 {
+      "id": "neonminecraft",
+      "title": "Neon Minecraft",
+      "url": "games/Neon Minecraft/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Minecraft with Unity new Design",
+      "tags": [
+	  "arcade",
+	  "featured",
+        "logic",
+        "skill",
+        "classic"
+      ],
+      "category": "top"
+    },
+	{
+      "id": "restaurant",
+      "title": "Pets Restaurant",
+      "url": "games/Restaurant3DGame/index.html",
+      "thumb": "images/restaurant.webp",
+      "desc": "Prepare food. Really nice game in the kitchen!!!",
+      "tags": [
+	  
+	  "featured",
+        "logic",
+        "skill"
+        
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neon-dungeon-auto-shooter",
+      "title": "Neon Dungeon Auto Shooter",
+      "url": "neon-dungeon-auto-shooter-core1.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Auto-shooter roguelike dungeon crawler with rooms, doors, minimap, loot drops, meta upgrades and characters.",
+      "tags": [
+        "arcade",
+        "shooter",
+        "roguelike",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neon-beat-tap",
+      "title": "Neon Beat Tap",
+      "url": "neon-beat-tap.html",
+      "thumb": "images/neon-beat-tap.webp",
+      "desc": "Tap lanes in time with the beat. Combos, accuracy and difficulty levels.",
+      "tags": [
+        "arcade",
+        "typing",
+        "skill",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neon-auto-battler",
+      "title": "Neon Auto Battler",
+      "url": "neon-auto-battler.html",
+      "thumb": "images/neon-auto-battler.webp",
+      "desc": "Drag units to the grid and watch them fight automatically each round. Combine 3 to upgrade.",
+      "tags": [
+        "strategy",
+        "ai",
+        "featured",
+        "new"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neon-runner-rush",
+      "title": "Neon Runner Rush",
+      "url": "neon-runner-rush.html",
+      "thumb": "images/neon-runner-rush.webp",
+      "desc": "Endless neon runner: jump, boost, collect coins, unlock skins.",
+      "tags": [
+        "arcade",
+        "classic",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "survivor-arena",
+      "title": "Survivor Arena",
+      "url": "survivor-arena.html",
+      "thumb": "images/survivor-arena.webp",
+      "desc": "Survive waves in a shrinking safe zone. Upgrade between waves and unlock skins.",
+      "tags": [
+        "arcade",
+        "shooter",
+        "strategy",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neon-arena",
+      "title": "Neon Arena",
+      "url": "neon-arena.html",
+      "thumb": "images/neon-arena.webp",
+      "desc": "Dash, shoot and survive waves of enemies in a neon arena.",
+      "tags": [
+        "arcade",
+        "shooter",
+        "campaign",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "neo-runner",
+      "title": "Neo Runner",
+      "url": "neo-runner.html",
+      "thumb": "images/neo-runner.webp",
+      "desc": "Run over obstacles and avoid enemies.",
+      "tags": [
+        "arcade",
+        "strategy",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "starfall-squadron",
+      "title": "Starfall Squadron",
+      "url": "starfall-squadron.html",
+      "thumb": "images/starfall-squadron.webp",
+      "desc": "Vertical shmup: dodge bullets, grab powerups, defeat bosses.",
+      "tags": [
+        "arcade",
+        "shooter",
+        "featured"
+      ],
+      "category": "top"
+    },
+    {
+      "id": "stargrid-defense-top",
+      "title": "Stargrid Defense",
+      "url": "stargrid-defense.html",
+      "thumb": "images/stargrid-defense-top.webp",
+      "desc": "Build towers along the path and stop enemy waves.",
+      "tags": [
+        "strategy",
+        "tower defense",
+        "arcade",
+        "featured"
+      ],
+      "category": "top"
+    }
+  ],
+  "classic": [
+  {
+    "id": "rps",
+    "title": "Rock Paper Scissors",
+    "url": "rps.html",
+    "thumb": "images/rps.webp",
+    "desc": "Pick your move and try to outsmart the computer in this timeless mini duel.",
+    "tags": ["classic"],
+    "category": "classic"
+  },
+	  {
+	  "id": "pacman",
+	  "title": "Pac-Man",
+	  "url": "games/games-gh-pages/pacman/pacman.html",
+	  "thumb": "images/pacman.webp",
+	  "desc": "Classic Pac-Man arcade game — chase the ghosts and eat the pellets!",
+	  "tags": ["arcade", "classic"],
+	  "category": "classic"
+	},
+	{
+	  "id": "bounce",
+	  "title": "Wall Bounce",
+	  "url": "games/games-gh-pages/bounce/bounce.html",
+	  "thumb": "images/bounce.webp",
+	  "desc": "Classic brick-breaker style game. Move the paddle, keep the ball alive, break bricks and chase high scores.",
+	  "tags": ["arcade", "classic", "skill"],
+	  "category": "classic"
+	},
+	{
+  "id": "defender",
+  "title": "Tower Defender",
+  "url": "games/games-gh-pages/defender/index.html",
+  "thumb": "images/defender.webp",
+  "desc": "Side-scrolling retro shooter — protect your base and survive waves of enemies.",
+  "tags": ["arcade", "classic", "shooter"],
+  "category": "classic"
+},
+{
+  "id": "puzzle",
+  "title": "Neon Puzzle",
+  "url": "games/games-gh-pages/puzzle/index.html",
+  "thumb": "images/puzzle.webp",
+  "desc": "A clean and simple logic puzzle game with relaxing gameplay.",
+  "tags": ["logic", "puzzle", "classic"],
+  "category": "classic"
+},
+{
+  "id": "snake-classic",
+  "title": "Snake (Classic)",
+  "url": "games/games-gh-pages/snake/index.html",
+  "thumb": "images/snake-classic.webp",
+  "desc": "Retro Snake — eat food, grow longer and avoid crashing.",
+  "tags": ["arcade", "classic"],
+  "category": "classic"
+},
+{
+  "id": "spider",
+  "title": "Spider Solitaire",
+  "url": "games/games-gh-pages/spider/index.html",
+  "thumb": "images/spider.webp",
+  "desc": "Classic spider-style arcade challenge with traps and tight movement.",
+  "tags": ["arcade", "classic", "skill"],
+  "category": "classic"
+},
+{
+  "id": "tetris",
+  "title": "Tetris",
+  "url": "games/games-gh-pages/tetris/index.html",
+  "thumb": "images/tetris.webp",
+  "desc": "The iconic falling-blocks puzzle game. Rotate, clear lines and chase the high score.",
+  "tags": ["puzzle", "arcade", "classic"],
+  "category": "classic"
+},
+
+  {
+    "id": "snake",
+    "title": "Snake",
+    "url": "snake.html",
+    "thumb": "images/snake.webp",
+    "desc": "Eat the food, grow longer and don’t crash into walls or your own tail.",
+    "tags": ["arcade", "classic"],
+    "category": "classic"
+  },
+  {
+    "id": "tictactoe-ai",
+    "title": "Tic Tac Toe vs AI",
+    "url": "tictactoe-ai.html",
+    "thumb": "images/tictactoe-ai.webp",
+    "desc": "Play against an AI in this simple but tricky 3×3 grid battle.",
+    "tags": ["classic", "AI"],
+    "category": "classic"
+  },
+  {
+    "id": "whack-a-mole",
+    "title": "Whack-a-Mole",
+    "url": "whack-a-mole.html",
+    "thumb": "images/whack-a-mole.webp",
+    "desc": "Test your reflexes by hitting moles before they vanish from their holes.",
+    "tags": ["arcade", "reflex"],
+    "category": "classic"
+  }
+]
+,
+  "skill": [
+    {
+      "id": "guess-number",
+      "title": "Guess The Number",
+      "url": "guess-number.html",
+      "thumb": "images/guess-number.webp",
+      "desc": "Pick a number range and try to guess it in as few tries as possible.",
+      "tags": [
+        "logic",
+        "numbers"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "reaction-test",
+      "title": "Reaction Test",
+      "url": "reaction-test.html",
+      "thumb": "images/reaction-test.webp",
+      "desc": "Wait for the screen to flash, then click as fast as you can.",
+      "tags": [
+        "speed",
+        "reflex"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "memory-grid",
+      "title": "Memory Grid",
+      "url": "memory-grid.html",
+      "thumb": "images/memory-grid.webp",
+      "desc": "Memorize the highlighted tiles and repeat the pattern.",
+      "tags": [
+        "memory",
+        "logic"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "typing-speed",
+      "title": "Typing Speed Test",
+      "url": "typing-speed.html",
+      "thumb": "images/typing-speed.webp",
+      "desc": "Type the shown text as fast and accurately as you can.",
+      "tags": [
+        "typing",
+        "skill"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "higher-lower",
+      "title": "Higher / Lower",
+      "url": "higher-lower.html",
+      "thumb": "images/higher-lower.webp",
+      "desc": "Guess if the next number will be higher or lower.",
+      "tags": [
+        "guessing",
+        "logic"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "minesweeper",
+      "title": "Minesweeper",
+      "url": "minesweeper.html",
+      "thumb": "images/minesweeper.webp",
+      "desc": "Clear the field without detonating any hidden mines.",
+      "tags": [
+        "logic",
+        "puzzle"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "simon",
+      "title": "Simon Says (Colors)",
+      "url": "simon.html",
+      "thumb": "images/simon.webp",
+      "desc": "Watch the color sequence and repeat it flawlessly.",
+      "tags": [
+        "memory"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "quiz",
+      "title": "Mini Quiz",
+      "url": "quiz.html",
+      "thumb": "images/quiz.webp",
+      "desc": "Answer quick questions across random topics.",
+      "tags": [
+        "trivia",
+        "logic"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "timer-bomb",
+      "title": "Timer Bomb",
+      "url": "timer-bomb.html",
+      "thumb": "images/timer-bomb.webp",
+      "desc": "Defuse the bomb before the countdown hits zero.",
+      "tags": [
+        "pressure",
+        "logic"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "pattern-lock",
+      "title": "Pattern Lock",
+      "url": "pattern-lock.html",
+      "thumb": "images/pattern-lock.webp",
+      "desc": "Recreate the shown lock pattern without mistakes.",
+      "tags": [
+        "pattern",
+        "logic"
+      ],
+      "category": "skill"
+    },
+    {
+      "id": "sliding-puzzle",
+      "title": "Sliding Puzzle (3\u00d73)",
+      "url": "sliding-puzzle.html",
+      "thumb": "images/sliding-puzzle.webp",
+      "desc": "Rearrange the tiles until the image is complete.",
+      "tags": [
+        "puzzle",
+        "logic"
+      ],
+      "category": "skill"
+    }
+  ],
+  "strategy": [
+  {
+    "id": "stargrid-defense-top",
+    "title": "Stargrid Defense",
+    "url": "stargrid-defense.html",
+    "thumb": "images/stargrid-defense.webp",
+    "desc": "Place and upgrade towers strategically to stop endless waves of enemies.",
+    "tags": ["tower defense", "strategy"],
+    "category": "strategy"
+  },
+  {
+    "id": "neon-arena",
+    "title": "Neon Arena",
+    "url": "neon-arena.html",
+    "thumb": "images/neon-arena.webp",
+    "desc": "A fast-paced arena where positioning, timing and upgrades matter for survival.",
+    "tags": ["arcade", "shooter"],
+    "category": "strategy"
+  },
+  {
+    "id": "neo-runner",
+    "title": "Neo Runner",
+    "url": "neo-runner.html",
+    "thumb": "images/neo-runner.webp",
+    "desc": "Plan your jumps and movement to chain safe paths through enemy-infested levels.",
+    "tags": ["arcade", "strategy"],
+    "category": "strategy"
+  },
+  {
+    "id": "starfall-squadron",
+    "title": "Starfall Squadron",
+    "url": "starfall-squadron.html",
+    "thumb": "images/starfall-squadron.webp",
+    "desc": "Pick the right powerups and flight path to survive bullet patterns and boss fights.",
+    "tags": ["arcade", "shooter"],
+    "category": "strategy"
+  }
+]
+
+}
