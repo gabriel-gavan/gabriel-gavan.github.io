@@ -1044,9 +1044,8 @@ header.hero {
 }
 header::before{content:"";position:absolute;inset:0;background:none;} 
 .hero-card-section{
-  overflow: auto;
-      padding: 0.4rem 1.5rem 1rem;
-    
+  overflow: hidden;   /* prevent scroll recalculation */
+  padding: 0.4rem 1.5rem 1rem;
 }
 .hero-card{
  width:100%;
@@ -2546,9 +2545,8 @@ header.hero {
 }
 header::before{content:"";position:absolute;inset:0;background:none;} 
 .hero-card-section{
-  overflow: auto;
-      padding: 0.4rem 1.5rem 1rem;
-    
+  overflow: hidden;   /* prevent scroll recalculation */
+  padding: 0.4rem 1.5rem 1rem;
 }
 .hero-card{
  width:100%;
@@ -3019,3 +3017,153 @@ body {  background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
 }
 
 
+
+
+
+/* ======================================================
+   CLS STABILIZATION PATCH (Non‑destructive overrides)
+   ====================================================== */
+
+/* 1️⃣ Reserve hero height before image loads */
+.hero-inner {
+  aspect-ratio: 16 / 7 !important;
+  position: relative;
+}
+
+.hero-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* 2️⃣ Prevent image layout shifts globally */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 3️⃣ Stabilize game thumbnails */
+.game-thumb,
+.ng-thumb {
+  aspect-ratio: 4 / 3 !important;
+  object-fit: cover !important;
+}
+
+/* 4️⃣ Ensure only one stable grid layout is used */
+.game-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)) !important;
+  gap: 20px !important;
+}
+
+/* 5️⃣ Prevent fixed background repaint shift on mobile */
+@media (max-width: 1024px) {
+  body {
+    background-attachment: scroll !important;
+  }
+}
+
+/* 6️⃣ Stabilize article cards */
+.fa-card {
+  min-height: 320px;
+}
+
+/* ======================================================
+   END CLS PATCH
+   ====================================================== */
+html, body {
+  height: 100%;
+}
+
+.page-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+footer {
+  flex-shrink: 0;
+}
+.game-card {
+  min-height: 260px;
+}
+.page-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+
+/* ======================================================
+   PRODUCTION CLS STABILIZATION FIX
+   ====================================================== */
+
+/* 1️⃣ Remove background repaint shifts */
+body {
+  background-attachment: scroll !important;
+}
+
+/* 2️⃣ Stabilize HERO image before load */
+.hero-img {
+  width: 100% !important;
+  aspect-ratio: 16 / 9 !important;  /* adjust if needed */
+  height: auto !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* 3️⃣ Force stable grid definition (single layout system) */
+.game-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)) !important;
+  gap: 20px !important;
+}
+
+/* 4️⃣ Prevent game cards from changing height */
+.game-card {
+  min-height: 260px !important;
+}
+
+/* 5️⃣ Prevent featured article cards from collapsing on mobile */
+.fa-card {
+  min-height: 320px !important;
+  height: 320px !important;
+}
+
+/* 6️⃣ Stabilize thumbnails globally */
+.game-thumb,
+.ng-thumb,
+.fa-thumb {
+  aspect-ratio: 4 / 3 !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+/* 7️⃣ Prevent footer jump by locking layout structure */
+.page-wrap {
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.main-content {
+  flex: 1 0 auto !important;
+}
+
+footer {
+  flex-shrink: 0 !important;
+}
+
+/* ======================================================
+   END PRODUCTION FIX
+   ====================================================== */
