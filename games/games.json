@@ -28,6 +28,21 @@
       ],
       "category": "top"
     },
+	 {
+      "id": "wednesday",
+      "title": "Wednesday",
+      "url": "games/RPG - Wednesday/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Wednesday!!!",
+      "tags": [
+	  "RPG",
+	  "featured",
+        "logic",
+        "skill",
+        "classic"
+      ],
+      "category": "top"
+    },
 	
 	    {
       "id": "nodulus",

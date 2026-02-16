@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Loading...</title>
+    <!-- Google Fonts - Fantasy theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #16213e;
+      }
+	  body {
+  background:
+    linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
+    url("/images/hub-bg.jpg") center center / cover no-repeat fixed !important;
+}
+      #renderDiv {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        overflow: hidden;
+      }
+      #renderDiv canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div id="renderDiv"></div>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "phaser": "https://esm.sh/phaser@3.70.0",
+          "tone": "https://esm.sh/tone@15.0.4"
+        }
+      }
+    </script>
+
+    <script type="module" src="main.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles_local/ChatManager.js"></script>
+  </body>
+</html>
