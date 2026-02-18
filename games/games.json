@@ -1,5 +1,20 @@
 {
   "topPicks": [
+  
+	 {
+      "id": "game_hero_background",
+      "title": "Chamber Breach",
+      "url": "games/Chamber Breach/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Shooter FPS!!!",
+      "tags": [
+	  "FPS",
+	  "featured",
+        "logic",
+        "skill"
+      ],
+      "category": "top"
+    },
     {
       "id": "neon-sudoku",
       "title": "Neon Sudoku Deluxe",
