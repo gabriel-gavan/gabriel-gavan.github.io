@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mobile Optimization Techniques for HTML5 Games</title>
+
+    <title data-i18n="art6_title">Mobile Optimization Techniques for HTML5 Games</title>
 
     <style>
         body {
@@ -36,36 +37,39 @@
 
 <body>
 
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
-        <a href="index.html">Home</a> <span>›</span>
-        <a href="articles.html">Articles</a> <span>›</span>
-        Mobile Optimization
+        <a href="index.html" data-i18n="breadcrumb_home">Home</a> <span>›</span>
+        <a href="articles.html" data-i18n="breadcrumb_articles">Articles</a> <span>›</span>
+        <span data-i18n="art6_breadcrumb">Mobile Optimization</span>
     </div>
 
-    <a id="backToHub" href="index.html" style="
+    <!-- BACK BUTTON -->
+    <a id="backToHub" href="index.html"
+       data-i18n="back_to_hub"
+       style="
       color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;
       padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
       box-shadow:0 0 10px rgba(56,189,248,0.45);display:inline-block;margin-top:14px;">
       ⬅ Back to Hub
     </a>
 
-    <h1>Mobile Optimization Techniques for HTML5 Games</h1>
+    <!-- TITLE -->
+    <h1 data-i18n="art6_title_h1">Mobile Optimization Techniques for HTML5 Games</h1>
 
-    <p>
-        Mobile browsers run HTML5 games under tighter CPU, GPU, memory, and thermal limits.  
-        That makes **mobile optimization one of the most important aspects** of modern browser-game development.
+    <p data-i18n="art6_intro_1">
+        Mobile browsers run HTML5 games under tighter CPU, GPU, memory, and thermal limits.
     </p>
 
-    <p>
-        In this guide, we break down the key optimization techniques used by high-performance
-        mobile games — including those found on <strong>Neon Mini Game Hub</strong>.
+    <p data-i18n="art6_intro_2">
+        This guide breaks down the essential techniques used by high-performance mobile games.
     </p>
 
-    <h2>1. Canvas Resolution vs. Device Pixel Ratio</h2>
+    <!-- SECTION 1 -->
+    <h2 data-i18n="art6_h2_1">1. Canvas Resolution vs. Device Pixel Ratio</h2>
 
-    <p>
-        High-DPI screens (Retina, AMOLED, etc.) can waste performance if developers render at full native resolution.  
-        The fix: scale canvas resolution relative to <strong>devicePixelRatio</strong>.
+    <p data-i18n="art6_p1">
+        High-DPI screens can waste performance if rendering at native resolution.
     </p>
 
 <pre style="background:#0f172a;padding:14px;border-radius:8px;border:1px solid #334155;">
@@ -75,77 +79,76 @@ canvas.height = innerHeight * scale;
 ctx.scale(scale, scale);
 </pre>
 
-    <p>Benefits:</p>
-    <ul>
-        <li>📉 Lower GPU load</li>
-        <li>⚡ Higher FPS</li>
-        <li>🌡 Reduced battery & thermal stress</li>
-    </ul>
-
-    <h2>2. Minimizing Overdraw & Layers</h2>
-
-    <p>
-        Overdraw occurs when the same pixel is rendered multiple times per frame.
-        Neon games avoid overdraw by:
-    </p>
+    <p data-i18n="art6_p2">Benefits:</p>
 
     <ul>
-        <li>🧩 Reducing full-screen effects</li>
-        <li>🪟 Using layered canvases for UI</li>
-        <li>🎯 Optimizing glow effects with shadows instead of multiplies</li>
+        <li data-i18n="art6_li1_1">Lower GPU load</li>
+        <li data-i18n="art6_li1_2">Higher FPS</li>
+        <li data-i18n="art6_li1_3">Reduced battery and thermal stress</li>
     </ul>
 
-    <h2>3. Touch Input Optimization</h2>
+    <!-- SECTION 2 -->
+    <h2 data-i18n="art6_h2_2">2. Minimizing Overdraw & Layers</h2>
 
-    <p>Mobile controls require low latency and immediate response:</p>
+    <p data-i18n="art6_p3">Overdraw happens when the same pixel is rendered multiple times.</p>
 
     <ul>
-        <li>📍 Passive event listeners to avoid scroll blocking</li>
-        <li>🎮 Virtual joystick with transformed coordinates</li>
-        <li>⚡ Using pointer events instead of touch/mouse separately</li>
+        <li data-i18n="art6_li2_1">Reduce full-screen effects</li>
+        <li data-i18n="art6_li2_2">Use layered canvases for UI</li>
+        <li data-i18n="art6_li2_3">Optimize glow effects</li>
     </ul>
 
-<pre style="background:#0f172a;padding:14px;border-radius:8px;border:1px solid #334155;">
-window.addEventListener("pointerdown", e => handlePress(e), { passive: true });
-</pre>
+    <!-- SECTION 3 -->
+    <h2 data-i18n="art6_h2_3">3. Touch Input Optimization</h2>
 
-    <h2>4. Asset Loading & Compression</h2>
-
-    <p>
-        Slow loading kills retention. Use:
-    </p>
+    <p data-i18n="art6_p4">Mobile controls must be low-latency and responsive.</p>
 
     <ul>
-        <li>🖼 WebP or AVIF textures</li>
-        <li>🎵 OGG or AAC audio</li>
-        <li>📦 Spritesheets instead of individual images</li>
-        <li>📉 Lazy-loading for off-screen assets</li>
+        <li data-i18n="art6_li3_1">Passive event listeners</li>
+        <li data-i18n="art6_li3_2">Virtual joysticks</li>
+        <li data-i18n="art6_li3_3">Pointer events instead of touch/mouse</li>
     </ul>
 
-    <h2>5. Adaptive Quality Scaling</h2>
+    <!-- SECTION 4 -->
+    <h2 data-i18n="art6_h2_4">4. Asset Loading & Compression</h2>
 
-    <p>Mobile games should adjust quality based on performance:</p>
+    <p data-i18n="art6_p5">Slow loading kills retention. Use optimized formats.</p>
 
     <ul>
-        <li>🔽 Reduce particle count</li>
-        <li>🔽 Lower canvas resolution</li>
-        <li>🔽 Disable heavy glow/bloom on low-end devices</li>
+        <li data-i18n="art6_li4_1">WebP/AVIF images</li>
+        <li data-i18n="art6_li4_2">OGG/AAC audio</li>
+        <li data-i18n="art6_li4_3">Spritesheets</li>
+        <li data-i18n="art6_li4_4">Lazy-loading assets</li>
     </ul>
 
-    <h2>Conclusion</h2>
+    <!-- SECTION 5 -->
+    <h2 data-i18n="art6_h2_5">5. Adaptive Quality Scaling</h2>
 
-    <p>
-        Great mobile HTML5 performance is a blend of smart rendering, input responsiveness,
-        optimized assets, and adaptive scaling.  
-        Follow these techniques and your neon games will feel smooth even on mid-range devices.
+    <p data-i18n="art6_p6">Games should adjust their quality based on performance.</p>
+
+    <ul>
+        <li data-i18n="art6_li5_1">Reduce particle count</li>
+        <li data-i18n="art6_li5_2">Lower canvas resolution</li>
+        <li data-i18n="art6_li5_3">Disable heavy bloom effects</li>
+    </ul>
+
+    <!-- CONCLUSION -->
+    <h2 data-i18n="art6_h2_conclusion">Conclusion</h2>
+
+    <p data-i18n="art6_conclusion">
+        Great mobile performance requires smart rendering, optimized assets, and adaptive scaling.
     </p>
 
     <!-- COMMENTS -->
     <div class="comments-section" style="margin-top:40px;">
-      <h3>💬 Comments</h3>
-      <textarea id="commentInput" placeholder="Write a comment..." 
+      <h3 data-i18n="comments_title">💬 Comments</h3>
+
+      <textarea id="commentInput" data-i18n-placeholder="comments_placeholder"
+        placeholder="Write a comment..."
         style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-      <button id="postCommentBtn">Post Comment</button>
+
+      <button id="postCommentBtn" data-i18n="comments_post_btn">Post Comment</button>
+
       <div id="commentsList" style="margin-top:20px;"></div>
     </div>
 
@@ -179,6 +182,8 @@ document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
 });
 loadComments();
 </script>
+
+<script src="js/translation.js?v=5"></script>
 
 </body>
 </html>

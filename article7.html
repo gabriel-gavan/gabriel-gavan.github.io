@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Why Neon Aesthetic Works in Web Design & Gaming</title>
+    <title data-i18n="art7_title">Why Neon Aesthetic Works in Web Design & Gaming</title>
 
     <style>
         body {
@@ -35,13 +35,17 @@
 </head>
 
 <body>
+
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
-        <a href="index.html">Home</a> <span>›</span>
-        <a href="articles.html">Articles</a> <span>›</span>
-        Why Neon Aesthetic Works
+        <a href="index.html" data-i18n="breadcrumb_home">Home</a> <span>›</span>
+        <a href="articles.html" data-i18n="breadcrumb_articles">Articles</a> <span>›</span>
+        <span data-i18n="art7_breadcrumb">Why Neon Aesthetic Works</span>
     </div>
 
+    <!-- BACK BUTTON -->
     <a id="backToHub" href="index.html"
+       data-i18n="back_to_hub"
        style="color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;
               padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
               box-shadow:0 0 10px rgba(56,189,248,0.45);
@@ -49,71 +53,71 @@
       ⬅ Back to Hub
     </a>
 
-    <h1>Why Neon Aesthetic Works in Web Design & Gaming</h1>
+    <!-- TITLE -->
+    <h1 data-i18n="art7_title_h1">Why Neon Aesthetic Works in Web Design & Gaming</h1>
 
-    <p>
+    <p data-i18n="art7_intro_1">
         Neon aesthetics are one of the most recognizable trends in modern digital design.
-        They combine bold contrast, vibrant color psychology, and futuristic visual cues
-        that trigger instant emotional engagement.
+        They combine bold contrast, vibrant color psychology, and futuristic visual cues.
     </p>
 
-    <h2>1. Neon Colors Trigger Immediate Attention</h2>
+    <h2 data-i18n="art7_h2_1">1. Neon Colors Trigger Immediate Attention</h2>
 
-    <p>
-        Neon hues sit close to the visual extremes of human perception.  
-        Their high saturation and strong contrast create a “glow-like illusion,” which:
-    </p>
-
-    <ul>
-        <li>🎯 Directs attention quickly</li>
-        <li>⚡ Enables faster UI navigation</li>
-        <li>💥 Makes buttons feel interactive & alive</li>
-    </ul>
-
-    <h2>2. Dark UI + Neon = Maximum Readability</h2>
-
-    <p>
-        The combination of neon on dark backgrounds increases visual clarity:
+    <p data-i18n="art7_p1">
+        Neon hues sit close to the visual extremes of human perception.
     </p>
 
     <ul>
-        <li>🌓 Higher contrast ratios</li>
-        <li>💡 Glowing outlines define shapes better</li>
-        <li>🎮 Perfect for fast-paced gameplay readability</li>
+        <li data-i18n="art7_li1_1">Direct attention quickly</li>
+        <li data-i18n="art7_li1_2">Enable faster UI navigation</li>
+        <li data-i18n="art7_li1_3">Make buttons feel alive</li>
     </ul>
 
-    <h2>3. Why Players Love Neon</h2>
+    <h2 data-i18n="art7_h2_2">2. Dark UI + Neon = Maximum Readability</h2>
 
-    <p>
-        Game designers use neon because it amplifies emotion:
-    </p>
+    <p data-i18n="art7_p2">The combination of neon on dark UI maximizes clarity.</p>
 
     <ul>
-        <li>🔵 Blue & cyan → calm, techy, futuristic</li>
-        <li>🟣 Purple → mystery & depth</li>
-        <li>🔴 Pink neon → energy & fun</li>
+        <li data-i18n="art7_li2_1">Higher contrast ratios</li>
+        <li data-i18n="art7_li2_2">Glow outlines define shapes better</li>
+        <li data-i18n="art7_li2_3">Perfect for fast-paced gameplay</li>
     </ul>
 
-    <h2>4. Neon = The Identity of Modern Web Gaming</h2>
+    <h2 data-i18n="art7_h2_3">3. Why Players Love Neon</h2>
 
-    <p>
-        Platforms like <strong>Neon Mini Game Hub</strong> leverage neon not as decoration,  
-        but as a central part of branding, UX clarity, and visual narrative.
+    <p data-i18n="art7_p3">Neon amplifies emotion and mood:</p>
+
+    <ul>
+        <li data-i18n="art7_li3_1">Blue & cyan → calm, techy</li>
+        <li data-i18n="art7_li3_2">Purple → mystery</li>
+        <li data-i18n="art7_li3_3">Pink → energy & fun</li>
+    </ul>
+
+    <h2 data-i18n="art7_h2_4">4. Neon = The Identity of Modern Web Gaming</h2>
+
+    <p data-i18n="art7_p4">
+        Platforms like Neon Mini Game Hub use neon for branding, clarity, and UX.
     </p>
 
-    <h2>Conclusion</h2>
+    <h2 data-i18n="art7_h2_conclusion">Conclusion</h2>
 
-    <p>
-        Neon works because it blends psychology, visual engineering, and modern digital trends.  
-        With WebGL, Canvas shadows, and GPU shaders, neon isn’t just pretty — it’s functional.
+    <p data-i18n="art7_conclusion">
+        Neon works because it blends psychology, visual engineering, and modern digital trends.
     </p>
 
     <!-- COMMENTS -->
     <div class="comments-section" style="margin-top:40px;">
-      <h3>💬 Comments</h3>
-      <textarea id="commentInput" placeholder="Write a comment..." 
-        style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-      <button id="postCommentBtn">Post Comment</button>
+      <h3 data-i18n="comments_title">💬 Comments</h3>
+
+      <textarea id="commentInput"
+                placeholder="Write a comment..."
+                data-i18n-placeholder="comments_placeholder"
+                style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+
+      <button id="postCommentBtn" data-i18n="comments_post_btn">
+        Post Comment
+      </button>
+
       <div id="commentsList" style="margin-top:20px;"></div>
     </div>
 
@@ -147,6 +151,8 @@ document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
 });
 loadComments();
 </script>
+
+<script src="js/translation.js?v=5"></script>
 
 </body>
 </html>

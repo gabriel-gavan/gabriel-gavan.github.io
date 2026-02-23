@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>How Game Engines Use Canvas Rendering Loops</title>
+
+    <title data-i18n="art5_title">How Game Engines Use Canvas Rendering Loops</title>
 
     <style>
         body {
@@ -17,62 +18,37 @@
             line-height: 1.7;
         }
 
-        h1, h2, h3 {
-            color: #38bdf8;
-            font-weight: 700;
-        }
+        h1, h2 { color:#38bdf8; font-weight:700; }
+        a { color:#38bdf8; }
 
-        a {
-            color: #38bdf8;
-        }
+        .breadcrumb { margin-bottom:20px; font-size:14px; }
+        .breadcrumb a { color:#94a3b8; text-decoration:none; }
+        .breadcrumb span { color:#64748b; }
 
-        .breadcrumb {
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        .breadcrumb a {
-            text-decoration: none;
-            color: #94a3b8;
-        }
-
-        .breadcrumb span {
-            color: #64748b;
-        }
-
-        /* Comments styling */
         .comments-section textarea {
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
+            background:#0f172a; border:1px solid #334155;
+            color:white; padding:10px; border-radius:8px;
         }
-
         .comments-section button {
-            background: #1e40af;
-            border: none;
-            padding: 10px 16px;
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
+            background:#1e40af; border:none; padding:10px 16px;
+            color:white; border-radius:6px; cursor:pointer;
         }
-
-        .comments-section button:hover {
-            background: #1e3a8a;
-        }
+        .comments-section button:hover { background:#1e3a8a; }
     </style>
 </head>
 
 <body>
 
+    <!-- BREADCRUMB -->
     <div class="breadcrumb">
-        <a href="index.html">Home</a> <span>›</span>
-        <a href="articles.html">Articles</a> <span>›</span>
-        How Game Engines Use Rendering Loops
+        <a href="index.html" data-i18n="breadcrumb_home">Home</a> <span>›</span>
+        <a href="articles.html" data-i18n="breadcrumb_articles">Articles</a> <span>›</span>
+        <span data-i18n="art5_breadcrumb">How Game Engines Use Rendering Loops</span>
     </div>
 
+    <!-- BACK TO HUB -->
     <a id="backToHub" href="index.html"
+       data-i18n="back_to_hub"
        style="
          color:#38bdf8;
          font-size:14px;
@@ -87,27 +63,21 @@
       ⬅ Back to Hub
     </a>
 
-    <h1>How Game Engines Use Canvas Rendering Loops</h1>
+    <!-- TITLE -->
+    <h1 data-i18n="art5_title_h1">How Game Engines Use Canvas Rendering Loops</h1>
 
-    <p>
-        Every real-time game — from neon shooters to puzzle animations — runs on top 
-        of a <strong>render loop</strong>. This loop updates visuals, processes input, 
-        simulates physics, and draws each frame. In HTML5 games, engines rely heavily 
-        on Canvas APIs and browser timing mechanisms to keep gameplay smooth.
+    <p data-i18n="art5_intro_1">
+        Every real-time game runs on a render loop that updates visuals, input, physics, and drawing.
     </p>
 
-    <p>
-        In this article, we break down how rendering loops work, how browsers optimize 
-        them, and how modern neon-styled games like those on 
-        <strong>Neon Mini Game Hub</strong> achieve fluid animation at 60–144 FPS.
+    <p data-i18n="art5_intro_2">
+        This article explains how rendering loops work and how neon-style games maintain smooth performance.
     </p>
 
-    <h2>1. requestAnimationFrame — The Heart of the Loop</h2>
+    <h2 data-i18n="art5_h2_1">1. requestAnimationFrame — The Heart of the Loop</h2>
 
-    <p>
-        The <strong>requestAnimationFrame</strong> API is the modern standard for game 
-        rendering. It synchronizes game frames with the monitor refresh rate and 
-        automatically throttles background tabs.
+    <p data-i18n="art5_p1">
+        requestAnimationFrame synchronizes frames with monitor refresh rates and saves CPU.
     </p>
 
 <pre style="background:#0f172a;padding:14px;border-radius:8px;border:1px solid #334155;">
@@ -119,53 +89,38 @@ function loop() {
 loop();
 </pre>
 
-    <p>
-        This ensures:
-    </p>
+    <p data-i18n="art5_p2">This ensures:</p>
 
     <ul>
-        <li>⚡ Optimal FPS based on display hardware</li>
-        <li>🧠 Lower CPU/GPU usage compared to timers</li>
-        <li>🎯 Smooth animation and reduced tearing</li>
+        <li data-i18n="art5_li1_1">Optimal FPS</li>
+        <li data-i18n="art5_li1_2">Lower CPU/GPU usage</li>
+        <li data-i18n="art5_li1_3">Smooth animations</li>
     </ul>
 
-    <h2>2. The Update → Render Model</h2>
+    <h2 data-i18n="art5_h2_2">2. The Update → Render Model</h2>
 
-    <p>
-        Every Canvas-based game has two core responsibilities per frame:
-    </p>
+    <p data-i18n="art5_p3">Every frame has two phases:</p>
 
     <ul>
-        <li><strong>Update</strong> → handle physics, input, AI, player actions</li>
-        <li><strong>Render</strong> → draw the scene to the canvas</li>
+        <li data-i18n="art5_li2_1"><strong>Update</strong> — physics, inputs, AI</li>
+        <li data-i18n="art5_li2_2"><strong>Render</strong> — drawing the frame</li>
     </ul>
 
-    <p>
-        Keeping these two layers clean improves performance and readability.
-    </p>
+    <p data-i18n="art5_p4">Keeping them separate boosts performance.</p>
 
-    <h2>3. Clearing & Drawing Efficiently</h2>
+    <h2 data-i18n="art5_h2_3">3. Clearing & Drawing Efficiently</h2>
 
-    <p>
-        Most engines optimize how they clear and redraw content:
-    </p>
+    <p data-i18n="art5_p5">Games optimize draw calls using different strategies:</p>
 
     <ul>
-        <li>🧽 <strong>Full canvas clears</strong> for fast-moving shooters</li>
-        <li>🔍 <strong>Dirty rectangles</strong> for slow puzzle games</li>
-        <li>🎬 <strong>Layered canvases</strong> for complex UI</li>
+        <li data-i18n="art5_li3_1">Full canvas clears</li>
+        <li data-i18n="art5_li3_2">Dirty rectangles</li>
+        <li data-i18n="art5_li3_3">Layered canvases</li>
     </ul>
 
-    <p>
-        Clear strategies can dramatically affect FPS.
-    </p>
+    <h2 data-i18n="art5_h2_4">4. Timing, Delta Frames & Game Speed</h2>
 
-    <h2>4. Timing, Delta Frames & Game Speed</h2>
-
-    <p>
-        Using <strong>delta time</strong> (time between frames) ensures 
-        consistent motion regardless of FPS drops.
-    </p>
+    <p data-i18n="art5_p6">Delta time ensures consistent speed even if FPS drops.</p>
 
 <pre style="background:#0f172a;padding:14px;border-radius:8px;border:1px solid #334155;">
 let last = performance.now();
@@ -178,43 +133,37 @@ function loop(now) {
 }
 </pre>
 
-    <p>
-        This makes movement and animation stable on all devices.
-    </p>
+    <h2 data-i18n="art5_h2_5">5. Why Neon Games Feel Extra Smooth</h2>
 
-    <h2>5. Why Neon Games Feel Extra Smooth</h2>
-
-    <p>
-        Neon-styled games benefit from optimized loops because glowing effects, 
-        particles, and motion trails require:
+    <p data-i18n="art5_p7">
+        Neon effects require high redraw rates, optimized particles, and efficient compositing.
     </p>
 
     <ul>
-        <li>✨ High redraw frequency</li>
-        <li>💨 Efficient compositing</li>
-        <li>⚡ Particle batching</li>
-        <li>🎨 Reduced overdraw</li>
+        <li data-i18n="art5_li4_1">High-frame glow effects</li>
+        <li data-i18n="art5_li4_2">Motion-blur trails</li>
+        <li data-i18n="art5_li4_3">Batch-rendered particles</li>
+        <li data-i18n="art5_li4_4">Optimized overdraw</li>
     </ul>
 
-    <p>
-        With a well-structured loop, neon effects remain crisp without tanking performance.
-    </p>
+    <h2 data-i18n="art5_h2_conclusion">Conclusion</h2>
 
-    <h2>Conclusion</h2>
-
-    <p>
-        A clean rendering loop is the backbone of every browser game. Using 
-        <strong>requestAnimationFrame</strong>, delta timing, and efficient draw calls, 
-        developers can build fast, beautiful neon games that feel responsive and modern.
+    <p data-i18n="art5_conclusion">
+        Clean loops, delta timing, and optimized drawing create fast and responsive neon games.
     </p>
 
     <!-- COMMENTS SECTION -->
     <div class="comments-section" style="margin-top:40px;">
-      <h3>💬 Comments</h3>
+      <h3 data-i18n="comments_title">💬 Comments</h3>
 
-      <textarea id="commentInput" placeholder="Write a comment..." 
-        style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-      <button id="postCommentBtn">Post Comment</button>
+      <textarea id="commentInput"
+                placeholder="Write a comment..."
+                data-i18n-placeholder="comments_placeholder"
+                style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+
+      <button id="postCommentBtn" data-i18n="comments_post_btn">
+        Post Comment
+      </button>
 
       <div id="commentsList" style="margin-top:20px;"></div>
     </div>
@@ -252,6 +201,8 @@ function loop(now) {
 
     loadComments();
     </script>
+
+    <script src="js/translation.js?v=5"></script>
 
 </body>
 </html>

@@ -208,29 +208,21 @@ export class Turret {
         if (this.type === 'EMP') color = 0x00ffff;
 
         if (this.type === 'LASER') {
-            // Visual flash
-            const flash = new THREE.PointLight(color, 5, 3);
+            // Use ParticleSystem for muzzle flash and tracer
             const barrelPos = new THREE.Vector3(0, 0, 0.6);
             this.head.localToWorld(barrelPos);
-            flash.position.copy(barrelPos);
-            this.scene.add(flash);
-            setTimeout(() => this.scene.remove(flash), 50);
-
-            // Trace line
+            
             const endPos = this.target.mesh.position.clone();
-            const points = [barrelPos, endPos];
-            const geo = new THREE.BufferGeometry().setFromPoints(points);
-            const mat = new THREE.LineBasicMaterial({ color: color, transparent: true, opacity: 0.5 });
-            const line = new THREE.Line(geo, mat);
-            this.scene.add(line);
-            setTimeout(() => this.scene.remove(line), 50);
+            endPos.y += 0.5;
+
+            if (this.particleSystem) {
+                this.particleSystem.flashLight(barrelPos, color, 5, 3, 50);
+                this.particleSystem.createTracer(barrelPos, endPos, color, 0.1, 1.0);
+                this.particleSystem.createExplosion(endPos, color, 5, 0.5);
+            }
 
             // Damage
             this.target.takeDamage(this.damage, enemies, 'LASER');
-            
-            if (this.particleSystem) {
-                this.particleSystem.createExplosion(endPos, color, 5, 0.5);
-            }
         } else if (this.type === 'EMP') {
             // AOE Blast
             const pos = this.mesh.position.clone();

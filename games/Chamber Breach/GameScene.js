@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import { Navigation } from './Navigation.js';
 import { PlayerController, FirstPersonCameraController } from './rosie/controls/rosieControls.js';
 import { CONFIG } from './config.js';
-import { Map } from './Map.js';
+import { GameMap } from './Map.js';
 import { Turret } from './Turret.js';
 import { Player } from './Player.js';
 import { Enemy } from './Enemy.js';
@@ -15,6 +16,8 @@ import { SmokeScreen } from './SmokeScreen.js';
 import { EMPGrenade } from './EMPGrenade.js';
 import { CreditChip } from './CreditChip.js';
 import { DataCore } from './DataCore.js';
+import { CryoVent } from './CryoVent.js';
+import { SpatialGrid } from './SpatialGrid.js';
 
 export class GameScene {
     constructor() {
@@ -40,11 +43,15 @@ export class GameScene {
 
         // Scene setup
         this.scene = new THREE.Scene();
+        this.scene.game = this; // Expose game instance to entities
         this.scene.background = new THREE.Color(0x0a0a0c);
-        this.scene.fog = new THREE.FogExp2(0x0a0a0c, 0.035);
+        this.scene.fog = new THREE.FogExp2(0x0a0a0c, 0.02); // Reduced fog density for better visibility
 
         // Particle System
         this.particleSystem = new ParticleSystem(this.scene);
+
+        // Spatial Grid for performance optimization
+        this.spatialGrid = new SpatialGrid(10);
 
         // Camera
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -54,7 +61,8 @@ export class GameScene {
         this.renderer = new THREE.WebGLRenderer({ antialias: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        this.renderer.shadowMap.enabled = true;
+        this.renderer.shadowMap.enabled = false; // Disable shadows for significant performance boost
+        this.renderer.domElement.tabIndex = 1; // Allow canvas to receive focus for keyboard events
         document.body.appendChild(this.renderer.domElement);
 
         // Lights
@@ -63,27 +71,13 @@ export class GameScene {
 
         const sunLight = new THREE.DirectionalLight(0xffffff, 1.2);
         sunLight.position.set(10, 20, 10);
-        sunLight.castShadow = true;
         this.scene.add(sunLight);
 
         // Map
-        this.map = new Map(this.scene);
+        this.map = null;
+        this.navigation = null;
         this.missionLights = [];
         this.missionParticles = [];
-
-        // Add some atmospheric room lights and particles
-        this.map.chambers.forEach((chamber, i) => {
-            const isBossRoom = (i + 1) % CONFIG.MAP.BOSS_INTERVAL === 0;
-            const color = isBossRoom ? 0xff3300 : (i % 2 === 0 ? 0x00ffaa : 0x00aaff);
-            const pLight = new THREE.PointLight(color, isBossRoom ? 60 : 40, 30);
-            pLight.position.set(chamber.x, 4, chamber.z); 
-            this.scene.add(pLight);
-            this.missionLights.push(pLight);
-            
-            // Add floating data-dust
-            const dust = this.particleSystem.createAtmosphericParticles(chamber, isBossRoom ? 40 : 20);
-            if (dust) this.missionParticles.push(dust);
-        });
 
         // Shake state
         this.shakeAmount = 0;
@@ -101,15 +95,22 @@ export class GameScene {
             this.handleExtinguisherBurst(extProp);
         }, (enemy) => {
             this.handleEnemyKilled(enemy);
+        }, (obj) => {
+            this.handleObjectDestruction(obj);
         });
         this.player.mesh.position.set(0, 1, 0); // Start at origin
+        
+        // Critical: Set player reference in particle system AFTER player is created
+        this.particleSystem.player = this.player; 
         
         // Rosie Controls
         this.playerController = new PlayerController(this.player.mesh, {
             moveSpeed: CONFIG.PLAYER.MOVE_SPEED,
             jumpForce: CONFIG.PLAYER.JUMP_FORCE,
             gravity: CONFIG.PLAYER.GRAVITY,
-            groundLevel: 1 // Matches player mesh center height
+            groundLevel: 1, // Matches player mesh center height
+            ceilingLevel: CONFIG.MAP.WALL_HEIGHT - 1.05,
+            radius: 0.6 // Consistent collision radius
         });
         
         this.cameraController = new FirstPersonCameraController(this.camera, this.player.mesh, this.renderer.domElement, {
@@ -123,10 +124,18 @@ export class GameScene {
         this.turrets = [];
         this.pickups = [];
         this.activeGrenades = [];
+        this.grenadePool = [];
+        this.empGrenadePool = [];
+        
+        for (let i = 0; i < 5; i++) {
+            this.grenadePool.push(new Grenade(this.scene, this.particleSystem));
+            this.empGrenadePool.push(new EMPGrenade(this.scene, this.particleSystem));
+        }
+
         this.activeFireFields = [];
         this.activeGasLeaks = [];
         this.activeSmokeScreens = [];
-        this.lastEnemySpawn = 0;
+        this.lastEnemySpawn = Date.now() + 5000; // 5 second grace period at start
         this.lastPickupSpawnCheck = 0;
 
         // Hacking state
@@ -142,6 +151,10 @@ export class GameScene {
         this.isMenuOpen = false;
         this.selectedCommand = null;
         this.commandMarker = this.createCommandMarker();
+
+        // Optimized Raycasting Targets
+        this.raycastTargets = [];
+        this.lastRaycastUpdate = 0;
 
         // Progression state
         this.currentFacility = CONFIG.FACILITIES[0];
@@ -167,6 +180,17 @@ export class GameScene {
         this.finalBossSpawned = false;
         this.finalBossAlive = false;
         
+        // Heat System state
+        this.heatLevel = 1;
+        this.missionStartTime = 0;
+        this.heatVisuals = {
+            targetFogColor: new THREE.Color(CONFIG.HEAT.VISUALS.FOG_COLOR_START),
+            currentFogColor: new THREE.Color(CONFIG.HEAT.VISUALS.FOG_COLOR_START),
+            targetAmbientIntensity: CONFIG.HEAT.VISUALS.AMBIENT_INTENSITY_START,
+            currentAmbientIntensity: CONFIG.HEAT.VISUALS.AMBIENT_INTENSITY_START,
+            glitchIntensity: 0
+        };
+        
         this.shopItems = [
             { id: 'medkit', name: 'MEDICAL NANITES', desc: 'Instantly restores 50% health.', price: 30, currency: 'scrap' },
             { id: 'ammo_rifle', name: 'RIFLE CALIBER CASE', desc: 'Full reserve refill for Rifle.', price: 20, currency: 'scrap' },
@@ -190,10 +214,15 @@ export class GameScene {
         this.successSynth = null;
         this.shootSynth = null;
         this.impactSynth = null;
-        this.ambientLoop = null;
+        this.ambientHum = null;
+        this.hazardHiss = null;
+        this.shieldHum = null;
+        this.eliteScreech = null; // High-pitched digital screech for elites
+        this.tacticalHandshake = null; // Command feedback audio
 
-        // Screen logic
-        this.gameState = 'START_SCREEN';
+        // Tactical Radar state
+        this.radarUpdateTimer = 0;
+        this.radarDots = [];
         this.missionCredits = 500;
         this.scrap = 0;
         this.techCores = 0;
@@ -216,8 +245,8 @@ export class GameScene {
         this.currentIntroLine = 0;
         this.introCharIndex = 0;
         this.introTextElement = null;
-        this.introTypeSpeed = 40; // ms per char
-        this.introLineDelay = 1500; // ms between lines
+        this.introTypeSpeed = 20; // ms per char
+        this.introLineDelay = 800; // ms between lines
 
         // Inventory & Upgrades
         this.isInventoryOpen = false;
@@ -242,8 +271,9 @@ export class GameScene {
             if (document.pointerLockElement === this.renderer.domElement) {
                 this.mouseIsDown = true;
                 if (e.button === 0) { // Left click
-                    this.player.shoot(this.enemies, this.map.walls, (pos, dir, type) => {
-                        this.turrets.push(new Turret(this.scene, pos, dir, this.particleSystem, type));
+                    this.player.shoot(this.raycastTargets, (pos, dir, type) => {
+                        const t = new Turret(this.scene, pos, dir, this.particleSystem, type);
+                        this.turrets.push(t);
                     });
                 } else if (e.button === 2) { // Right click
                     this.player.isAiming = true;
@@ -271,7 +301,11 @@ export class GameScene {
             }
             if (this.gameState !== 'PLAYING') return;
             if (e.code === 'KeyR') {
-                this.player.reload();
+                if (this.player.currentWeaponKey === 'SNIPER' && this.player.isAiming) {
+                    this.player.secondaryShoot(this.raycastTargets);
+                } else {
+                    this.player.reload();
+                }
             }
             if (e.code === 'Digit1') {
                 this.player.switchWeapon('RIFLE');
@@ -334,9 +368,13 @@ export class GameScene {
                 if (this.player.isAimingGrenade) {
                     this.player.isAimingGrenade = false;
                     this.player.throwGrenade((pos, vel) => {
-                        this.activeGrenades.push(new Grenade(this.scene, pos, vel, this.particleSystem, (explodePos) => {
-                            this.handleExplosion(explodePos);
-                        }));
+                        const grenade = this.grenadePool.find(g => g.isExploded);
+                        if (grenade) {
+                            grenade.spawn(pos, vel, (explodePos) => {
+                                this.handleExplosion(explodePos);
+                            });
+                            this.activeGrenades.push(grenade);
+                        }
                     });
                 }
             }
@@ -344,9 +382,13 @@ export class GameScene {
                 if (this.player.isAimingEMP) {
                     this.player.isAimingEMP = false;
                     this.player.throwEMP((pos, vel) => {
-                        this.activeGrenades.push(new EMPGrenade(this.scene, pos, vel, this.particleSystem, (explodePos) => {
-                            this.handleEMPExplosion(explodePos);
-                        }));
+                        const emp = this.empGrenadePool.find(g => g.isExploded);
+                        if (emp) {
+                            emp.spawn(pos, vel, (explodePos) => {
+                                this.handleEMPExplosion(explodePos);
+                            });
+                            this.activeGrenades.push(emp);
+                        }
                     });
                 }
             }
@@ -373,11 +415,13 @@ export class GameScene {
 
         this.initRadialMenuEvents();
         this.clock = new THREE.Clock();
+        this.frameCounter = 0; // Added for throttling
         this.animate();
     }
 
     initScreenEvents() {
         const startBtn = document.getElementById('start-btn');
+        const skipAllBtn = document.getElementById('skip-all-btn');
         const deployBtn = document.getElementById('deploy-btn');
         const startScreen = document.getElementById('start-screen');
         const introScreen = document.getElementById('intro-screen');
@@ -415,6 +459,17 @@ export class GameScene {
             this.startIntro();
         });
 
+        skipAllBtn.addEventListener('click', async () => {
+            try {
+                const Tone = await import('tone');
+                await Tone.start();
+                this.setupAudio(Tone);
+            } catch (err) {}
+            startScreen.style.display = 'none';
+            this.gameState = 'INTRO'; 
+            this.endIntro();
+        });
+
         skipIntroBtn.addEventListener('click', () => {
             this.endIntro();
         });
@@ -441,15 +496,47 @@ export class GameScene {
 
         // Deployment Logic
         deployBtn.addEventListener('click', () => {
-            // Apply Meta Upgrades before starting
+            // First: Request pointer lock immediately on user gesture
+            this.renderer.domElement.requestPointerLock();
+            
             this.applyMetaUpgrades();
             
             loadoutScreen.style.display = 'none';
-            ui.style.opacity = '1';
+            const uiOverlay = document.getElementById('ui');
+            if (uiOverlay) uiOverlay.style.opacity = '1';
             this.gameState = 'PLAYING';
-            this.renderer.domElement.requestPointerLock();
+            this.deploymentTime = Date.now();
+            this.missionStartTime = Date.now();
+            this.heatLevel = 1;
+            this.resetHeatVisuals();
+            
+            // Critical: Force capture focus 
+            this.renderer.domElement.focus();
+            window.focus();
+            
+        // Reset controller states
+        if (this.playerController) {
+            this.playerController.velocity.set(0, 0, 0);
+            this.playerController.isOnGround = true;
+            this.playerController.canJump = true;
+            // Removed clearing of keys to prevent initial movement delay when holding keys
+        }
+            if (this.cameraController) {
+                this.cameraController.enable();
+                this.cameraController.rotationY = 0;
+                this.cameraController.rotationX = 0;
+            }
+
+            this.refreshRaycastTargets();
             this.successSynth?.triggerAttackRelease("G4", "8n");
             this.showProgressionMessage(`INFILTRATION COMMENCED - ${this.currentFacility.name}`);
+        });
+
+        // Add a general click listener to the canvas to ensure lock recovery
+        this.renderer.domElement.addEventListener('mousedown', () => {
+            if (this.gameState === 'PLAYING' && document.pointerLockElement !== this.renderer.domElement) {
+                this.renderer.domElement.requestPointerLock();
+            }
         });
 
         // Expose for facility selection
@@ -593,6 +680,7 @@ export class GameScene {
         const desc = document.getElementById('detail-desc');
         const stats = document.getElementById('detail-stats');
         const confirmBtn = document.getElementById('detail-confirm-btn');
+        const image = document.getElementById('detail-image');
 
         const accentHex = `#${facility.accent.toString(16).padStart(6, '0')}`;
         name.innerText = facility.name;
@@ -600,6 +688,13 @@ export class GameScene {
         name.style.borderColor = accentHex;
         location.innerText = `COORDINATES: X-${coords.x} Y-${coords.y}`;
         desc.innerText = facility.desc;
+        
+        if (image && facility.image) {
+            image.src = facility.image;
+            image.style.borderColor = accentHex;
+            const glow = panel.querySelector('div > div:nth-child(3)');
+            if (glow) glow.style.background = accentHex;
+        }
         
         const riskLevel = facility.bossInterval <= 5 ? 'HIGH' : 'EXTREME';
         const securityClass = facility.rooms >= 50 ? 'TITAN-IV' : 'GUARDIAN-II';
@@ -712,12 +807,20 @@ export class GameScene {
         const descEl = document.getElementById('brief-desc');
         const statsEl = document.getElementById('brief-stats');
         const objectiveEl = document.getElementById('brief-objective');
+        const imageEl = document.getElementById('brief-image');
         
         const accentHex = `#${facility.accent.toString(16).padStart(6, '0')}`;
         nameEl.innerText = facility.name;
         nameEl.style.color = accentHex;
         nameEl.style.borderColor = accentHex;
         descEl.innerText = facility.desc;
+        
+        if (imageEl && facility.image) {
+            imageEl.src = facility.image;
+            imageEl.style.borderColor = accentHex;
+            const bar = imageEl.nextElementSibling;
+            if (bar) bar.style.background = accentHex;
+        }
         
         const riskLevel = facility.bossInterval <= 5 ? 'HIGH' : 'EXTREME';
         const securityClass = facility.rooms >= 50 ? 'TITAN-IV' : 'GUARDIAN-II';
@@ -810,6 +913,60 @@ export class GameScene {
         });
     }
 
+    refreshRaycastTargets() {
+        if (!this.map || (this.lastRaycastUpdate && Date.now() - this.lastRaycastUpdate < 100)) return;
+        
+        // Rebuild the target list: Walls + Enemies
+        const targets = [];
+        
+        // Only include walls in the player's current and adjacent chambers to massively reduce raycast overhead
+        const currentChamber = this.currentChamberIndex;
+        if (this.map.walls) {
+            for (let i = 0; i < this.map.walls.length; i++) {
+                const wall = this.map.walls[i];
+                if (currentChamber !== null) {
+                    const wallChamber = wall.userData.chamberIndex;
+                    if (wallChamber !== undefined && Math.abs(wallChamber - currentChamber) > 1) continue;
+                }
+                targets.push(wall);
+            }
+        }
+        
+        // Enemy Hitboxes
+        for (let i = 0; i < this.enemies.length; i++) {
+            const e = this.enemies[i];
+            if (!e.isDead && e.mesh) {
+                const hitbox = e.mesh.getObjectByName('hitbox');
+                if (hitbox) targets.push(hitbox);
+            }
+        }
+        
+        // Door panels in current vicinity
+        if (this.map.doors) {
+            this.map.doors.forEach(d => {
+                if (!d.isOpen) {
+                    if (currentChamber === null || Math.abs(d.chamberIndex - currentChamber) <= 1) {
+                        targets.push(d.pL, d.pR);
+                    }
+                }
+            });
+        }
+
+        // Props (Barrels, Pipes, etc.) in current vicinity
+        if (this.map.props) {
+            this.map.props.forEach(p => {
+                if (p.mesh) {
+                    if (currentChamber === null || Math.abs(p.userData.chamberIndex - currentChamber) <= 1) {
+                        targets.push(p.mesh);
+                    }
+                }
+            });
+        }
+
+        this.raycastTargets = targets.filter(Boolean);
+        this.lastRaycastUpdate = Date.now();
+    }
+
     reinitMap(facility) {
         // Clear all map geometry and entities
         if (this.map) this.map.cleanup();
@@ -849,12 +1006,18 @@ export class GameScene {
         this.activeGasLeaks = [];
 
         // Create new map
-        this.map = new Map(this.scene, facility);
+        this.map = new GameMap(this.scene, facility);
+        this.navigation = new Navigation(this.map);
         
-        // Reset player position for new map
+        // Reset player position and health for new map
         this.player.mesh.position.set(0, 1, 0);
+        this.player.health = this.player.maxHealth;
+        this.player.isDead = false;
+        this.player.updateUI();
+        
         this.currentChamberIndex = 0;
         this.chamberClearingStatus = 'ACTIVE';
+        this.lastEnemySpawn = Date.now() + 5000; // 5 second grace period on each new floor
 
         // Add new atmospheric room lights and particles for this mission
         this.map.chambers.forEach((chamber, i) => {
@@ -865,9 +1028,11 @@ export class GameScene {
             this.scene.add(pLight);
             this.missionLights.push(pLight);
             
-            const dust = this.particleSystem.createAtmosphericParticles(chamber, isBossRoom ? 40 : 20);
+            const dust = this.particleSystem.createAtmosphericParticles(chamber, isBossRoom ? 15 : 8);
             if (dust) this.missionParticles.push(dust);
         });
+
+        this.refreshRaycastTargets();
     }
 
     armoryUpgrade(weaponKey, modType) {
@@ -923,9 +1088,11 @@ export class GameScene {
     initRadialMenuEvents() {
         const options = [
             { id: 'radial-opt-follow', cmd: 'FOLLOW' },
-            { id: 'radial-opt-move', cmd: 'MOVE_TO' },
-            { id: 'radial-opt-guard', cmd: 'GUARD' },
-            { id: 'radial-opt-inventory', cmd: 'TECH_INVENTORY' }
+            { id: 'radial-opt-strike', cmd: 'STRIKE' },
+            { id: 'radial-opt-defend', cmd: 'DEFEND' },
+            { id: 'radial-opt-inventory', cmd: 'TECH_INVENTORY' },
+            { id: 'radial-opt-aggressive', cmd: 'STANCE_AGGRESSIVE' },
+            { id: 'radial-opt-defensive', cmd: 'STANCE_DEFENSIVE' }
         ];
 
         options.forEach(opt => {
@@ -1308,6 +1475,7 @@ export class GameScene {
     }
 
     setupAudio(Tone) {
+        this.Tone = Tone;
         // Hacking synth
         this.hackSynth = new Tone.PolySynth(Tone.Synth).toDestination();
         this.hackSynth.set({
@@ -1317,7 +1485,7 @@ export class GameScene {
         this.hackSynth.volume.value = -15;
 
         // Success sound
-        this.successSynth = new Tone.MonoSynth({
+        this.successSynth = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
             envelope: { attack: 0.05, decay: 0.2, sustain: 0.5, release: 0.8 }
         }).toDestination();
@@ -1330,52 +1498,107 @@ export class GameScene {
         }).toDestination();
         this.shootSynth.volume.value = -12;
 
-        // Impact Synth (Low-end punch)
-        this.impactSynth = new Tone.MembraneSynth({
+        // Impact Synths (Low-end punch) - Using PolySynth to allow overlapping sounds
+        this.impactSynth = new Tone.PolySynth(Tone.MembraneSynth, {
             pitchDecay: 0.05,
             octaves: 4,
             oscillator: { type: 'sine' }
         }).toDestination();
         this.impactSynth.volume.value = -15;
 
-        // Ambient Loop (Distant industrial hum)
-        this.ambientLoop = new Tone.Oscillator(40, "sine").toDestination();
-        this.ambientLoop.volume.value = -35;
+        this.fireImpactSynth = new Tone.MembraneSynth({
+            pitchDecay: 0.05,
+            octaves: 4,
+            oscillator: { type: 'sine' }
+        }).toDestination();
+        this.fireImpactSynth.volume.value = -15;
+
+        // Ambient Atmosphere (Deep Facility Drone)
+        this.ambientHum = new Tone.Oscillator(45, "triangle").toDestination();
+        this.ambientHum.volume.value = -45; 
         
-        // Distant server hum noise
-        const hum = new Tone.Noise("pink").toDestination();
-        hum.volume.value = -40;
+        // Low-pass filter to keep it deep and non-intrusive
+        const ambientFilter = new Tone.Filter(120, "lowpass").toDestination();
+        this.ambientHum.connect(ambientFilter);
+        this.ambientHum.start();
+
+        // Secondary texture layer (Very subtle "air")
+        this.ambientAir = new Tone.Noise("pink").toDestination();
+        this.ambientAir.volume.value = -65;
+        const airFilter = new Tone.Filter(200, "lowpass").toDestination();
+        this.ambientAir.connect(airFilter);
+        this.ambientAir.start();
+
+        // Hazard Warning (Replacing the "fsssss" with a modulated electronic hum)
+        this.hazardHiss = new Tone.Oscillator(120, "sawtooth").toDestination();
+        this.hazardHiss.volume.value = -100; // Start silent
         
-        const filter = new Tone.Filter(200, "lowpass").toDestination();
-        hum.connect(filter);
+        // Use an AutoFilter to give it a "pulsing/spinning" hazard quality
+        this.hazardFilter = new Tone.AutoFilter({
+            frequency: "4n",
+            baseFrequency: 400,
+            octaves: 2,
+            type: "sine"
+        }).toDestination().start();
         
-        this.ambientLoop.start();
-        hum.start();
+        this.hazardHiss.connect(this.hazardFilter);
+        this.hazardHiss.start();
+
+        // Shield Hum (Drone/Player energy field)
+        this.shieldHum = new Tone.Oscillator(60, "sine").toDestination();
+        this.shieldHum.volume.value = -100; // Start silent
+        this.shieldHum.start();
+
+        // Portal Rumble (Low-frequency extraction portal cue)
+        this.portalRumble = new Tone.Oscillator(30, "sine").toDestination();
+        this.portalRumble.volume.value = -100;
+        this.portalRumble.start();
+
+        // Elite Screech: Modulated FM Synth for "horrific digital" sounds
+        this.eliteScreech = new Tone.FMSynth({
+            harmonicity: 3.5,
+            modulationIndex: 10,
+            oscillator: { type: "sine" },
+            modulation: { type: "square" },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
+        }).toDestination();
+        this.eliteScreech.volume.value = -15;
+
+        // Tactical Handshake: Clean, authoritative UI feedback
+        this.tacticalHandshake = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }
+        }).toDestination();
+        this.tacticalHandshake.volume.value = -10;
 
         // Pass sounds to player
         if (this.player) {
             this.player.setAudio({
                 shoot: () => {
+                    const now = this.Tone ? this.Tone.now() : undefined;
                     const type = this.player.currentWeaponKey;
                     if (type === 'SNIPER') {
-                        this.shootSynth.triggerAttackRelease("16n");
-                        this.impactSynth.triggerAttackRelease("G1", "8n");
+                        this.shootSynth.triggerAttackRelease("16n", now);
+                        this.fireImpactSynth.triggerAttackRelease("G1", "8n", now);
                     } else if (type === 'RIFLE') {
-                        this.shootSynth.triggerAttackRelease("32n");
-                        this.impactSynth.triggerAttackRelease("C2", "16n");
+                        this.shootSynth.triggerAttackRelease("32n", now);
+                        this.fireImpactSynth.triggerAttackRelease("C2", "16n", now);
                     } else if (type === 'TURRET') {
-                        this.successSynth.triggerAttackRelease("G5", "32n");
+                        this.successSynth.triggerAttackRelease("G5", "32n", now);
                     }
                 },
                 hit: (isEnemy) => {
+                    // Use a tiny offset to ensure Tone.js doesn't clash with the shot sound
+                    const time = this.Tone ? this.Tone.now() + 0.01 : undefined;
                     if (isEnemy) {
-                        this.impactSynth.triggerAttackRelease("E1", "32n");
+                        this.impactSynth.triggerAttackRelease("E1", "32n", time);
                     } else {
-                        this.impactSynth.triggerAttackRelease("C1", "64n");
+                        this.impactSynth.triggerAttackRelease("C1", "64n", time);
                     }
                 },
                 reload: () => {
-                    this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n");
+                    const now = this.Tone ? this.Tone.now() : undefined;
+                    this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n", now);
                 }
             });
         }
@@ -1413,14 +1636,27 @@ export class GameScene {
             }
         }
 
-        // 4. Try interacting with hacking terminal
-        const chamber = this.map.chambers[this.currentChamberIndex];
-        if (chamber.isCleared && this.chamberClearingStatus === 'CLEARED') {
-            const terminal = this.map.terminals.find(t => t.chamberIndex === this.currentChamberIndex);
-            if (terminal && !terminal.isUsed) {
-                const dist = this.player.mesh.position.distanceTo(terminal.mesh.position);
-                if (dist < 3) {
-                    if (this.currentChamberIndex === CONFIG.MAP.NUM_ROOMS - 1 && this.finalBossAlive) {
+        // 4. Try interacting with hacking terminal or switches
+        const currentChamberIdx = this.currentChamberIndex;
+        const terminal = this.map.terminals.find(t => {
+            const d = this.player.mesh.position.distanceTo(t.mesh.position);
+            return d < 3;
+        });
+
+        if (terminal) {
+            if (terminal.type === 'HAZARD_SWITCH') {
+                if (!terminal.isUsed) {
+                    terminal.interact();
+                    this.showProgressionMessage("LOCAL HAZARD SYSTEMS OFFLINE");
+                    this.successSynth?.triggerAttackRelease("G5", "16n");
+                }
+                return;
+            }
+
+            const chamber = this.map.chambers[terminal.chamberIndex];
+            if (chamber && chamber.isCleared && this.chamberClearingStatus === 'CLEARED') {
+                if (!terminal.isUsed) {
+                    if (terminal.chamberIndex === CONFIG.MAP.NUM_ROOMS - 1 && this.finalBossAlive) {
                         this.showProgressionMessage("CRITICAL ERROR: NEUTRALIZE TERMINAL GUARD FIRST");
                         this.successSynth?.triggerAttackRelease("C3", "8n");
                         return;
@@ -1548,30 +1784,53 @@ export class GameScene {
 
         const isBossRoom = (this.currentChamberIndex + 1) % CONFIG.MAP.BOSS_INTERVAL === 0;
 
-        // Spawn a cluster of enemies
+        // Spawn a cluster of enemies - Staggered to prevent main-thread blocking
         const spawnCount = 3 + Math.floor(this.currentChamberIndex / 2);
+        
         for (let i = 0; i < spawnCount; i++) {
-            // Spawn at the chamber entrances or random points in the room
-            const spawnPos = new THREE.Vector3(
-                chamber.x + (Math.random() - 0.5) * (chamber.size - 2),
-                0,
-                chamber.z - chamber.size / 2 // Spawn at the "back" wall mostly
-            );
-            
-            let type = Math.random() > 0.7 ? 'STALKER' : 'SENTRY';
-            
-            // Force boss if it's a boss room (but not the final room which has a dedicated guard)
-            if (isBossRoom && i === 0 && !this.hackingWavesTriggered[1] && this.currentChamberIndex !== CONFIG.MAP.NUM_ROOMS - 1) {
-                type = 'HEAVY_SEC_BOT';
-                this.showProgressionMessage("BOSS DETECTED: HEAVY SECURITY UNIT ENGAGED");
-            } else if (this.currentChamberIndex >= 2 && i === 0 && Math.random() > 0.5) {
-                type = 'TANK';
-            }
+            // Use setTimeout to stagger spawns every 200ms
+            setTimeout(() => {
+                // Ensure we are still playing and in the right chamber
+                if (this.gameState !== 'PLAYING') return;
 
-            const enemy = new Enemy(this.scene, this.player, spawnPos, type, this.currentFacility?.id || 'meridian');
-            enemy.onDeath = (e) => this.handleEnemyDeath(e);
-            enemy.onSingularityDetonate = (e, type) => this.handleSingularityDetonate(e, type);
-            this.enemies.push(enemy);
+                // Increased buffer (chamber.size - 6) to prevent wall clipping on spawn
+                const spawnPos = new THREE.Vector3(
+                    chamber.x + (Math.random() - 0.5) * (chamber.size - 6),
+                    0,
+                    chamber.z + (Math.random() - 0.5) * (chamber.size - 6)
+                );
+                
+                let type = Math.random() > 0.7 ? 'STALKER' : 'SENTRY';
+                
+                if (isBossRoom && i === 0 && !this.hackingWavesTriggered[1] && this.currentChamberIndex !== CONFIG.MAP.NUM_ROOMS - 1) {
+                    type = 'HEAVY_SEC_BOT';
+                    this.showProgressionMessage("BOSS DETECTED: HEAVY SECURITY UNIT ENGAGED");
+                } else if (this.currentChamberIndex >= 2 && i === 0 && Math.random() > 0.5) {
+                    type = 'TANK';
+                }
+
+                // Elite Spawn Logic
+                let isElite = false;
+                if (this.heatLevel >= 5) {
+                    const eliteChance = Math.min(0.4, 0.1 + (this.heatLevel - 5) * 0.05);
+                    if (Math.random() < eliteChance && type !== 'HEAVY_SEC_BOT') {
+                        isElite = true;
+                        this.showProgressionMessage("WARNING: ELITE UNIT-X DETECTED");
+                        // Trigger elite sound and glitch immediately on spawn
+                        setTimeout(() => this.triggerEliteSound(type), 100);
+                    }
+                }
+
+                const enemy = new Enemy(this.scene, this.player, spawnPos, type, this.currentFacility?.id || 'meridian', this.navigation, this.particleSystem, this.heatLevel, isElite);
+                enemy.onDeath = (e) => this.handleEnemyDeath(e);
+                enemy.onSingularityDetonate = (e, type) => this.handleSingularityDetonate(e, type);
+                this.enemies.push(enemy);
+                
+                // Only refresh on last spawn of wave
+                if (i === spawnCount - 1) {
+                    this.refreshRaycastTargets();
+                }
+            }, i * 300); // Stagger by 300ms each
         }
 
         // Audio cue for wave
@@ -1581,26 +1840,39 @@ export class GameScene {
     updateTerminalHack(deltaTime) {
         if (!this.isHackingTerminal) return;
 
-        // Check for nearby enemies (blocking progress)
-        let enemiesNear = false;
-        const blockRadius = 8;
-        this.enemies.forEach(e => {
-            if (!e.isAlly && !e.isDead) {
-                if (e.mesh.position.distanceTo(this.currentTerminal.mesh.position) < blockRadius) {
-                    enemiesNear = true;
+        // Throttled enemy check (every 300ms) - Using Spatial Grid
+        if (!this.lastTerminalEnemiesCheck || Date.now() - this.lastTerminalEnemiesCheck > 300) {
+            this.lastTerminalEnemiesCheck = Date.now();
+            this.terminalBlocked = false;
+            const blockRadius = 8;
+            const blockRadiusSq = blockRadius * blockRadius;
+            const termPos = this.currentTerminal.mesh.position;
+            
+            const nearbyEnemies = this.spatialGrid.getNearby(termPos, blockRadius);
+            for (let i = 0; i < nearbyEnemies.length; i++) {
+                const e = nearbyEnemies[i];
+                if (!e.isAlly && !e.isDead && e.mesh.position.distanceToSquared(termPos) < blockRadiusSq) {
+                    this.terminalBlocked = true;
+                    break;
                 }
             }
-        });
+        }
 
-        if (enemiesNear) {
+        if (this.terminalBlocked) {
             const bar = document.getElementById('terminal-hack-bar');
             if (bar) bar.style.background = '#ff0000'; // Flash red when blocked
             const percent = document.getElementById('terminal-hack-percent');
-            if (percent) percent.innerText = "PROGRESS BLOCKED - CLEAR AREA";
+            if (percent) percent.style.display = 'none';
+            const alert = document.getElementById('terminal-hack-blocked-alert');
+            if (alert) alert.style.display = 'block';
         } else {
             this.terminalHackProgress += deltaTime / this.terminalHackDuration;
             const bar = document.getElementById('terminal-hack-bar');
             if (bar) bar.style.background = '#00ffaa';
+            const percent = document.getElementById('terminal-hack-percent');
+            if (percent) percent.style.display = 'block';
+            const alert = document.getElementById('terminal-hack-blocked-alert');
+            if (alert) alert.style.display = 'none';
         }
 
         // Trigger waves based on progress
@@ -1621,14 +1893,14 @@ export class GameScene {
         const percent = document.getElementById('terminal-hack-percent');
         const progress = Math.min(100, Math.floor(this.terminalHackProgress * 100));
         if (bar) bar.style.width = `${progress}%`;
-        if (percent && !enemiesNear) percent.innerText = `${progress}%`;
+        if (percent && !this.terminalBlocked) percent.innerText = `${progress}%`;
 
         // Interactive audio feedback
-        if (!enemiesNear && Math.random() < 0.1) {
+        if (!this.terminalBlocked && Math.random() < 0.1) {
             const notes = ["C5", "D5", "E5", "G5"];
             const note = notes[Math.floor(Math.random() * notes.length)];
             this.hackSynth?.triggerAttackRelease(note, "32n");
-        } else if (enemiesNear && Math.random() < 0.05) {
+        } else if (this.terminalBlocked && Math.random() < 0.05) {
             this.hackSynth?.triggerAttackRelease("C2", "16n"); // Warning low note
         }
 
@@ -1667,6 +1939,24 @@ export class GameScene {
     unlockNextChamber(terminal) {
         terminal.isUsed = true;
         terminal.light.material.emissive.set(0x00ff00);
+        
+        const chamber = this.map.chambers[this.currentChamberIndex];
+        
+        if (chamber.isVault) {
+            // Check if all vault terminals are hacked
+            const vaultTerminals = this.map.terminals.filter(t => t.chamberIndex === this.currentChamberIndex && t.type.startsWith('VAULT'));
+            const allHacked = vaultTerminals.every(t => t.isUsed);
+            
+            if (!allHacked) {
+                this.showProgressionMessage("VAULT SECURITY LAYER 1 BYPASSED - LOCATE SECONDARY TERMINAL");
+                this.successSynth?.triggerAttackRelease("C5", "8n");
+                return; // Don't unlock chamber yet
+            } else {
+                this.showProgressionMessage("VAULT BREACH SUCCESSFUL - HIGH-VALUE ASSETS EXPOSED");
+                this.unlockVaultLoot(this.currentChamberIndex);
+            }
+        }
+
         this.chamberClearingStatus = 'UNLOCKED';
         
         // Open the door for this chamber
@@ -1674,7 +1964,7 @@ export class GameScene {
         if (door) {
             door.isOpen = true;
             // Remove panels from walls to allow passage
-            this.map.walls = this.map.walls.filter(w => w !== door.panelL && w !== door.panelR);
+            this.map.walls = this.map.walls.filter(w => w !== door.pL && w !== door.pR);
         }
 
         // Show UI message
@@ -1683,8 +1973,42 @@ export class GameScene {
             this.showProgressionMessage("CRITICAL ASSETS SECURED - EXTRACTION PORTAL ONLINE");
             this.successSynth?.triggerAttackRelease("C5", "2n");
         } else {
-            this.showProgressionMessage("SECURITY OVERRIDE SUCCESSFUL - PROCEED TO NEXT CHAMBER");
+            if (!chamber.isVault) {
+                this.showProgressionMessage("SECURITY OVERRIDE SUCCESSFUL - PROCEED TO NEXT CHAMBER");
+            }
         }
+    }
+
+    unlockVaultLoot(chamberIndex) {
+        // Find loot caches in this chamber
+        this.map.walls.forEach(w => {
+            if (w.userData.isLootCache && w.userData.chamberIndex === chamberIndex) {
+                w.userData.isLocked = false;
+                if (w.userData.light) {
+                    w.userData.light.material.color.set(0x00ff00);
+                    w.userData.light.material.emissive.set(0x00ff00);
+                }
+                
+                // Spawn a cluster of high-value pickups nearby
+                for (let i = 0; i < 5; i++) {
+                    const pos = w.position.clone();
+                    pos.x += (Math.random() - 0.5) * 3;
+                    pos.z += (Math.random() - 0.5) * 3;
+                    pos.y = 0.5;
+                    
+                    const rand = Math.random();
+                    if (rand > 0.7) {
+                        this.pickups.push(new CreditChip(this.scene, pos, 100)); // Large chip
+                    } else if (rand > 0.4) {
+                        this.pickups.push(new DataCore(this.scene, pos, 1));
+                    } else {
+                        this.pickups.push(new HealthPack(this.scene, pos));
+                    }
+                }
+            }
+        });
+        
+        this.successSynth?.triggerAttackRelease("G5", "2n");
     }
 
     spawnFinalBoss() {
@@ -1700,7 +2024,7 @@ export class GameScene {
         const dirToCenter = new THREE.Vector3(chamber.x, 0, chamber.z).sub(spawnPos).normalize();
         spawnPos.add(dirToCenter.multiplyScalar(4)); 
         
-        const boss = new Enemy(this.scene, this.player, spawnPos, 'HEAVY_SEC_BOT', this.currentFacility?.id || 'meridian');
+        const boss = new Enemy(this.scene, this.player, spawnPos, 'HEAVY_SEC_BOT', this.currentFacility?.id || 'meridian', this.navigation, this.particleSystem, this.heatLevel);
         boss.onDeath = (e) => {
             this.finalBossAlive = false;
             this.handleEnemyDeath(e);
@@ -1744,10 +2068,12 @@ export class GameScene {
     }
 
     unlockAchievement(name, desc) {
-        const key = `achievement_${name.toLowerCase().replace(/ /g, '_')}`;
-        if (localStorage.getItem(key)) return; // Already unlocked
+        const achId = name.toUpperCase().replace(/ /g, '_');
+        const saved = JSON.parse(localStorage.getItem('chamber_breach_achievements') || '[]');
+        if (saved.includes(achId)) return;
 
-        localStorage.setItem(key, 'true');
+        saved.push(achId);
+        localStorage.setItem('chamber_breach_achievements', JSON.stringify(saved));
         
         const ui = document.getElementById('achievement-ui');
         const nameEl = document.getElementById('achievement-name');
@@ -1774,29 +2100,47 @@ export class GameScene {
     showProgressionMessage(msg) {
         const el = document.createElement('div');
         el.style.position = 'fixed';
-        el.style.top = '20%';
+        el.style.top = '12%'; // Moved higher to clear the center-view
         el.style.left = '50%';
         el.style.transform = 'translate(-50%, -50%)';
         el.style.color = '#00ffaa';
         el.style.fontFamily = 'monospace';
-        el.style.fontSize = '24px';
+        el.style.fontSize = '18px'; // Slightly smaller font
         el.style.textAlign = 'center';
         el.style.pointerEvents = 'none';
-        el.style.textShadow = '0 0 10px #00ffaa';
+        el.style.textShadow = '0 0 8px #00ffaa';
+        el.style.zIndex = '1000';
         el.innerText = msg;
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 4000);
+        setTimeout(() => {
+            el.style.transition = 'opacity 1s';
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 1000);
+        }, 3000);
     }
 
     spawnEnemy() {
         const chamber = this.map.chambers[this.currentChamberIndex];
         if (!chamber || chamber.enemiesSpawned >= this.enemiesPerChamber) return;
 
-        const spawnPos = new THREE.Vector3(
-            chamber.x + (Math.random() - 0.5) * (chamber.size - 4),
-            0,
-            chamber.z + (Math.random() - 0.5) * (chamber.size - 4)
-        );
+        let spawnPos = new THREE.Vector3();
+        let validSpawn = false;
+        let attempts = 0;
+        
+        while (!validSpawn && attempts < 10) {
+            // Increased wall buffer (chamber.size - 6) to prevent wall clipping on spawn
+            spawnPos.set(
+                chamber.x + (Math.random() - 0.5) * (chamber.size - 6),
+                0,
+                chamber.z + (Math.random() - 0.5) * (chamber.size - 6)
+            );
+            
+            // Ensure enemy doesn't spawn too close to the player (min 8 units away)
+            if (spawnPos.distanceTo(this.player.mesh.position) > 8) {
+                validSpawn = true;
+            }
+            attempts++;
+        }
         
         // Randomly pick a type based on difficulty/chamber index
         const rand = Math.random();
@@ -1804,10 +2148,21 @@ export class GameScene {
         if (rand > 0.8) type = 'TANK';
         else if (rand > 0.5) type = 'STALKER';
 
-        const enemy = new Enemy(this.scene, this.player, spawnPos, type, this.currentFacility?.id || 'meridian');
+        // Elite Spawn Logic
+        let isElite = false;
+        if (this.heatLevel >= 5) {
+            const eliteChance = Math.min(0.4, 0.1 + (this.heatLevel - 5) * 0.05);
+            if (Math.random() < eliteChance && type !== 'HEAVY_SEC_BOT') {
+                isElite = true;
+                this.showProgressionMessage("ELITE UNIT BREACH DETECTED");
+            }
+        }
+
+        const enemy = new Enemy(this.scene, this.player, spawnPos, type, this.currentFacility?.id || 'meridian', this.navigation, this.particleSystem, this.heatLevel, isElite);
         enemy.onDeath = (e) => this.handleEnemyDeath(e);
         enemy.onSingularityDetonate = (e, type) => this.handleSingularityDetonate(e, type);
         this.enemies.push(enemy);
+        this.refreshRaycastTargets();
         chamber.enemiesSpawned++;
     }
 
@@ -1824,12 +2179,8 @@ export class GameScene {
             if (this.particleSystem) {
                 this.particleSystem.createExplosion(pos, 0x00ffff, 60, 15);
                 this.particleSystem.createExplosion(pos, 0xffffff, 30, 8);
+                this.particleSystem.flashLight(pos, 0x00ffff, 30, radius * 2, 500);
             }
-
-            const light = new THREE.PointLight(0x00ffff, 30, radius * 2);
-            light.position.copy(pos);
-            this.scene.add(light);
-            setTimeout(() => this.scene.remove(light), 500);
 
             // Damage and EMP
             this.enemies.forEach(e => {
@@ -1869,18 +2220,15 @@ export class GameScene {
             if (this.particleSystem) {
                 this.particleSystem.createExplosion(pos, 0x6600ff, 40, 10);
                 this.particleSystem.createExplosion(pos, 0xff0000, 20, 5);
+                this.particleSystem.flashLight(pos, 0xaa00ff, 20, radius * 1.5, 400);
             }
-
-            const light = new THREE.PointLight(0xaa00ff, 20, radius * 1.5);
-            light.position.copy(pos);
-            this.scene.add(light);
-            setTimeout(() => this.scene.remove(light), 400);
 
             this.handleAreaDamage(pos, radius, damage);
         }
     }
 
     handleEnemyDeath(enemy) {
+        this.refreshRaycastTargets();
         if (enemy.isAlly && enemy.modules.includes('SELF_DESTRUCT')) {
             const pos = enemy.mesh.position.clone();
             const radius = 10;
@@ -2126,45 +2474,52 @@ export class GameScene {
     }
 
     handleAreaDamage(pos, radius, damage) {
-        // Damage enemies
-        this.enemies.forEach(enemy => {
-            const dist = enemy.mesh.position.distanceTo(pos);
-            if (dist < radius) {
+        const radiusSq = radius * radius;
+        
+        // Damage enemies using spatial grid
+        const nearbyEnemies = this.spatialGrid.getNearby(pos, radius);
+        for (let i = 0; i < nearbyEnemies.length; i++) {
+            const enemy = nearbyEnemies[i];
+            if (enemy.isDead) continue;
+            const distSq = enemy.mesh.position.distanceToSquared(pos);
+            if (distSq < radiusSq) {
+                const dist = Math.sqrt(distSq);
                 const factor = 1 - (dist / radius);
                 enemy.takeDamage(damage * factor, this.enemies);
                 if (enemy.isDead) {
                     this.player.score += 100;
                     this.player.updateUI();
                     this.handleEnemyKilled(enemy);
+                    this.spatialGrid.removeEntity(enemy);
                 }
             }
-        });
+        }
 
         // Damage player
-        const distToPlayer = this.player.mesh.position.distanceTo(pos);
-        if (distToPlayer < radius) {
-            const factor = 1 - (distToPlayer / radius);
+        const distToPlayerSq = this.player.mesh.position.distanceToSquared(pos);
+        if (distToPlayerSq < radiusSq) {
+            const dist = Math.sqrt(distToPlayerSq);
+            const factor = 1 - (dist / radius);
             this.player.takeDamage(damage * 0.4 * factor);
         }
 
-        // Damage environment
+        // Damage environment (Throttled/Optimized)
         for (let i = this.map.walls.length - 1; i >= 0; i--) {
             const wall = this.map.walls[i];
-            const dist = wall.position.distanceTo(pos);
-            if (dist < radius) {
+            const distSq = wall.position.distanceToSquared(pos);
+            if (distSq < radiusSq) {
+                const dist = Math.sqrt(distSq);
                 if (wall.userData.isDestructible) {
                     wall.userData.health -= damage * (1 - dist / radius);
                     if (wall.userData.health <= 0) {
                         if (this.particleSystem) {
-                            this.particleSystem.createExplosion(wall.position, 0x664422, 15, 5);
+                            this.particleSystem.createExplosion(wall.position, 0x664422, 10, 3);
                         }
                         this.map.destroyObject(wall);
                     }
                 } else if (wall.userData.isBarrel) {
-                    // Chain react barrels with a tiny delay
-                    setTimeout(() => this.handleBarrelExplosion(wall), 100 + Math.random() * 200);
+                    setTimeout(() => this.handleBarrelExplosion(wall), 50 + Math.random() * 150);
                 } else if (wall.userData.isPipe && !wall.userData.isGasTriggered) {
-                    // Pipe leak can be triggered by explosion
                     this.handlePipeHit(wall, wall.position.clone());
                 }
             }
@@ -2172,8 +2527,8 @@ export class GameScene {
 
         // Ignite other gas leaks
         this.activeGasLeaks.forEach(leak => {
-            if (!leak.isExploded && leak.position.distanceTo(pos) < radius) {
-                setTimeout(() => this.handleGasIgnite(leak), 150 + Math.random() * 200);
+            if (!leak.isExploded && leak.position.distanceToSquared(pos) < radiusSq) {
+                setTimeout(() => this.handleGasIgnite(leak), 100 + Math.random() * 100);
             }
         });
     }
@@ -2182,19 +2537,23 @@ export class GameScene {
     tryStartHacking() {
         if (this.isHacking) return;
         
-        // Find nearest disabled drone
+        // Find nearest disabled drone using spatial grid
         let nearest = null;
-        let minDist = 3; // Hack range
+        const hackRange = 3;
+        const hackRangeSq = hackRange * hackRange;
+        const playerPos = this.player.mesh.position;
         
-        this.enemies.forEach(e => {
+        const nearby = this.spatialGrid.getNearby(playerPos, hackRange);
+        for (let i = 0; i < nearby.length; i++) {
+            const e = nearby[i];
             if (e.isDisabled && !e.isAlly && !e.isDead) {
-                const d = e.mesh.position.distanceTo(this.player.mesh.position);
-                if (d < minDist) {
-                    minDist = d;
+                const dSq = e.mesh.position.distanceToSquared(playerPos);
+                if (dSq < hackRangeSq) {
                     nearest = e;
+                    break; // Found one close enough
                 }
             }
-        });
+        }
 
         if (nearest) {
             this.startHacking(nearest);
@@ -2287,6 +2646,166 @@ export class GameScene {
         }
     }
 
+    triggerEliteSound(type) {
+        if (!this.eliteScreech) return;
+        const now = this.Tone ? this.Tone.now() : 0;
+        
+        // Trigger a visual glitch
+        this.heatVisuals.glitchIntensity = Math.max(this.heatVisuals.glitchIntensity, 0.8);
+        this.shakeAmount = Math.max(this.shakeAmount, 0.4);
+
+        switch(type) {
+            case 'SENTRY':
+                // Rapid stuttering beep
+                this.eliteScreech.triggerAttackRelease("C6", "32n", now);
+                this.eliteScreech.triggerAttackRelease("G6", "32n", now + 0.1);
+                this.eliteScreech.triggerAttackRelease("C7", "32n", now + 0.2);
+                break;
+            case 'STALKER':
+                // Creepy slide
+                this.eliteScreech.triggerAttackRelease("E6", "16n", now);
+                this.eliteScreech.frequency.exponentialRampToValueAtTime(100, now + 0.5);
+                break;
+            case 'TANK':
+                // Industrial low crunch screech
+                this.eliteScreech.triggerAttackRelease("C3", "8n", now);
+                this.eliteScreech.modulationIndex.value = 50;
+                setTimeout(() => { if(this.eliteScreech) this.eliteScreech.modulationIndex.value = 10; }, 500);
+                break;
+            case 'SHIELD_PROJECTOR':
+                // Static burst
+                this.eliteScreech.triggerAttackRelease("G5", "4n", now);
+                break;
+            default:
+                this.eliteScreech.triggerAttackRelease("A5", "8n", now);
+        }
+    }
+
+    updateRadar() {
+        if (this.gameState !== 'PLAYING') return;
+        
+        const radarContent = document.getElementById('radar-content');
+        if (!radarContent) return;
+
+        // Throttled UI update
+        if (Date.now() - this.radarUpdateTimer < 100) return;
+        this.radarUpdateTimer = Date.now();
+
+        // Clear existing dots
+        radarContent.innerHTML = '';
+
+        const radarRadius = 60; // half of radar-ui size (120px)
+        const detectionRadius = 40; // Meters to show on radar
+
+        const playerPos = this.player.mesh.position;
+        const playerRot = this.cameraController.rotationY;
+
+        // Draw allies
+        this.enemies.forEach(e => {
+            if (e.isAlly && !e.isDead) {
+                const relX = e.mesh.position.x - playerPos.x;
+                const relZ = e.mesh.position.z - playerPos.z;
+                
+                // Rotate based on player heading
+                const rotatedX = relX * Math.cos(playerRot) - relZ * Math.sin(playerRot);
+                const rotatedZ = relX * Math.sin(playerRot) + relZ * Math.cos(playerRot);
+
+                const dist = Math.sqrt(rotatedX * rotatedX + rotatedZ * rotatedZ);
+                if (dist < detectionRadius) {
+                    const dot = document.createElement('div');
+                    dot.className = 'radar-dot ally';
+                    const screenX = radarRadius + (rotatedX / detectionRadius) * radarRadius;
+                    const screenZ = radarRadius + (rotatedZ / detectionRadius) * radarRadius;
+                    dot.style.left = `${screenX}px`;
+                    dot.style.top = `${screenZ}px`;
+                    radarContent.appendChild(dot);
+                }
+            }
+        });
+
+        // Draw Hostiles (if heat is high or scanning?)
+        if (this.heatLevel >= 3 || this.player.isThermalActive) {
+            this.enemies.forEach(e => {
+                if (!e.isAlly && !e.isDead) {
+                    const relX = e.mesh.position.x - playerPos.x;
+                    const relZ = e.mesh.position.z - playerPos.z;
+                    
+                    const rotatedX = relX * Math.cos(playerRot) - relZ * Math.sin(playerRot);
+                    const rotatedZ = relX * Math.sin(playerRot) + relZ * Math.cos(playerRot);
+
+                    const dist = Math.sqrt(rotatedX * rotatedX + rotatedZ * rotatedZ);
+                    if (dist < detectionRadius) {
+                        const dot = document.createElement('div');
+                        dot.className = 'radar-dot hostile';
+                        const screenX = radarRadius + (rotatedX / detectionRadius) * radarRadius;
+                        const screenZ = radarRadius + (rotatedZ / detectionRadius) * radarRadius;
+                        dot.style.left = `${screenX}px`;
+                        dot.style.top = `${screenZ}px`;
+                        radarContent.appendChild(dot);
+                    }
+                }
+            });
+        }
+    }
+
+    handleObjectDestruction(obj) {
+        if (!obj) return;
+        
+        // Visuals
+        const isMonitor = obj.userData.isMonitor;
+        const color = isMonitor ? 0x00ffff : 0x444444;
+        
+        this.particleSystem.createExplosion(obj.position, color, 15, 3);
+        this.particleSystem.createDebris(obj.position, color, 8, isMonitor ? 'MONITOR' : 'GENERIC');
+        
+        if (isMonitor) {
+            this.particleSystem.createExplosion(obj.position, 0xffffff, 5, 10); // Glass/Spark shards
+            this.shakeAmount = Math.max(this.shakeAmount, 0.5);
+        } else {
+            this.shakeAmount = Math.max(this.shakeAmount, 0.3);
+        }
+        
+        // Sounds
+        if (this.impactSynth) {
+            this.impactSynth.triggerAttackRelease(isMonitor ? "C4" : "C2", "8n");
+        }
+
+        // Logic
+        this.scene.remove(obj);
+        // Remove from raycast targets
+        this.raycastTargets = this.raycastTargets.filter(t => t !== obj);
+    }
+
+    handlePipeHit(pipe, point) {
+        if (!pipe) return;
+        
+        const isGasPipe = pipe.userData.isGasPipe;
+        const effectColor = isGasPipe ? 0x00ff00 : 0xffaa00;
+        
+        // Steam/Gas cloud
+        this.particleSystem.createSteamCloud(point, isGasPipe ? 0x00ff00 : 0xdddddd, 10);
+        
+        if (isGasPipe) {
+            // Spawn a gas leak logic
+            if (!pipe.userData.isGasTriggered) {
+                const leak = new GasLeak(this.scene, point, this.particleSystem);
+                this.activeGasLeaks.push(leak);
+                pipe.userData.isGasTriggered = true;
+            }
+        } else {
+            // High-voltage sparks
+            this.particleSystem.createExplosion(point, 0xffffff, 8, 5);
+            this.particleSystem.createTracer(point, point.clone().add(new THREE.Vector3(Math.random()-0.5, 2, Math.random()-0.5)), 0x00ffff, 0.5);
+        }
+
+        // Add debris
+        this.particleSystem.createDebris(point, 0x888888, 3, 'PIPE');
+
+        if (this.impactSynth) {
+            this.impactSynth.triggerAttackRelease(isGasPipe ? "G2" : "G4", "16n");
+        }
+    }
+
     issueCommand(command) {
         if (command === 'CANCEL') return;
         if (command === 'TECH_INVENTORY') {
@@ -2294,39 +2813,176 @@ export class GameScene {
             return;
         }
 
+        // Trigger Tactical Handshake audio
+        if (this.tacticalHandshake) {
+            const now = this.Tone ? this.Tone.now() : 0;
+            this.tacticalHandshake.triggerAttackRelease(["C5", "G5"], "32n", now);
+        }
+
+        if (command.startsWith('STANCE_')) {
+            const stance = command.split('_')[1].toLowerCase();
+            this.enemies.forEach(e => {
+                if (e.isAlly && !e.isDead) {
+                    if (e.setStance) e.setStance(stance);
+                }
+            });
+            this.showProgressionMessage(`DRONE SQUAD: ${stance.toUpperCase()} MODE ACTIVE`);
+            this.successSynth?.triggerAttackRelease("C5", "16n");
+            this.selectedCommand = null;
+            return;
+        }
+
         let targetPos = null;
-        if (command === 'MOVE_TO' || command === 'GUARD') {
-            // Raycast to find target position
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
-            const intersects = raycaster.intersectObjects([...this.map.walls, this.scene.children[0]], true); // walls + floor
-            if (intersects.length > 0) {
-                targetPos = intersects[0].point.clone();
-                this.commandMarker.position.copy(targetPos).y += 0.1;
-                this.commandMarker.visible = true;
-                setTimeout(() => this.commandMarker.visible = false, 2000);
+        let targetEnemy = null;
+
+        // Perform raycast to find target or position
+        const raycaster = new THREE.Raycaster();
+        raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+        
+        // We want to check enemies first for STRIKE, otherwise floor/walls
+        const enemiesHitboxes = this.enemies.filter(e => !e.isDead && !e.isAlly).map(e => e.mesh.getObjectByName('hitbox')).filter(Boolean);
+        const environment = [...this.map.walls, this.scene.getObjectByName('FLOOR')].filter(Boolean);
+        
+        if (command === 'STRIKE') {
+            const hits = raycaster.intersectObjects(enemiesHitboxes, true);
+            if (hits.length > 0) {
+                targetEnemy = hits[0].object.userData.enemyRef;
+                targetPos = targetEnemy.mesh.position.clone();
+                this.showProgressionMessage(`COMMAND: FOCUS FIRE ON ${targetEnemy.type}`);
+                this.successSynth?.triggerAttackRelease("G5", "16n");
+                
+                // Red marker for strike
+                this.commandMarker.material.color.set(0xff0000);
+                this.commandMarker.scale.setScalar(1.5);
             } else {
-                return; // No valid target
+                // If no enemy hit, maybe player just wanted to move them there?
+                // Or maybe cancel strike if nothing hit?
+                this.showProgressionMessage("COMMAND FAILED: NO TARGET ACQUIRED");
+                return;
             }
+        } else if (command === 'DEFEND') {
+            const hits = raycaster.intersectObjects(environment, true);
+            if (hits.length > 0) {
+                targetPos = hits[0].point.clone();
+                this.showProgressionMessage("COMMAND: DEFEND POSITION");
+                this.successSynth?.triggerAttackRelease("C5", "16n");
+                
+                // Blue marker for defend
+                this.commandMarker.material.color.set(0x00aaff);
+                this.commandMarker.scale.setScalar(1.0);
+            } else {
+                return;
+            }
+        } else if (command === 'FOLLOW') {
+            this.showProgressionMessage("COMMAND: FOLLOWING OPERATOR");
+            this.successSynth?.triggerAttackRelease("E5", "16n");
+        }
+
+        if (targetPos) {
+            this.commandMarker.position.copy(targetPos).y += 0.1;
+            this.commandMarker.visible = true;
+            setTimeout(() => this.commandMarker.visible = false, 2000);
         }
 
         this.enemies.forEach(e => {
             if (e.isAlly && !e.isDead) {
                 e.command = command;
                 if (targetPos) e.commandPos.copy(targetPos);
+                if (targetEnemy) e.commandTarget = targetEnemy;
+                else e.commandTarget = null;
             }
         });
         
         this.selectedCommand = null;
     }
 
+    updateChamberHUD() {
+        const chamber = this.map.chambers[this.currentChamberIndex];
+        const bar = document.getElementById('chamber-progress-bar');
+        const label = document.getElementById('chamber-progress-label');
+        if (!chamber || !bar || !label) return;
+
+        const enemiesAlive = this.enemies.filter(e => !e.isAlly && !e.isDead).length;
+        const enemiesKilled = Math.max(0, chamber.enemiesSpawned - enemiesAlive);
+        const totalEnemies = this.enemiesPerChamber;
+        
+        let progressPercent = Math.min(100, (enemiesKilled / totalEnemies) * 100);
+        
+        if (this.chamberClearingStatus === 'CLEARED' || this.chamberClearingStatus === 'UNLOCKED') {
+            progressPercent = 100;
+        }
+
+        bar.style.width = `${progressPercent}%`;
+        
+        if (this.chamberClearingStatus === 'CLEARED') {
+            label.innerText = `CHAMBER ${this.currentChamberIndex + 1} SECURED - ACCESS TERMINAL`;
+            label.style.color = '#ffff00';
+            bar.style.background = '#ffff00';
+        } else if (this.chamberClearingStatus === 'UNLOCKED') {
+            label.innerText = `CHAMBER ${this.currentChamberIndex + 1} UNLOCKED - PROCEED TO EXIT`;
+            label.style.color = '#00ffff';
+            bar.style.background = '#00ffff';
+        } else {
+            label.innerText = `CHAMBER ${this.currentChamberIndex + 1} INTEGRITY: ${Math.floor(100 - progressPercent)}%`;
+            label.style.color = '#00ffaa';
+            bar.style.background = '#00ffaa';
+        }
+    }
+
     update(deltaTime) {
-        if (this.gameState !== 'PLAYING' && this.gameState !== 'BRIEFING_SCREEN' && !this.isNeuralSyncing) return;
+        if (this.gameState !== 'PLAYING' && this.gameState !== 'BRIEFING_SCREEN' && !this.isNeuralSyncing) {
+            // Lower ambient when not playing
+            if (this.ambientHum) this.ambientHum.volume.rampTo(-60, 0.5);
+            if (this.ambientAir) this.ambientAir.volume.rampTo(-80, 0.5);
+            return;
+        } else {
+            if (this.ambientHum) this.ambientHum.volume.rampTo(-45, 0.5);
+            if (this.ambientAir) this.ambientAir.volume.rampTo(-65, 0.5);
+        }
+
+        // Update Radar HUD
+        this.updateRadar();
+
+        // --- Heat System Update ---
+        if (this.gameState === 'PLAYING') {
+            const elapsed = Date.now() - this.missionStartTime;
+            const newHeat = Math.min(CONFIG.HEAT.MAX_LEVEL, 1 + Math.floor(elapsed / CONFIG.HEAT.LEVEL_UP_INTERVAL));
+            
+            if (newHeat > this.heatLevel) {
+                this.heatLevel = newHeat;
+                this.showProgressionMessage(`SECURITY LEVEL INCREASED: HEAT LEVEL ${this.heatLevel}`);
+                this.successSynth?.triggerAttackRelease("C3", "4n");
+                
+                // Visual feedback for heat increase
+                const hud = document.getElementById('heat-hud');
+                if (hud) {
+                    hud.style.display = 'block';
+                    hud.style.animation = 'pulse 1s 3';
+                    const heatVal = document.getElementById('heat-val');
+                    if (heatVal) heatVal.innerText = this.heatLevel;
+                }
+                
+                // Trigger a burst glitch
+                this.heatVisuals.glitchIntensity = 1.0;
+            }
+            
+            this.updateHeatVisuals(deltaTime);
+        }
+
+        if (!this.map) return;
 
         // Check for player death
         if (this.player.isDead && this.gameState === 'PLAYING') {
-            this.showDeathScreen();
-            return;
+            // Short grace period after deployment to avoid instant glitch deaths
+            if (Date.now() - (this.deploymentTime || 0) > 1000) {
+                this.showDeathScreen();
+                return;
+            } else {
+                // If they "died" during grace period, just reset health
+                this.player.health = this.player.maxHealth;
+                this.player.isDead = false;
+                this.player.updateUI();
+            }
         }
 
         // Reset per-frame player states
@@ -2349,7 +3005,7 @@ export class GameScene {
             if (this.map.extractionPortal.mesh.visible) {
                 const dist = this.player.mesh.position.distanceTo(this.map.extractionPortal.mesh.position);
                 if (dist < 2.5) {
-                    this.extract();
+                    this.showExtractionScreen();
                 }
             }
         }
@@ -2372,9 +3028,11 @@ export class GameScene {
                 const nextChamber = this.map.chambers[this.currentChamberIndex + 1];
                 if (this.player.mesh.position.distanceTo(new THREE.Vector3(nextChamber.x, 0, nextChamber.z)) < nextChamber.size / 2) {
                     this.currentChamberIndex++;
-                    this.enemiesPerChamber += 2; // Increase difficulty
+                    this.enemiesPerChamber += 2; // Base increase
+                    if (nextChamber.isVault) this.enemiesPerChamber += 4; // Extra security for vaults
+                    
                     this.chamberClearingStatus = 'ACTIVE';
-                    this.showProgressionMessage(`ENTERING CHAMBER ${this.currentChamberIndex + 1}`);
+                    this.showProgressionMessage(nextChamber.isVault ? `WARNING: BREACHING HIGH-SECURITY VAULT` : `ENTERING CHAMBER ${this.currentChamberIndex + 1}`);
 
                     // Final Boss Room Logic
                     if (this.currentChamberIndex === CONFIG.MAP.NUM_ROOMS - 1 && !this.finalBossSpawned) {
@@ -2384,47 +3042,12 @@ export class GameScene {
             }
         }
 
-        // Show terminal prompt if near and ready
-        let nearTerminal = false;
-        if (this.chamberClearingStatus === 'CLEARED') {
-            const terminal = this.map.terminals.find(t => t.chamberIndex === this.currentChamberIndex);
-            if (terminal && !terminal.isUsed) {
-                if (this.player.mesh.position.distanceTo(terminal.mesh.position) < 3) {
-                    nearTerminal = true;
-                }
-            }
+        // Show interaction prompts - Throttled (every 10 frames)
+        if (this.frameCounter % 10 === 0) {
+            this.performProximityChecks();
         }
-        const termPrompt = document.getElementById('terminal-prompt');
-        if (termPrompt) termPrompt.style.display = nearTerminal ? 'block' : 'none';
+        this.frameCounter++;
 
-        // Show shop prompt if near a shop terminal
-        let nearShop = false;
-        for (const shopTerm of this.map.shopTerminals) {
-            if (this.player.mesh.position.distanceTo(shopTerm.mesh.position) < 3) {
-                nearShop = true;
-                break;
-            }
-        }
-        const shopPrompt = document.getElementById('shop-prompt');
-        if (shopPrompt) shopPrompt.style.display = nearShop ? 'block' : 'none';
-
-        // Show turret prompt if near a turret
-        let nearTurret = false;
-        this.turrets.forEach(t => {
-            if (t.mesh.position.distanceTo(this.player.mesh.position) < 3) {
-                nearTurret = true;
-            }
-        });
-        const turretPrompt = document.getElementById('turret-prompt');
-        if (turretPrompt) turretPrompt.style.display = nearTurret ? 'block' : 'none';
-
-        // Radial Menu update
-        if (this.isMenuOpen) {
-            // This would normally use mouse coordinates, but since we're in a pointer-locked environment
-            // that just unlocked, we can use the mouse position relative to center.
-            // Simplified: we'll check the mousemove event if we had it, but for now let's use a simpler hover detection
-            // usually done by tracking mouse in the UI layer.
-        }
         // Hacking UI update
         if (this.isHacking) {
             this.hackingNeedleRotation += this.hackingNeedleSpeed * deltaTime;
@@ -2432,58 +3055,53 @@ export class GameScene {
             if (needleEl) needleEl.style.transform = `translate(-50%, -100%) rotate(${this.hackingNeedleRotation}deg)`;
         }
 
-        // Show hack prompt if near a disabled drone
-        let canHack = false;
-        this.enemies.forEach(e => {
-            if (e.isDisabled && !e.isAlly && !e.isDead) {
-                const d = e.mesh.position.distanceTo(this.player.mesh.position);
-                if (d < 3) canHack = true;
-            }
-        });
-        const prompt = document.getElementById('hack-prompt');
-        if (prompt) prompt.style.display = (canHack && !this.isHacking) ? 'block' : 'none';
-
         // Handle Extinguisher Spray
         if (this.player.currentWeaponKey === 'EXTINGUISHER' && this.mouseIsDown) {
-            this.player.spray(deltaTime, this.activeFireFields, this.map.barrels);
+            this.player.spray(deltaTime, this.activeFireFields, this.map.barrels, this.map.hazards);
         } else {
             this.player.isSpraying = false;
         }
 
         // Update Environmental Hazards 2.0
+        let targetMoveSpeed = CONFIG.PLAYER.MOVE_SPEED;
         if (this.map.hazards) {
             this.map.hazards.forEach(hazard => {
-                hazard.pulseTime += deltaTime * 5;
+                if (hazard.update) {
+                    // Update hazard and it can handle its own player damage/detection if it wants
+                    // We pass a takeDamage callback that uses the environmental blue flash
+                    const envTakeDamage = (amt, isDOT) => this.player.takeDamage(amt, isDOT, 'rgba(0, 150, 255, 0.4)');
+                    hazard.update(deltaTime, this.player.mesh.position, envTakeDamage);
+                }
+                
+                if (hazard.instance && hazard.instance.update) {
+                    hazard.instance.update(deltaTime, this.player, this.enemies, this.gameState === 'PLAYING');
+                }
+                
+                if (!hazard.isActive) return;
+
                 if (hazard.type === 'VOLTAGE') {
-                    // Pulsing visual effect
-                    const intensity = 0.5 + Math.sin(hazard.pulseTime) * 0.5;
-                    hazard.mesh.material.emissiveIntensity = intensity * 2;
-                    
-                    // Collision check
-                    const dist = this.player.mesh.position.distanceTo(hazard.mesh.position);
-                    if (dist < hazard.radius) {
-                        if (Date.now() - (hazard.lastTick || 0) > 1000) {
-                            this.player.takeDamage(hazard.damage, true);
+                    // Collision check - use group position because mesh is relative
+                    const hazardPos = hazard.group ? hazard.group.position : hazard.mesh.position;
+                    const dist = this.player.mesh.position.distanceTo(hazardPos);
+                    if (dist < (hazard.radius || 1.8)) {
+                        if (this.gameState === 'PLAYING' && Date.now() - (hazard.lastTick || 0) > 800) {
+                            this.player.takeDamage(hazard.damage || 25, true, 'rgba(0, 150, 255, 0.4)');
                             hazard.lastTick = Date.now();
-                            this.cameraShake(0.2);
+                            this.shakeAmount = Math.max(this.shakeAmount, 0.3);
                         }
                     }
-                } else if (hazard.type === 'CRYO') {
-                    // Visual effect
-                    hazard.mesh.material.opacity = 0.3 + Math.sin(hazard.pulseTime * 0.5) * 0.1;
-                    
-                    // Collision check
-                    const dist = this.player.mesh.position.distanceTo(hazard.mesh.position);
-                    if (dist < hazard.radius) {
-                        this.playerController.moveSpeed = CONFIG.PLAYER.MOVE_SPEED * hazard.slowFactor;
-                    } else {
-                        // Restore speed if not in any cryo hazard (simplified)
-                        // In a real scenario we might want a 'isSlowed' flag per frame
-                        this.playerController.moveSpeed = CONFIG.PLAYER.MOVE_SPEED;
+                } else if (hazard.type === 'CRYO' || (hazard.instance && hazard.instance.isActive && hazard.type === 'CRYO_VENT')) {
+                    // Slow player if standing in cryo
+                    const hazardPos = hazard.group ? hazard.group.position : (hazard.position || hazard.mesh.position);
+                    const dist = this.player.mesh.position.distanceTo(hazardPos);
+                    const rad = hazard.radius || 2.5;
+                    if (dist < rad && this.gameState === 'PLAYING') {
+                        targetMoveSpeed = CONFIG.PLAYER.MOVE_SPEED * (hazard.slowFactor || 0.5);
                     }
                 }
             });
         }
+        this.playerController.moveSpeed = targetMoveSpeed;
 
         // Particle update
         this.particleSystem.update(deltaTime);
@@ -2546,8 +3164,15 @@ export class GameScene {
         }
 
         // Update Controls
-        const rotation = this.cameraController.update();
-        
+        let rotation = 0;
+        if (this.gameState === 'PLAYING') {
+            rotation = this.cameraController.update();
+            const walls = this.map ? this.map.walls : [];
+            this.playerController.update(deltaTime, rotation, walls);
+        } else {
+            this.cameraController.update(); 
+        }
+
         // Apply camera shake AFTER controller update
         if (this.shakeAmount > 0) {
             this.camera.position.x += (Math.random() - 0.5) * this.shakeAmount;
@@ -2559,7 +3184,13 @@ export class GameScene {
             if (this.shakeAmount < 0.001) this.shakeAmount = 0;
         }
 
-        this.playerController.update(deltaTime, rotation);
+        // Determine current chamber index based on player position
+        const curPos = this.player.mesh.position;
+        const detectedChamber = this.map.chambers.find(c => 
+            Math.abs(curPos.x - c.x) < c.size / 2 + 5 && 
+            Math.abs(curPos.z - c.z) < c.size / 2 + 5
+        );
+        this.currentChamberIndex = detectedChamber ? detectedChamber.index : null;
 
         // Player state for swaying/bobbing
         const isMoving = this.playerController.velocity.x !== 0 || this.playerController.velocity.z !== 0;
@@ -2568,24 +3199,20 @@ export class GameScene {
         // Reset mouse delta after passing it to player update
         this.mouseDelta = { x: 0, y: 0 };
 
-        // Simple Collision
-        if (this.map.checkCollision(this.player.mesh.position)) {
-            // Restore position if colliding (naive)
-            const dir = this.playerController.velocity.clone().multiplyScalar(-deltaTime);
-            this.player.mesh.position.add(dir);
-        }
-
         // Spawn Enemies
-        if (Date.now() - this.lastEnemySpawn > CONFIG.ENEMY.SPAWN_RATE) {
+        const activeEnemies = this.enemies.filter(e => !e.isDead && !e.isAlly).length;
+        const currentSpawnRate = Math.max(2000, CONFIG.ENEMY.SPAWN_RATE - (this.heatLevel - 1) * CONFIG.HEAT.SPAWN_RATE_REDUCTION_PER_LEVEL);
+        
+        if (activeEnemies < (CONFIG.ENEMY.MAX_ACTIVE || 15) && Date.now() - this.lastEnemySpawn > currentSpawnRate) {
             this.spawnEnemy();
             this.lastEnemySpawn = Date.now();
         }
 
         // Update Extraction Portal
-        if (this.map.extractionPortal) {
+        if (this.map.extractionPortal && this.map.extractionPortal.mesh.visible) {
             this.map.extractionPortal.update(deltaTime);
             const dist = this.player.mesh.position.distanceTo(this.map.extractionPortal.mesh.position);
-            if (dist < 3) {
+            if (dist < 3 && this.gameState === 'PLAYING') {
                 this.showExtractionScreen();
             }
         }
@@ -2593,6 +3220,7 @@ export class GameScene {
         this.checkAndSpawnPickups();
 
         // Update Pickups
+        let playedPickupSoundInFrame = false;
         for (let i = this.pickups.length - 1; i >= 0; i--) {
             const pickup = this.pickups[i];
             pickup.update(deltaTime, this.player.mesh.position);
@@ -2603,11 +3231,17 @@ export class GameScene {
                     this.player.replenishAmmo(pickup.type);
                 } else if (pickup instanceof CreditChip) {
                     this.scrap += pickup.value;
-                    this.successSynth?.triggerAttackRelease("C5", "32n");
+                    if (!playedPickupSoundInFrame) {
+                        try { this.successSynth?.triggerAttackRelease("C5", "32n"); } catch (e) {}
+                        playedPickupSoundInFrame = true;
+                    }
                     this.player.updateUI();
                 } else if (pickup instanceof DataCore) {
                     this.techCores += pickup.value;
-                    this.successSynth?.triggerAttackRelease("G6", "16n");
+                    if (!playedPickupSoundInFrame) {
+                        try { this.successSynth?.triggerAttackRelease("G6", "16n"); } catch (e) {}
+                        playedPickupSoundInFrame = true;
+                    }
                     this.player.updateUI();
                     this.showProgressionMessage(`LEGENDARY DATA CORE RECOVERED: +${pickup.value} CORES`);
                 }
@@ -2615,6 +3249,9 @@ export class GameScene {
                 this.pickups.splice(i, 1);
             }
         }
+
+        // Update Chamber HUD
+        this.updateChamberHUD();
 
         // Update Turrets
         for (let i = this.turrets.length - 1; i >= 0; i--) {
@@ -2640,15 +3277,145 @@ export class GameScene {
         // Update Enemies
         for (let i = this.enemies.length - 1; i >= 0; i--) {
             const enemy = this.enemies[i];
-            enemy.update(deltaTime, this.player.mesh.position, this.activeSmokeScreens, this.player.isThermalActive, this.enemies, this.turrets, this.map.walls);
+            
+            // Register in spatial grid if alive - Throttle indexing to every 4 frames per enemy
+            if (!enemy.isDead) {
+                if ((this.frameCounter + i) % 4 === 0) {
+                    this.spatialGrid.updateEntity(enemy);
+                }
+            } else {
+                this.spatialGrid.removeEntity(enemy);
+            }
+
+            enemy.update(deltaTime, this.player.mesh.position, this.activeSmokeScreens, this.player.isThermalActive, this.enemies, this.turrets, this.map, this.spatialGrid);
             
             // Update Boss UI if this is the final boss
             if (this.finalBossAlive && enemy.type === 'HEAVY_SEC_BOT' && this.currentChamberIndex === CONFIG.MAP.NUM_ROOMS - 1) {
                 this.updateBossHealthUI(enemy);
             }
 
-            if (enemy.isDead) {
+            if (enemy.isDead && (enemy.deathTimer === undefined || enemy.deathTimer <= 0)) {
                 this.enemies.splice(i, 1);
+            }
+        }
+
+        // Periodically refresh raycast targets to account for enemy movement and destruction
+        if (this.frameCounter % 30 === 0) {
+            this.refreshRaycastTargets();
+        }
+
+        // --- Audio Proximity Updates (Throttled) ---
+        if (this.frameCounter % 5 === 0) {
+            if (this.hazardHiss) {
+                let maxHiss = -100;
+                // Check hazards from map in vicinity
+                const currentHazards = (this.map.hazards || []).filter(h => {
+                   const hPos = h.position || (h.group ? h.group.position : (h.mesh ? h.mesh.position : null));
+                   return hPos && hPos.distanceToSquared(this.player.mesh.position) < 400; // 20m range
+                });
+
+                [...this.activeGasLeaks, ...currentHazards].forEach(h => {
+                    const hPos = h.position || (h.group ? h.group.position : (h.mesh ? h.mesh.position : null));
+                    if (!hPos) return;
+                    const d = this.player.mesh.position.distanceTo(hPos);
+                    if (d < 10) {
+                        const vol = THREE.MathUtils.lerp(-100, -35, 1.0 - (d / 10));
+                        maxHiss = Math.max(maxHiss, vol);
+                    }
+                });
+                this.hazardHiss.volume.rampTo(maxHiss, 0.2);
+            }
+
+            if (this.shieldHum) {
+                let maxHum = -100;
+                // Player shield
+                if (this.player.hasProjectedShield) maxHum = -35;
+                // Enemy shields in vicinity
+                this.enemies.forEach(e => {
+                    if (!e.isDead && (e.shieldHealth > 0 || e.hasProjectedShield)) {
+                        const dSq = this.player.mesh.position.distanceToSquared(e.mesh.position);
+                        if (dSq < 64) { // dist < 8
+                            const d = Math.sqrt(dSq);
+                            const vol = THREE.MathUtils.lerp(-100, -40, 1.0 - (d / 8));
+                            maxHum = Math.max(maxHum, vol);
+                        }
+                    }
+                });
+                this.shieldHum.volume.rampTo(maxHum, 0.2);
+            }
+
+            if (this.portalRumble) {
+                let portalVol = -100;
+                if (this.map.extractionPortal && this.map.extractionPortal.mesh.visible) {
+                    const dist = this.player.mesh.position.distanceTo(this.map.extractionPortal.mesh.position);
+                    if (dist < 15) {
+                        portalVol = THREE.MathUtils.lerp(-100, -20, 1.0 - (dist / 15));
+                    }
+                }
+                this.portalRumble.volume.rampTo(portalVol, 0.3);
+            }
+        }
+    }
+
+    updateHeatVisuals(deltaTime) {
+        const visualConfig = CONFIG.HEAT.VISUALS;
+        const heatFactor = (this.heatLevel - 1) / (CONFIG.HEAT.MAX_LEVEL - 1);
+        
+        // 1. Interpolate Fog Color and Density
+        const fogColorStart = new THREE.Color(visualConfig.FOG_COLOR_START);
+        const fogColorEnd = new THREE.Color(visualConfig.FOG_COLOR_END);
+        this.heatVisuals.targetFogColor.copy(fogColorStart).lerp(fogColorEnd, heatFactor);
+        this.heatVisuals.currentFogColor.lerp(this.heatVisuals.targetFogColor, deltaTime * 0.5);
+        
+        if (this.scene.fog) {
+            this.scene.fog.color.copy(this.heatVisuals.currentFogColor);
+            this.scene.background.copy(this.heatVisuals.currentFogColor);
+            
+            const targetDensity = 0.02 + (visualConfig.FOG_DENSITY_MAX - 0.02) * heatFactor;
+            this.scene.fog.density = THREE.MathUtils.lerp(this.scene.fog.density, targetDensity, deltaTime * 0.5);
+        }
+        
+        // 2. Interpolate Ambient Light
+        this.heatVisuals.targetAmbientIntensity = visualConfig.AMBIENT_INTENSITY_START + 
+            (visualConfig.AMBIENT_INTENSITY_END - visualConfig.AMBIENT_INTENSITY_START) * heatFactor;
+        
+        this.scene.children.forEach(child => {
+            if (child instanceof THREE.AmbientLight) {
+                child.intensity = THREE.MathUtils.lerp(child.intensity, this.heatVisuals.targetAmbientIntensity, deltaTime * 0.5);
+            }
+        });
+
+        // 3. Screen-space Filters (CSS)
+        const filters = visualConfig.COLOR_FILTERS;
+        const contrast = THREE.MathUtils.lerp(filters.CONTRAST_START, filters.CONTRAST_END, heatFactor);
+        const hueRotate = THREE.MathUtils.lerp(filters.HUE_ROTATE_START, filters.HUE_ROTATE_END, heatFactor);
+        const saturate = THREE.MathUtils.lerp(filters.SATURATE_START, filters.SATURATE_END, heatFactor);
+        
+        if (this.renderer.domElement) {
+            this.renderer.domElement.style.filter = `contrast(${contrast}%) hue-rotate(${hueRotate}deg) saturate(${saturate}%)`;
+        }
+
+        // 4. Glitch and Vignette
+        const vignette = document.getElementById('heat-vignette');
+        if (vignette) {
+            const vignetteOpacity = heatFactor * 0.5;
+            vignette.style.boxShadow = `inset 0 0 ${100 + heatFactor * 200}px rgba(255, 0, 0, ${vignetteOpacity})`;
+        }
+
+        const glitchOverlay = document.getElementById('heat-glitch-overlay');
+        if (glitchOverlay) {
+            // Decaying glitch intensity
+            this.heatVisuals.glitchIntensity = Math.max(0, this.heatVisuals.glitchIntensity - deltaTime * 1.5);
+            
+            // Base glitch level from heat
+            const baseGlitch = heatFactor * 0.15;
+            const totalGlitch = Math.min(1.0, baseGlitch + this.heatVisuals.glitchIntensity);
+            
+            glitchOverlay.style.opacity = totalGlitch;
+            if (totalGlitch > 0.05) {
+                glitchOverlay.style.animation = `glitch-flicker ${0.5 - heatFactor * 0.3}s infinite`;
+            } else {
+                glitchOverlay.style.animation = 'none';
             }
         }
     }
@@ -2695,7 +3462,9 @@ export class GameScene {
         }
 
         if (screen) screen.style.display = 'flex';
-        this.successSynth?.triggerAttackRelease("C5", "4n");
+        
+        const now = this.Tone ? this.Tone.now() : undefined;
+        this.successSynth?.triggerAttackRelease("C5", "4n", now);
     }
 
     getUpgradeBonusText(id, level) {
@@ -2746,9 +3515,10 @@ export class GameScene {
         if (screen) screen.style.display = 'flex';
         
         // Play death sound
-        this.impactSynth?.triggerAttackRelease("C2", "2n");
+        const now = this.Tone ? this.Tone.now() : undefined;
+        this.impactSynth?.triggerAttackRelease("C2", "2n", now);
         if (this.shootSynth) {
-            this.shootSynth.triggerAttackRelease("G1", "1n");
+            this.shootSynth.triggerAttackRelease("1n", now);
         }
 
         // Add a red flicker effect to the screen
@@ -2762,6 +3532,29 @@ export class GameScene {
         }
     }
 
+    resetHeatVisuals() {
+        this.heatVisuals = {
+            targetFogColor: new THREE.Color(CONFIG.HEAT.VISUALS.FOG_COLOR_START),
+            currentFogColor: new THREE.Color(CONFIG.HEAT.VISUALS.FOG_COLOR_START),
+            targetAmbientIntensity: CONFIG.HEAT.VISUALS.AMBIENT_INTENSITY_START,
+            currentAmbientIntensity: CONFIG.HEAT.VISUALS.AMBIENT_INTENSITY_START,
+            glitchIntensity: 0
+        };
+
+        if (this.renderer.domElement) {
+            this.renderer.domElement.style.filter = 'none';
+        }
+        
+        const vignette = document.getElementById('heat-vignette');
+        if (vignette) vignette.style.boxShadow = 'none';
+        
+        const glitchOverlay = document.getElementById('heat-glitch-overlay');
+        if (glitchOverlay) {
+            glitchOverlay.style.opacity = '0';
+            glitchOverlay.style.animation = 'none';
+        }
+    }
+
     resetMission() {
         // Reset non-persistent stats
         this.scrap = 0;
@@ -2770,6 +3563,8 @@ export class GameScene {
         this.finalBossSpawned = false;
         this.finalBossAlive = false;
         this.chamberClearingStatus = 'ACTIVE';
+        this.heatLevel = 1;
+        this.resetHeatVisuals();
 
         // Reset player
         this.player.health = this.player.maxHealth;
@@ -2834,6 +3629,61 @@ export class GameScene {
         if (creditsDisplay) creditsDisplay.innerText = `META-CREDITS: ${this.metaCredits.toLocaleString()}`;
     }
 
+    performProximityChecks() {
+        if (!this.player || !this.player.mesh) return;
+        const playerPos = this.player.mesh.position;
+
+        // Terminal proximity
+        let nearTerminal = false;
+        for (const terminal of this.map.terminals) {
+            if (terminal && !terminal.isUsed) {
+                if (playerPos.distanceToSquared(terminal.mesh.position) < 9) { // dist < 3
+                    nearTerminal = true;
+                    break;
+                }
+            }
+        }
+        const termPrompt = document.getElementById('terminal-prompt');
+        if (termPrompt) termPrompt.style.display = nearTerminal ? 'block' : 'none';
+
+        // Shop proximity
+        let nearShop = false;
+        for (const shopTerm of this.map.shopTerminals) {
+            if (playerPos.distanceToSquared(shopTerm.mesh.position) < 9) {
+                nearShop = true;
+                break;
+            }
+        }
+        const shopPrompt = document.getElementById('shop-prompt');
+        if (shopPrompt) shopPrompt.style.display = nearShop ? 'block' : 'none';
+
+        // Turret proximity
+        let nearTurret = false;
+        for (const t of this.turrets) {
+            if (playerPos.distanceToSquared(t.mesh.position) < 9) {
+                nearTurret = true;
+                break;
+            }
+        }
+        const turretPrompt = document.getElementById('turret-prompt');
+        if (turretPrompt) turretPrompt.style.display = nearTurret ? 'block' : 'none';
+
+        // Hack proximity - Using spatial grid
+        let canHack = false;
+        const nearby = this.spatialGrid.getNearby(playerPos, 3);
+        for (let i = 0; i < nearby.length; i++) {
+            const e = nearby[i];
+            if (e.isDisabled && !e.isAlly && !e.isDead) {
+                if (playerPos.distanceToSquared(e.mesh.position) < 9) {
+                    canHack = true;
+                    break;
+                }
+            }
+        }
+        const hackPrompt = document.getElementById('hack-prompt');
+        if (hackPrompt) hackPrompt.style.display = (canHack && !this.isHacking) ? 'block' : 'none';
+    }
+
     animate() {
         requestAnimationFrame(() => this.animate());
         const deltaTime = this.clock.getDelta();
@@ -2844,6 +3694,9 @@ export class GameScene {
     loadMetaState() {
         const savedCredits = localStorage.getItem('chamber_breach_meta_credits');
         if (savedCredits) this.metaCredits = parseInt(savedCredits);
+
+        const savedCores = localStorage.getItem('chamber_breach_meta_cores');
+        if (savedCores) this.techCores = parseInt(savedCores);
 
         const savedUpgrades = localStorage.getItem('chamber_breach_meta_upgrades');
         if (savedUpgrades) {
@@ -2858,6 +3711,7 @@ export class GameScene {
 
     saveMetaState() {
         localStorage.setItem('chamber_breach_meta_credits', this.metaCredits.toString());
+        localStorage.setItem('chamber_breach_meta_cores', this.techCores.toString());
         localStorage.setItem('chamber_breach_meta_upgrades', JSON.stringify(this.metaUpgrades));
     }
 

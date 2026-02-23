@@ -1,0 +1,828 @@
+{
+  "page_title": "Mini Game Hub (RO)",
+  "nav_home": "Acasă",
+  "nav_about": "Despre",
+  "nav_contact": "Contact",
+  "nav_articles": "Articole",
+  "nav_privacy": "Confidențialitate",
+  "nav_terms": "Termeni",
+
+  "header_title": "Neon Mini Game Hub",
+  "header_subtitle": "Joacă peste 100 de jocuri în browser",
+  "faq_q0": "❓ Intrebări Frecvente:",	
+  "faq_q1": "Trebuie să instalez ceva?",
+  "faq_a1": "Nu. Jocurile de pe Neon Mini Game Hub rulează direct în browser. Deschide pagina unui joc și joacă instant.",
+
+  "faq_q2": "Ce dispozitive sunt compatibile?",
+  "faq_a2": "Orice browser modern pe desktop sau mobil. Pentru performanță maximă, menține browserul actualizat și închide taburile grele.",
+
+  "faq_q3": "Colectați date personale?",
+  "faq_a3": "Site-ul este conceput să colecteze cât mai puține date. Vezi pagina de Confidențialitate pentru detalii despre cookie-uri, analytics și partenerii de publicitate.",
+
+  "faq_q4": "Cum pot cere un joc nou sau raporta un bug?",
+  "faq_a4": "Folosește pagina de Contact sau lasă feedback pe homepage dacă opțiunea este activată.",
+  "search_placeholder": "Caută jocuri după nume sau descriere…",
+  "filter_all_types": "Toate tipurile",
+  "filter_arcade": "Arcade",
+  "filter_shooter": "Shooter",
+  "filter_strategy": "Strategie",
+  "filter_logic": "Logică",
+  "filter_memory": "Memorie",
+  "filter_classic": "Clasice",
+  "filter_typing": "Tastare",
+  "filter_ai": "AI",
+  "btn_shuffle": "🔀 Amestecă",
+  "btn_reset_filters": "Resetează filtrele",
+  "btn_donate": "Donează pentru a susține site-ul",
+  "btn_submit_game": "Trimite jocul tău",
+  "title_neon_games": "Jocuri Neon",
+  "cat_top_picks": "🔥 Recomandările de top",
+  "cat_top_picks_sub": "Alese manual pentru distracție rapidă și rejucabilitate mare.",
+
+  "cat_classic_quick": "🎮 Jocuri Clasice Rapide",
+  "cat_classic_quick_sub": "Perfecte pentru pauze scurte și ușor de învățat.",
+
+  "cat_skill_logic": "🧠 Jocuri de Logică și Îndemânare",
+  "cat_skill_logic_sub": "Antrenează-ți memoria, atenția și timpul de reacție.",
+
+  "cat_strategy": "🚀 Strategie & Campanie",
+  "cat_strategy_sub": "Sesiuni mai lungi, planificare și tower defense.",
+    "value_title": "⚡ Neon Mini Game Hub — jocuri rapide în browser, optimizate pentru mobil",
+  "value_text": "Neon Mini Game Hub este o platformă ușoară de jocuri în browser: mini-jocuri HTML5 care pornesc instant, sunt rapide, fluide și funcționează atât pe desktop, cât și pe mobil. Fiecare joc este construit cu HTML, CSS și JavaScript moderne (fără instalare, fără cont), cu accent pe controale fluide, interfață clară și rejucabilitate.",
+
+  "value_link_articles": "📰 Citește articole",
+  "value_link_about": "ℹ️ Despre / Presă",
+  "value_link_privacy": "🔒 Confidențialitate",
+  "value_link_terms": "📄 Termeni",
+  "value_card1_title": "🚀 Performanță instant-play",
+  "value_card1_text": "Jocurile sunt create pentru a porni rapid și a rula fluid: scripturi minimale, randare eficientă și interfețe prietenoase cu mobilul. Dacă dispozitivul tău are un browser modern, poți juca.",
+
+  "value_card2_title": "🎮 Design de joc concentrat",
+  "value_card2_text": "Fiecare titlu este construit în jurul unui mecanism central solid: sesiuni scurte, obiective clare și progres semnificativ. Perfect pentru pauze rapide, dar suficient de profund pentru a fi stăpânit.",
+
+  "value_card3_title": "🧠 UX sigur și simplu",
+  "value_card3_text": "Fără cont obligatoriu. Fără ferestre intruzive. Navigare clară și îmbunătățiri de accesibilitate (inclusiv „sari direct la conținut”) astfel încât jucătorii să găsească jocurile și să înceapă imediat.",
+  "featured_articles_title": "Articole Recomandate",
+
+  "art1_title": "Ascensiunea Jocurilor HTML5 cu Estetică Neon",
+  "art1_desc": "O analiză aprofundată despre revenirea arcade-urilor în browser.",
+  "read_more": "Citește mai mult →",
+
+  "art2_title": "Cum Sunt Construite Jocurile Moderne în Browser",
+  "art2_desc": "Află cum HTML, CSS și JS oferă jocuri neon rapide.",
+
+  "art3_title": "Top 10 Principii ale Designului de Mini-Jocuri",
+  "art3_desc": "Elementele de bază pentru crearea jocurilor rapide și addictive.",
+
+  "art4_title": "Evoluția WebGL în Jocurile de Browser",
+  "art4_desc": "O incursiune tehnică în transformarea gaming-ului modern.",
+
+  "art5_title": "Cum Folosesc Motoarele de Jocuri Bucla de Randare Canvas",
+  "art5_desc": "Explorare în profunzime a ciclurilor de randare și sincronizării cadrelor.",
+
+  "art6_title": "Tehnici de Optimizare pe Mobil pentru Jocurile HTML5",
+  "art6_desc": "Cum să îmbunătățești viteza, latența inputului și claritatea vizuală.",
+
+  "art7_title": "De ce Funcționează Estetica Neon în Web și Gaming",
+  "art7_desc": "O analiză artistică și psihologică a puterii vizuale neon.",
+
+  "art8_title": "Construirea Sistemelor de Hitbox și Coliziune în Timp Real",
+  "art8_desc": "Matematica și tehnicile din spatele motoarelor de coliziune precise.",
+
+  "art9_title": "Cum Pot Crește Indie Devs cu Jocuri Browser-First",
+  "art9_desc": "De ce jocurile în browser devin o cale puternică pentru studiourile indie.",
+
+  "art10_title": "Viitorul WebGPU și Gamingului High-End în Browser",
+  "art10_desc": "Privire asupra API-urilor next-gen ce aduc grafică de nivel consolă în web.",
+    "footer_thanks": "🎮 Mulțumim că te joci în mini-arcada noastră!",
+  "footer_bookmark": "⭐ Adaugă pagina la favorite — jocuri noi sunt adăugate săptămânal.",
+  "footer_feedback": "💬 Ai idei sau feedback? Împarte distracția cu prietenii!",
+  "footer_privacy": "Politica de Confidențialitate",
+  "footer_terms": "Termeni de Utilizare",
+    "info_title": "Joacă Gratuit Jocuri în Browser",
+  "info_p1": "Neon Mini Game Hub oferă o colecție selectată de jocuri gratuite în browser, care pornesc instant, fără descărcare sau creare de cont. Toate jocurile sunt construite cu tehnologii web standard și funcționează pe desktop și mobil.",
+  "info_p2": "Unele jocuri pot salva progresul de bază local, în browserul tău. Reclamele, dacă sunt activate, sunt furnizate de servicii terțe precum Google AdSense. Află mai multe în",
+  "info_privacy_link": "Politica de Confidențialitate",
+  "info_p3": "Alege un joc de mai sus, dă un click și începe să te joci instant.",
+  "footer_rights": "Neo Runner Arcade — Toate Drepturile Rezervate.",
+  "about_title": "Despre Neon Mini Game Hub",
+  "about_p1": "Neon Mini Game Hub este o arcadă online gratuită cu jocuri originale create în HTML, CSS și JavaScript pur. Misiunea noastră este să oferim experiențe de joc rapide, ușoare și captivante, fără instalări, conturi sau întreruperi.",
+  "about_p2": "Fiecare joc este realizat manual, optimizat pentru performanță și complet jucabil atât pe dispozitive mobile, cât și pe desktop. Ne concentrăm pe estetica neon, controale responsive, animații fluide și mecanici addictive.",
+  "about_p3": "Acest hub conține doar titluri originale — nu jocuri embed-uite din alte surse. Fiecare lansare este construită, testată și îmbunătățită direct de dezvoltator, asigurând calitate și consistență în întreaga experiență.",
+  "about_p4": "Jocuri noi sunt adăugate săptămânal, alături de actualizări majore, extinderi de personaje, hărți noi, inamici mai inteligenți și echilibrare mai bună. Prioritatea noastră este să oferim o experiență premium, disponibilă instant din orice browser.",
+  "about_p5": "Îți mulțumim că ai vizitat Neon Mini Game Hub. Adaugă site-ul la favorite, explorează genuri noi și bucură-te de colecția în creștere de jocuri neon!",
+  "feedback_title": "💬 Feedback Comunitate",
+  "feedback_header": "Spune-ți părerea!",
+  "feedback_sub": "Lasă un comentariu sau răspunde—fără cont necesar.",
+  "feedback_name_ph": "Numele tău",
+  "feedback_text_ph": "Scrie comentariul tău...",
+  "feedback_post_btn": "Publică Comentariul",
+    "latest_articles_title": "📰 Articole Recente",
+
+  "latest_art1_title": "Ascensiunea Jocurilor HTML5 cu Neon",
+  "latest_art1_desc": "De ce jocurile neon în browser au explodat în popularitate în 2025–2026.",
+
+  "latest_art2_title": "Cum Sunt Construite Jocurile Moderne în Browser",
+  "latest_art2_desc": "O privire din culise asupra motoarelor de joc HTML, CSS și JS.",
+
+  "latest_art3_title": "Top 10 Principii de Design",
+  "latest_art3_desc": "Cum creează dezvoltatorii mini-jocuri virale și addictive.",
+    "cookie_text": "Folosim cookie-uri și tehnologii similare pentru a livra și îmbunătăți această arcadă, pentru a măsura traficul și (dacă este activat) pentru a afișa reclame personalizate prin parteneri precum Google AdSense. Prin apăsarea „Acceptă tot”, îți exprimi consimțământul pentru utilizarea cookie-urilor de analiză și publicitate. Îți poți schimba oricând opțiunile în secțiunea Confidențialitate & Cookie-uri. Vezi și",
+  "cookie_privacy_link": "Politica de Confidențialitate",
+  "cookie_reject_btn": "Respinge non-esențialele",
+  "cookie_accept_btn": "Acceptă tot",
+
+  "privacy_modal_title": "Confidențialitate & Cookie-uri",
+  "privacy_modal_intro": "Acest site folosește cookie-uri și tehnologii similare pentru:",
+  "privacy_modal_li1": "A ține minte preferințele tale (de exemplu, ce jocuri joci cel mai des).",
+  "privacy_modal_li2": "A măsura traficul și utilizarea pentru a îmbunătăți site-ul.",
+  "privacy_modal_li3": "Dacă este activat, a afișa reclame personalizate prin parteneri terți precum Google AdSense.",
+  "privacy_modal_gdpr": "Conform GDPR și altor legi similare, poți alege dacă permitem utilizarea cookie-urilor non-esențiale (analiză / reclame). Conform CCPA/CPRA, poți refuza vânzarea sau partajarea datelor personale respingând cookie-urile non-esențiale.",
+  "privacy_modal_more": "Pentru detalii complete, consultă",
+  "privacy_modal_terms": "Termenii de Utilizare",
+  "privacy_modal_close": "Închide",
+  "privacy_modal_accept_cookies": "Acceptă toate cookie-urile",
+ "cookie_policy_and": "și",
+  "privacy_floating_btn": "Confidențialitate & Cookie-uri",
+    "consent_decline": "Refuz",
+  "consent_accept": "Accept",
+    "about_h1": "Despre Neon Mini Game Hub",
+  "about_subtitle": "Kit media complet, documentație tehnică, prezentarea Neon Engine și descriere optimizată SEO.",
+  "back_to_hub": "⬅ Înapoi la Hub",
+
+  "press_title": "⭐ Presă / Media Kit",
+  "press_intro": "Neon Mini Game Hub este o platformă modernă de jocuri HTML5 cu pornire instant, având un stil neon cyberpunk. Toate titlurile sunt optimizate pentru viteză, responsivitate mobilă și consum redus de CPU/GPU.",
+
+  "brand_identity": "Identitatea Brandului",
+  "brand_name_label": "Nume:",
+  "brand_name": "Neon Mini Game Hub",
+  "brand_genre_label": "Gen:",
+  "brand_genre": "Jocuri Arcade HTML5",
+  "brand_style_label": "Stil:",
+  "brand_style": "Neon, cyberpunk, fuziune retro-arcade",
+  "brand_audience_label": "Public:",
+  "brand_audience": "Jucători casual / mobil / browser",
+  "brand_tech_label": "Tehnologii:",
+  "brand_tech": "HTML5 Canvas, JavaScript pur, Cloudflare CDN/Workers",
+
+  "press_highlights": "Repere pentru Presă",
+  "press_highlight1": "Gameplay instant — zero descărcări",
+  "press_highlight2": "Motoare custom pentru fiecare titlu",
+  "press_highlight3": "UI optimizat pentru mobil & controale tactile",
+  "press_highlight4": "Încărcare ultra-rapidă la nivel global via Cloudflare",
+  "press_highlight5": "Ecosistem în creștere de articole și jurnale de dezvoltare",
+
+  "bts_title": "⭐ În Culise: Motorul Neon",
+  "bts_intro": "Motorul Neon stă la baza titlurilor avansate precum Neon Dungeon Auto Shooter. Este ușor, modular și optimizat pentru gameplay în timp real.",
+
+  "bts_core_title": "Sisteme de Bază",
+  "bts_core1": "Randare: Pipeline HTML5 Canvas optimizat",
+  "bts_core2": "Game Loop: 60 FPS cu smoothing delta",
+  "bts_core3": "Fizică: Sistem de coliziuni optimizat pe grid",
+  "bts_core4": "AI: State machines + arbori comportamentali",
+  "bts_core5": "UI: HUD pe Canvas & overlay-uri CSS",
+
+  "bts_perf_title": "Optimizări de Performanță",
+  "bts_perf1": "Pre-randare cu OffscreenCanvas unde este suportat",
+  "bts_perf2": "Object pooling pentru proiectile și inamici",
+  "bts_perf3": "Mișcare pe matematică întreagă pentru a reduce jitter-ul",
+  "bts_perf4": "Partiționare pe layere pentru a reduce overdraw-ul",
+
+  "bts_tools_title": "Unelte & Interfețe de Debug",
+  "bts_tool1": "Inspector de hitbox-uri și coliziuni",
+  "bts_tool2": "Overlay FPS în timp real",
+  "bts_tool3": "Vizualizator al razei de vizibilitate / aggro",
+  "bts_tool4": "Loader de camere & inspector de limite",
+
+  "tech_title": "⭐ Documentație Tehnică",
+  "tech_folder_title": "Structură Fișiere",
+  "tech_loop_title": "Bucla Principală de Joc",
+  "tech_worker_title": "Cloudflare Worker (Sistem Feedback)",
+
+  "seo_title": "⭐ Descriere Optimizată SEO pentru Homepage",
+  "seo_intro": "Neon Mini Game Hub oferă jocuri rapide, cu estetică neon, jucabile instant pe desktop, mobil și tabletă. Fără descărcări și fără conturi — doar gameplay arcade direct în browser.",
+
+  "seo_strategy_title": "Strategie SEO",
+  "seo_strat1": "Articole lungi cu linking intern puternic",
+  "seo_strat2": "Structură semantică curată (H1, H2, pregătită pentru schema)",
+  "seo_strat3": "Layout responsive, mobile-first",
+  "seo_strat4": "Media încărcată lazy & resurse comprimate",
+  "seo_strat5": "Descrieri de joc optimizate pe cuvinte cheie",
+
+  "seo_keywords_title": "Cuvinte Cheie Principale",
+  "seo_kw1": "jocuri arcade html5",
+  "seo_kw2": "jocuri în browser gratuite",
+  "seo_kw3": "gaming html5 pe mobil",
+  "seo_kw4": "mini-jocuri cyberpunk",
+  "seo_kw5": "arcadă online rapidă",
+  "contact_title": "Contact – Neon Mini Game Hub",
+  "contact_meta_desc": "Contactează Neon Mini Game Hub pentru suport, feedback, parteneriate sau solicitări de presă.",
+
+  "contact_h1": "Contact",
+  "contact_intro": "Suport, feedback, parteneriate și solicitări de presă. Dacă apare o problemă într-un joc, spune-ne dispozitivul + browserul și acțiunile făcute.",
+
+  "back_to_hub": "⬅ Înapoi la Hub",
+  "nav_articles": "Articole",
+  "nav_about": "Despre",
+  "nav_privacy": "Confidențialitate",
+  "nav_terms": "Termeni",
+
+  "contact_send_msg": "Trimite un mesaj",
+  "contact_email_note": "Acest formular deschide aplicația ta de email (fără backend). Ne poți scrie direct la contact@neonminigamehub.com.",
+
+  "contact_label_name": "Numele tău",
+  "contact_ph_name": "Nume",
+
+  "contact_label_email": "Adresa ta de email",
+  "contact_ph_email": "tu@example.com",
+
+  "contact_label_topic": "Subiect",
+  "contact_ph_topic": "Raport bug / Feedback / Parteneriat / Presă",
+
+  "contact_label_msg": "Mesaj",
+  "contact_ph_msg": "Scrie mesajul tău…",
+
+  "contact_btn_send": "✉️ Trimite Email",
+
+  "contact_note": "Nu cerem cont pentru a juca. Te rugăm să nu postezi date personale (email, număr de telefon, adresă).",
+
+  "contact_checklist_title": "Checklist rapid de depanare",
+  "contact_check1": "Mobil: încearcă Chrome sau Safari și dă un refresh după rotirea telefonului.",
+  "contact_check2": "Desktop: fă un hard refresh (Ctrl+F5) dacă layout-ul pare vechi.",
+  "contact_check3": "Dacă reclamele sau bannerele acoperă conținutul, trimite o captură de ecran.",
+
+  "contact_press_title": "Parteneriate / Presă",
+  "contact_press_desc": "Pentru sponsorizări sau colaborări, include site-ul/canalul tău și propunerea de colaborare.",
+
+  "contact_footer": "© 2026 Neon Mini Game Hub • Creat cu HTML5 + JavaScript",
+  "articles_title": "Neon Mini Game Hub — Articole",
+  "articles_h1": "Neon Mini Game Hub — Articole",
+  "articles_intro": "Explorează tutoriale, devlog-uri, ghiduri și conținut tehnic cu tematică neon.",
+
+  "back_to_hub": "⬅ Înapoi la Hub",
+
+  "art1_title": "Ascensiunea Jocurilor HTML5 în Stil Neon",
+  "art1_desc": "O analiză detaliată despre evoluția jocurilor neon în browser și modernizarea web gaming-ului.",
+  "art1_meta": "5-8 min • În tendințe",
+
+  "art2_title": "Cum Sunt Construite Jocurile Moderne în Browser",
+  "art2_desc": "O privire în culise asupra motoarelor, loop-urilor grafice și API-urilor web care alimentează mini-jocurile rapide.",
+  "art2_meta": "6-9 min • Recomandat",
+
+  "art3_title": "10 Principii de Design pentru Mini-Jocuri Atractive",
+  "art3_desc": "Află cum mini-jocurile de succes mențin jucătorii implicați prin claritate, feedback și ritm.",
+  "art3_meta": "7-10 min • Popular",
+
+  "art4_title": "Evoluția WebGL în Jocurile Web",
+  "art4_desc": "O analiză tehnică despre cum WebGL a transformat redarea în browser și HTML5 gaming-ul modern.",
+  "art4_meta": "6–9 min • Tehnic",
+
+  "art5_title": "Cum Folosesc Motoarele de Joc Render Loops în Canvas",
+  "art5_desc": "Explicație despre render loops, delta time și programarea cadrelor pentru jocurile 2D.",
+  "art5_meta": "5–8 min • Insight Dev",
+
+  "art6_title": "Tehnici de Optimizare pe Mobil pentru Jocurile HTML5",
+  "art6_desc": "Descoperă trucuri pentru performanță în gameplay pe browsere mobile cu resurse limitate.",
+  "art6_meta": "7–10 min • Optimizare",
+
+  "art7_title": "De Ce Funcționează Estetica Neon în Web și Gaming",
+  "art7_desc": "Un studiu creativ despre impactul vizual al neonului în design și jocuri.",
+  "art7_meta": "4–6 min • Creativ",
+
+  "art8_title": "Construirea Sistemelor de Hitbox în Timp Real",
+  "art8_desc": "Explicarea logicii hitbox-urilor, overlap checks și grilelor spațiale în jocuri rapide.",
+  "art8_meta": "8–12 min • Avansat",
+
+  "art9_title": "Cum Se Pot Dezvolta Indie Dev-ii cu Jocuri Browser-First",
+  "art9_desc": "De ce jocurile browser sunt o cale rapidă și accesibilă pentru dezvoltatorii independenți.",
+  "art9_meta": "6–9 min • Business",
+
+  "art10_title": "Viitorul WebGPU și Gaming-ul de Nivel Înalt în Browser",
+  "art10_desc": "Cum WebGPU va aduce performanță de consolă direct în browser.",
+  "art10_meta": "8–11 min • Next-Gen",
+  "privacy_title": "Politica de Confidențialitate – Neon Mini Game Hub",
+  "privacy_meta_desc": "Politica de confidențialitate: cookie-uri, analitice, reclame, comentarii și modul de a ne contacta pentru cereri privind datele.",
+  "privacy_og_title": "Politica de Confidențialitate – Neon Mini Game Hub",
+  "privacy_og_desc": "Politica de confidențialitate: cookie-uri, analitice, reclame, comentarii și modul de a ne contacta pentru cereri privind datele.",
+
+  "privacy_h1": "Politica de Confidențialitate",
+  "privacy_intro": "Această politică explică ce date pot fi prelucrate când folosești Neon Mini Game Hub. Colectăm cât mai puțin posibil, păstrând funcționalitatea site-ului.",
+
+  "back_to_hub": "⬅ Înapoi la Hub",
+  "nav_articles": "Articole",
+  "nav_about": "Despre",
+  "nav_terms": "Termeni",
+  "nav_contact": "Contact",
+
+  "priv_1_title": "1) Ce este acest site",
+  "priv_1_desc": "Neon Mini Game Hub este un hub de jocuri și articole bazate pe browser. Poți juca majoritatea jocurilor fără cont.",
+
+  "priv_2_title": "2) Date pe care le putem procesa",
+  "priv_2_1_title": "2.1 Loguri de server",
+  "priv_2_1_desc": "Furnizorii de hosting/CDN pot procesa loguri tehnice pentru a livra serviciul și a preveni abuzurile.",
+
+  "priv_2_2_title": "2.2 Stocare locală (pe dispozitivul tău)",
+  "priv_2_2_desc": "Unele jocuri pot folosi localStorage pentru setări sau scoruri. Aceste date rămân pe dispozitivul tău.",
+
+  "priv_2_3_title": "2.3 Comentarii / feedback",
+  "priv_2_3_desc": "Dacă postezi comentarii, textul trimis este stocat și afișat altor vizitatori.",
+  "priv_2_3_item1": "textul comentariului",
+  "priv_2_3_item2": "numele afișat introdus",
+  "priv_2_3_item3": "timestamp și ID pentru răspunsuri",
+  "priv_2_3_note": "Nu posta informații personale. Comentariile sunt publice.",
+
+  "priv_3_title": "3) Cookie-uri, consimțământ și reclame",
+  "priv_3_desc": "Putem afișa reclame prin furnizori terți. Aceștia pot folosi cookie-uri sau tehnologii similare.",
+  "priv_3_item1": "servirea reclamelor",
+  "priv_3_item2": "măsurarea performanței",
+  "priv_3_item3": "prevenirea fraudei și abuzului",
+  "priv_3_item4": "(unde este permis) personalizarea reclamelor",
+
+  "priv_4_title": "4) Analitice",
+  "priv_4_desc": "Putem folosi analitice pentru a înțelege paginile populare și pentru a îmbunătăți performanța.",
+
+  "priv_5_title": "5) Partajare și servicii terțe",
+  "priv_5_desc": "Nu vindem date personale. Unele date pot fi procesate de servicii terțe folosite pentru operarea site-ului.",
+
+  "priv_6_title": "6) Confidențialitatea copiilor",
+  "priv_6_desc": "Site-ul este destinat publicului general. Contactează-ne dacă un copil a postat informații personale.",
+
+  "priv_7_title": "7) Opțiunile tale",
+  "priv_7_item1": "Cookie-uri: folosește bannerele/controllerele și setările browserului.",
+  "priv_7_item2": "Local storage: golește datele site-ului din browser.",
+  "priv_7_item3": "Comentarii: contactează-ne pentru ștergerea unui comentariu.",
+
+  "priv_8_title": "8) Contact",
+  "priv_8_desc": "Pentru cereri de confidențialitate, scrie la contact@neonminigamehub.com.",
+
+  "priv_last_update": "Ultima actualizare: 2026-02-03",
+  "terms_title": "Termeni de Utilizare – Neon Mini Game Hub",
+  "terms_meta_desc": "Termenii de utilizare pentru Neon Mini Game Hub: jocuri, reguli de conținut, proprietate intelectuală, limitări și informații de contact.",
+  "terms_og_title": "Termeni de Utilizare – Neon Mini Game Hub",
+  "terms_og_desc": "Termenii de utilizare pentru Neon Mini Game Hub: jocuri, reguli de conținut, proprietate intelectuală, limitări și informații de contact.",
+
+  "terms_h1": "Termeni de Utilizare",
+  "terms_intro": "Acești Termeni explică modul în care poți utiliza Neon Mini Game Hub („Site-ul”). Prin utilizarea Site-ului, ești de acord cu acești Termeni.",
+
+  "back_to_hub": "⬅ Înapoi la Hub",
+  "nav_articles": "Articole",
+  "nav_about": "Despre",
+  "nav_privacy": "Confidențialitate",
+  "nav_contact": "Contact",
+
+  "terms_1_title": "1) Cine suntem",
+  "terms_1_desc": "Neon Mini Game Hub este un arcade de jocuri HTML5 și articole tehnice bazate pe browser.",
+
+  "terms_2_title": "2) Utilizare acceptabilă",
+  "terms_2_item1": "Nu încerca să ataci, să faci scraping agresiv, să perturbi sau să supraîncarci Site-ul.",
+  "terms_2_item2": "Nu încărca malware, nu rula atacuri automate și nu testa vulnerabilități.",
+  "terms_2_item3": "Nu utiliza Site-ul într-un mod care încalcă legile aplicabile.",
+
+  "terms_3_title": "3) Jocuri, scoruri și disponibilitate",
+  "terms_3_item1": "Jocurile sunt oferite „ca atare”. Putem modifica sau elimina jocuri oricând.",
+  "terms_3_item2": "Clasamentele sau scorurile locale se pot reseta la actualizări sau la resetarea browserului.",
+
+  "terms_4_title": "4) Feedback / comentarii",
+  "terms_4_desc": "Dacă Site-ul permite comentarii, ești de acord că:",
+  "terms_4_item1": "Nu vei posta date personale sau informații confidențiale.",
+  "terms_4_item2": "Nu vei posta conținut ilegal, violent, instigator la ură sau explicit sexual.",
+  "terms_4_item3": "Ne acorzi dreptul de a afișa textul trimis pe Site.",
+  "terms_4_note": "Comentariile pot fi stocate prin infrastructură terță. Vezi Politica de Confidențialitate.",
+
+  "terms_5_title": "5) Proprietate intelectuală",
+  "terms_5_desc": "Dacă nu este menționat altfel, codul, designul și conținutul Site-ului aparțin Neon Mini Game Hub.",
+  "terms_5_item1": "Poți distribui linkuri către paginile noastre.",
+  "terms_5_item2": "Nu poți copia sau republica articolele sau asset-urile jocurilor noastre.",
+
+  "terms_dmca_title": "Notificare Copyright / DMCA",
+  "terms_dmca_desc": "Dacă consideri că un conținut încalcă drepturile tale, scrie-ne:",
+  "terms_dmca_item1": "Identificarea lucrării protejate.",
+  "terms_dmca_item2": "URL-ul conținutului suspect.",
+  "terms_dmca_item3": "Datele tale + declarație de bună-credință.",
+
+  "terms_6_title": "6) Publicitate",
+  "terms_6_desc": "Putem afișa reclame prin rețele terțe (ex.: Google).",
+
+  "terms_7_title": "7) Declarație privind garanțiile",
+  "terms_7_desc": "Site-ul este oferit „ca atare”, fără garanții de funcționare.",
+
+  "terms_8_title": "8) Limitarea răspunderii",
+  "terms_8_desc": "În limita permisă de lege, nu suntem răspunzători pentru daune indirecte sau consecvențiale.",
+
+  "terms_9_title": "9) Modificări",
+  "terms_9_desc": "Putem actualiza acești Termeni. Data de mai jos arată cea mai recentă versiune.",
+
+  "terms_10_title": "10) Trimiterea unui joc",
+  "terms_10_desc": "Trimiterea unui joc nu garantează împărțirea veniturilor. Putem monetiza jocurile trimise prin reclame.",
+
+  "terms_last_update": "Ultima actualizare: 2026-02-12",
+  "art1_page_title": "Ascensiunea Jocurilor HTML5 Neon: De ce revin arcadele în browser",
+  "art1_breadcrumb": "Ascensiunea Jocurilor HTML5 Neon",
+  "art1_title": "Ascensiunea Jocurilor HTML5 Neon: De ce revin arcadele în browser",
+
+  "art1_p1": "Lumea jocurilor în browser trece printr-o revenire spectaculoasă...",
+  "art1_p2": "Arcadele în stil neon precum Neon Mini Game Hub conduc acest val...",
+
+  "art1_h2_why": "De ce revin jocurile în browser",
+  "art1_p3": "Acum câțiva ani, jocurile în browser erau considerate „moarte”...",
+
+  "art1_list1_item1": "⚡ WebGL permite redare 2D/3D accelerată GPU",
+  "art1_list1_item2": "📱 Browserele mobile rulează acum la 120Hz",
+  "art1_list1_item3": "🎮 Gamepad-urile funcționează nativ în browser",
+  "art1_list1_item4": "🕹️ Motoarele Canvas sunt extrem de optimizate",
+  "art1_list1_item5": "🚀 WebAssembly oferă performanță aproape native",
+
+  "art1_h2_neon": "Estetica Neon",
+  "art1_p4": "Vaporwave retro, cyberpunk, lumini neon, gradienturi animate...",
+
+  "art1_h2_love": "De ce iubesc jucătorii mini-jocurile neon",
+  "art1_p5": "Mini-jocurile cu sesiuni scurte domină atenția utilizatorilor...",
+
+  "art1_list2_item1": "🔹 Joc instant — fără download",
+  "art1_list2_item2": "🔹 Recompense în secunde, nu minute",
+  "art1_list2_item3": "🔹 Feedback vizual clar",
+  "art1_list2_item4": "🔹 Resetări rapide",
+  "art1_list2_item5": "🔹 Perfecte pentru pauze scurte",
+
+  "art1_h2_dev_love": "De ce iubesc dezvoltatorii HTML5",
+  "art1_p6": "Stack-ul web modern oferă super-puteri dezvoltatorilor:",
+
+  "art1_list3_item1": "Distribuție fără instalare",
+  "art1_list3_item2": "Funcționează pe orice device",
+  "art1_list3_item3": "Ecosistem uriaș de tool-uri și librării",
+  "art1_list3_item4": "Update instant (doar redeploy)",
+  "art1_list3_item5": "Potențial masiv de trafic",
+
+  "art1_h2_future": "Viitorul",
+  "art1_p7": "Cu WebGPU și browsere tot mai optimizate, mini-jocurile neon vor avansa rapid...",
+
+  "comments_title": "💬 Comentarii",
+  "comments_post_btn": "Trimite comentariu",
+  "comments_placeholder": "Scrie un comentariu...",
+  "art2_page_title": "Cum sunt construite jocurile moderne în browser",
+  "art2_breadcrumb": "Cum sunt construite jocurile moderne în browser: o privire asupra HTML, CSS & JavaScript",
+  "art2_title": "Cum sunt construite jocurile moderne în browser: o privire asupra HTML, CSS & JavaScript",
+
+  "art2_intro": "Jocurile web moderne combină motoare JavaScript puternice, randare optimizată, UI responsiv și arhitectură modulară. HTML5 gaming nu mai este simplu — este o disciplină completă cu trucuri de performanță, pattern-uri de design și sisteme fizice.",
+
+  "art2_h2_core": "🎯 Tehnologiile de bază din jocurile moderne în browser",
+  "art2_core_item1": "HTML5 Canvas pentru desenarea sprite-urilor, hărților și UI.",
+  "art2_core_item2": "Game loops JavaScript pentru mișcare, fizică, input și coliziuni.",
+  "art2_core_item3": "Animații CSS pentru meniuri, tranziții, HUD și efecte neon.",
+  "art2_core_item4": "WebAudio API pentru soundtrack, lovituri, explozii și SFX.",
+  "art2_core_item5": "LocalStorage pentru salvări și progres.",
+
+  "art2_h2_loop": "🏎 Game Loop: inima fiecărui joc în browser",
+  "art2_p_loop": "Un joc în browser rulează la 60 FPS folosind requestAnimationFrame(). Fiecare frame actualizează:",
+
+  "art2_loop_item1": "Mișcarea jucătorului",
+  "art2_loop_item2": "Logica inamicilor",
+  "art2_loop_item3": "Fizica și coliziunile",
+  "art2_loop_item4": "Efecte de particule",
+  "art2_loop_item5": "UI rendering",
+
+  "art2_h2_tools": "🔧 Uneltele folosite zilnic de dezvoltatori",
+  "art2_tools_item1": "VS Code — editorul principal de cod",
+  "art2_tools_item2": "Generatoare AI — sprite-uri, iconițe și artă neon",
+  "art2_tools_item3": "GIMP / Aseprite — pixel art custom",
+  "art2_tools_item4": "Three.js — jocuri 3D în browser",
+  "art2_tools_item5": "WebGL — efecte GPU avansate",
+
+  "art2_h2_mobile": "📱 Adaptarea jocurilor pentru mobile",
+  "art2_p_mobile": "Majoritatea jucătorilor sunt pe mobil. Dezvoltatorii trebuie să țină cont de:",
+
+  "art2_mobile_item1": "Controale touch",
+  "art2_mobile_item2": "Joystick-uri virtuale",
+  "art2_mobile_item3": "Scalare pe baza device pixel ratio",
+  "art2_mobile_item4": "UI responsiv pe fullscreen",
+
+  "art2_h2_perf": "⚡ Optimizări de performanță pe care nu le vezi",
+  "art2_perf_item1": "Sprite atlases pentru reducerea draw call-urilor",
+  "art2_perf_item2": "Object pooling pentru a evita spike-uri de garbage collection",
+  "art2_perf_item3": "Fizică cu delta-time pentru a preveni tremuratul",
+  "art2_perf_item4": "Preloading al asseturilor pentru lag redus",
+
+  "art2_h2_ai": "🧩 Viitorul: dezvoltare asistată de AI",
+  "art2_p_ai": "AI va genera în curând niveluri întregi, valuri de inamici, comportamente NPC și soundtrack-uri dinamice.",
+
+  "art2_h2_modular": "🧱 Arhitectura modulară în jocurile moderne",
+  "art2_p_modular": "Jocurile sunt construite pe module: input, coliziuni, gestionarea sprite-urilor, AI, UI și fizică.",
+
+  "art2_h2_build": "📦 Unelte de build și împachetare",
+  "art2_p_build": "Unelte precum Vite, Parcel și Rollup împachetează asseturi și minifică codul, îmbunătățind performanța.",
+  "art3_page_title": "Top 10 principii de design pentru mini-jocuri addictive",
+  "art3_breadcrumb": "Top 10 principii de design pentru mini-jocuri addictive",
+  "art3_title": "Top 10 principii de design pentru mini-jocuri addictive",
+  "art3_intro": "Mini-jocurile au succes când oferă dopamină rapid, reguli clare, controale fluide și un feedback constant și satisfăcător.",
+
+  "art3_p1_title": "1. ⚡ Start Instant (0–5 secunde)",
+  "art3_p1_text": "Fără meniuri lungi. Fără citit. Click → Play.",
+
+  "art3_p2_title": "2. 🎯 Un Singur Obiectiv Clar",
+  "art3_p2_text": "Jucătorul trebuie să poată descrie jocul într-o frază.",
+
+  "art3_p3_title": "3. 💥 Feedback Rapid",
+  "art3_p3_text": "Animațiile și recompensele trebuie să reacționeze imediat.",
+
+  "art3_p4_title": "4. 📈 Dificultate Crescătoare Treptat",
+  "art3_p4_text": "Jocul începe ușor dar se intensifică repede.",
+
+  "art3_p5_title": "5. ❤️ Design „Încă O Dată!”",
+  "art3_p5_item1": "Runde scurte (20–90 sec)",
+  "art3_p5_item2": "Retry simplu",
+  "art3_p5_item3": "Fără penalizare la eșec",
+
+  "art3_p6_title": "6. 🌀 Randomizare & Varietate",
+  "art3_p6_text": "Elementele procedurale fac fiecare run diferit.",
+
+  "art3_p7_title": "7. 📱 Perfect pentru Mobil",
+  "art3_p7_text": "Controale touch, hitbox-uri mari, UI clar.",
+
+  "art3_p8_title": "8. 🧠 Predictibil Dar Provocator",
+  "art3_p8_text": "Tipare logice, dar greu de stăpânit.",
+
+  "art3_p9_title": "9. ✨ Sistem Vizual de Recompensă",
+  "art3_p9_item1": "Glow effects",
+  "art3_p9_item2": "Flash la lovitură",
+  "art3_p9_item3": "Efecte la power-ups",
+  "art3_p9_item4": "Cutremur al ecranului",
+
+  "art3_p10_title": "10. 🏆 Progres Clar",
+  "art3_p10_text": "Upgrade-uri, skin-uri, personaje noi.",
+
+  "art3_summary_title": "🌟 Rezumat",
+  "art3_summary_text": "Mini-jocurile combină psihologie, claritate, dopamină și ritm.",
+
+  "art3_ux_title": "🎨 Rolul UX & Micro-Animațiilor",
+  "art3_ux_text": "Interacțiunile mici cresc semnificativ satisfacția jucătorilor.",
+
+  "art3_sound_title": "🎵 Design Audio",
+  "art3_sound_text": "Sunetele bune cresc enorm retenția.",
+  "art4_title": "Știința din spatele efectelor vizuale neon în jocurile HTML5",
+  "art4_breadcrumb": "Știința efectelor vizuale neon",
+
+  "art4_intro_1": "Efectele neon nu sunt doar un stil — sunt un amestec atent construit de tehnici de randare, psihologia culorilor și shadere accelerate pe GPU.",
+  "art4_intro_2": "Jocurile moderne HTML5, Canvas și WebGL folosesc aceste efecte pentru a crea profunzime, mișcare, energie și emoție, în timp ce rulează fluent în browser.",
+  "art4_intro_3": "În această analiză detaliată explorăm cum funcționează efectele neon, de ce sunt atât de satisfăcătoare și cum Neon Mini Game Hub le folosește pentru o identitate vizuală unică.",
+
+  "art4_h2_1": "1. De ce culorile neon „strălucesc” pentru ochiul uman",
+  "art4_p1": "Culorile neon par extrem de luminoase deoarece stimulează conurile ochiului mult mai intens decât nuanțele estompate. Albastrul saturat, rozul, cyanul și movul se află aproape de marginile spectrului vizibil, ceea ce le face să sară în evidență pe fundaluri întunecate.",
+  "art4_li1_1": "💡 Contrast puternic pe fundal închis → claritate instantă",
+  "art4_li1_2": "🎨 Saturația creează iluzia de lumină emisă",
+  "art4_li1_3": "⚡ Urmele rapide de mișcare intensifică efectul vizual",
+
+  "art4_h2_2": "2. Efecte de glow folosind umbre Canvas",
+  "art4_p2": "Cel mai simplu efect neon în HTML5 folosește shadowBlur și shadowColor pentru a crea un halou luminos în jurul obiectelor.",
+  "art4_p3": "Este foarte performant și ideal pentru gloanțe, contururi, uși, obiecte colectabile și elemente UI iluminate.",
+
+  "art4_h2_3": "3. WebGL Bloom & Additive Blending",
+  "art4_li2_1": "Additive blending → pixelii luminoși devin și mai puternici când se suprapun",
+  "art4_li2_2": "Bloom shaders → glow difuz care se extinde spre exterior",
+  "art4_li2_3": "Blur gaussian → difuzie cinematică a neonului",
+
+  "art4_h2_4": "4. Sisteme de particule și energie în mișcare",
+  "art4_p4": "Particulele neon simulează scântei, praf, jar și pulsuri de energie. Ele reacționează dinamic la lovituri, dash-uri, coliziuni și explozii.",
+  "art4_li3_1": "Estompare bazată pe viteză",
+  "art4_li3_2": "Interpolare de culoare (albastru → cyan → alb)",
+  "art4_li3_3": "Additive blending pentru particule foarte luminoase",
+  "art4_li3_4": "Update-uri la FPS ridicat pentru urme fluide",
+
+  "art4_h2_5": "5. De ce funcționează neonul în UX",
+  "art4_p5": "Efectele neon ajută jucătorul să identifice rapid zonele importante și îmbunătățesc claritatea în gameplay rapid.",
+  "art4_li4_1": "Butoane luminoase → zone de interacțiune",
+  "art4_li4_2": "Gloanțe vizibile → claritate în acțiune haotică",
+  "art4_li4_3": "Margini evidențiate → indicii de navigare",
+  "art4_li4_4": "Flash-uri → feedback pentru lovituri/damage",
+
+  "art4_h2_6": "6. De ce Neon Mini Game Hub folosește neon peste tot",
+  "art4_p6": "Neon Mini Game Hub folosește neonul atât pentru estetică, cât și pentru funcționalitate.",
+  "art4_li5_1": "🎯 Identitate — stil vizual distinct",
+  "art4_li5_2": "📱 Claritate — lizibilitate perfectă pe mobil",
+  "art4_li5_3": "⚡ Viteză — elemente ușor de procesat vizual",
+  "art4_li5_4": "🧠 Memorabilitate — culorile neon se rețin ușor",
+
+  "art4_h2_7": "Concluzie",
+  "art4_conclusion": "Neonul este o tehnologie vizuală care amplifică claritatea, emoția și identitatea vizuală a jocului. Odată cu WebGPU, efectele neon vor deveni și mai dinamice, mai fluide și mai luminoase.",
+    "art5_title": "Cum folosesc motoarele de joc buclele de randare Canvas",
+  "art5_title_h1": "Cum folosesc motoarele de joc buclele de randare Canvas",
+  "art5_breadcrumb": "Cum folosesc motoarele buclele de randare",
+
+  "art5_intro_1": "Fiecare joc în timp real rulează pe o buclă de randare care actualizează vizualul, inputul, fizica și desenarea.",
+  "art5_intro_2": "Acest articol explică modul în care funcționează buclele de randare și cum jocurile neon mențin performanța fluidă.",
+
+  "art5_h2_1": "1. requestAnimationFrame — Inima buclei",
+  "art5_p1": "requestAnimationFrame sincronizează cadrele cu rata monitorului și economisește procesare.",
+  "art5_p2": "Acest lucru asigură:",
+  "art5_li1_1": "FPS optim",
+  "art5_li1_2": "Consum redus CPU/GPU",
+  "art5_li1_3": "Animații fluide",
+
+  "art5_h2_2": "2. Modelul Update → Render",
+  "art5_p3": "Fiecare cadru are două faze:",
+  "art5_li2_1": "Update — fizică, input, AI",
+  "art5_li2_2": "Render — desenarea scenei",
+  "art5_p4": "Separarea lor îmbunătățește performanța.",
+
+  "art5_h2_3": "3. Curățare și randare eficientă",
+  "art5_p5": "Jocurile optimizează apelurile de desen cu diferite strategii:",
+  "art5_li3_1": "Curățarea completă a canvas-ului",
+  "art5_li3_2": "„Dirty rectangles”",
+  "art5_li3_3": "Canvas-uri suprapuse pentru UI",
+
+  "art5_h2_4": "4. Timp, Delta Time & Viteza jocului",
+  "art5_p6": "Delta time menține mișcarea constantă chiar dacă FPS-ul scade.",
+
+  "art5_h2_5": "5. De ce jocurile neon se simt atât de fluide",
+  "art5_p7": "Efectele neon au nevoie de rate mari de redraw, particule optimizate și compoziție eficientă.",
+  "art5_li4_1": "Efecte glow la cadre înalte",
+  "art5_li4_2": "Urme de motion blur",
+  "art5_li4_3": "Particule randate în batch-uri",
+  "art5_li4_4": "Reducerea overdraw-ului",
+
+  "art5_h2_conclusion": "Concluzie",
+  "art5_conclusion": "Buclele curate, delta timing-ul și desenarea optimizată creează jocuri neon rapide și responsive.",
+  "art6_title": "Tehnici de optimizare pentru jocurile HTML5 pe mobil",
+  "art6_title_h1": "Tehnici de optimizare pentru jocurile HTML5 pe mobil",
+  "art6_breadcrumb": "Optimizare mobil",
+
+  "art6_intro_1": "Browserele mobile rulează jocuri HTML5 sub limite mai stricte de CPU, GPU, memorie și temperatură.",
+  "art6_intro_2": "Acest ghid explică tehnicile folosite de jocurile mobile performante.",
+
+  "art6_h2_1": "1. Rezoluția canvas vs. Device Pixel Ratio",
+  "art6_p1": "Ecranele high-DPI pot consuma performanță dacă redai la rezoluție nativă.",
+  "art6_p2": "Beneficii:",
+  "art6_li1_1": "Consum GPU redus",
+  "art6_li1_2": "FPS mai mare",
+  "art6_li1_3": "Consum și temperatură mai mici",
+
+  "art6_h2_2": "2. Minimizarea overdraw-ului și a straturilor",
+  "art6_p3": "Overdraw apare când același pixel este desenat de mai multe ori.",
+  "art6_li2_1": "Reducerea efectelor full-screen",
+  "art6_li2_2": "Canvas-uri separate pentru UI",
+  "art6_li2_3": "Optimizarea efectelor glow",
+
+  "art6_h2_3": "3. Optimizarea controlului tactil",
+  "art6_p4": "Controalele mobile trebuie să fie rapide și cu latență minimă.",
+  "art6_li3_1": "Event listeners pasive",
+  "art6_li3_2": "Joystick virtual",
+  "art6_li3_3": "Pointer events în loc de touch/mouse",
+
+  "art6_h2_4": "4. Încărcare și compresie optimizată",
+  "art6_p5": "Încărcarea lentă scade retenția jucătorilor.",
+  "art6_li4_1": "Imagini WebP/AVIF",
+  "art6_li4_2": "Audio OGG/AAC",
+  "art6_li4_3": "Spritesheet-uri",
+  "art6_li4_4": "Lazy-loading pentru resurse",
+
+  "art6_h2_5": "5. Scalare adaptivă a calității",
+  "art6_p6": "Jocurile trebuie să își ajusteze calitatea în funcție de performanță.",
+  "art6_li5_1": "Reducerea particulelor",
+  "art6_li5_2": "Rezoluție canvas mai mică",
+  "art6_li5_3": "Dezactivarea bloom-ului pe dispozitive slabe",
+
+  "art6_h2_conclusion": "Concluzie",
+  "art6_conclusion": "Performanța bună pe mobil necesită randare inteligentă, input rapid, resurse optimizate și scalare adaptivă.",
+
+
+"art7_title": "De ce estetica neon funcționează în web design și gaming",
+  "art7_title_h1": "De ce estetica neon funcționează în web design și gaming",
+  "art7_breadcrumb": "De ce funcționează estetica neon",
+
+  "art7_intro_1": "Estetica neon este una dintre cele mai recognoscibile tendințe din designul digital modern. Ea combină contrast puternic, psihologia culorilor vibrante și indicii vizuale futuriste care creează instant angajament emoțional.",
+
+  "art7_h2_1": "1. Culorile neon atrag imediat atenția",
+  "art7_p1": "Nuanțele neon sunt aproape de extremele percepției vizuale umane.",
+
+  "art7_li1_1": "Direcționează atenția rapid",
+  "art7_li1_2": "Permit navigare UI mai rapidă",
+  "art7_li1_3": "Fac butoanele să pară vii și active",
+
+  "art7_h2_2": "2. UI întunecat + neon = lizibilitate maximă",
+  "art7_p2": "Combinația de neon pe fundal întunecat maximizează claritatea.",
+
+  "art7_li2_1": "Rapoarte de contrast mai mari",
+  "art7_li2_2": "Contururile luminoase definesc mai bine formele",
+  "art7_li2_3": "Perfect pentru gameplay rapid",
+
+  "art7_h2_3": "3. De ce iubesc jucătorii neonul",
+  "art7_p3": "Neonul amplifică emoția și atmosfera:",
+
+  "art7_li3_1": "Albastru & cyan → calm, tech",
+  "art7_li3_2": "Mov → mister",
+  "art7_li3_3": "Roz neon → energie & distracție",
+
+  "art7_h2_4": "4. Neon = identitatea gamingului modern în browser",
+  "art7_p4": "Platforme precum Neon Mini Game Hub folosesc neonul pentru branding, claritate și UX.",
+
+  "art7_h2_conclusion": "Concluzie",
+  "art7_conclusion": "Neonul funcționează deoarece îmbină psihologia, ingineria vizuală și tendințele moderne digitale.",
+  "art8_title": "Construirea hitbox-urilor și a sistemelor de coliziune în timp real",
+  "art8_title_h1": "Construirea hitbox-urilor și a sistemelor de coliziune în timp real",
+  "art8_breadcrumb": "Hitbox-uri și coliziuni",
+
+  "art8_intro_1": "Sistemele de coliziune sunt coloana vertebrală a mecanicilor de joc în timp real. Fie că detectează lovituri de proiectile, mișcarea jucătorului, interacțiunile cu inamicii sau trecerile între camere — precizia și viteza determină cât de responsiv se simte jocul.",
+
+  "art8_h2_1": "1. Cutii de coliziune aliniate pe axe (AABB)",
+  "art8_p1": "AABB-urile sunt cel mai des folosit format de hitbox în jocurile HTML5. Ele folosesc o logică simplă de suprapunere de dreptunghiuri:",
+  "art8_p2": "Acest test este extrem de rapid — ideal pentru jocuri pe mobil și în browser.",
+
+  "art8_h2_2": "2. Coliziuni pixel-perfect",
+  "art8_p3": "În jocurile neon, coliziunile pixel-perfect sunt rareori necesare. Sunt costisitoare deoarece implică citirea bufferelor de pixeli prin Canvas sau WebGL.",
+
+  "art8_h2_3": "3. Partiționare spațială",
+  "art8_p4": "Scenele cu foarte multe obiecte folosesc adesea structuri de partiționare spațială:",
+  "art8_li3_1": "Quadtrees",
+  "art8_li3_2": "Grile uniforme",
+  "art8_li3_3": "Partitionare spațială binară (BSP)",
+  "art8_p5": "Acestea reduc numărul de verificări de coliziune de la mii la doar câteva zeci pe frame.",
+
+  "art8_h2_4": "4. Variante de hitbox-uri",
+  "art8_li4_1": "Hitbox-uri circulare → fluide pentru rotații",
+  "art8_li4_2": "Hitbox-uri poligonale → pentru modele neregulate",
+  "art8_li4_3": "Hitbox-uri hibride → combină mai multe forme",
+
+  "art8_h2_conclusion": "Concluzie",
+  "art8_conclusion": "Construirea unor sisteme de coliziune rapide cere un echilibru între matematică, performanță și feeling de gameplay. Neon Mini Game Hub folosește AABB-uri optimizate, partiționare spațială și regiuni de lovire simplificate pentru a oferi un gameplay responsiv pe toate dispozitivele.",
+  "art9_title": "Cum pot indie devs să scaleze cu jocuri browser-first",
+  "art9_title_h1": "Cum pot indie devs să scaleze cu jocuri browser-first",
+  "art9_breadcrumb": "Cum pot indie devs să scaleze",
+
+  "art9_intro_1": "Jocurile browser-first trec printr-o renaștere masivă. Motoarele ușoare, accesibilitatea instantă și acoperirea globală permit studiourilor mici sau solo să scaleze fără costuri de publicare sau restricții de platformă.",
+
+  "art9_h2_1": "1. Fără instalare = Conversie mai mare",
+  "art9_p1": "Una dintre cele mai mari bariere pentru jocurile indie este fricțiunea instalării. HTML5 elimină complet această problemă:",
+  "art9_li1_1": "⚡ Joc instant",
+  "art9_li1_2": "📱 Optimizat implicit pentru mobil",
+  "art9_li1_3": "🔗 Partajabil cu un singur link",
+  "art9_p2": "Acest lucru crește dramatic retenția și distribuirea jocului.",
+
+  "art9_h2_2": "2. Monetizare fără magazine de aplicații",
+  "art9_p3": "Jocurile din browser evită:",
+  "art9_li2_1": "❌ Întârzieri la review",
+  "art9_li2_2": "❌ Taxe de 15–30% din venit",
+  "art9_li2_3": "❌ Pachete dependente de dispozitiv",
+  "art9_p4": "Dezvoltatorii indie pot monetiza prin:",
+  "art9_li3_1": "✔ Reclame clasice",
+  "art9_li3_2": "✔ Reclame rewarded",
+  "art9_li3_3": "✔ Magazine cosmetice in-game",
+  "art9_li3_4": "✔ Patreon / Ko-fi",
+
+  "art9_h2_3": "3. Viteză de dezvoltare = avantaj uriaș",
+  "art9_p5": "Dezvoltarea web este rapidă — JavaScript, Canvas, PIXI, Phaser și WebGL permit cicluri de iterație extrem de rapide.",
+  "art9_li4_1": "💡 Construiești un prototip în câteva zile",
+  "art9_li4_2": "⚙ Poți împinge update-uri instant",
+  "art9_li4_3": "📈 Poți testa A/B fără aprobare din magazine",
+
+  "art9_h2_4": "4. Performanța cross-device e rezolvată",
+  "art9_p6": "Browserele moderne oferă:",
+  "art9_li5_1": "🖥 Accelerare GPU",
+  "art9_li5_2": "📱 Ecrane high-refresh",
+  "art9_li5_3": "🌐 Randare în thread separat",
+  "art9_p7": "Chiar și shootere neon complexe rulează la 60–120 FPS pe telefoane mid-range.",
+
+  "art9_h2_5": "5. Browser-first = audiență globală",
+  "art9_p8": "Jocul tău devine jucabil pe:",
+  "art9_li6_1": "🌍 Orice dispozitiv",
+  "art9_li6_2": "🎮 Orice controller",
+  "art9_li6_3": "💻 Orice sistem de operare",
+  "art9_p9": "Indie devs pot scala mai rapid decât pe PC/mobile tradițional.",
+
+  "art9_h2_conclusion": "Concluzie",
+  "art9_conclusion": "Browser-first deschide competiția. Pentru dezvoltatorii indie cu creativitate, viteză și focus — HTML5 este cel mai scalabil ecosistem disponibil astăzi.",
+"art10_title": "Viitorul WebGPU și al jocurilor browser de înaltă performanță",
+  "art10_title_h1": "Viitorul WebGPU & Gaming de top în browser",
+  "art10_breadcrumb": "Viitorul WebGPU",
+
+  "art10_intro_1": "WebGPU reprezintă cel mai mare salt în grafica web de la WebGL. Deblochează pipeline-uri GPU moderne, compute shaders și performanță aproape nativă.",
+
+  "art10_h2_1": "1. Performanță grafică next-gen",
+  "art10_p1": "WebGPU permite:",
+  "art10_li1_1": "⚡ Performanță de nivel Vulkan/Metal",
+  "art10_li1_2": "🧮 Compute shaders în browser",
+  "art10_li1_3": "💎 Renderizare fizică (PBR)",
+  "art10_li1_4": "🎇 Simulări de particule în timp real",
+
+  "art10_h2_2": "2. De ce schimbă asta gamingul în browser",
+  "art10_li2_1": "🎮 Shooters high-fidelity direct în browser",
+  "art10_li2_2": "🔥 Glow & bloom cinematice",
+  "art10_li2_3": "🧩 Lumi de joc masive fără lag",
+  "art10_li2_4": "📱 Performanță accelerată hardware pe mobil",
+
+  "art10_h2_3": "3. WebGPU + Neon = combinația perfectă",
+  "art10_p2": "Estetica neon profită enorm de puterea shader-elor WebGPU:",
+  "art10_li3_1": "🌈 Additive blending fără lag",
+  "art10_li3_2": "✨ Bloom HDR real",
+  "art10_li3_3": "⚙ Iluminare dinamică & distorsiuni shaders",
+
+  "art10_h2_4": "4. Jocurile din browser vor concura cu aplicațiile native",
+  "art10_p3": "Diferența de performanță dintre jocurile browser și aplicațiile native scade anual. WebGPU accelerează această tranziție.",
+
+  "art10_h2_conclusion": "Concluzie",
+  "art10_conclusion": "Viitorul gamingului în browser este luminos — la propriu și la figurat. WebGPU va redefini ce pot construi dezvoltatorii, iar Neon Mini Game Hub este deja pregătit pentru acest viitor."
+
+
+
+}
+
+
+

@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>Contact – Neon Mini Game Hub</title>
-  <meta name="description" content="Contact Neon Mini Game Hub for support, feedback, partnerships, or press inquiries. Fast, browser-first arcade games built with HTML5." />
+  <title data-i18n="contact_title">Contact – Neon Mini Game Hub</title>
+
+  <meta name="description" content="Contact Neon Mini Game Hub for support, feedback, partnerships, or press inquiries. Fast, browser-first arcade games built with HTML5." data-i18n="contact_meta_desc" />
+
   <meta name="robots" content="index,follow" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Contact – Neon Mini Game Hub" />
-  <meta property="og:description" content="Contact Neon Mini Game Hub for support, feedback, partnerships, or press inquiries. Fast, browser-first arcade games built with HTML5." />
+  <meta property="og:title" content="Contact – Neon Mini Game Hub" data-i18n="contact_og_title"/>
+  <meta property="og:description" content="Contact Neon Mini Game Hub for support, feedback, partnerships, or press inquiries." data-i18n="contact_og_desc"/>
   <meta property="og:url" content="https://neonminigamehub.com/contact.html" />
   <meta property="og:site_name" content="Neon Mini Game Hub" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -107,62 +109,97 @@
 </head>
 <body>
   <div class="wrap">
+
     <header class="hero">
       <div class="inner">
-        <h1>Contact</h1>
-        <p>Support, feedback, partnerships, and press requests. If something breaks in a game, tell us what device + browser you used and what you clicked.</p>
+        <h1 data-i18n="contact_h1">Contact</h1>
+
+        <p data-i18n="contact_intro">
+          Support, feedback, partnerships, and press requests.
+        </p>
+
         <nav class="top">
-          <a href="index.html">⬅ Back to Hub</a>
-          <a href="articles.html">Articles</a>
-          <a href="about.html">About</a>
-          <a href="privacy.html">Privacy</a>
-          <a href="terms.html">Terms</a>
+          <a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+          <a href="articles.html" data-i18n="nav_articles">Articles</a>
+          <a href="about.html" data-i18n="nav_about">About</a>
+          <a href="privacy.html" data-i18n="nav_privacy">Privacy</a>
+          <a href="terms.html" data-i18n="nav_terms">Terms</a>
         </nav>
       </div>
     </header>
 
+
     <main class="panel">
-      <h2>Send a message</h2>
-      <p class="small">This form opens your email app (no backend). If you prefer, email us directly at <strong>contact@neonminigamehub.com</strong>.</p>
+
+      <h2 data-i18n="contact_send_msg">Send a message</h2>
+
+      <p class="small" data-i18n="contact_email_note">
+        This form opens your email app (no backend). If you prefer, email us directly.
+      </p>
 
       <form id="contactForm" class="grid2" onsubmit="return false;">
         <div class="field">
-          <label for="cName">Your name</label>
-          <input id="cName" class="input" autocomplete="name" placeholder="Name" />
+          <label for="cName" data-i18n="contact_label_name">Your name</label>
+          <input id="cName" class="input" autocomplete="name" data-i18n-placeholder="contact_ph_name" placeholder="Name" />
         </div>
+
         <div class="field">
-          <label for="cEmail">Your email</label>
-          <input id="cEmail" class="input" autocomplete="email" placeholder="you@example.com" />
+          <label for="cEmail" data-i18n="contact_label_email">Your email</label>
+          <input id="cEmail" class="input" autocomplete="email" data-i18n-placeholder="contact_ph_email" placeholder="you@example.com" />
         </div>
+
         <div class="field" style="grid-column:1/-1;">
-          <label for="cTopic">Topic</label>
-          <input id="cTopic" class="input" placeholder="Bug report / Feedback / Partnership / Press" />
+          <label for="cTopic" data-i18n="contact_label_topic">Topic</label>
+          <input id="cTopic" class="input" data-i18n-placeholder="contact_ph_topic" placeholder="Bug report / Feedback / Partnership / Press" />
         </div>
+
         <div class="field" style="grid-column:1/-1;">
-          <label for="cMsg">Message</label>
-          <textarea id="cMsg" placeholder="Write your message…&#10;&#10;For bug reports: game name, steps to reproduce, device, browser, and a screenshot if possible."></textarea>
+          <label for="cMsg" data-i18n="contact_label_msg">Message</label>
+
+          <textarea id="cMsg" data-i18n-placeholder="contact_ph_msg"
+            placeholder="Write your message…">
+          </textarea>
         </div>
 
         <div style="grid-column:1/-1;">
-          <a class="btn" id="sendBtn" href="#">✉️ Send Email</a>
-          <div class="note">
-            We don’t require an account to play. If you use the Feedback/Comments features, please don’t post personal data (emails, phone numbers, addresses).
+          <a class="btn" id="sendBtn" href="#" data-i18n="contact_btn_send">✉️ Send Email</a>
+
+          <div class="note" data-i18n="contact_note">
+            We don’t require an account to play. Please don’t post personal data.
           </div>
         </div>
       </form>
 
-      <h3>Fast troubleshooting checklist</h3>
+
+      <h3 data-i18n="contact_checklist_title">Fast troubleshooting checklist</h3>
+
       <ul>
-        <li><strong>Mobile:</strong> try Chrome or Safari, and refresh once after rotating the phone.</li>
-        <li><strong>Desktop:</strong> hard refresh (Ctrl+F5) if the layout looks old after an update.</li>
-        <li>If ads or consent banners overlap content, include a screenshot so we can adjust spacing.</li>
+        <li data-i18n="contact_check1">
+          <strong>Mobile:</strong> try Chrome or Safari.
+        </li>
+
+        <li data-i18n="contact_check2">
+          <strong>Desktop:</strong> hard refresh (Ctrl+F5).
+        </li>
+
+        <li data-i18n="contact_check3">
+          If ads or banners overlap content, include a screenshot.
+        </li>
       </ul>
 
-      <h3>Partnerships / Press</h3>
-      <p>For sponsorships, cross‑promotions, or press features, include your website/channel and your proposed collaboration.</p>
+
+      <h3 data-i18n="contact_press_title">Partnerships / Press</h3>
+
+      <p data-i18n="contact_press_desc">
+        For sponsorships or collaborations, include your website/channel.
+      </p>
+
     </main>
 
-    <footer>© 2026 Neon Mini Game Hub • Built with HTML5 + JavaScript</footer>
+    <footer data-i18n="contact_footer">
+      © 2026 Neon Mini Game Hub • Built with HTML5 + JavaScript
+    </footer>
+
   </div>
 
 <script>
@@ -198,5 +235,6 @@
   buildMailto();
 })();
 </script>
+<script src="js/translation.js?v=5"></script>
 </body>
 </html>
