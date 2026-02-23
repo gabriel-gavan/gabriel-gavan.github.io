@@ -12,7 +12,8 @@ class PlayerController {
     this.moveSpeed = options.moveSpeed || 10;
     this.jumpForce = options.jumpForce || 15;
     this.gravity = options.gravity || 30;
-    this.groundLevel = options.groundLevel || 1; // Assuming base ground is at y=0, player bottom at y=0.4
+    this.groundLevel = options.groundLevel || 1; 
+    this.ceilingLevel = options.ceilingLevel || Infinity; 
 
     // State
     this.velocity = new THREE.Vector3();
@@ -20,6 +21,8 @@ class PlayerController {
     this.canJump = true;
     this.keys = {};
     this.cameraMode = 'third-person'; // Default camera mode
+    this.radius = options.radius || 0.6; // Collision radius
+    this.raycaster = new THREE.Raycaster();
 
     // Setup input handlers
     this.setupInput();
@@ -29,12 +32,17 @@ class PlayerController {
   }
 
   setupInput() {
-    document.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', (e) => {
       this.keys[e.code] = true;
     });
 
-    document.addEventListener('keyup', (e) => {
+    window.addEventListener('keyup', (e) => {
       this.keys[e.code] = false;
+    });
+
+    // Clear keys on window blur to prevent stuck keys
+    window.addEventListener('blur', () => {
+      this.keys = {};
     });
   }
 
@@ -46,20 +54,25 @@ class PlayerController {
    * Updates the player's state, velocity, and position.
    * @param {number} deltaTime Time elapsed since the last frame.
    * @param {number} cameraRotation The current horizontal rotation (yaw) of the active camera.
+   * @param {Array} collisionObjects Objects to check for collisions against.
    */
-  update(deltaTime, cameraRotation) {
+  update(deltaTime, cameraRotation, collisionObjects = []) {
     // Apply gravity
-    // Check if the player's base (center y - half height approx) is above ground
-    // Note: Player model base is roughly at world y = player.position.y
     if (this.player.position.y > this.groundLevel) {
       this.velocity.y -= this.gravity * deltaTime;
       this.isOnGround = false;
     } else {
       // Clamp player to ground level and reset vertical velocity
-      this.velocity.y = Math.max(0, this.velocity.y); // Stop downward velocity, allow upward (jump)
+      this.velocity.y = Math.max(0, this.velocity.y); 
       this.player.position.y = this.groundLevel;
       this.isOnGround = true;
-      this.canJump = true; // Can jump again once grounded
+      this.canJump = true; 
+    }
+
+    // Ceiling collision
+    if (this.player.position.y > this.ceilingLevel) {
+        this.player.position.y = this.ceilingLevel;
+        this.velocity.y = Math.min(0, this.velocity.y); // Stop upward momentum
     }
 
     // Handle jumping
@@ -72,52 +85,104 @@ class PlayerController {
     // --- Horizontal Movement ---
 
     // Reset horizontal velocity each frame
-    // We calculate desired movement directly based on input and camera
-    let moveX = 0;
-    let moveZ = 0;
+    let moveXInput = 0;
+    let moveZInput = 0;
 
     // Calculate movement direction vectors relative to the camera's horizontal rotation
-    // Forward direction (local -Z) rotated by camera yaw
     const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
-    // Right direction (local +X) rotated by camera yaw
     const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
 
-    // Apply movement based on keys pressed
-    const currentMoveSpeed = this.moveSpeed; // Use the configured move speed
-
     if (this.keys['KeyW']) { // Forward
-      moveX += forward.x;
-      moveZ += forward.z;
+      moveXInput += forward.x;
+      moveZInput += forward.z;
     }
     if (this.keys['KeyS']) { // Backward
-      moveX -= forward.x;
-      moveZ -= forward.z;
+      moveXInput -= forward.x;
+      moveZInput -= forward.z;
     }
     if (this.keys['KeyA']) { // Left
-      moveX -= right.x;
-      moveZ -= right.z;
+      moveXInput -= right.x;
+      moveZInput -= right.z;
     }
     if (this.keys['KeyD']) { // Right
-      moveX += right.x;
-      moveZ += right.z;
+      moveXInput += right.x;
+      moveZInput += right.z;
     }
 
-    // Normalize the movement vector if moving diagonally
-    const moveDirection = new THREE.Vector3(moveX, 0, moveZ);
-    if (moveDirection.lengthSq() > 0) { // Check if there's any horizontal movement input
+    // Normalize movement
+    const moveDirection = new THREE.Vector3(moveXInput, 0, moveZInput);
+    if (moveDirection.lengthSq() > 0) {
         moveDirection.normalize();
     }
 
-    // Apply speed and deltaTime to get the displacement for this frame
-    this.velocity.x = moveDirection.x * currentMoveSpeed;
-    this.velocity.z = moveDirection.z * currentMoveSpeed;
+    // Set horizontal velocity
+    this.velocity.x = moveDirection.x * this.moveSpeed;
+    this.velocity.z = moveDirection.z * this.moveSpeed;
 
 
-    // --- Update Player Position ---
-    // Apply calculated velocity scaled by deltaTime
-    this.player.position.x += this.velocity.x * deltaTime;
-    this.player.position.y += this.velocity.y * deltaTime; // Vertical velocity already includes gravity effect
-    this.player.position.z += this.velocity.z * deltaTime;
+    // --- Update Player Position with Collisions ---
+    
+    // Y Position (Gravity/Jump) - Apply first
+    this.player.position.y += this.velocity.y * deltaTime;
+
+    // X and Z Position with simple sliding collision check
+    if (collisionObjects.length > 0) {
+        const heights = [-0.4, 0.4]; // Check near feet and chest
+        
+        // Check X movement
+        if (this.velocity.x !== 0) {
+            const dispX = this.velocity.x * deltaTime;
+            const dirX = new THREE.Vector3(this.velocity.x > 0 ? 1 : -1, 0, 0);
+            let blockedX = false;
+            
+            for (const h of heights) {
+                const rayOrigin = new THREE.Vector3(this.player.position.x, this.player.position.y + h, this.player.position.z);
+                this.raycaster.set(rayOrigin, dirX);
+                this.raycaster.far = this.radius + Math.abs(dispX);
+                
+                const hits = this.raycaster.intersectObjects(collisionObjects, true);
+                if (hits.length > 0) {
+                    blockedX = true;
+                    break;
+                }
+            }
+            
+            if (!blockedX) {
+                this.player.position.x += dispX;
+            } else {
+                this.velocity.x = 0; // Stop horizontal velocity on impact
+            }
+        }
+        
+        // Check Z movement
+        if (this.velocity.z !== 0) {
+            const dispZ = this.velocity.z * deltaTime;
+            const dirZ = new THREE.Vector3(0, 0, this.velocity.z > 0 ? 1 : -1);
+            let blockedZ = false;
+            
+            for (const h of heights) {
+                const rayOrigin = new THREE.Vector3(this.player.position.x, this.player.position.y + h, this.player.position.z);
+                this.raycaster.set(rayOrigin, dirZ);
+                this.raycaster.far = this.radius + Math.abs(dispZ);
+                
+                const hits = this.raycaster.intersectObjects(collisionObjects, true);
+                if (hits.length > 0) {
+                    blockedZ = true;
+                    break;
+                }
+            }
+            
+            if (!blockedZ) {
+                this.player.position.z += dispZ;
+            } else {
+                this.velocity.z = 0; // Stop horizontal velocity on impact
+            }
+        }
+    } else {
+        // No collision objects, move freely
+        this.player.position.x += this.velocity.x * deltaTime;
+        this.player.position.z += this.velocity.z * deltaTime;
+    }
 
 
     // --- Update Player Rotation ---

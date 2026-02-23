@@ -2,19 +2,24 @@ import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
 export class EMPGrenade {
-    constructor(scene, position, velocity, particleSystem, onExplode) {
+    constructor(scene, particleSystem) {
         this.scene = scene;
         this.particleSystem = particleSystem;
-        this.onExplode = onExplode;
-        
+        this.onExplode = null;
         this.mesh = this.createMesh();
-        this.mesh.position.copy(position);
+        this.mesh.visible = false;
         this.scene.add(this.mesh);
-        
-        this.velocity = velocity;
+        this.isExploded = true;
+    }
+
+    spawn(position, velocity, onExplode) {
+        this.mesh.position.copy(position);
+        this.velocity = velocity.clone();
+        this.onExplode = onExplode;
         this.isExploded = false;
-        this.timer = 1500; // Faster fuse for tactical use
+        this.timer = 1500;
         this.gravity = CONFIG.PLAYER.GRENADE.GRAVITY;
+        this.mesh.visible = true;
     }
 
     createMesh() {
@@ -78,27 +83,24 @@ export class EMPGrenade {
 
     explode() {
         this.isExploded = true;
-        this.scene.remove(this.mesh);
+        this.mesh.visible = false;
 
         // Visual Explosion: Electric Blue Shockwave
         if (this.particleSystem) {
             this.particleSystem.createExplosion(this.mesh.position, 0x00ffff, 40, 15);
+            this.particleSystem.flashLight(this.mesh.position, 0x00ffff, 20, 20, 200);
+            
             // Add some "sparks"
-            for (let i = 0; i < 10; i++) {
-                const sparkPos = this.mesh.position.clone().add(new THREE.Vector3(
+            const tempVec = new THREE.Vector3();
+            for (let i = 0; i < 5; i++) {
+                tempVec.set(
                     (Math.random() - 0.5) * 2,
                     (Math.random() - 0.5) * 2,
                     (Math.random() - 0.5) * 2
-                ));
-                this.particleSystem.createImpact(sparkPos, new THREE.Vector3(0, 1, 0), 0x00ffff);
+                ).add(this.mesh.position);
+                this.particleSystem.createImpact(tempVec, new THREE.Vector3(0, 1, 0), 0x00ffff);
             }
         }
-
-        // Flash Light: Sharp Cyan
-        const light = new THREE.PointLight(0x00ffff, 20, 20);
-        light.position.copy(this.mesh.position);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 200);
 
         if (this.onExplode) {
             this.onExplode(this.mesh.position);

@@ -2,19 +2,24 @@ import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
 export class Grenade {
-    constructor(scene, position, velocity, particleSystem, onExplode) {
+    constructor(scene, particleSystem) {
         this.scene = scene;
         this.particleSystem = particleSystem;
-        this.onExplode = onExplode;
-        
+        this.onExplode = null;
         this.mesh = this.createMesh();
-        this.mesh.position.copy(position);
+        this.mesh.visible = false;
         this.scene.add(this.mesh);
-        
-        this.velocity = velocity;
+        this.isExploded = true;
+    }
+
+    spawn(position, velocity, onExplode) {
+        this.mesh.position.copy(position);
+        this.velocity = velocity.clone();
+        this.onExplode = onExplode;
         this.isExploded = false;
-        this.timer = 2000; // 2 seconds fuse
+        this.timer = 2000;
         this.gravity = CONFIG.PLAYER.GRENADE.GRAVITY;
+        this.mesh.visible = true;
     }
 
     createMesh() {
@@ -71,19 +76,14 @@ export class Grenade {
 
     explode() {
         this.isExploded = true;
-        this.scene.remove(this.mesh);
+        this.mesh.visible = false;
 
         // Visual Explosion
         if (this.particleSystem) {
             this.particleSystem.createExplosion(this.mesh.position, 0xff6600, 30, 10);
             this.particleSystem.createExplosion(this.mesh.position, 0xffff00, 20, 5);
+            this.particleSystem.flashLight(this.mesh.position, 0xffaa00, 10, 15, 150);
         }
-
-        // Flash Light
-        const light = new THREE.PointLight(0xffaa00, 10, 15);
-        light.position.copy(this.mesh.position);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 150);
 
         if (this.onExplode) {
             this.onExplode(this.mesh.position);

@@ -6,7 +6,7 @@
   }
 
   // =============================
-  // 1️⃣ AdSense (Auto Ads only)
+  // 1️⃣ ADSENSE (AUTO ADS)
   // =============================
   if (!window.adsbygoogleLoaded) {
     const adsenseScript = document.createElement("script");
@@ -18,97 +18,108 @@
     window.adsbygoogleLoaded = true;
   }
 
-  // =====================================================
-  // 2️⃣ ADSTERRA UNITS
-  // =====================================================
+  // =============================
+  // 2️⃣ HELPER FUNCTIONS
+  // =============================
 
-  function loadAdsterraScript(url, placement = "body") {
+  // Load external JS safely
+  function loadScript(url, target = document.body) {
     if (document.querySelector(`script[src="${url}"]`)) return;
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src = url;
-
-    if (placement === "head") {
-      document.head.appendChild(script);
-    } else {
-      document.body.appendChild(script);
-    }
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = url;
+    target.appendChild(s);
   }
 
-  // 🔹 Social Bar
-  loadAdsterraScript(
-    "https://pl28700278.effectivegatecpm.com/26/13/e8/2613e8380f7bdfa828796e21eede7894.js",
-    "head"
-  );
-
-  // 🔹 Native Banner
-  function loadAdsterraContainer(scriptUrl, containerId) {
-    if (document.getElementById(containerId)) return;
-
-    const container = document.createElement("div");
-    container.id = containerId;
-    container.style.maxWidth = "1200px";
-    container.style.margin = "20px auto";
-    container.style.textAlign = "center";
-
-    document.querySelector(".main-content")?.appendChild(container);
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.setAttribute("data-cfasync", "false");
-    script.src = scriptUrl;
-
-    container.appendChild(script);
+  // Create generic container
+  function createContainer(id, width = "auto", height = "auto") {
+    if (document.getElementById(id)) return document.getElementById(id);
+    const c = document.createElement("div");
+    c.id = id;
+    c.style.width = width;
+    c.style.height = height;
+    c.style.margin = "20px auto";
+    c.style.textAlign = "center";
+    document.querySelector(".main-content")?.appendChild(c);
+    return c;
   }
 
-  setTimeout(() => {
-    loadAdsterraContainer(
-      "https://pl28742157.effectivegatecpm.com/afff8cbe88a210d98b8ca11d2adc0943/invoke.js",
-      "container-afff8cbe88a210d98b8ca11d2adc0943"
+  // =============================
+  // 3️⃣ DESKTOP UNITS ONLY
+  // =============================
+  if (window.innerWidth > 768) {
+
+    // Desktop Social Bar (BLOCK MOBILE)
+    loadScript(
+      "https://pl28700278.effectivegatecpm.com/26/13/e8/2613e8380f7bdfa828796e21eede7894.js",
+      document.head
     );
-  }, 1500);
 
-  // 🔹 320x50 Mobile Banner
-  function loadAdsterra320x50() {
-    if (window.innerWidth > 768) return;
+    // Native Banner (Desktop Only)
+    setTimeout(() => {
+      const id = "container-afff8cbe88a210d98b8ca11d2adc0943";
+      const container = createContainer(id, "100%", "auto");
 
-    const containerId = "adsterra-320x50";
-    if (document.getElementById(containerId)) return;
+      const script = document.createElement("script");
+      script.async = true;
+      script.setAttribute("data-cfasync", "false");
+      script.src =
+        "https://pl28742157.effectivegatecpm.com/afff8cbe88a210d98b8ca11d2adc0943/invoke.js";
 
-    const container = document.createElement("div");
-    container.id = containerId;
-    container.style.width = "320px";
-    container.style.height = "50px";
-    container.style.margin = "20px auto";
-    container.style.textAlign = "center";
+      container.appendChild(script);
+    }, 1200);
 
-    document.querySelector(".main-content")?.appendChild(container);
-
-    window.atOptions = {
-      key: "f003d840adf5943aadf32d7057595e7f",
-      format: "iframe",
-      height: 50,
-      width: 320,
-      params: {}
-    };
-
-    const script = document.createElement("script");
-    script.async = true;
-    script.src =
-      "https://www.highperformanceformat.com/f003d840adf5943aadf32d7057595e7f/invoke.js";
-
-    container.appendChild(script);
+    // Popunder (Desktop Only)
+    setTimeout(() => {
+      loadScript(
+        "https://pl28741283.effectivegatecpm.com/c2/46/66/c24666ba56d10524410f231d33bf7708.js"
+      );
+    }, 3000);
   }
 
-  setTimeout(loadAdsterra320x50, 2000);
+  // =============================
+  // 4️⃣ MOBILE UNITS ONLY
+  // =============================
+  else {
 
-  // 🔹 Popunder
-  setTimeout(() => {
-  loadAdsterraScript(
-    "https://pl28741283.effectivegatecpm.com/c2/46/66/c24666ba56d10524410f231d33bf7708.js"
-  );
-}, 3000);
+    setTimeout(() => {
+      const id = "adsterra-320x50";
+      const container = createContainer(id, "320px", "50px");
 
+      window.atOptions = {
+        key: "f003d840adf5943aadf32d7057595e7f",
+        format: "iframe",
+        height: 50,
+        width: 320,
+        params: {}
+      };
+
+      const script = document.createElement("script");
+      script.async = true;
+      script.src =
+        "https://www.highperformanceformat.com/f003d840adf5943aadf32d7057595e7f/invoke.js";
+      container.appendChild(script);
+    }, 1500);
+
+  }
+
+  // ========================================
+  // 5️⃣ AUTO-HIDE EMPTY / NO-FILL AD CONTAINERS
+  // ========================================
+  function hideBlankAds() {
+    document.querySelectorAll('#adsterra-320x50, [id^="container-"]').forEach(ad => {
+      if (!ad) return;
+
+      const hasIframe = ad.querySelector("iframe");
+      const visibleText = ad.innerText.trim().length;
+
+      if (!hasIframe && visibleText === 0) {
+        ad.style.display = "none";
+      }
+    });
+  }
+
+  // Run every 1 sec
+  setInterval(hideBlankAds, 1000);
 
 })();

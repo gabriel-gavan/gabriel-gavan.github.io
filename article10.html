@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Future of WebGPU and High-End Browser Gaming</title>
+<title data-i18n="art10_title">Future of WebGPU and High-End Browser Gaming</title>
 
 <style>
     body {
@@ -36,12 +36,13 @@
 <body>
 
 <div class="breadcrumb">
-  <a href="index.html">Home</a> <span>›</span>
-  <a href="articles.html">Articles</a> <span>›</span>
-  Future of WebGPU
+  <a href="index.html" data-i18n="breadcrumb_home">Home</a> <span>›</span>
+  <a href="articles.html" data-i18n="breadcrumb_articles">Articles</a> <span>›</span>
+  <span data-i18n="art10_breadcrumb">Future of WebGPU</span>
 </div>
 
 <a id="backToHub" href="index.html"
+   data-i18n="back_to_hub"
    style="
      color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;
      padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
@@ -50,67 +51,66 @@
 ⬅ Back to Hub
 </a>
 
-<h1>The Future of WebGPU & High-End Browser Gaming</h1>
+<h1 data-i18n="art10_title_h1">The Future of WebGPU & High-End Browser Gaming</h1>
 
-<p>
+<p data-i18n="art10_intro_1">
     WebGPU marks the biggest leap in web graphics since WebGL.
-    It unlocks modern GPU pipelines, compute shaders, and performance levels previously reachable
-    only through native engines like Unity or Unreal.
+    It unlocks modern GPU pipelines, compute shaders, and near-native performance.
 </p>
 
-<h2>1. Next-Gen Rendering Performance</h2>
+<h2 data-i18n="art10_h2_1">1. Next-Gen Rendering Performance</h2>
 
-<p>WebGPU enables:</p>
-
-<ul>
-    <li>⚡ Vulkan/Metal-level performance</li>
-    <li>🧮 Compute shaders in the browser</li>
-    <li>💎 Physically-based rendering (PBR)</li>
-    <li>🎇 Real-time particle simulations</li>
-</ul>
-
-<h2>2. Why This Changes Browser Gaming</h2>
+<p data-i18n="art10_p1">WebGPU enables:</p>
 
 <ul>
-    <li>🎮 High-fidelity shooters in browser</li>
-    <li>🔥 Cinematic glow & bloom pipelines</li>
-    <li>🧩 Massive game worlds without lag</li>
-    <li>📱 Hardware-accelerated performance on mobile</li>
+    <li data-i18n="art10_li1_1">⚡ Vulkan/Metal-level performance</li>
+    <li data-i18n="art10_li1_2">🧮 Compute shaders in the browser</li>
+    <li data-i18n="art10_li1_3">💎 Physically-based rendering (PBR)</li>
+    <li data-i18n="art10_li1_4">🎇 Real-time particle simulations</li>
 </ul>
 
-<h2>3. WebGPU + Neon = A Perfect Match</h2>
+<h2 data-i18n="art10_h2_2">2. Why This Changes Browser Gaming</h2>
 
-<p>
-    Neon aesthetics benefit from WebGPU’s shader-driven graphics:
+<ul>
+    <li data-i18n="art10_li2_1">🎮 High-fidelity shooters in browser</li>
+    <li data-i18n="art10_li2_2">🔥 Cinematic glow & bloom pipelines</li>
+    <li data-i18n="art10_li2_3">🧩 Massive game worlds without lag</li>
+    <li data-i18n="art10_li2_4">📱 Hardware-accelerated performance on mobile</li>
+</ul>
+
+<h2 data-i18n="art10_h2_3">3. WebGPU + Neon = A Perfect Match</h2>
+
+<p data-i18n="art10_p2">Neon aesthetics benefit from WebGPU’s shader power:</p>
+
+<ul>
+    <li data-i18n="art10_li3_1">🌈 Additive blending with 0-lag</li>
+    <li data-i18n="art10_li3_2">✨ Bloom passes with real HDR</li>
+    <li data-i18n="art10_li3_3">⚙ Dynamic lighting & distortion shaders</li>
+</ul>
+
+<h2 data-i18n="art10_h2_4">4. Browser Games Will Compete With Native</h2>
+
+<p data-i18n="art10_p3">
+    The performance gap between browser games and native apps shrinks every year.
+    WebGPU accelerates this transition dramatically.
 </p>
 
-<ul>
-    <li>🌈 Additive blending with 0-lag</li>
-    <li>✨ Bloom passes with real HDR</li>
-    <li>⚙  Dynamic lighting & distortion shaders</li>
-</ul>
+<h2 data-i18n="art10_h2_conclusion">Conclusion</h2>
 
-<h2>4. Browser Games Will Compete With Native</h2>
-
-<p>
-    The gap between browser games and native apps shrinks every year.
-    WebGPU pushes that transition even faster.
-</p>
-
-<h2>Conclusion</h2>
-
-<p>
+<p data-i18n="art10_conclusion">
     The future of browser gaming is bright — literally and technologically.
-    WebGPU will redefine what indie and web developers can build,
-    and Neon Mini Game Hub is already positioned for that future.
+    WebGPU will redefine what developers can build,
+    and Neon Mini Game Hub is positioned for that future.
 </p>
 
 <!-- COMMENTS -->
 <div class="comments-section" style="margin-top:40px;">
-  <h3>💬 Comments</h3>
-  <textarea id="commentInput" placeholder="Write a comment..."
-    style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-  <button id="postCommentBtn">Post Comment</button>
+  <h3 data-i18n="comments_title">💬 Comments</h3>
+  <textarea id="commentInput"
+            placeholder="Write a comment..."
+            data-i18n-placeholder="comments_placeholder"
+            style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+  <button id="postCommentBtn" data-i18n="comments_post_btn">Post Comment</button>
   <div id="commentsList" style="margin-top:20px;"></div>
 </div>
 
@@ -144,6 +144,8 @@ document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
 });
 loadComments();
 </script>
+
+<script src="js/translation.js?v=5"></script>
 
 </body>
 </html>

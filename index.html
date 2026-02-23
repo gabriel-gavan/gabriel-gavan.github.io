@@ -73,34 +73,47 @@
       <script type="application/ld+json">
          {"@context": "https://schema.org", "@type": "Website", "name": "Neon Mini Game Hub", "url": "https://neonminigamehub.com", "description": "Play free neon-style HTML5 games instantly in your browser."}
       </script>
-      <script type="application/ld+json">
-         {
-         "@context": "https://schema.org",
-         "@type": "FAQPage",
-         "mainEntity": [
-         {
-         "@type": "Question",
-         "name": "Do I need to install anything?",
-         "acceptedAnswer": { "@type": "Answer", "text": "No. Neon Mini Game Hub games run directly in your browser. Open a game page and play instantly." }
-         },
-         {
-         "@type": "Question",
-         "name": "Which devices are supported?",
-         "acceptedAnswer": { "@type": "Answer", "text": "Any modern browser on desktop or mobile. For best performance, keep your browser updated and close heavy background tabs." }
-         },
-         {
-         "@type": "Question",
-         "name": "Do you collect personal data?",
-         "acceptedAnswer": { "@type": "Answer", "text": "The site is designed to collect as little as possible. See the Privacy page for details about cookies, analytics, and advertising partners." }
-         },
-         {
-         "@type": "Question",
-         "name": "How can I request a new game or report a bug?",
-         "acceptedAnswer": { "@type": "Answer", "text": "Use the Contact page, or leave feedback on the homepage if feedback is enabled." }
-         }
-         ]
-         }
-      </script>
+      <script type="application/ld+json" id="faq-schema">
+			{
+			  "@context": "https://schema.org",
+			  "@type": "FAQPage",
+			  "mainEntity": [
+				{
+				  "@type": "Question",
+				  "name": "##faq_q1##",
+				  "acceptedAnswer": {
+					"@type": "Answer",
+					"text": "##faq_a1##"
+				  }
+				},
+				{
+				  "@type": "Question",
+				  "name": "##faq_q2##",
+				  "acceptedAnswer": {
+					"@type": "Answer",
+					"text": "##faq_a2##"
+				  }
+				},
+				{
+				  "@type": "Question",
+				  "name": "##faq_q3##",
+				  "acceptedAnswer": {
+					"@type": "Answer",
+					"text": "##faq_a3##"
+				  }
+				},
+				{
+				  "@type": "Question",
+				  "name": "##faq_q4##",
+				  "acceptedAnswer": {
+					"@type": "Answer",
+					"text": "##faq_a4##"
+				  }
+				}
+			  ]
+			}
+			</script>
+
 	  <script defer src="js/loadgames.js"></script>
    </head>
    <body>
@@ -115,318 +128,297 @@
                alt="">
             <div class="hero-overlay">
             </div>
+			<div id="langSwitcher" style="cursor:pointer; padding:5px 10px; border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">
+				🌐 EN
+			</div>
             <div class="hero-content">
                <!-- PAGE TITLE + BADGES MOVED HERE -->
                <nav class="hero-nav">
-                  <a href="index.html">
+                  <a data-i18n="nav_home" href="index.html">
                   Home
                   </a>
-                  <a href="about.html">
+                  <a data-i18n="nav_about" href="about.html">
                   About
                   </a>
-                  <a href="contact.html">
+                  <a data-i18n="nav_contact" href="contact.html">
                   Contact
                   </a>
-                  <a href="articles.html">
+                  <a data-i18n="nav_articles" href="articles.html">
                   Articles
                   </a>
-                  <a href="privacy.html">
+                  <a data-i18n="nav_privacy" href="privacy.html">
                   Privacy
                   </a>
-                  <a href="terms.html">
+                  <a data-i18n="nav_terms" href="terms.html">
                   Terms
                   </a>
+				  
+	
                </nav>
+			   
             </div>
+			
          </div>
+		 
       </header>
       <div class="page-wrap">
          
          <main class="main-content" style="position:relative;">
-					  				
-			<!-- FILTERS / SEARCH / SHUFFLE -->
-               <div class="filters-bar">
-                  <div class="filters-left">
-                     <input id="searchInput" class="search-input" type="text" placeholder="Search games by name or description…" />
-                     <select id="typeFilter" class="type-select">
-                        <option value="all">
-                           All types
-                        </option>
-                        <option value="arcade">
-                           Arcade
-                        </option>
-                        <option value="shooter">
-                           Shooter
-                        </option>
-                        <option value="strategy">
-                           Strategy
-                        </option>
-                        <option value="logic">
-                           Logic
-                        </option>
-                        <option value="memory">
-                           Memory
-                        </option>
-                        <option value="classic">
-                           Classic
-                        </option>
-                        <option value="typing">
-                           Typing
-                        </option>
-                        <option value="ai">
-                           AI
-                        </option>
-                     </select>
-                 
-                     <button id="shuffleBtn" class="btn-secondary">
-                     🔀 Shuffle
-                     </button>
-                     <button id="resetFiltersBtn" class="btn-secondary">
-                     Reset Filters
-                     </button>
-					 </div>
-			<div class="filters-right">
-				  <div style="
-					  font-size:14px;
-					  margin-bottom:8px;
-					  opacity:0.85;
-					  color:#cbd5f5;
-				  ">
-				  </div>
+
+			  <!-- FILTERS / SEARCH / SHUFFLE -->
+			  <div class="filters-bar">
+				<div class="filters-left">
+
+				  <input
+					id="searchInput"
+					class="search-input"
+					type="text"
+					placeholder="Search games by name or description…"
+					data-i18n-placeholder="search_placeholder"
+				  />
+
+				  <select id="typeFilter" class="type-select">
+					<option value="all" data-i18n="filter_all_types">All types</option>
+					<option value="arcade" data-i18n="filter_arcade">Arcade</option>
+					<option value="shooter" data-i18n="filter_shooter">Shooter</option>
+					<option value="strategy" data-i18n="filter_strategy">Strategy</option>
+					<option value="logic" data-i18n="filter_logic">Logic</option>
+					<option value="memory" data-i18n="filter_memory">Memory</option>
+					<option value="classic" data-i18n="filter_classic">Classic</option>
+					<option value="typing" data-i18n="filter_typing">Typing</option>
+					<option value="ai" data-i18n="filter_ai">AI</option>
+				  </select>
+
+				  <button id="shuffleBtn" class="btn-secondary" data-i18n="btn_shuffle">
+					🔀 Shuffle
+				  </button>
+
+				  <button id="resetFiltersBtn" class="btn-secondary" data-i18n="btn_reset_filters">
+					Reset Filters
+				  </button>
+
+				</div>
+
+				<div class="filters-right">
 
 				  <a href="https://www.paypal.com/donate?business=gabi.gabz@gmail.com&currency_code=USD"
 					 target="_blank"
 					 rel="noopener"
 					 style="
-						position:relative;
-						display:inline-flex;
-						align-items:center;
-						padding:14px 40px 14px 75px;
-						font-size:12px;
-						font-weight:600;
-						color:#ffffff;
-						text-decoration:none;
-						border-radius:999px;
-						cursor:pointer;
+					   position:relative;
+					   display:inline-flex;
+					   align-items:center;
+					   padding:14px 40px 14px 75px;
+					   font-size:12px;
+					   font-weight:600;
+					   color:#ffffff;
+					   text-decoration:none;
+					   border-radius:999px;
+					   cursor:pointer;
 
-						background:linear-gradient(180deg,#ff7a7a 0%, #ff4d4d 45%, #b00020 100%);
-						box-shadow:
-						  inset 0 4px 8px rgba(255,255,255,0.5),
-						  inset 0 -5px 12px rgba(0,0,0,0.4),
-						  0 12px 30px rgba(0,0,0,0.6);
-					 ">
-
+					   background:linear-gradient(180deg,#ff7a7a 0%, #ff4d4d 45%, #b00020 100%);
+					   box-shadow:
+						 inset 0 4px 8px rgba(255,255,255,0.5),
+						 inset 0 -5px 12px rgba(0,0,0,0.4),
+						 0 12px 30px rgba(0,0,0,0.6);
+					 "
+					 data-i18n="btn_donate">
 					<span style="
-						position:absolute;
-						left:12px;
-						width:46px;
-						height:46px;
-						border-radius:50%;
-						background:linear-gradient(180deg,#ff5c5c,#8b0000);
-						display:flex;
-						align-items:center;
-						justify-content:center;
-						font-size:18px;
-						box-shadow:
-						  inset 0 3px 6px rgba(255,255,255,0.5),
-						  0 5px 12px rgba(0,0,0,0.5);
+					   position:absolute;
+					   left:12px;
+					   width:46px;
+					   height:46px;
+					   border-radius:50%;
+					   background:linear-gradient(180deg,#ff5c5c,#8b0000);
+					   display:flex;
+					   align-items:center;
+					   justify-content:center;
+					   font-size:18px;
+					   box-shadow:
+						 inset 0 3px 6px rgba(255,255,255,0.5),
+						 0 5px 12px rgba(0,0,0,0.5);
 					">❤</span>
-
 					Donate to Support the Site
 				  </a>
-					<br><br>
 
-				<a href="submit.html"
-				   style="
-					position:relative;
-					display:inline-flex;
-					align-items:center;
-					padding:12px 34px 12px 65px;
-					font-size:12px;
-					font-weight:600;
-					color:#38bdf8;
-					text-decoration:none;
-					border-radius:999px;
-					cursor:pointer;
+				  <br><br>
 
-					background:linear-gradient(180deg,#0f172a 0%, #020617 100%);
-					border:1px solid #38bdf8;
+				  <a href="submit.html"
+					 style="
+					   position:relative;
+					   display:inline-flex;
+					   align-items:center;
+					   padding:12px 34px 12px 65px;
+					   font-size:12px;
+					   font-weight:600;
+					   color:#38bdf8;
+					   text-decoration:none;
+					   border-radius:999px;
+					   cursor:pointer;
 
-					box-shadow:
-					  inset 0 3px 6px rgba(255,255,255,0.08),
-					  0 8px 20px rgba(0,0,0,0.6);
-				">
+					   background:linear-gradient(180deg,#0f172a 0%, #020617 100%);
+					   border:1px solid #38bdf8;
 
+					   box-shadow:
+						 inset 0 3px 6px rgba(255,255,255,0.08),
+						 0 8px 20px rgba(0,0,0,0.6);
+					 "
+					 data-i18n="btn_submit_game">
 					<span style="
-						position:absolute;
-						left:10px;
-						width:40px;
-						height:40px;
-						border-radius:50%;
-						background:linear-gradient(180deg,#38bdf8,#1e40af);
-						display:flex;
-						align-items:center;
-						justify-content:center;
-						font-size:18px;
-						color:white;
-						box-shadow:
-						  inset 0 3px 6px rgba(255,255,255,0.4),
-						  0 5px 12px rgba(0,0,0,0.5);
+					   position:absolute;
+					   left:10px;
+					   width:40px;
+					   height:40px;
+					   border-radius:50%;
+					   background:linear-gradient(180deg,#38bdf8,#1e40af);
+					   display:flex;
+					   align-items:center;
+					   justify-content:center;
+					   font-size:18px;
+					   color:white;
+					   box-shadow:
+						 inset 0 3px 6px rgba(255,255,255,0.4),
+						 0 5px 12px rgba(0,0,0,0.5);
 					">🎮</span>
-
 					Submit Your Game
-				</a>
+				  </a>
 
 				</div>
-                  </div>
-				  
-               </div>
-			   
-               <h2 style="color:#93c5fd;padding:1px; text-align:center;    width: 100%;
-							max-width: 1300px;
-							height: auto;
-							border-radius: 16px;
-							overflow: hidden;
-							border: 1px solid rgba(148, 163, 184, 0.25);
-							background: linear-gradient(145deg, #020617, #0a0f24);
-							box-shadow: none;
-							position: relative;
-							margin: 0 auto;
-							background-attachment: scroll;">
-                  Neon Games
-               </h2>
+			  </div>
+
+			  <h2 style="color:#93c5fd; padding:1px; text-align:center; width:100%; max-width:1300px; border-radius:16px; border:1px solid rgba(148,163,184,0.25); background:linear-gradient(145deg,#020617,#0a0f24); margin:0 auto;"
+				  data-i18n="title_neon_games">
+				Neon Games
+			  </h2>
                <!-- ===================== TOP PICKS ===================== -->
 				<div class="category-title">
-				   <span class="label">🔥 Top Picks</span>
-				   <span class="sub">Hand-picked for quick fun and high replay value.</span>
-				</div>
+			   <span class="label" data-i18n="cat_top_picks">🔥 Top Picks</span>
+			   <span class="sub" data-i18n="cat_top_picks_sub">Hand-picked for quick fun and high replay value.</span>
+							</div>
 
 				<div id="grid-topPicks" class="game-grid"></div>
 
 
-               <!-- ===================== CLASSIC QUICK GAMES ===================== -->
+				<!-- ===================== CLASSIC QUICK GAMES ===================== -->
 				<div class="category-title">
-				   <span class="label">🎮 Classic Quick Games</span>
-				   <span class="sub">Perfect for short breaks and easy to learn.</span>
+				   <span class="label" data-i18n="cat_classic_quick">🎮 Classic Quick Games</span>
+				   <span class="sub" data-i18n="cat_classic_quick_sub">Perfect for short breaks and easy to learn.</span>
 				</div>
 
 				<div id="grid-classic" class="game-grid"></div>
 
-               <!-- ===================== SKILL & LOGIC ===================== -->
-               <div class="category-title">
-				   <span class="label">🧠 Skill & Logic Games</span>
-				   <span class="sub">Train your brain, memory and reaction time.</span>
+
+				<!-- ===================== SKILL & LOGIC ===================== -->
+				<div class="category-title">
+				   <span class="label" data-i18n="cat_skill_logic">🧠 Skill & Logic Games</span>
+				   <span class="sub" data-i18n="cat_skill_logic_sub">Train your brain, memory and reaction time.</span>
 				</div>
 
 				<div id="grid-skill" class="game-grid"></div>
 
-               <!-- ===================== STRATEGY & CAMPAIGN ===================== -->
-               <div class="category-title">
-			   <span class="label">🚀 Strategy & Campaign</span>
-			   <span class="sub">Longer sessions, planning and tower defense.</span>
-			</div>
 
-			<div id="grid-strategy" class="game-grid"></div>
+				<!-- ===================== STRATEGY & CAMPAIGN ===================== -->
+				<div class="category-title">
+				   <span class="label" data-i18n="cat_strategy">🚀 Strategy & Campaign</span>
+				   <span class="sub" data-i18n="cat_strategy_sub">Longer sessions, planning and tower defense.</span>
+				</div>
+
+				<div id="grid-strategy" class="game-grid"></div>						
 
             </div>
+			
             <div class="mobile-nav-toggle" onclick="toggleMobileMenu()">
                ☰ Articles
             </div>
             <div class="content-scroll" id="main">
                <section class="value-wrap" aria-label="About Neon Mini Game Hub">
 			   
-         <div class="value-head">
+			<div class="value-head">
 
-		   <div class="value-intro">
-			  <h2>⚡ Neon Mini Game Hub — fast browser games, built for mobile</h2>
-			  <p>
-				 Neon Mini Game Hub is a lightweight browser arcade: instant-play HTML5 mini-games that load fast, feel responsive,
-				 and work on both desktop and mobile. Each game is built with modern HTML, CSS, and JavaScript (no installs, no accounts),
-				 with a focus on smooth controls, clear UI, and replayability.
-			  </p>
-		   </div>
+			   <div class="value-intro">
+				  <h2 data-i18n="value_title">
+					 ⚡ Neon Mini Game Hub — fast browser games, built for mobile
+				  </h2>
 
-		   <div class="value-side">
-			  <div class="value-links" aria-label="Quick links">
-				 <a href="articles.html">📰 Read articles</a>
-				 <a href="about.html">ℹ️ About / Press</a>
-				 <a href="privacy.html">🔒 Privacy</a>
-				 <a href="terms.html">📄 Terms</a>
-			  </div>
+				  <p data-i18n="value_text">
+					 Neon Mini Game Hub is a lightweight browser arcade: instant-play HTML5 mini-games that load fast, feel responsive,
+					 and work on both desktop and mobile. Each game is built with modern HTML, CSS, and JavaScript (no installs, no accounts),
+					 with a focus on smooth controls, clear UI, and replayability.
+				  </p>
+			   </div>
+
+			   <div class="value-side">
+				  <div class="value-links" aria-label="Quick links">
+					 <a href="articles.html" data-i18n="value_link_articles">📰 Read articles</a>
+					 <a href="about.html" data-i18n="value_link_about">ℹ️ About / Press</a>
+					 <a href="privacy.html" data-i18n="value_link_privacy">🔒 Privacy</a>
+					 <a href="terms.html" data-i18n="value_link_terms">📄 Terms</a>
+				  </div>
+			   </div>
+
+			</div>
 
 
+            <div class="value-grid">
 
-		   </div>
+				  <div class="value-card">
+					<h3 data-i18n="value_card1_title">
+					  🚀 Instant-play performance
+					</h3>
+					<p data-i18n="value_card1_text">
+					  Games are designed to start quickly and stay smooth: minimal blocking scripts, efficient rendering,
+					  and mobile-friendly layouts. If your device supports a modern browser, you can play.
+					</p>
+				  </div>
 
-		</div>
+				  <div class="value-card">
+					<h3 data-i18n="value_card2_title">
+					  🎮 Focused game design
+					</h3>
+					<p data-i18n="value_card2_text">
+					  Every title is built around a tight core loop: short sessions, clear goals, and meaningful progression.
+					  Perfect for quick breaks, but deep enough to master.
+					</p>
+				  </div>
 
+				  <div class="value-card">
+					<h3 data-i18n="value_card3_title">
+					  🧠 Safe, simple UX
+					</h3>
+					<p data-i18n="value_card3_text">
+					  No forced sign-ups. No invasive prompts. Clear navigation and accessibility improvements
+					  (including “skip to content”) so users can find games and start playing immediately.
+					</p>
+				  </div>
 
-                  <div class="value-grid">
-                     <div class="value-card">
-                        <h3>
-                           🚀 Instant-play performance
-                        </h3>
-                        <p>
-                           Games are designed to start quickly and stay smooth: minimal blocking scripts, efficient rendering,
-                           and mobile-friendly layouts. If your device supports a modern browser, you can play.
-                        </p>
-                     </div>
-                     <div class="value-card">
-                        <h3>
-                           🎮 Focused game design
-                        </h3>
-                        <p>
-                           Every title is built around a tight core loop: short sessions, clear goals, and meaningful progression.
-                           Perfect for quick breaks, but deep enough to master.
-                        </p>
-                     </div>
-                     <div class="value-card">
-                        <h3>
-                           🧠 Safe, simple UX
-                        </h3>
-                        <p>
-                           No forced sign-ups. No invasive prompts. Clear navigation and accessibility improvements
-                           (including “skip to content”) so users can find games and start playing immediately.
-                        </p>
-                     </div>
-                  </div>
+				</div>
+
+				  
                </section>
+			   
                <section class="faq-wrap" aria-label="Frequently asked questions">
-                  <h2>
+                  <h2 data-i18n="faq_q0">
                      ❓ FAQ
                   </h2>
                   <div class="faq">
                      <div class="faq-item">
-                        <h3>
-                           Do I need to install anything?
-                        </h3>
-                        <p>
-                           No. These are browser games. Open a game page and play instantly.
-                        </p>
+                        <h3 data-i18n="faq_q1"> Do I need to install anything?</h3>
+                        <p data-i18n="faq_a1">No. These are browser games. Open a game page and play instantly.</p>
                      </div>
+
                      <div class="faq-item">
-                        <h3>
-                           Do you collect personal data?
-                        </h3>
-                        <p>
-                           The site aims to collect as little as possible. See the Privacy page for details about cookies, analytics, and ads.
-                        </p>
+                        <h3 data-i18n="faq_q2">Do you collect personal data?</h3>
+                        <p data-i18n="faq_a2">The site aims to collect as little as possible. See the Privacy page for details about cookies, analytics, and ads.</p>
                      </div>
+					 
                      <div class="faq-item">
-                        <h3>
-                           Which devices are supported?
-                        </h3>
-                        <p>
-                           Any modern browser on desktop or mobile. If performance is slow, close other tabs and disable battery saver mode.
-                        </p>
+                        <h3 data-i18n="faq_q3" >Which devices are supported?</h3>
+                        <p data-i18n="faq_a3">Any modern browser on desktop or mobile. If performance is slow, close other tabs and disable battery saver mode.</p>
                      </div>
+					 
                      <div class="faq-item">
-                        <h3>
-                           How can I request a game or report a bug?
-                        </h3>
-                        <p>
-                           Use the Contact page, or leave feedback on this homepage if the feedback section is enabled.
-                        </p>
+                        <h3 data-i18n="faq_q4">How can I request a game or report a bug?</h3>
+                        <p data-i18n="faq_a4">Use the Contact page, or leave feedback on this homepage if the feedback section is enabled.</p>
                      </div>
                   </div>
                </section>
@@ -434,257 +426,267 @@
 			
 			
 			<div class="featured-articles" style="padding:20px; text-align:center;">
-               <h2 style="color:#93c5fd;">
-                  Featured Articles
-               </h2>
-               <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
-                  <div class="fa-card">
-                     <img src="images/thumb1.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3> The Rise of HTML5 Neon Games </h3>
-                     <p>
-                        A deep dive into why browser arcades are returning in force.
-                     </p>
-                     <a class="fa-more-btn" href="article1.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb2.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        How Modern Browser Games Are Built
-                     </h3>
-                     <p>
-                        Learn how HTML, CSS and JS power fast neon games.
-                     </p>
-                     <a class="fa-more-btn" href="article2.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb3.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        Top 10 Principles of Mini-Game Design
-                     </h3>
-                     <p>
-                        The fundamentals of creating addictive fast-play games.
-                     </p>
-                     <a class="fa-more-btn" href="article3.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb4.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        The Evolution of WebGL for Browser Games
-                     </h3>
-                     <p>
-                        A technical deep-dive into how WebGL transformed modern browser gaming.
-                     </p>
-                     <a class="fa-more-btn" href="article4.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb5.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        How Game Engines Use Canvas Rendering Loops
-                     </h3>
-                     <p>
-                        A deep exploration of render cycles, frame timing, and loop scheduling.
-                     </p>
-                     <a class="fa-more-btn" href="article5.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb6.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        Mobile Optimization Techniques for HTML5 Games
-                     </h3>
-                     <p>
-                        How to maximize speed, input latency, and visual clarity on smartphones.
-                     </p>
-                     <a class="fa-more-btn" href="article6.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb7.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        Why the Neon Aesthetic Works in Web Design & Gaming
-                     </h3>
-                     <p>
-                        An artistic and psychological breakdown of neon’s visual power.
-                     </p>
-                     <a class="fa-more-btn" href="article7.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb8.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        Building Real-Time Hitboxes & Collision Systems
-                     </h3>
-                     <p>
-                        The mathematics and techniques behind precision collision engines.
-                     </p>
-                     <a class="fa-more-btn" href="article8.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb9.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        How Indie Devs Can Scale With Browser-First Games
-                     </h3>
-                     <p>
-                        Why browser games are becoming a powerful growth path for indie studios.
-                     </p>
-                     <a class="fa-more-btn" href="article9.html">
-                     Read more →
-                     </a>
-                  </div>
-                  <div class="fa-card">
-                     <img src="images/thumb10.webp" class="fa-thumb" width="280" height="170" loading="lazy" fetchpriority="low" role="presentation" decoding="async" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
-                     <h3>
-                        The Future of WebGPU & High-End Browser Gaming
-                     </h3>
-                     <p>
-                        A look at next-gen APIs bringing console-level graphics to the web.
-                     </p>
-                     <a class="fa-more-btn" href="article10.html">
-                     Read more →
-                     </a>
-                  </div>
-               </div>
-            </div>
+
+				  <h2 style="color:#93c5fd;" data-i18n="featured_articles_title">
+					Featured Articles
+				  </h2>
+
+				  <div class="fa-grid" style="display:flex; gap:20px; justify-content:center; flex-wrap:wrap;">
+
+					<!-- ARTICLE 1 -->
+					<div class="fa-card">
+					  <img src="images/thumb1.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art1_title">The Rise of HTML5 Neon Games</h3>
+					  <p data-i18n="art1_desc">A deep dive into why browser arcades are returning in force.</p>
+					  <a class="fa-more-btn" href="article1.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 2 -->
+					<div class="fa-card">
+					  <img src="images/thumb2.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art2_title">How Modern Browser Games Are Built</h3>
+					  <p data-i18n="art2_desc">Learn how HTML, CSS and JS power fast neon games.</p>
+					  <a class="fa-more-btn" href="article2.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 3 -->
+					<div class="fa-card">
+					  <img src="images/thumb3.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art3_title">Top 10 Principles of Mini-Game Design</h3>
+					  <p data-i18n="art3_desc">The fundamentals of creating addictive fast-play games.</p>
+					  <a class="fa-more-btn" href="article3.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 4 -->
+					<div class="fa-card">
+					  <img src="images/thumb4.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art4_title">The Evolution of WebGL for Browser Games</h3>
+					  <p data-i18n="art4_desc">A technical deep-dive into how WebGL transformed modern browser gaming.</p>
+					  <a class="fa-more-btn" href="article4.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 5 -->
+					<div class="fa-card">
+					  <img src="images/thumb5.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art5_title">How Game Engines Use Canvas Rendering Loops</h3>
+					  <p data-i18n="art5_desc">A deep exploration of render cycles, frame timing, and loop scheduling.</p>
+					  <a class="fa-more-btn" href="article5.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 6 -->
+					<div class="fa-card">
+					  <img src="images/thumb6.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art6_title">Mobile Optimization Techniques for HTML5 Games</h3>
+					  <p data-i18n="art6_desc">How to maximize speed, input latency, and visual clarity on smartphones.</p>
+					  <a class="fa-more-btn" href="article6.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 7 -->
+					<div class="fa-card">
+					  <img src="images/thumb7.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art7_title">Why the Neon Aesthetic Works in Web Design & Gaming</h3>
+					  <p data-i18n="art7_desc">An artistic and psychological breakdown of neon’s visual power.</p>
+					  <a class="fa-more-btn" href="article7.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 8 -->
+					<div class="fa-card">
+					  <img src="images/thumb8.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art8_title">Building Real-Time Hitboxes & Collision Systems</h3>
+					  <p data-i18n="art8_desc">The mathematics and techniques behind precision collision engines.</p>
+					  <a class="fa-more-btn" href="article8.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 9 -->
+					<div class="fa-card">
+					  <img src="images/thumb9.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art9_title">How Indie Devs Can Scale With Browser-First Games</h3>
+					  <p data-i18n="art9_desc">Why browser games are becoming a powerful growth path for indie studios.</p>
+					  <a class="fa-more-btn" href="article9.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+					<!-- ARTICLE 10 -->
+					<div class="fa-card">
+					  <img src="images/thumb10.webp" class="fa-thumb" width="280" height="170"
+						   loading="lazy" style="width:280px; background:#020617; padding:15px; border-radius:12px; border:1px solid #374151;">
+					  <h3 data-i18n="art10_title">The Future of WebGPU & High-End Browser Gaming</h3>
+					  <p data-i18n="art10_desc">A look at next-gen APIs bringing console-level graphics to the web.</p>
+					  <a class="fa-more-btn" href="article10.html" data-i18n="read_more">Read more →</a>
+					</div>
+
+				  </div>
+				</div>
+
 
 <!-- ===================== End of Games ===================== -->
             <footer>
-               <p>
-                  🎮 Thanks for playing in our mini arcade!
-               </p>
-               <p>
-                  ⭐ Bookmark this page — new games are added weekly.
-               </p>
-               <p>
-                  💬 Got ideas or feedback? Share the fun with your friends!
-               </p>
-               <hr style="border:1px solid #111827; margin:10px auto; width:60%;">
-               <p>
-                  <a href="privacy.html" style="color:#9ca3af;">
-                  Privacy Policy
-                  </a>
-                  ·
-                  <a href="terms.html" style="color:#9ca3af;">
-                  Terms of Use
-                  </a>
-               </p>
-               <p>
+				<p data-i18n="footer_thanks">
+					  🎮 Thanks for playing in our mini arcade!
+					</p>
+
+					<p data-i18n="footer_bookmark">
+					  ⭐ Bookmark this page — new games are added weekly.
+					</p>
+
+					<p data-i18n="footer_feedback">
+					  💬 Got ideas or feedback? Share the fun with your friends!
+					</p>
+
+					<hr style="border:1px solid #111827; margin:10px auto; width:60%;">
+
+					<p>
+					  <a href="privacy.html" style="color:#9ca3af;" data-i18n="footer_privacy">
+						Privacy Policy
+					  </a>
+					  ·
+					  <a href="terms.html" style="color:#9ca3af;" data-i18n="footer_terms">
+						Terms of Use
+					  </a>
+					</p>
+
                   <!-- ================= AdSense Content Section ================= -->
-               <section style="
-                  max-width: 1100px;
-                  margin: 40px auto 20px;
-                  padding: 20px;
-                  background-image:none;
-                  border: 1px solid rgba(148,163,184,0.25);
-                  border-radius: 16px;
-                  color: #e5e7eb;
-                  ">
-                  <h2 style="margin-top:0;">
-                     Play Free Browser Games
-                  </h2>
-                  <p>
-                     Neon Mini Game Hub offers a curated collection of free browser games that
-                     run instantly without downloads or sign-ups. All games are built using
-                     standard web technologies and are playable on desktop and mobile devices.
-                  </p>
-                  <p>
-                     Some games may store basic progress locally in your browser. Advertising,
-                     if enabled, is provided by third-party services such as Google AdSense.
-                     Learn more in our
-                     <a href="privacy.html" style="color:#93c5fd;">
-                     Privacy Policy
-                     </a>
-                     .
-                  </p>
-                  <p>
-                     Choose a game above, click once, and start playing instantly.
-                  </p>
-               </section>
+					<section style="
+					  max-width: 1100px;
+					  margin: 40px auto 20px;
+					  padding: 20px;
+					  background-image:none;
+					  border: 1px solid rgba(148,163,184,0.25);
+					  border-radius: 16px;
+					  color: #e5e7eb;
+					">
+
+					  <h2 style="margin-top:0;" data-i18n="info_title">
+						Play Free Browser Games
+					  </h2>
+
+					  <p data-i18n="info_p1">
+						Neon Mini Game Hub offers a curated collection of free browser games that
+						run instantly without downloads or sign-ups. All games are built using
+						standard web technologies and are playable on desktop and mobile devices.
+					  </p>
+
+					  <p>
+						<span data-i18n="info_p2">
+						  Some games may store basic progress locally in your browser. Advertising,
+						  if enabled, is provided by third-party services such as Google AdSense.
+						  Learn more in our
+						</span>
+						<a href="privacy.html" style="color:#93c5fd;" data-i18n="info_privacy_link">
+						  Privacy Policy
+						</a>.
+					  </p>
+
+					  <p data-i18n="info_p3">
+						Choose a game above, click once, and start playing instantly.
+					  </p>
+
+					</section>
+
                <!-- ============================================================ -->
                ©
-               <span id="footer-year">
-               </span>
-               Neo Runner Arcade — All Rights Reserved.
-               </p>
-               <section style="
-                  max-width:1100px;
-                  margin:40px auto;
-                  padding:20px;
-                  background-image:none;
-                  border:1px solid rgba(148,163,184,0.25);
-                  border-radius:16px;
-                  color:#e5e7eb;">
-                  <h2>
-                     About Neon Mini Game Hub
-                  </h2>
-                  <p>
-                     Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript. Our mission is to offer fast, lightweight, and engaging gameplay experiences without downloads, accounts, or interruptions.
-                  </p>
-                  <p>
-                     Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices. We focus on neon aesthetics, responsive controls, smooth animations, and addictive gameplay loops.
-                  </p>
-                  <p>
-                     This hub contains only original titles—not externally embedded games. Every release is built, tested, and improved directly by the developer, ensuring quality and consistency across the entire experience.
-                  </p>
-                  <p>
-                     New games are added weekly along with major updates, character expansions, new maps, smarter enemies, and better balance changes. Our top priority is delivering a premium gaming experience available instantly from any browser.
-                  </p>
-                  <p>
-                     Thank you for visiting Neon Mini Game Hub. Bookmark the site, explore new genres, and enjoy the growing collection of neon-powered arcade games!
-                  </p>
-               </section>
+               <p>
+				  <span id="footer-year"></span>
+				  <span data-i18n="footer_rights">Neo Runner Arcade — All Rights Reserved.</span>
+				</p>
+
+				<section style="
+				  max-width:1100px;
+				  margin:40px auto;
+				  padding:20px;
+				  background-image:none;
+				  border:1px solid rgba(148,163,184,0.25);
+				  border-radius:16px;
+				  color:#e5e7eb;
+				">
+
+				  <h2 data-i18n="about_title">
+					About Neon Mini Game Hub
+				  </h2>
+
+				  <p data-i18n="about_p1">
+					Neon Mini Game Hub is a free online arcade featuring original browser-based games created with pure HTML, CSS, and JavaScript...
+				  </p>
+
+				  <p data-i18n="about_p2">
+					Each game is handcrafted, performance-optimized, and fully playable on both mobile and desktop devices...
+				  </p>
+
+				  <p data-i18n="about_p3">
+					This hub contains only original titles—not externally embedded games...
+				  </p>
+
+				  <p data-i18n="about_p4">
+					New games are added weekly along with major updates...
+				  </p>
+
+				  <p data-i18n="about_p5">
+					Thank you for visiting Neon Mini Game Hub. Bookmark the site...
+				  </p>
+
+				</section>
+
                <!-- ============================
                   💬 COMMUNITY FEEDBACK
                   ============================ -->
                <section class="category-title" style="margin-top:40px;">
-                  <span class="label">
-                  💬 Community Feedback
-                  </span>
-               </section>
-               <section id="feedback-widget" class="neon-feedback"
-                  style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
-                  background: none;
-                  border: 1px solid rgba(148,163,184,0.25);
-                  border-radius: 16px;">
-                  <h2 style="margin-top:0; color:#e5e7eb;">
-                     Share your thoughts!
-                  </h2>
-                  <p style="color:#cbd5f5; opacity:0.85; margin-bottom:16px;">
-                     Leave a comment or reply—no login needed.
-                  </p>
-                  <!-- Username -->
-                  <input id="fb-username" type="text" placeholder="Your name"
-                     style="width:100%; padding:10px 14px; border-radius:8px;
-                     border:1px solid #334155; background:#0f172a;
-                     color:#e5e7eb; margin-bottom:10px;">
-                  <!-- Comment Text -->
-                  <textarea id="fb-text" rows="3" placeholder="Write your comment..."
-                     style="width:100%; padding:10px 14px; border-radius:8px;
-                     border:1px solid #334155; background:#0f172a;
-                     color:#e5e7eb;">
-                                                                </textarea>
-                  <button id="fb-submit"
-                     style="margin-top:10px; padding:10px 16px; border-radius:8px;
-                     background:#4f46e5; border:none; color:white; font-weight:600;
-                     cursor:pointer;">
-                  Post Comment
-                  </button>
-                  <!-- Comment List -->
-                  <div id="fb-comments" style="margin-top:30px;">
-                  </div>
-               </section>
+					  <span class="label" data-i18n="feedback_title">
+						💬 Community Feedback
+					  </span>
+					</section>
+
+					<section id="feedback-widget" class="neon-feedback"
+					  style="max-width: 1100px; margin: 0 auto 40px; padding: 20px;
+					  background: none;
+					  border: 1px solid rgba(148,163,184,0.25);
+					  border-radius: 16px;">
+					  
+					  <h2 style="margin-top:0; color:#e5e7eb;" data-i18n="feedback_header">
+						Share your thoughts!
+					  </h2>
+
+					  <p style="color:#cbd5f5; opacity:0.85; margin-bottom:16px;" data-i18n="feedback_sub">
+						Leave a comment or reply—no login needed.
+					  </p>
+
+					  <!-- Username -->
+					  <input id="fb-username" type="text"
+						data-i18n-placeholder="feedback_name_ph"
+						placeholder="Your name"
+						style="width:100%; padding:10px 14px; border-radius:8px;
+						border:1px solid #334155; background:#0f172a;
+						color:#e5e7eb; margin-bottom:10px;">
+
+					  <!-- Comment Text -->
+					  <textarea id="fb-text" rows="3"
+						data-i18n-placeholder="feedback_text_ph"
+						placeholder="Write your comment..."
+						style="width:100%; padding:10px 14px; border-radius:8px;
+						border:1px solid #334155; background:#0f172a;
+						color:#e5e7eb;"></textarea>
+
+					  <!-- Submit Button -->
+					  <button id="fb-submit"
+						data-i18n="feedback_post_btn"
+						style="margin-top:10px; padding:10px 16px; border-radius:8px;
+						background:#4f46e5; border:none; color:white; font-weight:600;
+						cursor:pointer;">
+						Post Comment
+					  </button>
+
+					  <!-- Comment List -->
+					  <div id="fb-comments" style="margin-top:30px;"></div>
+
+					</section>
+
                <!-- FEEDBACK LOGIC -->
                <script defer>
                   (function() {
@@ -848,132 +850,137 @@
                   });
                   })();
                </script>
-               <section class="category-title">
-                  <span class="label">
-                  📰 Latest Articles
-                  </span>
-               </section>
-               <section class="grid">
-                  <div class="card" onclick="location.href='article1.html'">
-                     <h3>
-                        The Rise of HTML5 Neon Games
-                     </h3>
-                     <p>
-                        Why neon browser games exploded in popularity in 2025–2026.
-                     </p>
-                  </div>
-                  <div class="card" onclick="location.href='article2.html'">
-                     <h3>
-                        How Modern Browser Games Are Built
-                     </h3>
-                     <p>
-                        A behind‑the‑scenes look at HTML, CSS, JS game engines.
-                     </p>
-                  </div>
-                  <div class="card" onclick="location.href='article3.html'">
-                     <h3>
-                        Top 10 Design Principles
-                     </h3>
-                     <p>
-                        How developers create viral, addictive mini‑games.
-                     </p>
-                  </div>
-               </section>
+			   
+					<section class="category-title">
+					  <span class="label" data-i18n="latest_articles_title">
+						📰 Latest Articles
+					  </span>
+					</section>
+
+					<section class="grid">
+
+					  <div class="card" onclick="location.href='article1.html'">
+						<h3 data-i18n="latest_art1_title">
+						  The Rise of HTML5 Neon Games
+						</h3>
+						<p data-i18n="latest_art1_desc">
+						  Why neon browser games exploded in popularity in 2025–2026.
+						</p>
+					  </div>
+
+					  <div class="card" onclick="location.href='article2.html'">
+						<h3 data-i18n="latest_art2_title">
+						  How Modern Browser Games Are Built
+						</h3>
+						<p data-i18n="latest_art2_desc">
+						  A behind-the-scenes look at HTML, CSS, JS game engines.
+						</p>
+					  </div>
+
+					  <div class="card" onclick="location.href='article3.html'">
+						<h3 data-i18n="latest_art3_title">
+						  Top 10 Design Principles
+						</h3>
+						<p data-i18n="latest_art3_desc">
+						  How developers create viral, addictive mini-games.
+						</p>
+					  </div>
+
+					</section>
+
             </footer>
          </main>
        
       </div>
       <!-- ============ COOKIE CONSENT BANNER ============ -->
-      <div id="cookie-banner" class="cookie-banner hidden">
-         <div class="cookie-inner">
-            <div class="cookie-text">
-               We use cookies and similar technologies to deliver and improve this arcade, to measure traffic and (if enabled)
-               to show personalized ads via partners like Google AdSense. By clicking
-               <strong>
-               “Accept all”
-               </strong>
-               you consent
-               to the use of cookies for analytics and advertising. You can change your choice at any time in
-               <strong>
-               Privacy &amp; Cookies
-               </strong>
-               .
-               See our
-               <a href="privacy.html" target="_blank" rel="noopener">
-               Privacy Policy
-               </a>
-               .
-            </div>
-            <div class="cookie-actions">
-               <button id="cookie-reject" class="btn-cookie-secondary">
-               Reject non-essential
-               </button>
-               <button id="cookie-accept" class="btn-cookie-primary">
-               Accept all
-               </button>
-            </div>
-         </div>
-      </div>
-      <!-- ============ PRIVACY / GDPR / CCPA MODAL ============ -->
-      <div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
-         <div class="privacy-modal">
-            <h2>
-               Privacy &amp; Cookies
-            </h2>
-            <p>
-               This site uses cookies and similar technologies to:
-            </p>
-            <ul>
-               <li>
-                  Remember your preferences (for example, which games you play most).
-               </li>
-               <li>
-                  Measure traffic and usage to improve the site.
-               </li>
-               <li>
-                  If you enable it, show personalized ads via third-party partners such as Google AdSense.
-               </li>
-            </ul>
-            <p>
-               Under GDPR and similar laws, you can choose whether we may use non-essential cookies (analytics / ads).
-               Under CCPA/CPRA, you may opt out of the
-               <em>
-               sale or sharing
-               </em>
-               of personal information by rejecting
-               non-essential cookies.
-            </p>
-            <p>
-               For full details, please see our
-               <a href="privacy.html" target="_blank" rel="noopener">
-               Privacy Policy
-               </a>
-               and
-               <a href="terms.html" target="_blank" rel="noopener">
-               Terms of Use
-               </a>
-               .
-            </p>
-            <div class="modal-actions">
-               <button id="privacy-reject" class="btn-outline">
-               Reject non-essential
-               </button>
-               <button id="privacy-accept" class="btn-cookie-primary">
-               Accept all cookies
-               </button>
-               <button id="privacy-close" class="btn-outline">
-               Close
-               </button>
-            </div>
-         </div>
-      </div>
-      <!-- Floating privacy settings button -->
-      <button id="privacy-settings-btn" class="privacy-settings-btn">
-      <span>
-      ⚙
-      </span>
-      Privacy &amp; Cookies
-      </button>
+		<div id="cookie-banner" class="cookie-banner hidden">
+		   <div class="cookie-inner">
+			  <div class="cookie-text" data-i18n="cookie_text">
+				 We use cookies and similar technologies to deliver and improve this arcade, to measure traffic and (if enabled)
+				 to show personalized ads via partners like Google AdSense. By clicking “Accept all” you consent
+				 to the use of cookies for analytics and advertising. You can change your choice at any time in
+				 Privacy & Cookies. See our
+			  </div>
+
+			  <a href="privacy.html" target="_blank" rel="noopener" data-i18n="cookie_privacy_link">
+				 Privacy Policy
+			  </a>
+
+			  <div class="cookie-actions">
+				 <button id="cookie-reject" class="btn-cookie-secondary" data-i18n="cookie_reject_btn">
+					Reject non-essential
+				 </button>
+
+				 <button id="cookie-accept" class="btn-cookie-primary" data-i18n="cookie_accept_btn">
+					Accept all
+				 </button>
+			  </div>
+		   </div>
+		</div>
+
+		<!-- ============ PRIVACY / GDPR / CCPA MODAL ============ -->
+		<div id="privacy-modal-backdrop" class="privacy-modal-backdrop hidden">
+		   <div class="privacy-modal">
+
+			  <h2 data-i18n="privacy_modal_title">
+				 Privacy &amp; Cookies
+			  </h2>
+
+			  <p data-i18n="privacy_modal_intro">
+				 This site uses cookies and similar technologies to:
+			  </p>
+
+			  <ul>
+				 <li data-i18n="privacy_modal_li1">
+					Remember your preferences (for example, which games you play most).
+				 </li>
+				 <li data-i18n="privacy_modal_li2">
+					Measure traffic and usage to improve the site.
+				 </li>
+				 <li data-i18n="privacy_modal_li3">
+					If you enable it, show personalized ads via third-party partners such as Google AdSense.
+				 </li>
+			  </ul>
+
+			  <p data-i18n="privacy_modal_gdpr">
+				 Under GDPR and similar laws, you can choose whether we may use non-essential cookies...
+			  </p>
+
+			  <p>
+				 <span data-i18n="privacy_modal_more">
+					For full details, please see our
+				 </span>
+				 <a href="privacy.html" target="_blank" rel="noopener" data-i18n="cookie_privacy_link">
+				  Privacy Policy
+				</a>
+				<span data-i18n="cookie_policy_and">and</span>
+				<a href="terms.html" target="_blank" rel="noopener" data-i18n="privacy_modal_terms">
+				  Terms of Use
+				</a>.
+			  <div class="modal-actions">
+
+				 <button id="privacy-reject" class="btn-outline" data-i18n="cookie_reject_btn">
+					Reject non-essential
+				 </button>
+
+				 <button id="privacy-accept" class="btn-cookie-primary" data-i18n="privacy_modal_accept_cookies">
+					Accept all cookies
+				 </button>
+
+				 <button id="privacy-close" class="btn-outline" data-i18n="privacy_modal_close">
+					Close
+				 </button>
+
+			  </div>
+		   </div>
+		</div>
+
+		<!-- Floating privacy settings button -->
+		<button id="privacy-settings-btn" class="privacy-settings-btn" data-i18n="privacy_floating_btn">
+		   <span>⚙</span>
+		   Privacy &amp; Cookies
+		</button>
+
       <script defer>
          window.addEventListener('load', () => {
 
@@ -1129,31 +1136,116 @@
       </script>
       <!-- Cookie/Consent banner (simple fallback). Replace with a Google-certified CMP for EEA/UK/CH compliance. -->
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-         <button id="btnConsentDecline" style="
-            border: 1px solid rgba(148,163,184,0.35);
-            background: none;
-            color: #e5e7eb;
-            padding: 10px 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 800;
-            ">
-         Decline
-         </button>
-         <button id="btnConsentAccept" style="
-            border: 1px solid rgba(250,204,21,0.7);
-            background: none;
-            color: #e5e7eb;
-            padding: 10px 12px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 900;
-            ">
-         Accept
-         </button>
-      </div>
+
+	  <button id="btnConsentDecline"
+		data-i18n="consent_decline"
+		style="
+		  border: 1px solid rgba(148,163,184,0.35);
+		  background: none;
+		  color: #e5e7eb;
+		  padding: 10px 12px;
+		  border-radius: 12px;
+		  cursor: pointer;
+		  font-weight: 800;
+		">
+		Decline
+	  </button>
+
+	  <button id="btnConsentAccept"
+		data-i18n="consent_accept"
+		style="
+		  border: 1px solid rgba(250,204,21,0.7);
+		  background: none;
+		  color: #e5e7eb;
+		  padding: 10px 12px;
+		  border-radius: 12px;
+		  cursor: pointer;
+		  font-weight: 900;
+		">
+		Accept
+	  </button>
+
+	</div>
+
+	  
       </div>
       </div>
 	  <script src="/js/ads.js"></script>
+	  <script>
+			const defaultLang = "en";
+			const supportedLangs = ["en", "ro"];
+			let currentLang = localStorage.getItem("site-lang") || null;
+
+			// Auto-detect if no saved choice
+			if (!currentLang) {
+				const userLang = navigator.language || navigator.userLanguage;
+
+				if (userLang.startsWith("ro")) currentLang = "ro";
+				else currentLang = defaultLang;
+
+				localStorage.setItem("site-lang", currentLang);
+			}
+
+			// Load language file
+			async function loadLanguage(lang) {
+				const response = await fetch(`/lang/${lang}.json`);
+				const translations = await response.json();
+				applyTranslations(translations);
+				updateLangButton(lang);
+			}
+
+			function applyTranslations(dict) {
+				document.querySelectorAll("[data-i18n]").forEach(el => {
+					const key = el.getAttribute("data-i18n");
+					if (dict[key]) el.innerText = dict[key];
+				});
+				document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+					const key = el.getAttribute("data-i18n-placeholder");
+					if (dict[key]) el.placeholder = dict[key];
+				});
+				document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+					const key = el.getAttribute("data-i18n-placeholder");
+					if (dict[key]) el.placeholder = dict[key];
+				});
+
+				// 🔥 Translate <title>
+				if (dict["page_title"]) {
+					document.title = dict["page_title"];
+				}
+				    // Translate FAQ Structured Data
+				updateFAQPlaceholders(dict);
+			}
+
+			function updateFAQPlaceholders(dict) {
+				const script = document.getElementById("faq-schema");
+				if (!script) return;
+
+				let jsonText = script.textContent;
+
+				// Replace all ##keys##
+				Object.keys(dict).forEach(key => {
+					const placeholder = `##${key}##`;
+					jsonText = jsonText.replaceAll(placeholder, dict[key]);
+				});
+
+				script.textContent = jsonText;
+			}
+
+			function updateLangButton(lang) {
+				const btn = document.getElementById("langSwitcher");
+				btn.innerText = lang.toUpperCase();
+			}
+
+			// Switcher click
+			document.getElementById("langSwitcher").addEventListener("click", () => {
+				currentLang = (currentLang === "en") ? "ro" : "en";
+				localStorage.setItem("site-lang", currentLang);
+				loadLanguage(currentLang);
+			});
+
+			// Load on startup
+			loadLanguage(currentLang);
+			</script>
+
    </body>
 </html>

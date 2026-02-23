@@ -25,11 +25,17 @@ export class HealthPack {
 
         // Rotation and hover
         this.mesh.rotation.y += CONFIG.PICKUPS.ROTATION_SPEED * deltaTime;
-        this.mesh.position.y = 1 + Math.sin(Date.now() * 0.005) * 0.1;
+        const hover = Math.sin(Date.now() * 0.005) * 0.15;
+        this.mesh.position.y = 1.1 + hover;
+
+        // Visual "Item" bounce
+        const scaleBase = 1.0;
+        const scalePulse = 1.0 + Math.sin(Date.now() * 0.01) * 0.05;
+        this.mesh.scale.set(scaleBase * scalePulse, scaleBase * scalePulse, 1);
 
         // Simple distance check for collection
         const dist = this.mesh.position.distanceTo(playerPos);
-        if (dist < 1.5) {
+        if (dist < 1.8) {
             this.isCollected = true;
         }
     }

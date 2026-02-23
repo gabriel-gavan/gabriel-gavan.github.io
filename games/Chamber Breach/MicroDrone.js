@@ -35,7 +35,7 @@ export class MicroDrone {
         return mesh;
     }
 
-    update(deltaTime, enemies) {
+    update(deltaTime, enemies, forcedTarget = null) {
         if (this.isDead) return;
 
         // Orbit logic
@@ -53,21 +53,26 @@ export class MicroDrone {
 
         // Attack logic
         if (Date.now() - this.lastAttack > this.attackCooldown) {
-            let nearest = null;
-            let minDist = 12;
+            let target = forcedTarget;
+            
+            if (!target || target.isDead) {
+                let nearest = null;
+                let minDist = 12;
 
-            enemies.forEach(e => {
-                if (!e.isAlly && !e.isDead) {
-                    const d = e.mesh.position.distanceTo(this.mesh.position);
-                    if (d < minDist) {
-                        minDist = d;
-                        nearest = e;
+                enemies.forEach(e => {
+                    if (!e.isAlly && !e.isDead) {
+                        const d = e.mesh.position.distanceTo(this.mesh.position);
+                        if (d < minDist) {
+                            minDist = d;
+                            nearest = e;
+                        }
                     }
-                }
-            });
+                });
+                target = nearest;
+            }
 
-            if (nearest) {
-                this.shoot(nearest);
+            if (target) {
+                this.shoot(target);
                 this.lastAttack = Date.now();
             }
         }

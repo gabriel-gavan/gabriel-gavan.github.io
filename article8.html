@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Building Real-Time Hitboxes & Collision Systems</title>
+<title data-i18n="art8_title">Building Real-Time Hitboxes & Collision Systems</title>
 
 <style>
     body {
@@ -32,28 +32,28 @@
 <body>
 
 <div class="breadcrumb">
-    <a href="index.html">Home</a> <span>›</span>
-    <a href="articles.html">Articles</a> <span>›</span>
-    Hitboxes & Collision
+    <a href="index.html" data-i18n="breadcrumb_home">Home</a> <span>›</span>
+    <a href="articles.html" data-i18n="breadcrumb_articles">Articles</a> <span>›</span>
+    <span data-i18n="art8_breadcrumb">Hitboxes & Collision</span>
 </div>
 
-<a id="backToHub" href="index.html" style="
+<a id="backToHub" href="index.html" data-i18n="back_to_hub" style="
     color:#38bdf8;font-size:14px;font-weight:700;text-decoration:none;
     padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;
     box-shadow:0 0 10px rgba(56,189,248,0.45);
     display:inline-block;margin-top:14px;">
 ⬅ Back to Hub</a>
 
-<h1>Building Real-Time Hitboxes & Collision Systems</h1>
+<h1 data-i18n="art8_title_h1">Building Real-Time Hitboxes & Collision Systems</h1>
 
-<p>
+<p data-i18n="art8_intro_1">
     Collision systems are the backbone of real-time game mechanics. Whether detecting bullet hits,
     player movement, enemy interactions, or room transitions — precision and speed determine how responsive a game feels.
 </p>
 
-<h2>1. Axis-Aligned Bounding Boxes (AABB)</h2>
+<h2 data-i18n="art8_h2_1">1. Axis-Aligned Bounding Boxes (AABB)</h2>
 
-<p>
+<p data-i18n="art8_p1">
     AABBs are the most common hitbox format in HTML5 games. They use simple rectangle overlap logic:
 </p>
 
@@ -66,52 +66,56 @@ function collides(a,b){
 }
 </pre>
 
-<p>
+<p data-i18n="art8_p2">
     This check is extremely fast — ideal for mobile and browser games.
 </p>
 
-<h2>2. Pixel-Perfect Collisions</h2>
+<h2 data-i18n="art8_h2_2">2. Pixel-Perfect Collisions</h2>
 
-<p>
-    For neon games, pixel-perfect collisions are rarely required.  
-    They are expensive because they involve reading pixel buffers via Canvas or WebGL.
+<p data-i18n="art8_p3">
+    For neon games, pixel-perfect collisions are rarely required. They are expensive because
+    they involve reading pixel buffers via Canvas or WebGL.
 </p>
 
-<h2>3. Spatial Partitioning</h2>
+<h2 data-i18n="art8_h2_3">3. Spatial Partitioning</h2>
 
-<p>High-object scenes use:</p>
-
-<ul>
-    <li>🗂 Quadtrees</li>
-    <li>🧱 Uniform grids</li>
-    <li>🧩 Binary space partitioning (BSP)</li>
-</ul>
-
-<p>These reduce collision checks from thousands to a few dozen.</p>
-
-<h2>4. Hitbox Variants</h2>
+<p data-i18n="art8_p4">High-object scenes often use spatial partitioning structures:</p>
 
 <ul>
-    <li>⭕ Circle hitboxes → smooth for rotation</li>
-    <li>🔺 Polygon hitboxes → for irregular models</li>
-    <li>🟥 Hybrid hitboxes → combine multiple shapes</li>
+    <li data-i18n="art8_li3_1">Quadtrees</li>
+    <li data-i18n="art8_li3_2">Uniform grids</li>
+    <li data-i18n="art8_li3_3">Binary space partitioning (BSP)</li>
 </ul>
 
-<h2>Conclusion</h2>
+<p data-i18n="art8_p5">
+    These reduce collision checks from thousands to just a few dozen per frame.
+</p>
 
-<p>
-    Building fast collision systems requires a balance of math, performance, and gameplay feel.  
+<h2 data-i18n="art8_h2_4">4. Hitbox Variants</h2>
+
+<ul>
+    <li data-i18n="art8_li4_1">Circle hitboxes → smooth for rotation</li>
+    <li data-i18n="art8_li4_2">Polygon hitboxes → for irregular models</li>
+    <li data-i18n="art8_li4_3">Hybrid hitboxes → combine multiple shapes</li>
+</ul>
+
+<h2 data-i18n="art8_h2_conclusion">Conclusion</h2>
+
+<p data-i18n="art8_conclusion">
+    Building fast collision systems requires a balance of math, performance, and gameplay feel.
     Neon Mini Game Hub uses optimized AABBs, spatial partitioning, and simplified hit regions
     to deliver responsive gameplay across devices.
 </p>
 
 <!-- COMMENTS -->
 <div class="comments-section" style="margin-top:40px;">
-<h3>💬 Comments</h3>
-<textarea id="commentInput" placeholder="Write a comment..."
-    style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-<button id="postCommentBtn">Post Comment</button>
-<div id="commentsList" style="margin-top:20px;"></div>
+  <h3 data-i18n="comments_title">💬 Comments</h3>
+  <textarea id="commentInput"
+            placeholder="Write a comment..."
+            data-i18n-placeholder="comments_placeholder"
+            style="width:100%;height:80px;margin-bottom:10px;"></textarea>
+  <button id="postCommentBtn" data-i18n="comments_post_btn">Post Comment</button>
+  <div id="commentsList" style="margin-top:20px;"></div>
 </div>
 
 <script>
@@ -144,6 +148,8 @@ document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
 });
 loadComments();
 </script>
+
+<script src="js/translation.js?v=5"></script>
 
 </body>
 </html>

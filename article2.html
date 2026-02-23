@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Neon Mini Game Hub — Article</title>
+  <title data-i18n="art2_page_title">How Modern Browser Games Are Built</title>
   <link rel="icon" href="data:,">
   
 <style>
@@ -86,148 +86,166 @@
   <div class="wrap">
     <header>
       <div style="margin-bottom:20px;">
-  <a href="index.html" style="color:#93c5fd;">Home</a> › 
-  <a href="articles.html" style="color:#93c5fd;">Articles</a> › 
-  <span>How Modern Browser Games Are Built: An Inside Look at HTML, CSS & JavaScript</span>
-  	<a id="backToHub" href="index.html"
-       style="
-         color:#38bdf8;
-         font-size:14px;
-         text-decoration:none;
-         font-weight:700;
-         padding:4px 10px;
-         border:1px solid #38bdf8;
-         border-radius:8px;
-         box-shadow:0 0 10px rgba(56,189,248,0.45);
-		 display: inline-block;
-		 margin-top: 14px;
-	
-       ">
-      ⬅ Back to Hub
-    </a>
-</div>
+        <a href="index.html" style="color:#93c5fd;" data-i18n="nav_home">Home</a> › 
+        <a href="articles.html" style="color:#93c5fd;" data-i18n="nav_articles">Articles</a> › 
+        <span data-i18n="art2_breadcrumb">
+          How Modern Browser Games Are Built: An Inside Look at HTML, CSS & JavaScript
+        </span>
+
+        <a id="backToHub" href="index.html"
+          data-i18n="back_to_hub"
+          style="
+             color:#38bdf8;
+             font-size:14px;
+             text-decoration:none;
+             font-weight:700;
+             padding:4px 10px;
+             border:1px solid #38bdf8;
+             border-radius:8px;
+             box-shadow:0 0 10px rgba(56,189,248,0.45);
+             display: inline-block;
+             margin-top: 14px;
+          ">
+          ⬅ Back to Hub
+        </a>
+      </div>
     </header>
+
     <main class="content">
-<h1>How Modern Browser Games Are Built: An Inside Look at HTML, CSS & JavaScript</h1>
 
-<p>
-Modern web games combine powerful JavaScript engines, optimized rendering, responsive UI design,
-and modular architecture. HTML5 gaming is no longer “simple.” It is a legitimate development discipline with
-performance tricks, design patterns, and physics systems.
+<h1 data-i18n="art2_title">
+  How Modern Browser Games Are Built: An Inside Look at HTML, CSS & JavaScript
+</h1>
+
+<p data-i18n="art2_intro">
+  Modern web games combine powerful JavaScript engines, optimized rendering, responsive UI design,
+  and modular architecture. HTML5 gaming is no longer “simple.” It is a legitimate development discipline
+  with performance tricks, design patterns, and physics systems.
 </p>
 
-<h2>🎯 Core Technologies Behind Today’s Browser Games</h2>
+<h2 data-i18n="art2_h2_core">🎯 Core Technologies Behind Today’s Browser Games</h2>
 <ul>
-  <li><strong>HTML5 Canvas</strong> for drawing sprites, maps, and UI.</li>
-  <li><strong>JavaScript game loops</strong> for movement, physics, inputs, and collisions.</li>
-  <li><strong>CSS animations</strong> for menus, transitions, HUDs, and neon effects.</li>
-  <li><strong>WebAudio API</strong> for soundtracks, hits, explosions, and SFX.</li>
-  <li><strong>LocalStorage</strong> for game saves and meta progression.</li>
+  <li data-i18n="art2_core_item1"><strong>HTML5 Canvas</strong> for drawing sprites, maps, and UI.</li>
+  <li data-i18n="art2_core_item2"><strong>JavaScript game loops</strong> for movement, physics, inputs, and collisions.</li>
+  <li data-i18n="art2_core_item3"><strong>CSS animations</strong> for menus, transitions, HUDs, and neon effects.</li>
+  <li data-i18n="art2_core_item4"><strong>WebAudio API</strong> for soundtracks, hits, explosions, and SFX.</li>
+  <li data-i18n="art2_core_item5"><strong>LocalStorage</strong> for game saves and meta progression.</li>
 </ul>
 
-<h2>🏎 The Game Loop: The Heart of Every Browser Game</h2>
-<p>
-A browser game runs at 60 FPS using <code>requestAnimationFrame()</code>. Each frame updates:
+<h2 data-i18n="art2_h2_loop">🏎 The Game Loop: The Heart of Every Browser Game</h2>
+
+<p data-i18n="art2_p_loop">
+  A browser game runs at 60 FPS using <code>requestAnimationFrame()</code>. Each frame updates:
 </p>
+
 <ul>
-  <li>Player movement</li>
-  <li>Enemy logic</li>
-  <li>Physics and collisions</li>
-  <li>Particle effects</li>
-  <li>UI rendering</li>
+  <li data-i18n="art2_loop_item1">Player movement</li>
+  <li data-i18n="art2_loop_item2">Enemy logic</li>
+  <li data-i18n="art2_loop_item3">Physics and collisions</li>
+  <li data-i18n="art2_loop_item4">Particle effects</li>
+  <li data-i18n="art2_loop_item5">UI rendering</li>
 </ul>
 
-<h2>🔧 Tools That Developers Use Every Day</h2>
+<h2 data-i18n="art2_h2_tools">🔧 Tools That Developers Use Every Day</h2>
 <ul>
-  <li><strong>VS Code</strong> — the main coding editor</li>
-  <li><strong>AI asset generators</strong> — sprites, icons, and neon art</li>
-  <li><strong>GIMP / Aseprite</strong> — custom pixel art</li>
-  <li><strong>Three.js</strong> — 3D browser games</li>
-  <li><strong>WebGL</strong> — GPU-level effects</li>
+  <li data-i18n="art2_tools_item1"><strong>VS Code</strong> — the main coding editor</li>
+  <li data-i18n="art2_tools_item2"><strong>AI asset generators</strong> — sprites, icons, and neon art</li>
+  <li data-i18n="art2_tools_item3"><strong>GIMP / Aseprite</strong> — custom pixel art</li>
+  <li data-i18n="art2_tools_item4"><strong>Three.js</strong> — 3D browser games</li>
+  <li data-i18n="art2_tools_item5"><strong>WebGL</strong> — GPU-level effects</li>
 </ul>
 
-<h2>📱 Making Games Mobile-Friendly</h2>
-<p>
-Most players today are mobile. Developers must account for:
+<h2 data-i18n="art2_h2_mobile">📱 Making Games Mobile-Friendly</h2>
+
+<p data-i18n="art2_p_mobile">
+  Most players today are mobile. Developers must account for:
 </p>
+
 <ul>
-  <li>Touch controls</li>
-  <li>Virtual joysticks</li>
-  <li>Device pixel ratio scaling</li>
-  <li>Fullscreen responsive UI</li>
+  <li data-i18n="art2_mobile_item1">Touch controls</li>
+  <li data-i18n="art2_mobile_item2">Virtual joysticks</li>
+  <li data-i18n="art2_mobile_item3">Device pixel ratio scaling</li>
+  <li data-i18n="art2_mobile_item4">Fullscreen responsive UI</li>
 </ul>
 
-<h2>⚡ Performance Optimizations You Never See</h2>
+<h2 data-i18n="art2_h2_perf">⚡ Performance Optimizations You Never See</h2>
 <ul>
-  <li>Sprite atlases to reduce draw calls</li>
-  <li>Object pooling to avoid garbage collection spikes</li>
-  <li>Delta‑time physics to prevent jitter</li>
-  <li>Preloading assets to reduce lag</li>
+  <li data-i18n="art2_perf_item1">Sprite atlases to reduce draw calls</li>
+  <li data-i18n="art2_perf_item2">Object pooling to avoid garbage collection spikes</li>
+  <li data-i18n="art2_perf_item3">Delta-time physics to prevent jitter</li>
+  <li data-i18n="art2_perf_item4">Preloading assets to reduce lag</li>
 </ul>
 
-<h2>🧩 The Future: AI-Assisted Development</h2>
-<p>
-AI will soon generate entire levels, enemy waves, NPC behaviors, and soundtracks dynamically.
-Developers can focus more on creativity while AI handles repetitive work.
+<h2 data-i18n="art2_h2_ai">🧩 The Future: AI-Assisted Development</h2>
+
+<p data-i18n="art2_p_ai">
+  AI will soon generate entire levels, enemy waves, NPC behaviors, and soundtracks dynamically.
+  Developers can focus more on creativity while AI handles repetitive work.
 </p>
 
-<h2>🧱 Modular Architecture in Modern Web Games</h2>
-<p>
-Games today are built in modules: input handlers, collision systems, sprite managers, AI controllers, UI layers,
-and physics engines. This structure allows developers to quickly swap components without rewriting whole systems.
+<h2 data-i18n="art2_h2_modular">🧱 Modular Architecture in Modern Web Games</h2>
+
+<p data-i18n="art2_p_modular">
+  Games today are built in modules: input handlers, collision systems, sprite managers, AI controllers,
+  UI layers, and physics engines. This structure allows developers to quickly swap components without
+  rewriting whole systems.
 </p>
 
-<h2>📦 Packaging & Build Tools</h2>
-<p>
-Tools like Vite, Parcel, and Rollup bundle assets and minify code, improving performance and reducing load times.
-Even browser games now follow professional deployment standards.
+<h2 data-i18n="art2_h2_build">📦 Packaging & Build Tools</h2>
+
+<p data-i18n="art2_p_build">
+  Tools like Vite, Parcel, and Rollup bundle assets and minify code, improving performance and reducing load times.
+  Even browser games now follow professional deployment standards.
 </p>
 
 
-    <!-- COMMENTS SECTION (CLOUDFLARE WORKERS) -->
-    <div class="comments-section" style="margin-top:40px;">
-      <h3>💬 Comments</h3>
+<!-- COMMENTS -->
+<div class="comments-section" style="margin-top:40px;">
+  <h3 data-i18n="comments_title">💬 Comments</h3>
 
-      <textarea id="commentInput" placeholder="Write a comment..." 
-        style="width:100%;height:80px;margin-bottom:10px;"></textarea>
-      <button id="postCommentBtn">Post Comment</button>
+  <textarea id="commentInput" data-i18n-placeholder="comments_placeholder"
+    placeholder="Write a comment..." 
+    style="width:100%;height:80px;margin-bottom:10px;"></textarea>
 
-      <div id="commentsList" style="margin-top:20px;"></div>
-    </div>
+  <button id="postCommentBtn" data-i18n="comments_post_btn">Post Comment</button>
 
-    <script>
-    const ARTICLE_ID = "browser-tech";
-    const COMMENTS_API = "https://neon-comments.gabi-gabz.workers.dev";
+  <div id="commentsList" style="margin-top:20px;"></div>
+</div>
 
-    async function loadComments(){
-      const r = await fetch(COMMENTS_API + "/" + ARTICLE_ID);
-      const list = await r.json();
-      const box = document.getElementById("commentsList");
-      box.innerHTML = "";
-      list.forEach(c=>{
-        const d=document.createElement("div");
-        d.style.marginBottom="12px";
-        d.innerHTML = "<div style='padding:8px;background:#111;border-radius:6px;border:1px solid #333;'>" 
-          + c.text + "</div>";
-        box.appendChild(d);
-      });
-    }
+<script>
+const ARTICLE_ID = "browser-tech";
+const COMMENTS_API = "https://neon-comments.gabi-gabz.workers.dev";
 
-    document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
-      const text = document.getElementById("commentInput").value.trim();
-      if(!text) return;
-      await fetch(COMMENTS_API + "/" + ARTICLE_ID,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({text})
-      });
-      document.getElementById("commentInput").value="";
-      loadComments();
-    });
+async function loadComments(){
+  const r = await fetch(COMMENTS_API + "/" + ARTICLE_ID);
+  const list = await r.json();
+  const box = document.getElementById("commentsList");
+  box.innerHTML = "";
+  list.forEach(c=>{
+    const d=document.createElement("div");
+    d.style.marginBottom="12px";
+    d.innerHTML = "<div style='padding:8px;background:#111;border-radius:6px;border:1px solid #333;'>" 
+      + c.text + "</div>";
+    box.appendChild(d);
+  });
+}
 
-    loadComments();
-    </script>
+document.getElementById("postCommentBtn").addEventListener("click", async ()=>{
+  const text = document.getElementById("commentInput").value.trim();
+  if(!text) return;
+  await fetch(COMMENTS_API + "/" + ARTICLE_ID,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({text})
+  });
+  document.getElementById("commentInput").value="";
+  loadComments();
+});
+
+loadComments();
+</script>
+
+<script src="js/translation.js?v=5"></script>
 
 </body>
 </html>
-

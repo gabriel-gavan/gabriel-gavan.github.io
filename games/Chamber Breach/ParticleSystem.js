@@ -1,99 +1,453 @@
 import * as THREE from 'three';
 
+class ObjectPool {
+    constructor(createFn, initialSize = 10) {
+        this.createFn = createFn;
+        this.pool = [];
+        
+        for (let i = 0; i < initialSize; i++) {
+            this.pool.push(this.createFn());
+        }
+    }
+
+    get() {
+        return this.pool.length > 0 ? this.pool.pop() : this.createFn();
+    }
+
+    release(obj) {
+        this.pool.push(obj);
+    }
+}
+
 export class ParticleSystem {
     constructor(scene) {
         this.scene = scene;
+        this.player = null; 
         this.particles = [];
+        this.MAX_PARTICLES = 1000;
+        this.activeCount = 0;
+        
+        // Initialize fixed-size array for particles
+        for (let i = 0; i < this.MAX_PARTICLES; i++) {
+            this.particles[i] = {
+                active: false,
+                mesh: null,
+                velocity: new THREE.Vector3(),
+                life: 0,
+                decay: 0,
+                pool: null,
+                isProjectile: false,
+                isTracer: false,
+                isSprite: false,
+                isDebris: false,
+                isPersistent: false,
+                growSpeed: 0,
+                damage: 0,
+                bounds: null,
+                bounce: 0
+            };
+        }
+
         this.textureLoader = new THREE.TextureLoader();
         
         // Pre-load textures
         this.muzzleTexture = this.textureLoader.load('https://rosebud.ai/assets/muzzle_flash_sprite.png.webp?cmmK');
         this.dustTexture = this.textureLoader.load('https://rosebud.ai/assets/data_dust_particle.png.webp?K9IH');
+
+        // Optimization: Shared geometries
+        this.boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        this.tracerGeo = new THREE.BoxGeometry(0.02, 0.02, 1);
+        
+        // Optimization: Material pools
+        this.materialPool = new Map(); // Color -> Material
+        
+        // Reusable vectors
+        this.tempVec = new THREE.Vector3();
+        this.tempVec2 = new THREE.Vector3();
+
+        // --- Pools ---
+        
+        // Light Pool
+        this.lightPool = new ObjectPool(() => {
+            const light = new THREE.PointLight(0xffffff, 0, 5);
+            light.castShadow = false;
+            this.scene.add(light);
+            return light;
+        }, 15);
+
+        // Particle Mesh Pool
+        this.particlePool = new ObjectPool(() => {
+            const mesh = new THREE.Mesh(this.boxGeo, new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false }));
+            mesh.visible = false;
+            this.scene.add(mesh);
+            return mesh;
+        }, 200);
+
+        // Tracer Pool
+        this.tracerPool = new ObjectPool(() => {
+            const mat = new THREE.MeshBasicMaterial({ 
+                transparent: true, 
+                opacity: 0.9,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const mesh = new THREE.Mesh(this.tracerGeo, mat);
+            mesh.visible = false;
+            this.scene.add(mesh);
+            return mesh;
+        }, 60);
+
+        // Projectile Pool
+        this.projectilePool = new ObjectPool(() => {
+            const geo = new THREE.CylinderGeometry(0.15, 0.15, 2.0, 8);
+            geo.rotateX(Math.PI / 2);
+            const mat = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 1.0,
+                depthWrite: false,
+                depthTest: true
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            
+            // Outer glow shell
+            const shellGeo = new THREE.CylinderGeometry(0.3, 0.3, 2.2, 8);
+            shellGeo.rotateX(Math.PI / 2);
+            const shellMat = new THREE.MeshBasicMaterial({
+                color: 0xff0000,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                depthTest: false 
+            });
+            const shell = new THREE.Mesh(shellGeo, shellMat);
+            shell.name = 'projShell';
+            mesh.add(shell);
+
+            const light = new THREE.PointLight(0xff0000, 20, 8);
+            light.name = 'projLight';
+            mesh.add(light);
+
+            const glowMat = new THREE.SpriteMaterial({
+                map: this.muzzleTexture,
+                color: 0xff0000,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                opacity: 1.0,
+                depthWrite: false,
+                depthTest: false
+            });
+            const glow = new THREE.Sprite(glowMat);
+            glow.name = 'projGlow';
+            glow.scale.set(3, 3, 3); 
+            mesh.add(glow);
+            
+            mesh.visible = false;
+            mesh.renderOrder = 999;
+            this.scene.add(mesh);
+            return mesh;
+        }, 40);
+
+        // Sprite Pool (Muzzle Flashes)
+        this.spritePool = new ObjectPool(() => {
+            const mat = new THREE.SpriteMaterial({ 
+                map: this.muzzleTexture,
+                transparent: true, 
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            const sprite = new THREE.Sprite(mat);
+            sprite.visible = false;
+            this.scene.add(sprite);
+            return sprite;
+        }, 30);
+
+        // Debris Pool
+        this.debrisPool = new ObjectPool(() => {
+            const geo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+            const mat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.8, roughness: 0.2 });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.visible = false;
+            this.scene.add(mesh);
+            return mesh;
+        }, 30);
+    }
+
+    getNextParticle() {
+        for (let i = 0; i < this.MAX_PARTICLES; i++) {
+            if (!this.particles[i].active) {
+                const p = this.particles[i];
+                p.active = true;
+                p.isProjectile = false;
+                p.isTracer = false;
+                p.isSprite = false;
+                p.isDebris = false;
+                p.isPersistent = false;
+                p.growSpeed = 0;
+                p.damage = 0;
+                p.bounds = null;
+                p.bounce = 0;
+                p.pool = null;
+                return p;
+            }
+        }
+        return null;
+    }
+
+    getMaterial(color) {
+        if (!this.materialPool.has(color)) {
+            this.materialPool.set(color, new THREE.MeshBasicMaterial({ color: color, transparent: true }));
+        }
+        return this.materialPool.get(color);
+    }
+
+    flashLight(position, color, intensity, distance, duration) {
+        const light = this.lightPool.get();
+        light.position.copy(position);
+        light.color.set(color);
+        light.intensity = intensity;
+        light.distance = distance;
+        light.visible = true;
+
+        setTimeout(() => {
+            light.intensity = 0;
+            light.visible = false;
+            this.lightPool.release(light);
+        }, duration);
     }
 
     createExplosion(position, color, count = 10, speed = 2) {
         for (let i = 0; i < count; i++) {
+            const p = this.getNextParticle();
+            if (!p) break;
+
             const size = 0.05 + Math.random() * 0.1;
-            const geo = new THREE.BoxGeometry(size, size, size);
-            const mat = new THREE.MeshBasicMaterial({ color: color });
-            const particle = new THREE.Mesh(geo, mat);
+            const mesh = this.particlePool.get();
+            mesh.material.color.set(color);
+            mesh.material.opacity = 1.0;
+            mesh.scale.setScalar(size);
+            mesh.position.copy(position);
+            mesh.visible = true;
             
-            particle.position.copy(position);
-            
-            const velocity = new THREE.Vector3(
+            p.mesh = mesh;
+            p.velocity.set(
                 (Math.random() - 0.5) * speed,
                 (Math.random() - 0.5) * speed,
                 (Math.random() - 0.5) * speed
             );
+            p.life = 1.0;
+            p.decay = 0.02 + Math.random() * 0.05;
+            p.pool = this.particlePool;
+        }
+    }
 
-            this.particles.push({
-                mesh: particle,
-                velocity: velocity,
-                life: 1.0,
-                decay: 0.02 + Math.random() * 0.05
-            });
+    createDebris(position, color = 0x333333, count = 5, type = 'GENERIC') {
+        for (let i = 0; i < count; i++) {
+            const p = this.getNextParticle();
+            if (!p) break;
 
-            this.scene.add(particle);
+            const mesh = this.debrisPool.get();
+            mesh.material.color.set(color);
+            mesh.position.copy(position);
+            
+            // Special scaling for different debris types
+            if (type === 'MONITOR') {
+                mesh.scale.set(0.2 + Math.random() * 0.4, 0.05 + Math.random() * 0.1, 0.2 + Math.random() * 0.4);
+                mesh.material.emissive.set(color).multiplyScalar(0.5);
+            } else if (type === 'PIPE') {
+                mesh.scale.set(0.1, 0.4 + Math.random() * 0.6, 0.1);
+                mesh.material.emissive.set(0x000000);
+            } else {
+                mesh.scale.setScalar(0.3 + Math.random() * 0.5);
+                mesh.material.emissive.set(0x000000);
+            }
+
+            mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+            mesh.visible = true;
+
+            p.mesh = mesh;
+            p.velocity.set(
+                (Math.random() - 0.5) * 8,
+                Math.random() * 10 + 2,
+                (Math.random() - 0.5) * 8
+            );
+            p.life = 3.0;
+            p.decay = 0.01;
+            p.isDebris = true;
+            p.bounce = 0.5;
+            p.pool = this.debrisPool;
+        }
+    }
+
+    createSteamCloud(position, color = 0xffffff, count = 5) {
+        for (let i = 0; i < count; i++) {
+            const p = this.getNextParticle();
+            if (!p) break;
+
+            const mesh = this.particlePool.get();
+            mesh.material.color.set(color);
+            mesh.material.opacity = 0.4;
+            mesh.scale.setScalar(0.5);
+            mesh.position.copy(position);
+            mesh.visible = true;
+            
+            p.mesh = mesh;
+            p.velocity.set(
+                (Math.random() - 0.5) * 2,
+                Math.random() * 3 + 1,
+                (Math.random() - 0.5) * 2
+            );
+            p.life = 1.5;
+            p.decay = 0.02;
+            p.growSpeed = 2.0;
+            p.pool = this.particlePool;
         }
     }
 
     createImpact(position, normal, color = 0xffffff) {
-        // Create a small burst of particles at impact point
-        this.createExplosion(position, color, 8, 1.5);
+        this.createExplosion(position, color, 6, 2.0);
         
-        // Add a temporary "scorch mark" or point light
-        const light = new THREE.PointLight(color, 1, 2);
-        light.position.copy(position);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 50);
+        for (let i = 0; i < 2; i++) {
+            const p = this.getNextParticle();
+            if (!p) break;
+
+            const size = 0.02 + Math.random() * 0.06;
+            const mesh = this.particlePool.get();
+            mesh.material.color.set(0x333333);
+            mesh.material.opacity = 1.0;
+            mesh.scale.setScalar(size);
+            mesh.position.copy(position);
+            mesh.visible = true;
+            
+            p.mesh = mesh;
+            p.velocity.copy(normal).multiplyScalar(1 + Math.random() * 1.5);
+            p.velocity.x += (Math.random() - 0.5) * 1.0;
+            p.velocity.y += (Math.random() - 0.5) * 1.0;
+            p.velocity.z += (Math.random() - 0.5) * 1.0;
+
+            p.life = 1.0;
+            p.decay = 0.08 + Math.random() * 0.05;
+            p.pool = this.particlePool;
+        }
+
+        this.flashLight(position.clone().add(normal.clone().multiplyScalar(0.2)), color, 3, 2, 50);
+    }
+
+    createEnemyProjectile(start, end, color = 0xff0000, speed = 8) {
+        const p = this.getNextParticle();
+        if (!p) return;
+
+        const mesh = this.projectilePool.get();
+        mesh.material.color.set(0xffffff);
+        mesh.material.opacity = 1.0;
+        mesh.scale.setScalar(1.0);
+        mesh.position.copy(start);
+        
+        const shell = mesh.getObjectByName('projShell');
+        if (shell) {
+            shell.material.color.set(color);
+            shell.material.opacity = 0.6;
+            shell.visible = true;
+        }
+
+        const light = mesh.getObjectByName('projLight');
+        if (light) {
+            light.color.set(color);
+            light.intensity = 35;
+            light.visible = true;
+        }
+
+        const glow = mesh.getObjectByName('projGlow');
+        if (glow) {
+            glow.material.color.set(color);
+            glow.material.opacity = 1.0;
+            glow.scale.setScalar(8);
+            glow.visible = true;
+        }
+
+        const direction = new THREE.Vector3().subVectors(end, start).normalize();
+        mesh.lookAt(mesh.position.clone().add(direction));
+        mesh.visible = true;
+        
+        p.mesh = mesh;
+        p.velocity.copy(direction).multiplyScalar(speed);
+        p.life = 4.0;
+        p.decay = 0.005;
+        p.isProjectile = true;
+        p.damage = 20;
+        p.pool = this.projectilePool;
+        
+        this.flashLight(start, color, 40, 20, 300);
+    }
+
+    createTracer(start, end, color = 0xffffff, life = 1.0, scale = 2.0) {
+        const p = this.getNextParticle();
+        if (!p) return;
+
+        const distance = start.distanceTo(end);
+        const mesh = this.tracerPool.get();
+        
+        mesh.material.color.set(color);
+        mesh.position.copy(start).lerp(end, 0.5);
+        mesh.scale.set(scale, scale, distance); 
+        mesh.lookAt(end);
+        mesh.visible = true;
+        
+        p.mesh = mesh;
+        p.velocity.set(0, 0, 0);
+        p.life = life;
+        p.decay = 0.01 / life;
+        p.isTracer = true;
+        p.pool = this.tracerPool;
+    }
+
+    createPersistentTracer(start, end, color = 0xffffff) {
+        // A thinner, longer-lasting tracer to show enemy fire paths
+        this.createTracer(start, end, color, 3.0, 0.5);
     }
 
     createMuzzleFlash(position, direction, color = 0xffff00) {
-        // Main flash sprite
-        const spriteMat = new THREE.SpriteMaterial({ 
-            map: this.muzzleTexture, 
-            color: color, 
-            transparent: true, 
-            blending: THREE.AdditiveBlending 
-        });
-        const flashSprite = new THREE.Sprite(spriteMat);
-        flashSprite.position.copy(position);
-        flashSprite.scale.set(0.5, 0.5, 0.5);
-        
-        this.scene.add(flashSprite);
-        this.particles.push({
-            mesh: flashSprite,
-            velocity: new THREE.Vector3(),
-            life: 1.0,
-            decay: 0.15, // Very fast
-            isSprite: true,
-            growSpeed: 2.0
-        });
-
-        // Small focused burst for muzzle
-        for (let i = 0; i < 5; i++) {
-            const size = 0.02 + Math.random() * 0.05;
-            const geo = new THREE.BoxGeometry(size, size, size);
-            const mat = new THREE.MeshBasicMaterial({ color: color });
-            const particle = new THREE.Mesh(geo, mat);
+        const pSprite = this.getNextParticle();
+        if (pSprite) {
+            const sprite = this.spritePool.get();
+            sprite.material.color.set(color);
+            sprite.position.copy(position);
+            sprite.scale.set(2, 2, 2);
+            sprite.visible = true;
             
-            particle.position.copy(position);
-            
-            // Velocity mostly in shooting direction
-            const velocity = direction.clone().multiplyScalar(2 + Math.random() * 2);
-            velocity.x += (Math.random() - 0.5) * 0.5;
-            velocity.y += (Math.random() - 0.5) * 0.5;
-            velocity.z += (Math.random() - 0.5) * 0.5;
-
-            this.particles.push({
-                mesh: particle,
-                velocity: velocity,
-                life: 0.5,
-                decay: 0.1 + Math.random() * 0.1
-            });
-
-            this.scene.add(particle);
+            pSprite.mesh = sprite;
+            pSprite.velocity.set(0, 0, 0);
+            pSprite.life = 0.2;
+            pSprite.decay = 0.05;
+            pSprite.isSprite = true;
+            pSprite.growSpeed = 10.0;
+            pSprite.pool = this.spritePool;
         }
+
+        const mat = this.getMaterial(color);
+        for (let i = 0; i < 4; i++) { 
+            const p = this.getNextParticle();
+            if (!p) break;
+
+            const size = 0.05 + Math.random() * 0.1;
+            const mesh = this.particlePool.get();
+            mesh.material = mat;
+            mesh.scale.setScalar(size);
+            mesh.position.copy(position);
+            mesh.visible = true;
+            
+            p.mesh = mesh;
+            p.velocity.copy(direction).multiplyScalar(4 + Math.random() * 4);
+            p.velocity.x += (Math.random() - 0.5) * 1.0;
+            p.velocity.y += (Math.random() - 0.5) * 1.0;
+            p.velocity.z += (Math.random() - 0.5) * 1.0;
+            p.life = 0.5;
+            p.decay = 0.1;
+            p.pool = this.particlePool;
+        }
+
+        this.flashLight(position, color, 8, 10, 80);
     }
 
     createAtmosphericParticles(chamber, count = 20) {
@@ -105,8 +459,12 @@ export class ParticleSystem {
             blending: THREE.AdditiveBlending 
         });
 
+        const group = new THREE.Group();
         for (let i = 0; i < count; i++) {
-            const sprite = new THREE.Sprite(mat.clone());
+            const p = this.getNextParticle();
+            if (!p) break;
+
+            const sprite = new THREE.Sprite(mat.clone()); 
             
             const x = chamber.x + (Math.random() - 0.5) * chamber.size;
             const y = 1 + Math.random() * 4;
@@ -114,73 +472,142 @@ export class ParticleSystem {
             
             sprite.position.set(x, y, z);
             sprite.scale.setScalar(0.05 + Math.random() * 0.1);
+            group.add(sprite);
             
-            this.scene.add(sprite);
-            
-            this.particles.push({
-                mesh: sprite,
-                velocity: new THREE.Vector3(
-                    (Math.random() - 0.5) * 0.2,
-                    (Math.random() - 0.5) * 0.2,
-                    (Math.random() - 0.5) * 0.2
-                ),
-                life: 1.0,
-                decay: 0, // Never dies
-                isPersistent: true,
-                bounds: {
-                    minX: chamber.x - chamber.size / 2,
-                    maxX: chamber.x + chamber.size / 2,
-                    minY: 0.5,
-                    maxY: 5.5,
-                    minZ: chamber.z - chamber.size / 2,
-                    maxZ: chamber.z + chamber.size / 2
-                }
-            });
+            p.mesh = sprite;
+            p.velocity.set(
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2,
+                (Math.random() - 0.5) * 0.2
+            );
+            p.life = 1.0;
+            p.decay = 0; 
+            p.isPersistent = true;
+            p.bounds = {
+                minX: chamber.x - chamber.size / 2,
+                maxX: chamber.x + chamber.size / 2,
+                minY: 0.5,
+                maxY: 5.5,
+                minZ: chamber.z - chamber.size / 2,
+                maxZ: chamber.z + chamber.size / 2
+            };
         }
+        this.scene.add(group);
+        return group;
     }
 
     update(deltaTime) {
-        for (let i = this.particles.length - 1; i >= 0; i--) {
+        const now = Date.now();
+        const timeScale = now * 0.001;
+        
+        for (let i = 0; i < this.MAX_PARTICLES; i++) {
             const p = this.particles[i];
+            if (!p.active) continue;
             
             if (!p.isPersistent) {
                 p.life -= p.decay;
                 
                 if (p.life <= 0) {
-                    this.scene.remove(p.mesh);
-                    this.particles.splice(i, 1);
+                    p.mesh.visible = false;
+                    if (p.pool) p.pool.release(p.mesh);
+                    p.active = false;
                     continue;
                 }
 
-                p.mesh.position.add(p.velocity.clone().multiplyScalar(deltaTime));
+                this.tempVec.copy(p.velocity).multiplyScalar(deltaTime);
+                p.mesh.position.add(this.tempVec);
+
+                // Apply Gravity to Debris
+                if (p.isDebris) {
+                    p.velocity.y -= 25 * deltaTime; // Gravity
+                    if (p.mesh.position.y < 0.2) {
+                        p.mesh.position.y = 0.2;
+                        p.velocity.y *= -p.bounce; // Bounce
+                        p.velocity.x *= 0.8; // Friction
+                        p.velocity.z *= 0.8; // Friction
+                    }
+                    p.mesh.rotation.x += p.velocity.y * deltaTime;
+                    p.mesh.rotation.z += p.velocity.x * deltaTime;
+
+                    // Flicker emission for monitor shards
+                    if (p.mesh.material.emissiveIntensity > 0) {
+                        p.mesh.material.emissiveIntensity = 0.5 + Math.random() * 2.0;
+                    }
+                }
+
+                if (p.isProjectile) {
+                    const light = p.mesh.getObjectByName('projLight');
+                    if (light) light.intensity = 20 * Math.min(1.0, p.life * 2);
+                    const glow = p.mesh.getObjectByName('projGlow');
+                    if (glow) {
+                        glow.material.opacity = Math.min(1.0, p.life * 2);
+                        glow.scale.setScalar(3.0 + Math.sin(now * 0.05) * 0.5); 
+                    }
+                    const shell = p.mesh.getObjectByName('projShell');
+                    if (shell) {
+                        shell.material.opacity = 0.6 * Math.min(1.0, p.life * 2);
+                    }
+
+                    // Collision detection with player
+                    if (this.player && !this.player.isDead) {
+                        const distToPlayer = p.mesh.position.distanceTo(this.player.camera.position);
+                        if (distToPlayer < 1.5) { 
+                            this.player.takeDamage(p.damage || 10);
+                            p.life = 0; 
+                            this.createImpact(p.mesh.position, new THREE.Vector3(0, 1, 0), 0xff0000);
+                        }
+                    }
+
+                    // Lightweight trail - Optimized trail pooling
+                    if (Math.random() < 0.3) {
+                        const tPart = this.getNextParticle();
+                        if (tPart) {
+                            const trail = this.particlePool.get();
+                            trail.material.color.set(shell ? shell.material.color.getHex() : 0xff0000);
+                            trail.material.opacity = 0.5;
+                            trail.scale.setScalar(0.2);
+                            trail.position.copy(p.mesh.position);
+                            trail.visible = true;
+                            
+                            tPart.mesh = trail;
+                            tPart.velocity.set(0, 0, 0);
+                            tPart.life = 0.3;
+                            tPart.decay = 0.05;
+                            tPart.pool = this.particlePool;
+                        }
+                    }
+                }
 
                 if (p.growSpeed) {
                     p.mesh.scale.addScalar(p.growSpeed * deltaTime);
-                } else {
-                    p.mesh.scale.setScalar(p.life);
+                } else if (!p.isTracer && !p.isProjectile) { 
+                    p.mesh.scale.multiplyScalar(0.98); 
                 }
                 
                 if (p.mesh.material) {
-                    p.mesh.material.opacity = p.life;
-                    p.mesh.material.transparent = true;
+                    p.mesh.material.opacity = Math.min(1.0, p.life);
                 }
             } else {
-                // Persistent particle logic (drifting and wrapping)
-                p.mesh.position.add(p.velocity.clone().multiplyScalar(deltaTime));
-                
-                // Wrap within chamber bounds
-                if (p.mesh.position.x < p.bounds.minX) p.mesh.position.x = p.bounds.maxX;
-                if (p.mesh.position.x > p.bounds.maxX) p.mesh.position.x = p.bounds.minX;
-                if (p.mesh.position.y < p.bounds.minY) p.mesh.position.y = p.bounds.maxY;
-                if (p.mesh.position.y > p.bounds.maxY) p.mesh.position.y = p.bounds.minY;
-                if (p.mesh.position.z < p.bounds.minZ) p.mesh.position.z = p.bounds.maxZ;
-                if (p.mesh.position.z > p.bounds.maxZ) p.mesh.position.z = p.bounds.minZ;
-                
-                // Subtle opacity pulsing
-                p.mesh.material.opacity = 0.2 + Math.sin(Date.now() * 0.001 + i) * 0.15;
+                // Persistent particle logic - Throttled update
+                if (i % 2 === 0) { 
+                    this.tempVec.copy(p.velocity).multiplyScalar(deltaTime * 2);
+                    p.mesh.position.add(this.tempVec);
+                    
+                    if (p.mesh.position.x < p.bounds.minX) p.mesh.position.x = p.bounds.maxX;
+                    if (p.mesh.position.x > p.bounds.maxX) p.mesh.position.x = p.bounds.minX;
+                    if (p.mesh.position.y < p.bounds.minY) p.mesh.position.y = p.bounds.maxY;
+                    if (p.mesh.position.y > p.bounds.maxY) p.mesh.position.y = p.bounds.minY;
+                    if (p.mesh.position.z < p.bounds.minZ) p.mesh.position.z = p.bounds.maxZ;
+                    if (p.mesh.position.z > p.bounds.maxX) p.mesh.position.z = p.bounds.minZ;
+                    
+                    if (p.mesh.material) {
+                        p.mesh.material.opacity = 0.15 + Math.sin(timeScale + i) * 0.1;
+                    }
+                }
             }
         }
     }
 }
+
 
 
