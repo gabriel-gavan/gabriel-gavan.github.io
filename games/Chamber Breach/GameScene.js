@@ -138,6 +138,10 @@ export class GameScene {
         this.lastEnemySpawn = Date.now() + 5000; // 5 second grace period at start
         this.lastPickupSpawnCheck = 0;
 
+        // Audio State initialization for Arbiter safety
+        this.audioWindows = {};
+        this.lastPlayTime = {};
+
         // Hacking state
         this.isHacking = false;
         this.hackingDrone = null;
@@ -420,6 +424,15 @@ export class GameScene {
     }
 
     initScreenEvents() {
+        // Back to Hub Button
+        const hubBtn = document.getElementById('back-to-hub-btn');
+        if (hubBtn) {
+            hubBtn.style.display = 'block'; // Ensure it's visible
+            hubBtn.addEventListener('click', () => {
+                window.location.href = '/index.html';
+            });
+        }
+
         const startBtn = document.getElementById('start-btn');
         const skipAllBtn = document.getElementById('skip-all-btn');
         const deployBtn = document.getElementById('deploy-btn');
@@ -491,7 +504,7 @@ export class GameScene {
             loadoutScreen.style.display = 'flex';
             this.gameState = 'LOADOUT_SCREEN';
             this.updateArmoryUI();
-            this.successSynth?.triggerAttackRelease("G4", "8n");
+            this.playArbiterSound('ui', { type: 'success', note: "G4", duration: "8n" });
         });
 
         // Deployment Logic
@@ -528,7 +541,7 @@ export class GameScene {
             }
 
             this.refreshRaycastTargets();
-            this.successSynth?.triggerAttackRelease("G4", "8n");
+            this.playArbiterSound('ui', { type: 'success', note: "G4", duration: "8n" });
             this.showProgressionMessage(`INFILTRATION COMMENCED - ${this.currentFacility.name}`);
         });
 
@@ -573,9 +586,9 @@ export class GameScene {
             if (charIdx < line.length) {
                 lineElement.innerText += line[charIdx];
                 charIdx++;
-                // Play subtle typing sound
-                if (charIdx % 2 === 0 && this.hackSynth) {
-                    this.hackSynth?.triggerAttackRelease("C5", "32n", undefined, 0.1);
+                // Play subtle typing sound via Arbiter
+                if (charIdx % 4 === 0) {
+                    this.playArbiterSound('interaction', { notes: ["C5"] });
                 }
                 setTimeout(typeChar, this.introTypeSpeed);
             } else {
@@ -595,7 +608,7 @@ export class GameScene {
         facilityScreen.style.display = 'flex';
         this.gameState = 'FACILITY_SCREEN';
         this.updateFacilityGrid();
-        this.successSynth?.triggerAttackRelease("C4", "8n");
+        this.playArbiterSound('ui', { type: 'success', note: "C4", duration: "8n" });
     }
 
     updateFacilityGrid() {
@@ -657,7 +670,7 @@ export class GameScene {
 
             node.onmouseenter = () => {
                 this.showFacilityDetail(fac, coords[i]);
-                this.successSynth?.triggerAttackRelease("C5", "32n", undefined, 0.1);
+                this.playArbiterSound('ui', { type: 'interaction', note: "C5", duration: "32n" });
                 node.style.boxShadow = `0 0 20px #${fac.accent.toString(16).padStart(6, '0')}`;
             };
             
@@ -768,7 +781,7 @@ export class GameScene {
             logContainer.appendChild(entry);
             logContainer.scrollTop = logContainer.scrollHeight;
             
-            this.successSynth?.triggerAttackRelease("C6", "64n", undefined, 0.05);
+            this.playArbiterSound('ui', { type: 'success', note: "C6", duration: "64n" });
             
             logIdx++;
             setTimeout(addLog, Math.random() * 300 + 100);
@@ -919,20 +932,25 @@ export class GameScene {
         // Rebuild the target list: Walls + Enemies
         const targets = [];
         
-        // Only include walls in the player's current and adjacent chambers to massively reduce raycast overhead
+        // Use the map's spatial grid to only include relevant walls
         const currentChamber = this.currentChamberIndex;
-        if (this.map.walls) {
-            for (let i = 0; i < this.map.walls.length; i++) {
-                const wall = this.map.walls[i];
-                if (currentChamber !== null) {
-                    const wallChamber = wall.userData.chamberIndex;
-                    if (wallChamber !== undefined && Math.abs(wallChamber - currentChamber) > 1) continue;
+        if (this.map.walls && this.map.spatialGrid) {
+            const chambersToCheck = (currentChamber !== null) ? 
+                [currentChamber, currentChamber - 1, currentChamber + 1] : 
+                Array.from(this.map.spatialGrid.keys());
+
+            chambersToCheck.forEach(idx => {
+                if (this.map.spatialGrid.has(idx)) {
+                    const wallIndices = this.map.spatialGrid.get(idx);
+                    wallIndices.forEach(wallIdx => {
+                        const wall = this.map.walls[wallIdx];
+                        if (wall) targets.push(wall);
+                    });
                 }
-                targets.push(wall);
-            }
+            });
         }
         
-        // Enemy Hitboxes
+        // Enemy Hitboxes - Only nearby ones? No, usually enemies are few enough to check all.
         for (let i = 0; i < this.enemies.length; i++) {
             const e = this.enemies[i];
             if (!e.isDead && e.mesh) {
@@ -952,16 +970,10 @@ export class GameScene {
             });
         }
 
-        // Props (Barrels, Pipes, etc.) in current vicinity
-        if (this.map.props) {
-            this.map.props.forEach(p => {
-                if (p.mesh) {
-                    if (currentChamber === null || Math.abs(p.userData.chamberIndex - currentChamber) <= 1) {
-                        targets.push(p.mesh);
-                    }
-                }
-            });
-        }
+        // Props (Barrels, Pipes, etc.) in current vicinity - already part of walls? 
+        // Some are, some aren't. Let's check. 
+        // In Map.js, complex props are added to walls via addWall. 
+        // So we only need to add items that ARE NOT in this.map.walls.
 
         this.raycastTargets = targets.filter(Boolean);
         this.lastRaycastUpdate = Date.now();
@@ -1020,17 +1032,24 @@ export class GameScene {
         this.lastEnemySpawn = Date.now() + 5000; // 5 second grace period on each new floor
 
         // Add new atmospheric room lights and particles for this mission
+		
         this.map.chambers.forEach((chamber, i) => {
-            const isBossRoom = (i + 1) % facility.bossInterval === 0;
-            const color = isBossRoom ? 0xff3300 : facility.accent;
-            const pLight = new THREE.PointLight(color, isBossRoom ? 60 : 40, 30);
-            pLight.position.set(chamber.x, 4, chamber.z); 
-            this.scene.add(pLight);
-            this.missionLights.push(pLight);
-            
-            const dust = this.particleSystem.createAtmosphericParticles(chamber, isBossRoom ? 15 : 8);
-            if (dust) this.missionParticles.push(dust);
-        });
+			// NEW: per-chamber security flags
+			chamber.isCleared = chamber.isCleared || false;
+			chamber.firewallBypassed = chamber.firewallBypassed || false;
+
+			const isBossRoom = (i + 1) % facility.bossInterval === 0;
+			const color = isBossRoom ? 0xff3300 : facility.accent;
+			const pLight = new THREE.PointLight(color, isBossRoom ? 60 : 40, 30);
+			pLight.position.set(chamber.x, 4, chamber.z); 
+			this.scene.add(pLight);
+			this.missionLights.push(pLight);
+			
+			const dust = this.particleSystem.createAtmosphericParticles(chamber, isBossRoom ? 15 : 8);
+			if (dust) this.missionParticles.push(dust);
+		});
+		
+		
 
         this.refreshRaycastTargets();
     }
@@ -1476,131 +1495,202 @@ export class GameScene {
 
     setupAudio(Tone) {
         this.Tone = Tone;
-        // Hacking synth
-        this.hackSynth = new Tone.PolySynth(Tone.Synth).toDestination();
+        
+        // --- Master Output Chain ---
+        // A master compressor helps glue the sounds together and prevents clipping CPU spikes
+        this.masterCompressor = new Tone.Compressor({
+            threshold: -20,
+            ratio: 6,
+            attack: 0.003,
+            release: 0.25
+        }).toDestination();
+        
+        // A final limiter for absolute safety
+        this.masterLimiter = new Tone.Limiter(-1).connect(this.masterCompressor);
+
+        // --- Synths ---
+        // Hacking synth - reduced polyphony
+        this.hackSynth = new Tone.PolySynth(Tone.Synth).connect(this.masterLimiter);
         this.hackSynth.set({
             oscillator: { type: "square8" },
             envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 }
         });
-        this.hackSynth.volume.value = -15;
+        this.hackSynth.maxPolyphony = 6;
+        this.hackSynth.volume.value = -18;
 
         // Success sound
         this.successSynth = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
-            envelope: { attack: 0.05, decay: 0.2, sustain: 0.5, release: 0.8 }
-        }).toDestination();
-        this.successSynth.volume.value = -10;
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.5 }
+        }).connect(this.masterLimiter);
+        this.successSynth.maxPolyphony = 8;
+        this.successSynth.volume.value = -18;
 
-        // Weapon Fire (Noise-based for impact/crunch)
-        this.shootSynth = new Tone.NoiseSynth({
-            noise: { type: 'white' },
-            envelope: { attack: 0.005, decay: 0.1, sustain: 0 }
-        }).toDestination();
-        this.shootSynth.volume.value = -12;
+        // Weapon Fire - Wrapped in PolySynth to prevent voice stealing artifacts/beeps
+        this.shootSynth = new Tone.PolySynth(Tone.MembraneSynth, {
+			envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+		}).connect(this.masterLimiter);
+				
+		
+        this.shootSynth.maxPolyphony = 12;
+        this.shootSynth.volume.value = -24;
 
-        // Impact Synths (Low-end punch) - Using PolySynth to allow overlapping sounds
-        this.impactSynth = new Tone.PolySynth(Tone.MembraneSynth, {
+        // Impact Synths
+        this.impactSynth = new Tone.MembraneSynth({
+			pitchDecay: 0.02,
+			octaves: 2,
+			oscillator: { type: "sine" },
+			envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.1 }
+		}).connect(this.masterLimiter);
+		this.impactSynth.volume.value = -20;
+		
+
+        this.fireImpactSynth = new Tone.PolySynth(Tone.MembraneSynth, {
             pitchDecay: 0.05,
             octaves: 4,
             oscillator: { type: 'sine' }
-        }).toDestination();
-        this.impactSynth.volume.value = -15;
+        }).connect(this.masterLimiter);
+        this.fireImpactSynth.maxPolyphony = 8;
+        this.fireImpactSynth.volume.value = -22;
 
-        this.fireImpactSynth = new Tone.MembraneSynth({
-            pitchDecay: 0.05,
-            octaves: 4,
-            oscillator: { type: 'sine' }
-        }).toDestination();
-        this.fireImpactSynth.volume.value = -15;
-
-        // Ambient Atmosphere (Deep Facility Drone)
-        this.ambientHum = new Tone.Oscillator(45, "triangle").toDestination();
-        this.ambientHum.volume.value = -45; 
-        
-        // Low-pass filter to keep it deep and non-intrusive
-        const ambientFilter = new Tone.Filter(120, "lowpass").toDestination();
+        // --- Ambient Atmosphere ---
+        // Oscillator and Noise sources connected only to their filters
+        this.ambientHum = new Tone.Oscillator(45, "triangle");
+        const ambientFilter = new Tone.Filter(120, "lowpass").connect(this.masterLimiter);
         this.ambientHum.connect(ambientFilter);
+        this.ambientHum.volume.value = -45; 
         this.ambientHum.start();
 
-        // Secondary texture layer (Very subtle "air")
-        this.ambientAir = new Tone.Noise("pink").toDestination();
-        this.ambientAir.volume.value = -65;
-        const airFilter = new Tone.Filter(200, "lowpass").toDestination();
+        this.ambientAir = new Tone.Noise("pink");
+        const airFilter = new Tone.Filter(200, "lowpass").connect(this.masterLimiter);
         this.ambientAir.connect(airFilter);
+        this.ambientAir.volume.value = -65;
         this.ambientAir.start();
 
-        // Hazard Warning (Replacing the "fsssss" with a modulated electronic hum)
-        this.hazardHiss = new Tone.Oscillator(120, "sawtooth").toDestination();
-        this.hazardHiss.volume.value = -100; // Start silent
-        
-        // Use an AutoFilter to give it a "pulsing/spinning" hazard quality
+        // Hazard Warning
+        this.hazardHiss = new Tone.Oscillator(120, "sawtooth");
         this.hazardFilter = new Tone.AutoFilter({
             frequency: "4n",
             baseFrequency: 400,
             octaves: 2,
             type: "sine"
-        }).toDestination().start();
-        
+        }).connect(this.masterLimiter).start();
         this.hazardHiss.connect(this.hazardFilter);
+        this.hazardHiss.volume.value = -100;
         this.hazardHiss.start();
 
-        // Shield Hum (Drone/Player energy field)
-        this.shieldHum = new Tone.Oscillator(60, "sine").toDestination();
-        this.shieldHum.volume.value = -100; // Start silent
+        // Shield Hum
+        this.shieldHum = new Tone.Oscillator(60, "sine").connect(this.masterLimiter);
+        this.shieldHum.volume.value = -100;
         this.shieldHum.start();
 
-        // Portal Rumble (Low-frequency extraction portal cue)
-        this.portalRumble = new Tone.Oscillator(30, "sine").toDestination();
+        // Portal Rumble
+        this.portalRumble = new Tone.Oscillator(30, "sine").connect(this.masterLimiter);
         this.portalRumble.volume.value = -100;
         this.portalRumble.start();
 
-        // Elite Screech: Modulated FM Synth for "horrific digital" sounds
-        this.eliteScreech = new Tone.FMSynth({
+        // Elite Screech
+        this.eliteScreech = new Tone.PolySynth(Tone.FMSynth, {
             harmonicity: 3.5,
             modulationIndex: 10,
             oscillator: { type: "sine" },
             modulation: { type: "square" },
             envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
-        }).toDestination();
-        this.eliteScreech.volume.value = -15;
+        }).connect(this.masterLimiter);
+        this.eliteScreech.maxPolyphony = 2;
+        this.eliteScreech.volume.value = -18;
 
-        // Tactical Handshake: Clean, authoritative UI feedback
+        // Tactical Handshake
         this.tacticalHandshake = new Tone.PolySynth(Tone.Synth, {
             oscillator: { type: "sine" },
             envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }
-        }).toDestination();
-        this.tacticalHandshake.volume.value = -10;
+        }).connect(this.masterLimiter);
+        this.tacticalHandshake.maxPolyphony = 2;
+        this.tacticalHandshake.volume.value = -12;
+
+        // --- Audio Arbiter State ---
+        this.audioWindows = {
+			shoot: 0.12,
+			hit: 0.15,            // increased throttle
+			enemy_shoot: 0.20,    // NEW
+			warning: 0.2,
+			elite: 0.5,
+			ui: 0.1,
+			interaction: 0.2
+		};
+        this.lastPlayTime = {};
 
         // Pass sounds to player
         if (this.player) {
             this.player.setAudio({
-                shoot: () => {
-                    const now = this.Tone ? this.Tone.now() : undefined;
-                    const type = this.player.currentWeaponKey;
-                    if (type === 'SNIPER') {
-                        this.shootSynth.triggerAttackRelease("16n", now);
-                        this.fireImpactSynth.triggerAttackRelease("G1", "8n", now);
-                    } else if (type === 'RIFLE') {
-                        this.shootSynth.triggerAttackRelease("32n", now);
-                        this.fireImpactSynth.triggerAttackRelease("C2", "16n", now);
-                    } else if (type === 'TURRET') {
-                        this.successSynth.triggerAttackRelease("G5", "32n", now);
-                    }
-                },
-                hit: (isEnemy) => {
-                    // Use a tiny offset to ensure Tone.js doesn't clash with the shot sound
-                    const time = this.Tone ? this.Tone.now() + 0.01 : undefined;
-                    if (isEnemy) {
-                        this.impactSynth.triggerAttackRelease("E1", "32n", time);
-                    } else {
-                        this.impactSynth.triggerAttackRelease("C1", "64n", time);
-                    }
-                },
-                reload: () => {
-                    const now = this.Tone ? this.Tone.now() : undefined;
-                    this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n", now);
-                }
+                shoot: () => this.playArbiterSound('shoot'),
+                hit: (isEnemy) => this.playArbiterSound('hit', { isEnemy }),
+                reload: () => this.playArbiterSound('ui', { type: 'reload' })
             });
+        }
+    }
+
+    playArbiterSound(category, params = {}) {
+        if (!this.Tone || this.Tone.getContext().state !== 'running') return;
+        const now = this.Tone.now();
+        
+        // Strict window throttling
+        const window = this.audioWindows[category] || 0.1;
+        if (this.lastPlayTime[category] && now - this.lastPlayTime[category] < window) return;
+        this.lastPlayTime[category] = now;
+
+        switch(category) {
+            case 'shoot':
+                const wpType = this.player.currentWeaponKey;
+                if (wpType === 'SNIPER') {
+                    // Use a frequency for PolySynth trigger
+                    this.shootSynth.triggerAttackRelease("C4", "16n", now);
+                    this.fireImpactSynth.triggerAttackRelease("G1", "16n", now);
+                } else if (wpType === 'RIFLE') {
+                    this.shootSynth.triggerAttackRelease("C3", "32n", now);
+                    // Higher frequency for rifle impact to avoid sub-bass buildup
+                    this.fireImpactSynth.triggerAttackRelease("C2", "32n", now);
+                } else if (wpType === 'TURRET') {
+                    this.successSynth.triggerAttackRelease("G5", "32n", now);
+                }
+                break;
+            case 'hit': {
+				const freq = params.isEnemy
+					? 160 + Math.random() * 40   // Enemy hit is higher pitch
+					: 100 + Math.random() * 30;  // Player hit deeper
+				this.impactSynth.triggerAttackRelease(freq, "16n", now);
+				break;
+			}
+			case 'enemy_shoot': {
+				const freq = 200 + Math.random() * 50;
+				this.impactSynth.triggerAttackRelease(freq, "16n", now);
+				break;
+			}
+            case 'ui':
+                if (params.type === 'reload') {
+                    this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n", now);
+                } else if (params.type === 'success') {
+                    this.successSynth.triggerAttackRelease(params.note || "C5", params.duration || "8n", now);
+                }
+                break;
+            case 'warning':
+                this.hackSynth.triggerAttackRelease("C6", "32n", now);
+                break;
+            case 'elite':
+                if (!this.eliteScreech) return;
+                const type = params.type || 'SENTRY';
+                const notes = { 
+                    'SENTRY': 'C6', 
+                    'STALKER': 'E6', 
+                    'TANK': 'C3', 
+                    'SHIELD_PROJECTOR': 'G5',
+                    'TITAN': 'G1' // Deep sub-bass screech
+                };
+                this.eliteScreech.triggerAttackRelease(notes[type] || 'A5', "8n", now);
+                break;
+            case 'interaction':
+                this.tacticalHandshake.triggerAttackRelease(params.notes || ["C5", "G5"], "32n", now);
+                break;
         }
     }
 
@@ -1711,7 +1801,7 @@ export class GameScene {
             const ringEl = document.getElementById(`sync-ring-${this.syncLevel}`);
             if (ringEl) ringEl.classList.add('locked');
             
-            this.successSynth?.triggerAttackRelease(200 + this.syncLevel * 100, "16n");
+            this.playArbiterSound('ui', { type: 'success', note: 200 + this.syncLevel * 100, duration: "16n" });
             
             this.syncLevel++;
             if (this.syncLevel > 3) {
@@ -1726,7 +1816,7 @@ export class GameScene {
                 core.style.background = '#ff0000';
                 setTimeout(() => core.style.background = '#00ffaa', 200);
             }
-            this.successSynth?.triggerAttackRelease(100, "8n");
+            this.playArbiterSound('ui', { type: 'success', note: 100, duration: "8n" });
             // Reset current level or just allow retry? 
             // Let's allow retry but maybe slow down slightly to penalize?
         }
@@ -1779,8 +1869,14 @@ export class GameScene {
     }
 
     triggerHackingWave() {
-        const chamber = this.map.chambers[this.currentChamberIndex];
-        if (!chamber) return;
+		const chamber = this.map.chambers[this.currentChamberIndex];
+		if (!chamber) return;
+
+		// 🚫 NEW RULE: if chamber is cleared → block hacking wave spawns too
+		if (chamber.isCleared) return;
+
+    // NEW: don't spawn hacking waves in a chamber that is cleared + firewall bypassed
+		if (chamber.firewallBypassed && chamber.isCleared) return;
 
         const isBossRoom = (this.currentChamberIndex + 1) % CONFIG.MAP.BOSS_INTERVAL === 0;
 
@@ -1834,7 +1930,7 @@ export class GameScene {
         }
 
         // Audio cue for wave
-        this.hackSynth?.triggerAttackRelease(["G3", "G4"], "8n");
+        this.playArbiterSound('ui', { type: 'interaction', note: ["G3", "G4"], duration: "8n" });
     }
 
     updateTerminalHack(deltaTime) {
@@ -1895,13 +1991,13 @@ export class GameScene {
         if (bar) bar.style.width = `${progress}%`;
         if (percent && !this.terminalBlocked) percent.innerText = `${progress}%`;
 
-        // Interactive audio feedback
+        // Interactive audio feedback - Throttled by Arbiter
         if (!this.terminalBlocked && Math.random() < 0.1) {
             const notes = ["C5", "D5", "E5", "G5"];
             const note = notes[Math.floor(Math.random() * notes.length)];
-            this.hackSynth?.triggerAttackRelease(note, "32n");
+            this.playArbiterSound('ui', { type: 'interaction', note: note, duration: "32n" });
         } else if (this.terminalBlocked && Math.random() < 0.05) {
-            this.hackSynth?.triggerAttackRelease("C2", "16n"); // Warning low note
+            this.playArbiterSound('ui', { type: 'interaction', note: "C2", duration: "16n" }); // Warning low note
         }
 
         // Cancel if too far
@@ -1941,7 +2037,9 @@ export class GameScene {
         terminal.light.material.emissive.set(0x00ff00);
         
         const chamber = this.map.chambers[this.currentChamberIndex];
-        
+        if (chamber) {
+			chamber.firewallBypassed = true;
+			}
         if (chamber.isVault) {
             // Check if all vault terminals are hacked
             const vaultTerminals = this.map.terminals.filter(t => t.chamberIndex === this.currentChamberIndex && t.type.startsWith('VAULT'));
@@ -2011,29 +2109,36 @@ export class GameScene {
         this.successSynth?.triggerAttackRelease("G5", "2n");
     }
 
+    triggerEliteSound(type) {
+        this.playArbiterSound('elite', { type });
+        
+        // Visual glitch effect when an elite sound plays
+        this.heatVisuals.glitchIntensity = Math.max(this.heatVisuals.glitchIntensity, 0.4);
+    }
+
+    triggerWarningBeep() {
+        this.playArbiterSound('warning');
+    }
+
     spawnFinalBoss() {
         this.finalBossSpawned = true;
         this.finalBossAlive = true;
         
         const chamber = this.map.chambers[this.currentChamberIndex];
-        const terminal = this.map.terminals.find(t => t.chamberIndex === this.currentChamberIndex);
         
-        // Spawn boss slightly in front of terminal
-        const spawnPos = terminal.mesh.position.clone();
-        spawnPos.y = 0;
-        const dirToCenter = new THREE.Vector3(chamber.x, 0, chamber.z).sub(spawnPos).normalize();
-        spawnPos.add(dirToCenter.multiplyScalar(4)); 
+        // Spawn TITAN in the center of the arena
+        const spawnPos = new THREE.Vector3(chamber.x, 0, chamber.z);
         
-        const boss = new Enemy(this.scene, this.player, spawnPos, 'HEAVY_SEC_BOT', this.currentFacility?.id || 'meridian', this.navigation, this.particleSystem, this.heatLevel);
+        const boss = new Enemy(this.scene, this.player, spawnPos, 'TITAN', this.currentFacility?.id || 'meridian', this.navigation, this.particleSystem, this.heatLevel);
         boss.onDeath = (e) => {
             this.finalBossAlive = false;
             this.handleEnemyDeath(e);
-            this.showProgressionMessage("TERMINAL GUARD NEUTRALIZED - SECURITY HUB EXPOSED");
+            this.showProgressionMessage("TITAN DESTROYED - SERVER SPINE BREACHED - EXTRACTION PORTAL INITIALIZING");
             
             // Drop Legendary Loot
             const dropPos = e.mesh.position.clone();
             dropPos.y = 1.0;
-            this.pickups.push(new DataCore(this.scene, dropPos, 5)); // 5 Tech Cores value
+            this.pickups.push(new DataCore(this.scene, dropPos, 10)); // 10 Tech Cores value
             
             // Unlock Achievement
             this.unlockAchievement('TITAN SLAYER', 'Defeat the Heavy Security Titan in Room 50.');
@@ -2041,16 +2146,18 @@ export class GameScene {
             // Hide boss health
             const healthUI = document.getElementById('boss-health-container');
             if (healthUI) healthUI.style.display = 'none';
+            
+            // Activate Portal
+            setTimeout(() => {
+                this.map.extractionPortal?.activate();
+                this.playArbiterSound('ui', { type: 'success', note: "C6", duration: "1n" });
+            }, 2000);
         };
         boss.onSingularityDetonate = (e, type) => this.handleSingularityDetonate(e, type);
         this.enemies.push(boss);
         
-        // Final boss is extra beefy
-        boss.health *= 1.5;
-        boss.maxHealth *= 1.5;
-        
-        this.showProgressionMessage("WARNING: TITAN-CLASS SECURITY BOT DETECTED");
-        this.successSynth?.triggerAttackRelease("C2", "2n");
+        this.showProgressionMessage("CRITICAL THREAT DETECTED: TITAN-CLASS OVERSEER ENGAGED");
+        this.playArbiterSound('elite', { type: 'TANK' });
         
         // Show Boss Health UI
         const healthUI = document.getElementById('boss-health-container');
@@ -2064,7 +2171,7 @@ export class GameScene {
         const bar = document.getElementById('boss-health-bar');
         const name = document.getElementById('boss-name');
         if (bar) bar.style.width = `${(boss.health / boss.maxHealth) * 100}%`;
-        if (name) name.innerText = `TITAN UNIT: ${this.currentFacility?.name || 'SECURITY CORE'}`;
+        if (name) name.innerText = boss.type === 'TITAN' ? "TITAN OVERSEER" : `TITAN UNIT: ${this.currentFacility?.name || 'SECURITY CORE'}`;
     }
 
     unlockAchievement(name, desc) {
@@ -2120,8 +2227,13 @@ export class GameScene {
     }
 
     spawnEnemy() {
-        const chamber = this.map.chambers[this.currentChamberIndex];
-        if (!chamber || chamber.enemiesSpawned >= this.enemiesPerChamber) return;
+					const chamber = this.map.chambers[this.currentChamberIndex];
+		if (!chamber) return;
+
+		// 🔥 NEW — absolute rule: Cleared = ZERO spawns
+		if (chamber.isCleared) return;
+
+		if (chamber.enemiesSpawned >= this.enemiesPerChamber) return;
 
         let spawnPos = new THREE.Vector3();
         let validSpawn = false;
@@ -2176,7 +2288,7 @@ export class GameScene {
             const empDuration = 4000;
             let killsCount = 0;
 
-            if (this.particleSystem) {
+            if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
                 this.particleSystem.createExplosion(pos, 0x00ffff, 60, 15);
                 this.particleSystem.createExplosion(pos, 0xffffff, 30, 8);
                 this.particleSystem.flashLight(pos, 0x00ffff, 30, radius * 2, 500);
@@ -2206,10 +2318,9 @@ export class GameScene {
                 this.player.updateUI();
                 
                 // Visual feedback for buff activation
-                const buffFlash = new THREE.PointLight(0x00ff00, 10, 10);
-                buffFlash.position.copy(this.player.mesh.position);
-                this.scene.add(buffFlash);
-                setTimeout(() => this.scene.remove(buffFlash), 300);
+                if (this.particleSystem) {
+                    this.particleSystem.flashLight(this.player.mesh.position, 0x00ff00, 10, 10, 300);
+                }
             }
 
             this.shakeAmount = Math.max(this.shakeAmount, 0.8);
@@ -2217,7 +2328,7 @@ export class GameScene {
             const radius = 12;
             const damage = 300;
 
-            if (this.particleSystem) {
+            if (this.particleSystem&& typeof this.particleSystem.createExplosion === "function") {
                 this.particleSystem.createExplosion(pos, 0x6600ff, 40, 10);
                 this.particleSystem.createExplosion(pos, 0xff0000, 20, 5);
                 this.particleSystem.flashLight(pos, 0xaa00ff, 20, radius * 1.5, 400);
@@ -2235,15 +2346,11 @@ export class GameScene {
             const damage = 200;
 
             // Massive Visual Explosion
-            if (this.particleSystem) {
+            if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
                 this.particleSystem.createExplosion(pos, 0xff4400, 50, 15);
                 this.particleSystem.createExplosion(pos, 0xffaa00, 30, 8);
+                this.particleSystem.flashLight(pos, 0xffaa00, 20, radius * 2, 300);
             }
-
-            const light = new THREE.PointLight(0xffaa00, 20, radius * 2);
-            light.position.copy(pos);
-            this.scene.add(light);
-            setTimeout(() => this.scene.remove(light), 300);
 
             // Area Damage
             this.handleAreaDamage(pos, radius, damage);
@@ -2315,17 +2422,11 @@ export class GameScene {
         const radius = CONFIG.PLAYER.BARREL.RADIUS;
         const damage = CONFIG.PLAYER.BARREL.DAMAGE;
 
-        // Visual Explosion
-        if (this.particleSystem) {
+        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
             this.particleSystem.createExplosion(pos, 0xff3300, 25, 8);
             this.particleSystem.createExplosion(pos, 0xffaa00, 15, 4);
+            this.particleSystem.flashLight(pos, 0xff3300, 8, 12, 150);
         }
-
-        // Flash Light
-        const light = new THREE.PointLight(0xff3300, 8, 12);
-        light.position.copy(pos);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 150);
 
         // Remove the barrel before processing AOE to prevent recursion issues
         this.map.destroyObject(barrel);
@@ -2371,15 +2472,11 @@ export class GameScene {
         const radius = CONFIG.HAZARDS.GAS.EXPLOSION_RADIUS;
         const damage = CONFIG.HAZARDS.GAS.EXPLOSION_DAMAGE;
 
-        if (this.particleSystem) {
+        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
             this.particleSystem.createExplosion(pos, 0x00ff00, 40, 12);
             this.particleSystem.createExplosion(pos, 0xffaa00, 20, 8);
+            this.particleSystem.flashLight(pos, 0x00ff33, 10, radius * 1.5, 200);
         }
-
-        const light = new THREE.PointLight(0x00ff33, 10, radius * 1.5);
-        light.position.copy(pos);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 200);
 
         this.handleAreaDamage(pos, radius, damage);
         this.activeFireFields.push(new FireField(this.scene, pos, radius * 0.4, this.particleSystem));
@@ -2391,10 +2488,9 @@ export class GameScene {
         const duration = CONFIG.PLAYER.EMP.DURATION;
 
         // Visual distortion flash
-        const light = new THREE.PointLight(0x00ffff, 30, radius * 2);
-        light.position.copy(pos);
-        this.scene.add(light);
-        setTimeout(() => this.scene.remove(light), 300);
+        if (this.particleSystem) {
+            this.particleSystem.flashLight(pos, 0x00ffff, 30, radius * 2, 300);
+        }
 
         // Affect Enemies
         this.enemies.forEach(enemy => {
@@ -2420,7 +2516,7 @@ export class GameScene {
         const radius = CONFIG.HAZARDS.EXTINGUISHER.RADIUS;
 
         // Visual
-        if (this.particleSystem) {
+        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
             this.particleSystem.createExplosion(pos, 0xffffff, 40, 6);
         }
 
@@ -2466,8 +2562,8 @@ export class GameScene {
         // Random chance for tech core (physical drop or auto?)
         if (Math.random() < 0.3) {
             this.techCores++;
-            if (this.particleSystem) {
-                this.particleSystem.createExplosion(enemy.mesh.position, 0xffff00, 10, 2);
+            if (this.particleSystem && typeof this.particleSystem.spawnExplosion === "function") {
+                this.particleSystem.spawnExplosion(enemy.mesh.position, 0xff0000, 20, 4);
             }
         }
         this.player.updateUI();
@@ -2512,7 +2608,7 @@ export class GameScene {
                 if (wall.userData.isDestructible) {
                     wall.userData.health -= damage * (1 - dist / radius);
                     if (wall.userData.health <= 0) {
-                        if (this.particleSystem) {
+                        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
                             this.particleSystem.createExplosion(wall.position, 0x664422, 10, 3);
                         }
                         this.map.destroyObject(wall);
@@ -2646,41 +2742,6 @@ export class GameScene {
         }
     }
 
-    triggerEliteSound(type) {
-        if (!this.eliteScreech) return;
-        const now = this.Tone ? this.Tone.now() : 0;
-        
-        // Trigger a visual glitch
-        this.heatVisuals.glitchIntensity = Math.max(this.heatVisuals.glitchIntensity, 0.8);
-        this.shakeAmount = Math.max(this.shakeAmount, 0.4);
-
-        switch(type) {
-            case 'SENTRY':
-                // Rapid stuttering beep
-                this.eliteScreech.triggerAttackRelease("C6", "32n", now);
-                this.eliteScreech.triggerAttackRelease("G6", "32n", now + 0.1);
-                this.eliteScreech.triggerAttackRelease("C7", "32n", now + 0.2);
-                break;
-            case 'STALKER':
-                // Creepy slide
-                this.eliteScreech.triggerAttackRelease("E6", "16n", now);
-                this.eliteScreech.frequency.exponentialRampToValueAtTime(100, now + 0.5);
-                break;
-            case 'TANK':
-                // Industrial low crunch screech
-                this.eliteScreech.triggerAttackRelease("C3", "8n", now);
-                this.eliteScreech.modulationIndex.value = 50;
-                setTimeout(() => { if(this.eliteScreech) this.eliteScreech.modulationIndex.value = 10; }, 500);
-                break;
-            case 'SHIELD_PROJECTOR':
-                // Static burst
-                this.eliteScreech.triggerAttackRelease("G5", "4n", now);
-                break;
-            default:
-                this.eliteScreech.triggerAttackRelease("A5", "8n", now);
-        }
-    }
-
     updateRadar() {
         if (this.gameState !== 'PLAYING') return;
         
@@ -2752,22 +2813,38 @@ export class GameScene {
         if (!obj) return;
         
         // Visuals
-        const isMonitor = obj.userData.isMonitor;
+          const isMonitor = obj.userData.isMonitor;
         const color = isMonitor ? 0x00ffff : 0x444444;
-        
-        this.particleSystem.createExplosion(obj.position, color, 15, 3);
-        this.particleSystem.createDebris(obj.position, color, 8, isMonitor ? 'MONITOR' : 'GENERIC');
-        
-        if (isMonitor) {
-            this.particleSystem.createExplosion(obj.position, 0xffffff, 5, 10); // Glass/Spark shards
-            this.shakeAmount = Math.max(this.shakeAmount, 0.5);
-        } else {
-            this.shakeAmount = Math.max(this.shakeAmount, 0.3);
+
+        // Safe particle calls
+        if (this.particleSystem) {
+            if (typeof this.particleSystem.createExplosion === "function") {
+                // main impact burst
+                this.particleSystem.createExplosion(obj.position, color, 15, 3);
+
+                // extra glass/spark burst only for monitors
+                if (isMonitor) {
+                    this.particleSystem.createExplosion(obj.position, 0xffffff, 5, 10);
+                }
+            }
+
+            if (typeof this.particleSystem.createDebris === "function") {
+                this.particleSystem.createDebris(
+                    obj.position,
+                    color,
+                    8,
+                    isMonitor ? "MONITOR" : "GENERIC"
+                );
+            }
         }
+
+        this.shakeAmount = Math.max(this.shakeAmount, isMonitor ? 0.5 : 0.3);
         
-        // Sounds
-        if (this.impactSynth) {
-            this.impactSynth.triggerAttackRelease(isMonitor ? "C4" : "C2", "8n");
+        // Sounds - with slight throttle check
+        const now = this.Tone ? this.Tone.now() : Date.now() / 1000;
+        if (this.impactSynth && now - this.lastHitSoundTime > 0.05) {
+            this.impactSynth.triggerAttackRelease(isMonitor ? "C4" : "C2", "8n", now);
+            this.lastHitSoundTime = now;
         }
 
         // Logic
@@ -2814,10 +2891,7 @@ export class GameScene {
         }
 
         // Trigger Tactical Handshake audio
-        if (this.tacticalHandshake) {
-            const now = this.Tone ? this.Tone.now() : 0;
-            this.tacticalHandshake.triggerAttackRelease(["C5", "G5"], "32n", now);
-        }
+        this.playArbiterSound('interaction');
 
         if (command.startsWith('STANCE_')) {
             const stance = command.split('_')[1].toLowerCase();
@@ -2827,7 +2901,7 @@ export class GameScene {
                 }
             });
             this.showProgressionMessage(`DRONE SQUAD: ${stance.toUpperCase()} MODE ACTIVE`);
-            this.successSynth?.triggerAttackRelease("C5", "16n");
+            this.playArbiterSound('ui', { type: 'success', note: "C5", duration: "16n" });
             this.selectedCommand = null;
             return;
         }
@@ -2930,10 +3004,13 @@ export class GameScene {
     }
 
     update(deltaTime) {
-        if (this.gameState !== 'PLAYING' && this.gameState !== 'BRIEFING_SCREEN' && !this.isNeuralSyncing) {
+        if (this.gameState !== 'PLAYING' && !this.isNeuralSyncing) {
             // Lower ambient when not playing
             if (this.ambientHum) this.ambientHum.volume.rampTo(-60, 0.5);
             if (this.ambientAir) this.ambientAir.volume.rampTo(-80, 0.5);
+            
+            // Still update camera for menus if needed, but return early
+            if (this.cameraController) this.cameraController.update();
             return;
         } else {
             if (this.ambientHum) this.ambientHum.volume.rampTo(-45, 0.5);
@@ -3194,7 +3271,7 @@ export class GameScene {
 
         // Player state for swaying/bobbing
         const isMoving = this.playerController.velocity.x !== 0 || this.playerController.velocity.z !== 0;
-        this.player.update(deltaTime, isMoving, this.mouseDelta);
+        this.player.update(deltaTime, isMoving, this.mouseDelta, this.raycastTargets);
         
         // Reset mouse delta after passing it to player update
         this.mouseDelta = { x: 0, y: 0 };
@@ -3385,19 +3462,18 @@ export class GameScene {
             }
         });
 
-        // 3. Screen-space Filters (CSS)
-        const filters = visualConfig.COLOR_FILTERS;
-        const contrast = THREE.MathUtils.lerp(filters.CONTRAST_START, filters.CONTRAST_END, heatFactor);
-        const hueRotate = THREE.MathUtils.lerp(filters.HUE_ROTATE_START, filters.HUE_ROTATE_END, heatFactor);
-        const saturate = THREE.MathUtils.lerp(filters.SATURATE_START, filters.SATURATE_END, heatFactor);
-        
-        if (this.renderer.domElement) {
+        // 3. Screen-space Filters (CSS) - Throttled for performance
+        if (this.frameCounter % 5 === 0 && this.renderer.domElement) {
+            const filters = visualConfig.COLOR_FILTERS;
+            const contrast = THREE.MathUtils.lerp(filters.CONTRAST_START, filters.CONTRAST_END, heatFactor);
+            const hueRotate = THREE.MathUtils.lerp(filters.HUE_ROTATE_START, filters.HUE_ROTATE_END, heatFactor);
+            const saturate = THREE.MathUtils.lerp(filters.SATURATE_START, filters.SATURATE_END, heatFactor);
             this.renderer.domElement.style.filter = `contrast(${contrast}%) hue-rotate(${hueRotate}deg) saturate(${saturate}%)`;
         }
 
         // 4. Glitch and Vignette
         const vignette = document.getElementById('heat-vignette');
-        if (vignette) {
+        if (vignette && this.frameCounter % 10 === 0) {
             const vignetteOpacity = heatFactor * 0.5;
             vignette.style.boxShadow = `inset 0 0 ${100 + heatFactor * 200}px rgba(255, 0, 0, ${vignetteOpacity})`;
         }

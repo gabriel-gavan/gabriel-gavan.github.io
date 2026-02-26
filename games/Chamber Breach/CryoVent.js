@@ -13,7 +13,7 @@ export class CryoVent {
         this.freezeTimer = 0;
         
         // Vent visual - it's a floor hazard so it should be flat
-        const ventTex = new THREE.TextureLoader().load('https://rosebud.ai/assets/cryo_vent_sprite.png.webp?SnKX');
+        const ventTex = new THREE.TextureLoader().load('assets/cryo_vent_sprite.webp');
         const ventMat = new THREE.MeshBasicMaterial({ 
             map: ventTex, 
             transparent: true,

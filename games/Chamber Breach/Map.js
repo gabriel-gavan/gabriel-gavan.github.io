@@ -7,6 +7,10 @@ export class GameMap {
     constructor(scene, facility = null) {
         this.scene = scene;
         this.facility = facility;
+        
+        this.mapGroup = new THREE.Group();
+        this.scene.add(this.mapGroup);
+        
         this.walls = [];
         this.wallBoxes = [];
         this.spatialGrid = new Map(); // chamberIndex -> [indices in wallBoxes]
@@ -30,7 +34,7 @@ export class GameMap {
         const theme = this.facility || { accent: 0x00ffaa };
         
         // Floor Setup
-        this.floorTex = loader.load('https://rosebud.ai/assets/floor_metal_tiles.webp?M8T3');
+        this.floorTex = loader.load('assets/floor_metal_tiles.webp');
         this.floorTex.wrapS = this.floorTex.wrapT = THREE.RepeatWrapping;
         this.floorTex.repeat.set(400, 400);
 
@@ -44,7 +48,7 @@ export class GameMap {
         
         // Localized floor geometry is handled in createChamber
         // Pre-load textures ONCE
-        this.wallTexture = loader.load('https://rosebud.ai/assets/wall_server_rack.webp?xds8');
+        this.wallTexture = loader.load('assets/wall_server_rack.webp');
         this.wallTexture.wrapS = this.wallTexture.wrapT = THREE.RepeatWrapping;
         
         this.sharedWallMat = new THREE.MeshStandardMaterial({ 
@@ -56,7 +60,7 @@ export class GameMap {
             emissiveIntensity: 0.3
         });
         
-        this.ceilingTexture = loader.load('https://rosebud.ai/assets/ceiling_conduit.webp?WX9c');
+        this.ceilingTexture = loader.load('assets/ceiling_conduit.webp');
         this.ceilingTexture.wrapS = this.ceilingTexture.wrapT = THREE.RepeatWrapping;
         
         this.sharedCeilMat = new THREE.MeshStandardMaterial({ 
@@ -70,7 +74,7 @@ export class GameMap {
         });
         
         this.sharedBeamMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, metalness: 0.9, roughness: 0.1 });
-        this.terminalTexture = loader.load('https://rosebud.ai/assets/terminal_screen_ui.webp?bzBE');
+        this.terminalTexture = loader.load('assets/terminal_screen_ui.webp');
 
         // Generation
         const roomSize = CONFIG.MAP.ROOM_SIZE;
@@ -79,7 +83,8 @@ export class GameMap {
 
         for (let i = 0; i < CONFIG.MAP.NUM_ROOMS; i++) {
             const isBossRoom = (i + 1) % (CONFIG.MAP.BOSS_INTERVAL || 5) === 0;
-            const currentRoomSize = isBossRoom ? roomSize * 1.5 : roomSize;
+            const isFinalRoom = i === CONFIG.MAP.NUM_ROOMS - 1;
+            const currentRoomSize = isFinalRoom ? roomSize * 2.5 : (isBossRoom ? roomSize * 1.5 : roomSize);
             
             const exits = [];
             if (lastExitDir === 'NORTH') exits.push('SOUTH');
@@ -91,7 +96,10 @@ export class GameMap {
             let cX1 = currentX, cZ1 = currentZ, cX2 = currentX, cZ2 = currentZ;
 
             if (i < CONFIG.MAP.NUM_ROOMS - 1) {
-                const nextRoomSize = (i + 2) % (CONFIG.MAP.BOSS_INTERVAL || 5) === 0 ? roomSize * 1.5 : roomSize;
+                const nextRoomIndex = i + 1;
+                const nextIsBoss = (nextRoomIndex + 1) % (CONFIG.MAP.BOSS_INTERVAL || 5) === 0;
+                const nextIsFinal = nextRoomIndex === CONFIG.MAP.NUM_ROOMS - 1;
+                const nextRoomSize = nextIsFinal ? roomSize * 2.5 : (nextIsBoss ? roomSize * 1.5 : roomSize);
                 const turn = Math.random();
 
                 if (turn < 0.2 && currentX === 0) { // East
@@ -113,7 +121,11 @@ export class GameMap {
                 exits.push(nextExitDir);
             }
 
-            this.createChamber(currentX, currentZ, currentRoomSize, wallHeight, i, isBossRoom, exits);
+            if (isFinalRoom) {
+                this.createTitanArena(currentX, currentZ, currentRoomSize, wallHeight, i, exits);
+            } else {
+                this.createChamber(currentX, currentZ, currentRoomSize, wallHeight, i, isBossRoom, exits);
+            }
             
             if (nextExitDir) {
                 if (nextExitDir === 'EAST' || nextExitDir === 'WEST') {
@@ -128,7 +140,17 @@ export class GameMap {
 
     addWall(wall, chamberIndex) {
         this.walls.push(wall);
-        const box = new THREE.Box3().setFromObject(wall);
+        
+        // Optimization: Use pre-defined geometry size for bounding boxes instead of expensive setFromObject
+        const box = new THREE.Box3();
+        if (wall.geometry && wall.geometry.parameters) {
+            const p = wall.geometry.parameters;
+            const size = new THREE.Vector3(p.width || 1, p.height || 1, p.depth || 1);
+            box.setFromCenterAndSize(wall.position, size);
+        } else {
+            box.setFromObject(wall);
+        }
+        
         this.wallBoxes.push(box);
         const idx = this.walls.length - 1;
         if (chamberIndex !== undefined) {
@@ -160,6 +182,100 @@ export class GameMap {
                 }
             });
         }
+    }
+
+    createTitanArena(x, z, size, height, index, exits) {
+        const half = size / 2;
+        const wallDepth = 1.0;
+        const gap = 4;
+        const seg = (size - gap) / 2;
+        const off = gap / 2 + seg / 2;
+
+        const makeWall = (cx, cz, isH, side) => {
+            const hasExit = exits.includes(side);
+            if (hasExit) {
+                const geo = isH ? new THREE.BoxGeometry(seg, height * 2, wallDepth) : new THREE.BoxGeometry(wallDepth, height * 2, seg);
+                [-1, 1].forEach(s => {
+                    const w = new THREE.Mesh(geo, this.sharedWallMat);
+                    w.position.set(isH ? cx + s * off : cx, height, isH ? cz : cz + s * off);
+                    this.scene.add(w); this.addWall(w, index);
+                });
+            } else {
+                const geo = isH ? new THREE.BoxGeometry(size, height * 2, wallDepth) : new THREE.BoxGeometry(wallDepth, height * 2, size);
+                const w = new THREE.Mesh(geo, this.sharedWallMat);
+                w.position.set(cx, height, cz);
+                this.scene.add(w); this.addWall(w, index);
+            }
+        };
+
+        // Airtight Pillars (Taller for Titan Arena)
+        const pGeo = new THREE.BoxGeometry(wallDepth + 0.5, height * 2.5, wallDepth + 0.5);
+        [[-half, -half], [half, -half], [-half, half], [half, half]].forEach(c => {
+            const p = new THREE.Mesh(pGeo, this.sharedBeamMat);
+            p.position.set(x + c[0], height, z + c[1]);
+            this.scene.add(p); this.addWall(p, index);
+        });
+
+        makeWall(x, z + half, true, 'NORTH');
+        makeWall(x, z - half, true, 'SOUTH');
+        makeWall(x + half, z, false, 'EAST');
+        makeWall(x - half, z, false, 'WEST');
+
+        // Central Arena Floor (Higher quality)
+        const f = new THREE.Mesh(new THREE.BoxGeometry(size, 0.2, size), this.floorMat);
+        f.position.set(x, 0.1, z);
+        this.scene.add(f);
+
+        // Circular Arena Internal Structures
+        const torusGeo = new THREE.TorusGeometry(size * 0.35, 1.5, 16, 32);
+        const torusMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9, roughness: 0.1 });
+        const ring = new THREE.Mesh(torusGeo, torusMat);
+        ring.rotation.x = Math.PI / 2;
+        ring.position.set(x, 0.5, z);
+        this.scene.add(ring);
+        this.addWall(ring, index);
+
+        // Elevated Platforms
+        const platGeo = new THREE.BoxGeometry(6, 0.5, 6);
+        const platMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.8, emissive: 0xff0000, emissiveIntensity: 0.2 });
+        const platOff = size * 0.3;
+        [[-platOff, -platOff], [platOff, -platOff], [-platOff, platOff], [platOff, platOff]].forEach(pPos => {
+            const p = new THREE.Mesh(platGeo, platMat);
+            p.position.set(x + pPos[0], 2.5, z + pPos[1]);
+            this.scene.add(p);
+            this.addWall(p, index);
+            
+            // Pillar for the platform
+            const pil = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 2.5), this.sharedBeamMat);
+            pil.position.set(x + pPos[0], 1.25, z + pPos[1]);
+            this.scene.add(pil);
+            this.addWall(pil, index);
+        });
+
+        this.createComplexCeiling(x, z, size, height * 2, index);
+        
+        // Add unique Titan decorations
+        for (let i = 0; i < 8; i++) {
+            const angle = (i / 8) * Math.PI * 2;
+            const rx = x + Math.cos(angle) * (size * 0.45);
+            const rz = z + Math.sin(angle) * (size * 0.45);
+            
+            const spike = new THREE.Mesh(new THREE.ConeGeometry(0.5, 4, 4), this.sharedBeamMat);
+            spike.position.set(rx, 2, rz);
+            spike.rotation.x = Math.PI;
+            this.scene.add(spike);
+            this.addWall(spike, index);
+        }
+
+        this.chambers.push({ x, z, size, index, enemiesSpawned: 0, isCleared: false, isBossRoom: true, isTitanRoom: true });
+        
+        // Final Portal in center
+        this.createExtractionPortal(x, z);
+        
+        // Add specialized lighting
+        const titanLight = new THREE.PointLight(0xff0000, 20, 50);
+        titanLight.position.set(x, height * 1.5, z);
+        this.scene.add(titanLight);
     }
 
     createChamber(x, z, size, height, index, isBossRoom, exits) {
@@ -577,7 +693,7 @@ export class GameMap {
 
     createExtractionPortal(x, z) {
         const g = new THREE.Group();
-        const tex = new THREE.TextureLoader().load('https://rosebud.ai/assets/extraction_portal_sprite.webp?OBBJ');
+        const tex = new THREE.TextureLoader().load('assets/extraction_portal_sprite.webp');
         const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, color: 0x00ffff }));
         s.scale.set(0.1, 0.1, 0.1); s.position.y = 3; g.add(s);
         const rGeo = new THREE.TorusGeometry(3, 0.05, 16, 100), rMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2.0, transparent: true, opacity: 0.5 });

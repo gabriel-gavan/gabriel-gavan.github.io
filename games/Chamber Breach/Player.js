@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { createShieldMaterial } from './ShieldShader.js';
+import { PerkManager } from './PerkManager.js';
 
 export class Player {
     constructor(scene, camera, particleSystem, onShake, onBarrelExplode, onPipeHit, onGasHit, onExtHit, onEnemyKilled, onObjectDestroyed) {
@@ -33,21 +34,16 @@ export class Player {
             cores: -1
         };
 
-        // ... rest of constructor ...
-
         // Asset URLs
         const ASSETS = {
-            RIFLE: 'https://rosebud.ai/assets/fps_rifle_sprite.webp?cgUE',
-            SNIPER: 'https://rosebud.ai/assets/fps_sniper_sprite.webp?vsVa',
-            EXTINGUISHER: 'https://rosebud.ai/assets/fps_extinguisher_sprite.webp?NqPV',
-            TURRET: 'https://rosebud.ai/assets/fps_turret_sprite.webp?YBIK',
-            AMMO_INCENDIARY: 'https://rosebud.ai/assets/incendiary_ammo_icon.png.webp?F1cz',
-            AMMO_SHOCK: 'https://rosebud.ai/assets/shock_ammo_icon.png.webp?jXE1'
+            RIFLE: 'assets/fps_rifle_sprite.webp',
+            SNIPER: 'assets/fps_sniper_sprite.webp',
+            EXTINGUISHER: 'assets/fps_extinguisher_sprite.webp',
+            TURRET: 'assets/fps_turret_sprite.webp',
+            AMMO_INCENDIARY: 'assets/incendiary_ammo_icon.webp',
+            AMMO_SHOCK: 'assets/shock_ammo_icon.webp'
         };
 
-        const textureLoader = new THREE.TextureLoader();
-        
-        // Weapon state
         this.weapons = {
             RIFLE: {
                 ...CONFIG.PLAYER.WEAPONS.RIFLE,
@@ -91,6 +87,8 @@ export class Player {
                 aimPos: new THREE.Vector3(0, -0.5, -0.8)
             }
         };
+
+        this.perkManager = new PerkManager(this);
         
         this.currentWeaponKey = 'RIFLE';
         this.currentWeapon = this.weapons[this.currentWeaponKey];
@@ -145,6 +143,7 @@ export class Player {
         
         // Optimization: Pooled muzzle flash light
         this.muzzleFlashLight = new THREE.PointLight(0xffff00, 0, 6);
+		this.muzzleFlashLight.intensity = 0;
         this.muzzleFlashLight.position.set(0.4, -0.3, -1.2);
         this.camera.add(this.muzzleFlashLight);
 
@@ -365,8 +364,9 @@ export class Player {
         return true;
     }
 
-    update(deltaTime, isMoving, mouseDelta) {
+    update(deltaTime, isMoving, mouseDelta, raycastTargets) {
         if (this.isDead) return;
+        this.raycastTargets = raycastTargets; // Store for other methods if needed
 
         // --- Projected Shield timer decrease ---
         if (this.projectedShieldTimer > 0) {
@@ -413,6 +413,10 @@ export class Player {
             }
         }
 
+        if (this.perkManager) {
+            this.perkManager.update(deltaTime);
+        }
+
         // --- Flashlight Logic ---
         if (this.isFlashlightActive) {
             this.flashlightBattery -= CONFIG.FLASHLIGHT.CONSUMPTION_RATE * deltaTime;
@@ -442,6 +446,25 @@ export class Player {
             ext.magazine = Math.min(CONFIG.PLAYER.EXTINGUISHER.CAPACITY, ext.magazine + CONFIG.PLAYER.EXTINGUISHER.REGEN_RATE * deltaTime);
         }
 
+        // --- Crosshair Raycast for Color Change ---
+        const crosshair = document.getElementById('crosshair');
+        if (crosshair && this.raycastTargets) {
+            this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
+            const intersects = this.raycaster.intersectObjects(this.raycastTargets, true);
+            let color = 'rgba(0, 255, 170, 0.8)'; // Default Cyan
+            if (intersects.length > 0) {
+                const hit = intersects[0];
+                if (hit.object.userData.enemyRef) {
+                    color = 'rgba(255, 68, 0, 0.9)'; // Target Red
+                } else if (hit.object.userData.isBarrel || hit.object.userData.isPipe) {
+                    color = 'rgba(255, 255, 0, 0.9)'; // Hazard Yellow
+                }
+            }
+            crosshair.style.borderColor = color;
+            const chLines = crosshair.querySelectorAll('.ch-line');
+            chLines.forEach(l => l.style.backgroundColor = color);
+        }
+
         // Optimized UI update: only every 10th frame or when triggered manually
         if (Math.random() < 0.1) {
             this.updateUI();
@@ -463,7 +486,6 @@ export class Player {
         
         // Handle Sniper scope overlay
         const scopeOverlay = document.getElementById('scope-overlay');
-        const crosshair = document.getElementById('crosshair');
         if (this.currentWeaponKey === 'SNIPER' && this.isAiming) {
             if (scopeOverlay) scopeOverlay.style.display = 'block';
             if (crosshair) crosshair.style.display = 'none';
@@ -534,11 +556,21 @@ export class Player {
             return;
         }
 
-        if (Date.now() - this.lastShot < this.currentWeapon.COOLDOWN) return;
+        const currentCooldown = this.perkManager ? this.perkManager.getModifiedFireRate(this.currentWeapon) : this.currentWeapon.COOLDOWN;
+        if (Date.now() - this.lastShot < currentCooldown) return;
         
         this.currentWeapon.magazine--;
         this.lastShot = Date.now();
         this.updateUI();
+        
+        // Trigger crosshair pulse
+        const crosshair = document.getElementById('crosshair');
+        if (crosshair) {
+            crosshair.style.transform = 'translate(-50%, -50%) scale(1.4)';
+            setTimeout(() => {
+                crosshair.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 50);
+        }
         
         this.audio.shoot(); // Trigger audio
 
@@ -567,9 +599,9 @@ export class Player {
 
         const muzzlePos = new THREE.Vector3();
         this.currentWeapon.mesh.getWorldPosition(muzzlePos);
+        const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
 
         if (this.particleSystem) {
-            const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
             this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, muzzleFlashColor);
         }
 
@@ -578,47 +610,36 @@ export class Player {
 
         this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
         
-        // Use pre-built target objects for high performance
-        const intersects = this.raycaster.intersectObjects(targetObjects, true);
+        // --- Bullet Logic with Perks ---
+        const maxPenetration = (this.currentWeapon.perks && this.currentWeapon.perks.penetration) || 0;
+        let hitsRemaining = 1 + maxPenetration;
+        let lastHitPoint = muzzlePos.clone();
+        let currentDir = shootDir.clone();
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
+        const processHit = (hit, isRicochet = false) => {
             const hitObject = hit.object;
+            const enemy = hitObject.userData.enemyRef;
 
-            // Bullet Tracer to hit point
             if (this.particleSystem) {
-                this.particleSystem.createTracer(muzzlePos, hit.point, muzzleFlashColor);
+                this.particleSystem.createTracer(lastHitPoint, hit.point, muzzleFlashColor);
             }
-        } else {
-            // Bullet Tracer to max distance
-            if (this.particleSystem) {
-                const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
-                const maxPoint = muzzlePos.clone().add(shootDir.multiplyScalar(50));
-                this.particleSystem.createTracer(muzzlePos, maxPoint, muzzleFlashColor);
-            }
-        }
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
-            const hitObject = hit.object;
-
-            // Robust enemy detection: check if hit object is a hitbox or in an enemy mesh group
-            let enemy = null;
-            let current = hitObject;
-            // Optimization: check if hit object is a hitbox directly
-            if (hitObject.userData.isEnemyHitbox) {
-                // Find enemy in the scene or pass a map for instant lookup
-                // For now, search from current list in GameScene is handled there
-                // We'll rely on our GameScene to pass the correct objects
-            }
+            this.audio.hit(!!enemy); 
             
-            // To properly resolve 'enemy', we'll rely on the object's parent chain 
-            // but we'll optimize by storing a reference to the enemy class on the hitbox
-            if (hitObject.userData.enemyRef) {
-                enemy = hitObject.userData.enemyRef;
+            // Show hitmarker
+            const hm = document.getElementById('hitmarker');
+            if (hm && enemy) {
+                hm.style.display = 'block';
+                const lines = hm.querySelectorAll('.hm-line');
+                lines.forEach(l => {
+                    if (enemy.isDead) l.classList.add('kill');
+                    else l.classList.remove('kill');
+                });
+                
+                setTimeout(() => {
+                    hm.style.display = 'none';
+                }, 100);
             }
-
-            this.audio.hit(!!enemy); // Trigger impact audio
 
             if (this.particleSystem) {
                 const isBarrel = hitObject.userData.isBarrel;
@@ -642,31 +663,85 @@ export class Player {
             }
 
             if (enemy) {
-                enemy.takeDamage(finalDamage, [], activeDamageType); // Pass empty list as we optimize this
+                let dmg = finalDamage;
+                // Sniper Shield Breaker Perk
+                if (this.currentWeaponKey === 'SNIPER' && this.currentWeapon.perks.shieldBreaker) {
+                    if (enemy.type === 'TANK' || enemy.type === 'HEAVY_SEC_BOT' || enemy.type === 'SHIELD_PROJECTOR') {
+                        dmg *= 3.0;
+                    }
+                }
+
+                enemy.takeDamage(dmg, [], activeDamageType);
+                
+                // Sniper Ammo Recall Perk
+                if (this.currentWeaponKey === 'SNIPER' && this.currentWeapon.perks.ammoRecall && Math.random() < 0.5) {
+                    this.currentWeapon.magazine = Math.min(this.currentWeapon.MAGAZINE_SIZE, this.currentWeapon.magazine + 1);
+                }
+
                 if (enemy.isDead) {
                     this.score += 100;
+                    if (this.perkManager) this.perkManager.handleKill(enemy);
                     if (this.onEnemyKilled) this.onEnemyKilled(enemy);
                     this.updateUI();
                 }
-            } else if (hitObject.userData.isBarrel) {
-                hitObject.userData.health -= finalDamage;
-                if (hitObject.userData.health <= 0) {
-                    if (this.onBarrelExplode) this.onBarrelExplode(hitObject);
+                
+                hitsRemaining--;
+                lastHitPoint.copy(hit.point);
+                return hitsRemaining > 0; // Continue if we have more penetration
+            } else {
+                // Hit a static object
+                if (hitObject.userData.isBarrel) {
+                    hitObject.userData.health -= finalDamage;
+                    if (hitObject.userData.health <= 0 && this.onBarrelExplode) this.onBarrelExplode(hitObject);
+                } else if (hitObject.userData.isPipe) {
+                    if (this.onPipeHit) this.onPipeHit(hitObject, hit.point);
+                } else if (hitObject.userData.isGas) {
+                    if (this.onGasHit) this.onGasHit(hitObject.userData.gasLeak);
+                } else if (hitObject.userData.isExtinguisherProp) {
+                    hitObject.userData.health -= finalDamage;
+                    if (hitObject.userData.health <= 0 && this.onExtHit) this.onExtHit(hitObject);
+                } else if (hitObject.userData.isDestructible) {
+                    hitObject.userData.health -= finalDamage;
+                    if (hitObject.userData.health <= 0 && this.onObjectDestroyed) this.onObjectDestroyed(hitObject);
                 }
-            } else if (hitObject.userData.isPipe) {
-                if (this.onPipeHit) this.onPipeHit(hitObject, hit.point);
-            } else if (hitObject.userData.isGas) {
-                if (this.onGasHit) this.onGasHit(hitObject.userData.gasLeak);
-            } else if (hitObject.userData.isExtinguisherProp) {
-                hitObject.userData.health -= finalDamage;
-                if (hitObject.userData.health <= 0) {
-                    if (this.onExtHit) this.onExtHit(hitObject);
+
+                // Ricochet Perk (Rifle only, once per shot)
+                if (this.currentWeaponKey === 'RIFLE' && this.currentWeapon.perks.ricochet && !isRicochet) {
+                    const normal = hit.face ? hit.face.normal.clone().applyQuaternion(hitObject.quaternion || new THREE.Quaternion()) : new THREE.Vector3(0,1,0);
+                    currentDir.reflect(normal);
+                    lastHitPoint.copy(hit.point);
+                    
+                    this.raycaster.set(lastHitPoint, currentDir);
+                    const ricochetIntersects = this.raycaster.intersectObjects(targetObjects, true);
+                    if (ricochetIntersects.length > 0) {
+                        processHit(ricochetIntersects[0], true);
+                    } else {
+                        if (this.particleSystem) {
+                            const maxPoint = lastHitPoint.clone().add(currentDir.multiplyScalar(50));
+                            this.particleSystem.createTracer(lastHitPoint, maxPoint, muzzleFlashColor);
+                        }
+                    }
                 }
-            } else if (hitObject.userData.isDestructible) {
-                hitObject.userData.health -= finalDamage;
-                if (hitObject.userData.health <= 0) {
-                    if (this.onObjectDestroyed) this.onObjectDestroyed(hitObject);
+
+                return false; // Stop bullet
+            }
+        };
+
+        const intersects = this.raycaster.intersectObjects(targetObjects, true);
+        if (intersects.length > 0) {
+            // If penetrating, we need to process all hits along the ray
+            if (maxPenetration > 0) {
+                for (const hit of intersects) {
+                    if (!processHit(hit)) break;
                 }
+            } else {
+                processHit(intersects[0]);
+            }
+        } else {
+            // Bullet Tracer to max distance
+            if (this.particleSystem) {
+                const maxPoint = muzzlePos.clone().add(shootDir.clone().multiplyScalar(50));
+                this.particleSystem.createTracer(muzzlePos, maxPoint, muzzleFlashColor);
             }
         }
 
@@ -908,6 +983,7 @@ export class Player {
         }
 
         if (this.health <= 0) this.die();
+        else if (this.perkManager) this.perkManager.handleDamageTaken();
     }
 
     heal(amount) {
@@ -1073,10 +1149,10 @@ export class Player {
             let color = '';
             
             if (type === 'INCENDIARY') {
-                src = 'https://rosebud.ai/assets/incendiary_ammo_icon.png.webp?F1cz';
+                src = 'assets/incendiary_ammo_icon.webp';
                 color = '#ff4400';
             } else if (type === 'SHOCK') {
-                src = 'https://rosebud.ai/assets/shock_ammo_icon.png.webp?jXE1';
+                src = 'assets/shock_ammo_icon.webp';
                 color = '#00ffff';
             }
 

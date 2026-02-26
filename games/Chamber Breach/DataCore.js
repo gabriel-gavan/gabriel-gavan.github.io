@@ -16,7 +16,7 @@ export class DataCore {
     createMesh() {
         const group = new THREE.Group();
         const loader = new THREE.TextureLoader();
-        const texture = loader.load('https://rosebud.ai/assets/legendary_data_core.webp?nNzu');
+        const texture = loader.load('assets/legendary_data_core.webp');
         const material = new THREE.SpriteMaterial({ 
             map: texture,
             transparent: true,

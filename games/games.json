@@ -15,6 +15,79 @@
       ],
       "category": "top"
     },
+	
+		 {
+      "id": "NeonRunnerVelocity",
+      "title": "Neon Rush Velocity",
+      "url": "games/Neon Rush Velocity/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Racing Arcade!!!",
+      "tags": [
+	  "Racing",
+	  "featured",
+        
+        "skill"
+      ],
+      "category": "top"
+    },
+		    {
+      "id": "bangbang",
+      "title": "Wild West Bang Bang",
+      "url": "games/Saloon Showdown/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Wild West Bang Bang is a high-octane 2D-in-3D arcade shooter where you step into the boots of a legendary sheriff. Battle through 10 levels of increasing intensity, neutralizing menacing outlaws while sparing innocent civilians. Face a formidable final boss, chain massive combos, and etch your name onto the high-score leaderboard. Featuring visceral damage feedback, procedural western audio, and a convenient auto-reload toggle, this experience blends classic arcade action with modern polish. Strap on your holster, sharpen your aim, and prove you're the fastest gun in the territory!",
+      "tags": [
+	  "arcade",
+	  "featured",
+        "logic",
+        "skill",
+        "classic",
+		"shooter"
+      ],
+      "category": "top"
+    },
+		 {
+      "id": "NeonRacingCarGame",
+      "title": "Neon Continuous Race",
+      "url": "NeonRacingCarGame.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Racing Arcade!!!",
+      "tags": [
+	  "Racing",
+	  "featured",
+        
+        "skill"
+      ],
+      "category": "top"
+    },
+		 {
+      "id": "NeonVelocityCyberRacers",
+      "title": "Neon Velocity Cyber Racers",
+      "url": "games/Neon Velocity Cyber Racers/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Racing Arcade!!!",
+      "tags": [
+	  "Racing",
+	  "featured",
+        
+        "skill"
+      ],
+      "category": "top"
+    },
+		 {
+      "id": "onepiece",
+      "title": "One Piece",
+      "url": "games/RPG - One Piece-Story Game/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "RPG FPS!!!",
+      "tags": [
+	  "RPG",
+	  "featured",
+        "logic",
+        "skill"
+      ],
+      "category": "top"
+    },
     {
       "id": "neon-sudoku",
       "title": "Neon Sudoku Deluxe",
