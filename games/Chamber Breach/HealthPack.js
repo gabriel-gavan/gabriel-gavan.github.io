@@ -13,7 +13,7 @@ export class HealthPack {
 
     createMesh() {
         const loader = new THREE.TextureLoader();
-        const map = loader.load('https://rosebud.ai/assets/medkit_sprite.webp?KHNa');
+        const map = loader.load('assets/medkit_sprite.webp');
         const material = new THREE.SpriteMaterial({ map: map });
         const sprite = new THREE.Sprite(material);
         sprite.scale.set(1.2, 1.2, 1);

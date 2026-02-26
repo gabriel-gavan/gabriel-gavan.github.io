@@ -1,10 +1,10 @@
 export const CONFIG = {
     FACILITIES: [
-        { id: 'meridian', name: 'THE MERIDIAN SERVERPLEX', desc: 'Central corporate data spine. Moderate security.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00ffaa, image: 'https://rosebud.ai/assets/facility_core_lab.webp.webp?CtAf' },
-        { id: 'aetheris', name: 'AETHERIS CLOUD SPIRE', desc: 'High-altitude processing hub. Specialized aerial units.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00aaff, image: 'https://rosebud.ai/assets/facility_security_hub.webp.webp?kHy9' },
-        { id: 'obsidian', name: 'OBSIDIAN DATA VAULT', desc: 'Deep-underground encrypted archive. Extreme armor.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0xff3300, image: 'https://rosebud.ai/assets/facility_data_vault.webp.webp?N8Mr' },
-        { id: 'cryo', name: 'CRYO-LINK COLD STORAGE', desc: 'Sub-zero server farm. Environmental hazards.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00ffff, image: 'https://rosebud.ai/assets/facility_power_grid.webp.webp?wIee' },
-        { id: 'neon', name: 'NEON-SHIFT R&D WING', desc: 'Experimental weapons lab. Cloaked enemies.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0xff00ff, image: 'https://rosebud.ai/assets/facility_core_lab.webp.webp?CtAf' }
+        { id: 'meridian', name: 'THE MERIDIAN SERVERPLEX', desc: 'Central corporate data spine. Moderate security.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00ffaa, image: 'assets/facility_core_lab.webp' },
+        { id: 'aetheris', name: 'AETHERIS CLOUD SPIRE', desc: 'High-altitude processing hub. Specialized aerial units.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00aaff, image: 'assets/facility_security_hub.webp' },
+        { id: 'obsidian', name: 'OBSIDIAN DATA VAULT', desc: 'Deep-underground encrypted archive. Extreme armor.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0xff3300, image: 'assets/facility_data_vault.webp' },
+        { id: 'cryo', name: 'CRYO-LINK COLD STORAGE', desc: 'Sub-zero server farm. Environmental hazards.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0x00ffff, image: 'assets/facility_power_grid.webp' },
+        { id: 'neon', name: 'NEON-SHIFT R&D WING', desc: 'Experimental weapons lab. Cloaked enemies.', rooms: 20, enemies: 10, bossInterval: 5, accent: 0xff00ff, image: 'assets/facility_core_lab.webp' }
     ],
     PLAYER: {
         MOVE_SPEED: 14,
@@ -128,12 +128,13 @@ export const CONFIG = {
             STALKER: { HEALTH: 30, DAMAGE: 6, SPEED: 6, RANGE: 3, SCORE: 150, SCALE: 0.8 },  
             TANK: { HEALTH: 150, DAMAGE: 15, SPEED: 1.5, RANGE: 20, SCORE: 500, SCALE: 1.5 }, 
             SHIELD_PROJECTOR: { HEALTH: 100, DAMAGE: 3, SPEED: 2.5, RANGE: 10, SCORE: 300, SCALE: 1.2 },
-            HEAVY_SEC_BOT: { HEALTH: 800, DAMAGE: 20, SPEED: 2.5, RANGE: 12, SCORE: 2000, SCALE: 2.5 }
+            HEAVY_SEC_BOT: { HEALTH: 800, DAMAGE: 20, SPEED: 2.5, RANGE: 12, SCORE: 2000, SCALE: 2.5 },
+            TITAN: { HEALTH: 10000, DAMAGE: 50, SPEED: 3.5, RANGE: 30, SCORE: 50000, SCALE: 10.0 }
         }
     },
     MAP: {
         ROOM_SIZE: 20,
-        NUM_ROOMS: 20, // Lowered from 50 for stability and performance
+        NUM_ROOMS: 50, // Final challenge at Room 50
         WALL_HEIGHT: 5,
         BOSS_INTERVAL: 5,
         HAZARD_CHANCE: 0.4,

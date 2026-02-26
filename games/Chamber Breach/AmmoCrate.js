@@ -14,7 +14,7 @@ export class AmmoCrate {
 
     createMesh() {
         const loader = new THREE.TextureLoader();
-        const map = loader.load('https://rosebud.ai/assets/ammo_box_sprite.webp?plqH');
+        const map = loader.load('assets/ammo_box_sprite.webp');
         const color = this.type === 'RIFLE' ? 0xffffff : 0x00ffff; // Tint sniper blue
         const material = new THREE.SpriteMaterial({ map: map, color: color });
         const sprite = new THREE.Sprite(material);

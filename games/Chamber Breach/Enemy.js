@@ -8,11 +8,12 @@ const ENEMY_TEXTURES = {};
 const loader = new THREE.TextureLoader();
 
 const SPRITE_URLS = {
-    'SENTRY': 'https://rosebud.ai/assets/sentry_drone_new.webp?X9tu',
-    'HEAVY_SEC_BOT': 'https://rosebud.ai/assets/heavy_sec_bot_new.webp?O9Gj',
-    'SHIELD_PROJECTOR': 'https://rosebud.ai/assets/shield_drone_sprite.webp?X7y9',
-    'TANK': 'https://rosebud.ai/assets/tank_bot_new.webp?Ygvw',
-    'STALKER': 'https://rosebud.ai/assets/stalker_drone_new.webp?1ilJ'
+    'SENTRY': 'assets/sentry_drone_new.webp',
+    'HEAVY_SEC_BOT': 'assets/heavy_sec_bot_new.webp',
+    'SHIELD_PROJECTOR': 'assets/shield_drone_sprite.webp',
+    'TANK': 'assets/tank_bot_new.webp',
+    'STALKER': 'assets/stalker_drone_new.webp',
+    'TITAN': 'assets/titan_boss_drone.webp'
 };
 
 // Pre-warm cache
@@ -114,7 +115,7 @@ export class Enemy {
         this.lastShockChain = 0;
 
         // Adaptive Shielding for Heavy Sec-Bot
-        if (this.type === 'HEAVY_SEC_BOT') {
+        if (this.type === 'HEAVY_SEC_BOT' || this.type === 'TITAN') {
             this.adaptiveResistances = {
                 'LASER': 0,
                 'EMP': 0,
@@ -125,6 +126,13 @@ export class Enemy {
             this.shieldMesh = this.createAdaptiveShieldMesh();
             this.mesh.add(this.shieldMesh);
             this.bossPhase = 1;
+            
+            if (this.type === 'TITAN') {
+                this.isTitan = true;
+                this.titanAttackTimer = 0;
+                this.titanAttackCooldown = 6000;
+                this.mesh.position.y = 8; // Titans are huge and float higher
+            }
         }
 
         if (this.type === 'SHIELD_PROJECTOR') {
@@ -558,6 +566,18 @@ export class Enemy {
                 }
             }
             return;
+        }
+
+        if (this.isTitan && !this.isDisabled) {
+            this.titanAttackTimer += deltaTime * 1000;
+            if (this.titanAttackTimer > this.titanAttackCooldown) {
+                this.executeTitanAttack(playerPos, otherEnemies);
+                this.titanAttackTimer = 0;
+            }
+            
+            // Titan floating motion
+            this.mesh.position.y = 7 + Math.sin(Date.now() * 0.001) * 2;
+            this.mesh.rotation.z = Math.sin(Date.now() * 0.0005) * 0.1;
         }
 
         // --- Elite Logic ---
@@ -1340,12 +1360,12 @@ export class Enemy {
                     this.hitFlashTimer = 0.4; // Longer flash for telegraphing
                     
                     // Trigger a warning beep via Tone.js if available
-                    if (this.scene.game && this.scene.game.hackSynth) {
-                        this.scene.game.hackSynth.triggerAttackRelease("C6", "32n");
-                    }
+                    if (this.scene.game) {
+						this.scene.game.playArbiterSound("enemy_shoot");
+					}
                 }
 
-                this.particleSystem.createMuzzleFlash(this.muzzlePos, shootDir, flashColor);
+                this.particleSystem.createMuzzleFlash(this.muzzlePos, shootDir, flashColor, true);
                 
                 if (!this.isAlly) {
                     // Physical Projectiles only - no automatic damage timers!
@@ -1480,11 +1500,8 @@ export class Enemy {
                 ).normalize().multiplyScalar(1.2);
             }
 
-            if (Math.random() < 0.2) {
-                const flash = new THREE.PointLight(0x00ffff, 5, 3);
-                flash.position.copy(this.mesh.position);
-                this.scene.add(flash);
-                setTimeout(() => this.scene.remove(flash), 100);
+            if (Math.random() < 0.2 && this.particleSystem) {
+                this.particleSystem.flashLight(this.mesh.position, 0x00ffff, 5, 3, 100);
             }
         }
 
@@ -1681,6 +1698,100 @@ export class Enemy {
         this.mesh.children[0].material.emissive.set(0x004466);
     }
 
+    executeTitanAttack(playerPos, otherEnemies) {
+        if (this.isDead || this.isDisabled) return;
+
+        const attacks = ['BARRAGE', 'LASER', 'SHOCKWAVE'];
+        const choice = attacks[Math.floor(Math.random() * attacks.length)];
+        
+        // Final phase (rage) increases attack frequency
+        this.titanAttackCooldown = this.isRaging ? 3000 : 6000;
+
+        if (this.scene.game) {
+            this.scene.game.showProgressionMessage(`TITAN: PREPARING ${choice} PROTOCOL`, 2000);
+            this.scene.game.triggerEliteSound('TITAN');
+        }
+
+        switch (choice) {
+            case 'BARRAGE': this.executeTitanMissileBarrage(playerPos); break;
+            case 'LASER': this.executeTitanLaserSweep(playerPos); break;
+            case 'SHOCKWAVE': this.executeTitanShockwave(); break;
+        }
+    }
+
+    executeTitanMissileBarrage(playerPos) {
+        const missileCount = this.isRaging ? 12 : 6;
+        for (let i = 0; i < missileCount; i++) {
+            setTimeout(() => {
+                if (this.isDead || this.isDisabled) return;
+                
+                const startPos = this.mesh.position.clone();
+                startPos.y += (Math.random() - 0.5) * 5;
+                startPos.x += (Math.random() - 0.5) * 10;
+                startPos.z += (Math.random() - 0.5) * 10;
+                
+                // Target is player's position with some randomization
+                const target = playerPos.clone().add(new THREE.Vector3(
+                    (Math.random() - 0.5) * 5,
+                    0,
+                    (Math.random() - 0.5) * 5
+                ));
+
+                if (this.particleSystem) {
+                    this.particleSystem.createEnemyProjectile(startPos, target, 0xff0000);
+                    this.particleSystem.createMuzzleFlash(startPos, new THREE.Vector3().subVectors(target, startPos).normalize(), 0xff0000, true);
+                }
+            }, i * 300);
+        }
+    }
+
+    executeTitanLaserSweep(playerPos) {
+        const sweepDuration = 2000;
+        const startTime = Date.now();
+        const startDir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
+        
+        const updateSweep = () => {
+            if (this.isDead || this.isDisabled) return;
+            const elapsed = Date.now() - startTime;
+            if (elapsed > sweepDuration) return;
+
+            const angle = (elapsed / sweepDuration) * Math.PI * 0.5 - Math.PI * 0.25;
+            const sweepDir = startDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
+            
+            const beamEnd = this.mesh.position.clone().add(sweepDir.multiplyScalar(50));
+            if (this.particleSystem) {
+                this.particleSystem.createTracer(this.mesh.position, beamEnd, 0xff0000);
+            }
+
+            // Check if player is hit
+            const playerToTitan = new THREE.Vector3().subVectors(this.player.camera.position, this.mesh.position);
+            const dot = playerToTitan.normalize().dot(sweepDir.normalize());
+            if (dot > 0.995 && playerToTitan.length() < 50) {
+                this.player.takeDamage(15);
+            }
+
+            requestAnimationFrame(updateSweep);
+        };
+        updateSweep();
+    }
+
+    executeTitanShockwave() {
+        const radius = 25;
+        const duration = 2000;
+
+        if (this.particleSystem) {
+            this.particleSystem.createExplosion(this.mesh.position, 0xff0000, 100, 15);
+        }
+
+        // Check if player is hit
+        const dist = this.mesh.position.distanceTo(this.player.camera.position);
+        if (dist < radius) {
+            this.player.takeDamage(40);
+            // Shake effect
+            if (this.scene.game) this.scene.game.shakeAmount += 1.5;
+        }
+    }
+
     die() {
         if (this.isDead) return;
         this.isDead = true;
@@ -1699,6 +1810,11 @@ export class Enemy {
 
         if (this.scene.particleSystem) {
             this.scene.particleSystem.createExplosion(this.mesh.position, 0xffaa00, 15, 3);
+            if (this.isTitan) {
+                // Massive explosion for Titan
+                this.scene.particleSystem.createExplosion(this.mesh.position, 0xffaa00, 100, 20);
+                this.scene.particleSystem.createExplosion(this.mesh.position, 0xff5500, 200, 10);
+            }
         }
     }
 }

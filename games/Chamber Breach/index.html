@@ -47,7 +47,7 @@
         pointer-events: none; z-index: 495;
         opacity: 0;
         mix-blend-mode: color-dodge;
-        background: url('https://rosebud.ai/assets/noise_texture.png.webp?8pXv');
+        background: url('assets/noise_texture.webp');
         background-size: 200px;
       }
       
@@ -71,7 +71,7 @@
         background: #000; z-index: 1000; pointer-events: auto;
       }
       #start-screen { 
-        background: url('https://rosebud.ai/assets/game_hero_background.webp?07BT') no-repeat center center;
+        background: url('assets/game_hero_background.webp') no-repeat center center;
         background-size: cover;
         position: relative;
         overflow: hidden;
@@ -133,17 +133,41 @@
       .loadout-card .name { font-size: 20px; color: #00ffff; margin-bottom: 10px; }
       .loadout-card .stats-mini { font-size: 12px; color: #aaa; text-align: left; line-height: 1.6; }
 
-      #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; transition: opacity 1s; }
+      #ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0;  z-index: 9999; transition: opacity 1s; }
       #crosshair { 
-        position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; 
-        border: 2px solid rgba(0, 255, 0, 0.5); border-radius: 50%; 
-        transform: translate(-50%, -50%); 
+        position: absolute; top: 50%; left: 50%; width: 32px; height: 32px; 
+        border: 2px solid rgba(0, 255, 170, 0.8); border-radius: 50%; 
+        transform: translate(-50%, -50%) scale(1); 
+        transition: transform 0.1s ease-out;
       }
-      #crosshair::after, #crosshair::before {
-        content: ''; position: absolute; background: rgba(0, 255, 0, 0.5);
+      #crosshair::before {
+        content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px;
+        background: #00ffaa; border-radius: 50%; transform: translate(-50%, -50%);z-index: 99999;
+        box-shadow: 0 0 5px #00ffaa;
       }
-      #crosshair::before { top: 50%; left: -5px; width: 30px; height: 2px; margin-top: -1px; }
-      #crosshair::after { left: 50%; top: -5px; height: 30px; width: 2px; margin-left: -1px; }
+      #crosshair .lines {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      }
+      #hitmarker {
+        position: absolute; top: 50%; left: 50%; width: 24px; height: 24px;
+        transform: translate(-50%, -50%) rotate(45deg);
+        pointer-events: none; display: none;
+      }
+      .hm-line {
+        position: absolute; background: #fff;
+      }
+      .hm-line.v { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
+      .hm-line.h { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
+      .hm-line.v.kill { background: #ff4400; }
+      .hm-line.h.kill { background: #ff4400; }
+      
+      .ch-line {
+        position: absolute; background: rgba(0, 255, 170, 0.8);
+      }
+      .ch-line.v { left: 50%; top: -5px; width: 2px; height: 10px; transform: translateX(-50%); }
+      .ch-line.v.b { top: auto; bottom: -5px; }
+      .ch-line.h { top: 50%; left: -5px; width: 100%; height: 2px; transform: translateY(-50%); width: 10px; }
+      .ch-line.h.r { left: auto; right: -5px; }
       
       .stats { position: absolute; padding: 20px; font-size: 24px; text-shadow: 2px 2px #000; }
       #health { bottom: 0; left: 0; }
@@ -556,7 +580,7 @@
       
       <div class="loadout-grid">
         <div class="loadout-card">
-          <img src="https://rosebud.ai/assets/rifle_display.png.webp?15vc" alt="Rifle">
+          <img src="assets/rifle_display.webp" alt="Rifle">
           <div class="name">XM-42 RIFLE</div>
           <div class="stats-mini" id="rifle-stats-armory">
             DAMAGE: 25<br>
@@ -572,7 +596,7 @@
           </div>
         </div>
         <div class="loadout-card">
-          <img src="https://rosebud.ai/assets/sniper_display.png.webp?Ltx1" alt="Sniper">
+          <img src="assets/sniper_display.webp" alt="Sniper">
           <div class="name">SRS-99 SNIPER</div>
           <div class="stats-mini" id="sniper-stats-armory">
             DAMAGE: 100<br>
@@ -639,6 +663,65 @@
         }
     </style>
 
+    <!-- Perk Selection Menu -->
+    <div id="perk-screen" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:2000; flex-direction:column; align-items:center; justify-content:center; color:#00ffaa;">
+        <h1 style="text-shadow: 0 0 15px #00ffaa; margin-bottom: 30px; letter-spacing: 5px; font-size: 36px;">TECH UPGRADE DETECTED</h1>
+        <p style="margin-bottom: 40px; color:#fff; font-size: 14px; opacity: 0.8;">SELECT A NEURAL ENHANCEMENT TO STABILIZE THE LINK</p>
+        <div id="perk-options" style="display:flex; gap:30px;">
+            <!-- Perks will be injected here -->
+        </div>
+    </div>
+
+    <style>
+      .perk-card {
+          width: 260px;
+          height: 380px;
+          background: rgba(0, 40, 30, 0.8);
+          border: 2px solid #00ffaa;
+          padding: 30px 20px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          cursor: pointer;
+          transition: all 0.3s;
+          position: relative;
+          overflow: hidden;
+      }
+      .perk-card:hover {
+          background: rgba(0, 255, 170, 0.2);
+          box-shadow: 0 0 30px rgba(0, 255, 170, 0.4);
+          transform: translateY(-10px);
+      }
+      .perk-card .icon {
+          font-size: 60px;
+          margin-bottom: 25px;
+          filter: drop-shadow(0 0 10px #00ffaa);
+      }
+      .perk-card .name {
+          font-size: 20px;
+          font-weight: bold;
+          margin-bottom: 15px;
+          color: #fff;
+          letter-spacing: 2px;
+      }
+      .perk-card .desc {
+          font-size: 13px;
+          color: #aaa;
+          line-height: 1.6;
+          flex-grow: 1;
+      }
+      .perk-card .type {
+          font-size: 10px;
+          margin-top: 15px;
+          letter-spacing: 2px;
+          opacity: 0.6;
+          border-top: 1px solid rgba(0, 255, 170, 0.3);
+          padding-top: 15px;
+          width: 100%;
+      }
+    </style>
+
     <div id="crt-overlay"></div>
     <div id="heat-vignette"></div>
     <div id="heat-glitch-overlay"></div>
@@ -689,6 +772,9 @@
             box-shadow: 0 0 15px #00ffaa;
         }
     </style>
+    <!-- Back to Hub Button (Global) -->
+    <button id="back-to-hub-btn" style="position: fixed; top: 10px; left: 10px; padding: 10px 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid #00ffaa; color: #00ffaa; font-family: 'Orbitron', sans-serif; font-size: 10px; letter-spacing: 1px; cursor: pointer; pointer-events: auto; z-index: 2100; transition: all 0.2s; display: none;">&lt; BACK TO HUB</button>
+    
     <div id="ui">
       <!-- Tactical Radar -->
       <div id="radar-ui">
@@ -703,7 +789,18 @@
         <div id="scope-crosshair-v"></div>
         <div id="scope-circle"></div>
       </div>
-      <div id="crosshair"></div>
+      <div id="crosshair">
+          <div class="lines">
+              <div class="ch-line v"></div>
+              <div class="ch-line v b"></div>
+              <div class="ch-line h"></div>
+              <div class="ch-line h r"></div>
+          </div>
+      </div>
+      <div id="hitmarker">
+          <div class="hm-line v"></div>
+          <div class="hm-line h"></div>
+      </div>
 
       <!-- Hacking Minigame UI -->
       <div id="hacking-ui" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: rgba(0, 20, 0, 0.9); border: 2px solid #00ff00; border-radius: 50%; z-index: 100; box-shadow: 0 0 20px #00ff00;">

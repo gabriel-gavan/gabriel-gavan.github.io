@@ -8,7 +8,7 @@ export class CreditChip {
         this.isCollected = false;
         
         const loader = new THREE.TextureLoader();
-        const map = loader.load('https://rosebud.ai/assets/credit_chip_sprite.png.webp?pwu0');
+        const map = loader.load('assets/credit_chip_sprite.webp');
         const material = new THREE.SpriteMaterial({ map: map, transparent: true });
         this.mesh = new THREE.Sprite(material);
         this.mesh.position.copy(position);
