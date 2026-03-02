@@ -1,17 +1,19 @@
 {
   "topPicks": [
   
-	 {
-      "id": "game_hero_background",
-      "title": "Chamber Breach",
-      "url": "games/Chamber Breach/index.html",
+	 
+		 {
+      "id": "neondash",
+      "title": "Neon Dash",
+      "url": "games/Soldier Runner/index.html",
       "thumb": "images/thumb1.webp",
       "desc": "Shooter FPS!!!",
       "tags": [
-	  "FPS",
+	  "arcade",
 	  "featured",
         "logic",
-        "skill"
+        "skill",
+        "classic"
       ],
       "category": "top"
     },
@@ -202,6 +204,20 @@
         "typing",
         "skill",
         "featured"
+      ],
+      "category": "top"
+    },
+	{
+      "id": "game_hero_background",
+      "title": "Chamber Breach",
+      "url": "games/Chamber Breach/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Shooter FPS!!!",
+      "tags": [
+	  "FPS",
+	  "featured",
+        "logic",
+        "skill"
       ],
       "category": "top"
     },

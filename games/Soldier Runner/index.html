@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Neon Soldier Runner (r160 + importmap)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a id="backToHub" href="/index.html">⬅ Back to Hub</a>
+<div id="mainMenu">
+    <h1>NEON DASH</h1>
+    <button id="playBtn">PLAY</button>
+</div>
+<div id="gameContainer"></div>
+
+
+<div id="hud">
+    <div id="score">Score: 0</div>
+    <div id="distance">Distance: 0m</div>
+    <div id="multiplier">x1</div>
+	 <div id="coins">Coins: 0</div>
+</div>
+<!-- Import Map -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<!-- Your game entrypoint module -->
+<script type="module">
+    import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js";
+
+    import { EffectComposer } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
+    import { RenderPass } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
+    import { UnrealBloomPass } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js";
+
+    import initGame from "./game.js";
+
+    //(THREE, GLTFLoader, EffectComposer, RenderPass, UnrealBloomPass);
+	document.getElementById("playBtn").onclick = () => {
+		document.getElementById("mainMenu").style.display = "none";
+		initGame(THREE, GLTFLoader, EffectComposer, RenderPass, UnrealBloomPass);
+	};
+</script>
+<div id="gameOverScreen" class="hidden">
+    <div class="game-over-box">
+        <h1>GAME OVER</h1>
+        <p id="finalScore">Score: 0</p>
+        <p id="finalDistance">Distance: 0m</p>
+
+        <button id="restartBtn">Restart</button>
+        <button id="menuBtn">Main Menu</button>
+    </div>
+</div>
+
+</body>
+</html>

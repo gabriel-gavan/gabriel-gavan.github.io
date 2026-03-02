@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: system-ui;
+}
+#mainMenu {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+#mainMenu h1 {
+    color: #0ff;
+    font-size: 40px;
+    text-shadow: 0 0 20px #0ff;
+    margin-bottom: 20px;
+}
+
+#mainMenu button {
+    padding: 14px 30px;
+    font-size: 20px;
+    border-radius: 10px;
+    background: #0ff;
+    color: #000;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#mainMenu button:hover {
+    background: #8ff;
+}
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+}
+
+#backToHub {
+    position: absolute;
+    z-index: 10;
+    top: 12px;
+    left: 12px;
+    color: #38bdf8;
+    border: 1px solid #38bdf8;
+    padding: 6px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 0 10px rgba(56,189,248,0.5);
+    font-weight: bold;
+}
+#hud {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #00eaff;
+    font-family: system-ui;
+    z-index: 20;
+    text-align: right;
+    text-shadow: 0 0 10px #00eaff;
+}
+
+#hud div {
+    margin-bottom: 6px;
+    font-size: 20px;
+}
+#gameOverScreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .4s ease;
+}
+
+#gameOverScreen.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.game-over-box {
+    background: radial-gradient(circle at top, #111 0%, #000 70%);
+    padding: 30px 50px;
+    border-radius: 14px;
+    border: 2px solid #00eaff;
+    box-shadow: 0 0 35px rgba(0, 234, 255, 0.9);
+    text-align: center;
+
+    /* 👇 important: text visible! */
+    color: #e5e7eb;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+}
+
+#restartBtn, #menuBtn {
+    padding: 10px 25px;
+    margin: 12px;
+    font-size: 18px;
+    border: none;
+    cursor: pointer;
+    background: #0ff;
+    color: #000;
+    border-radius: 8px;
+}
+#hud {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    font-size: 22px;
+    z-index: 999;
+    text-align: right;
+}
+
+#coins {
+    margin-top: 6px;
+    color: #ffdd00;
+    font-weight: bold;
+    text-shadow: 0 0 10px #ffdf33;
+}

@@ -90,7 +90,7 @@ export class CryoVent {
             }
 
             // Particles
-            if (this.particleSystem && Math.random() < 0.4) {
+            if (this.particleSystem && Math.random() < 0.4 && typeof this.particleSystem.createExplosion === "function") {
                 const offset = new THREE.Vector3(
                     (Math.random() - 0.5) * 1.5,
                     Math.random() * 3,
@@ -118,7 +118,7 @@ export class CryoVent {
         this.freezeTimer = 6.0; // Frozen for 6 seconds
         this.isActive = false;
         
-        if (this.particleSystem) {
+        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
             this.particleSystem.createExplosion(this.position.clone().add(new THREE.Vector3(0, 1, 0)), 0xffffff, 5, 1.0);
         }
     }

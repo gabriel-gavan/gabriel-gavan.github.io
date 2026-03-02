@@ -1515,7 +1515,7 @@ export class GameScene {
             oscillator: { type: "square8" },
             envelope: { attack: 0.01, decay: 0.1, sustain: 0.2, release: 0.1 }
         });
-        this.hackSynth.maxPolyphony = 6;
+        this.hackSynth.maxPolyphony = 1;
         this.hackSynth.volume.value = -18;
 
         // Success sound
@@ -1523,7 +1523,7 @@ export class GameScene {
             oscillator: { type: "sine" },
             envelope: { attack: 0.01, decay: 0.2, sustain: 0.2, release: 0.5 }
         }).connect(this.masterLimiter);
-        this.successSynth.maxPolyphony = 8;
+        this.successSynth.maxPolyphony = 1;
         this.successSynth.volume.value = -18;
 
         // Weapon Fire - Wrapped in PolySynth to prevent voice stealing artifacts/beeps
@@ -1532,7 +1532,7 @@ export class GameScene {
 		}).connect(this.masterLimiter);
 				
 		
-        this.shootSynth.maxPolyphony = 12;
+        this.shootSynth.maxPolyphony = 1;
         this.shootSynth.volume.value = -24;
 
         // Impact Synths
@@ -1550,7 +1550,7 @@ export class GameScene {
             octaves: 4,
             oscillator: { type: 'sine' }
         }).connect(this.masterLimiter);
-        this.fireImpactSynth.maxPolyphony = 8;
+        this.fireImpactSynth.maxPolyphony = 1;
         this.fireImpactSynth.volume.value = -22;
 
         // --- Ambient Atmosphere ---
@@ -1558,13 +1558,13 @@ export class GameScene {
         this.ambientHum = new Tone.Oscillator(45, "triangle");
         const ambientFilter = new Tone.Filter(120, "lowpass").connect(this.masterLimiter);
         this.ambientHum.connect(ambientFilter);
-        this.ambientHum.volume.value = -45; 
+        this.ambientHum.volume.value = -55; 
         this.ambientHum.start();
 
         this.ambientAir = new Tone.Noise("pink");
         const airFilter = new Tone.Filter(200, "lowpass").connect(this.masterLimiter);
         this.ambientAir.connect(airFilter);
-        this.ambientAir.volume.value = -65;
+        this.ambientAir.volume.value = -75;
         this.ambientAir.start();
 
         // Hazard Warning
@@ -1597,7 +1597,7 @@ export class GameScene {
             modulation: { type: "square" },
             envelope: { attack: 0.01, decay: 0.2, sustain: 0, release: 0.2 }
         }).connect(this.masterLimiter);
-        this.eliteScreech.maxPolyphony = 2;
+        this.eliteScreech.maxPolyphony = 1;
         this.eliteScreech.volume.value = -18;
 
         // Tactical Handshake
@@ -1605,14 +1605,14 @@ export class GameScene {
             oscillator: { type: "sine" },
             envelope: { attack: 0.01, decay: 0.1, sustain: 0, release: 0.1 }
         }).connect(this.masterLimiter);
-        this.tacticalHandshake.maxPolyphony = 2;
+        this.tacticalHandshake.maxPolyphony = 1;
         this.tacticalHandshake.volume.value = -12;
 
         // --- Audio Arbiter State ---
         this.audioWindows = {
 			shoot: 0.12,
 			hit: 0.15,            // increased throttle
-			enemy_shoot: 0.20,    // NEW
+			enemy_shoot: 0.40,    // NEW
 			warning: 0.2,
 			elite: 0.5,
 			ui: 0.1,
@@ -1628,71 +1628,125 @@ export class GameScene {
                 reload: () => this.playArbiterSound('ui', { type: 'reload' })
             });
         }
-    }
+    
+			// --- GLOBAL AUDIO QUEUE FIX ---
+		
+			this.audioQueue = [];
+			this.lastAudioFlush = 0;
 
-    playArbiterSound(category, params = {}) {
-        if (!this.Tone || this.Tone.getContext().state !== 'running') return;
-        const now = this.Tone.now();
-        
-        // Strict window throttling
-        const window = this.audioWindows[category] || 0.1;
-        if (this.lastPlayTime[category] && now - this.lastPlayTime[category] < window) return;
-        this.lastPlayTime[category] = now;
+			this.enqueueAudio = (fn) => {
+				this.audioQueue.push(fn);
+			};
 
-        switch(category) {
-            case 'shoot':
-                const wpType = this.player.currentWeaponKey;
-                if (wpType === 'SNIPER') {
-                    // Use a frequency for PolySynth trigger
-                    this.shootSynth.triggerAttackRelease("C4", "16n", now);
-                    this.fireImpactSynth.triggerAttackRelease("G1", "16n", now);
-                } else if (wpType === 'RIFLE') {
-                    this.shootSynth.triggerAttackRelease("C3", "32n", now);
-                    // Higher frequency for rifle impact to avoid sub-bass buildup
-                    this.fireImpactSynth.triggerAttackRelease("C2", "32n", now);
-                } else if (wpType === 'TURRET') {
-                    this.successSynth.triggerAttackRelease("G5", "32n", now);
-                }
-                break;
-            case 'hit': {
-				const freq = params.isEnemy
-					? 160 + Math.random() * 40   // Enemy hit is higher pitch
-					: 100 + Math.random() * 30;  // Player hit deeper
-				this.impactSynth.triggerAttackRelease(freq, "16n", now);
+			// Runs only a few sounds per frame
+			this.flushAudio = () => {
+				const now = this.Tone.now();
+				if (now - this.lastAudioFlush < 0.03) return; // 30ms throttle
+				this.lastAudioFlush = now;
+
+				let c = 2; // max 2 events per cycle
+				while (this.audioQueue.length && c--) {
+					const fn = this.audioQueue.shift();
+					fn();
+				}
+			};
+			}
+	playArbiterSound(category, params = {}) {
+		if (!this.Tone || this.Tone.getContext().state !== 'running') return;
+
+		const now = this.Tone.now();
+
+		// Window throttle
+		const window = this.audioWindows[category] || 0.1;
+		if (this.lastPlayTime[category] && now - this.lastPlayTime[category] < window) return;
+		this.lastPlayTime[category] = now;
+
+		// Global load control
+		if (this.audioQueue.length > 6) return;
+
+		switch(category) {
+
+			case 'shoot': {
+				const wpType = this.player.currentWeaponKey;
+				if (wpType === 'SNIPER') {
+					this.enqueueAudio(() => {
+						this.shootSynth.triggerAttackRelease("C4", "16n", this.Tone.now());
+						this.fireImpactSynth.triggerAttackRelease("G1", "16n", this.Tone.now());
+					});
+				} else if (wpType === 'RIFLE') {
+					this.enqueueAudio(() => {
+						this.shootSynth.triggerAttackRelease("C3", "32n", this.Tone.now());
+						this.fireImpactSynth.triggerAttackRelease("C2", "32n", this.Tone.now());
+					});
+				} else if (wpType === 'TURRET') {
+					this.enqueueAudio(() => {
+						this.successSynth.triggerAttackRelease("G5", "32n", this.Tone.now());
+					});
+				}
 				break;
 			}
+
+			case 'hit': {
+				const freq = params.isEnemy
+					? 160 + Math.random() * 40
+					: 100 + Math.random() * 30;
+
+				this.enqueueAudio(() => {
+					this.impactSynth.triggerAttackRelease(freq, "16n", this.Tone.now());
+				});
+				break;
+			}
+
 			case 'enemy_shoot': {
 				const freq = 200 + Math.random() * 50;
-				this.impactSynth.triggerAttackRelease(freq, "16n", now);
+				this.enqueueAudio(() => {
+					this.impactSynth.triggerAttackRelease(freq, "16n", this.Tone.now());
+				});
 				break;
 			}
-            case 'ui':
-                if (params.type === 'reload') {
-                    this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n", now);
-                } else if (params.type === 'success') {
-                    this.successSynth.triggerAttackRelease(params.note || "C5", params.duration || "8n", now);
-                }
-                break;
-            case 'warning':
-                this.hackSynth.triggerAttackRelease("C6", "32n", now);
-                break;
-            case 'elite':
-                if (!this.eliteScreech) return;
-                const type = params.type || 'SENTRY';
-                const notes = { 
-                    'SENTRY': 'C6', 
-                    'STALKER': 'E6', 
-                    'TANK': 'C3', 
-                    'SHIELD_PROJECTOR': 'G5',
-                    'TITAN': 'G1' // Deep sub-bass screech
-                };
-                this.eliteScreech.triggerAttackRelease(notes[type] || 'A5', "8n", now);
-                break;
-            case 'interaction':
-                this.tacticalHandshake.triggerAttackRelease(params.notes || ["C5", "G5"], "32n", now);
-                break;
-        }
-    }
+
+			case 'ui': {
+				this.enqueueAudio(() => {
+					if (params.type === 'reload') {
+						this.hackSynth.triggerAttackRelease(["C3", "E3"], "16n", this.Tone.now());
+					} else if (params.type === 'success') {
+						this.successSynth.triggerAttackRelease(params.note || "C5", params.duration || "8n", this.Tone.now());
+					}
+				});
+				break;
+			}
+
+			case 'warning': {
+				this.enqueueAudio(() => {
+					this.hackSynth.triggerAttackRelease("C6", "32n", this.Tone.now());
+				});
+				break;
+			}
+
+			case 'elite': {
+				if (!this.eliteScreech) return;
+				const type = params.type || 'SENTRY';
+				const notes = {
+					'SENTRY': 'C6',
+					'STALKER': 'E6',
+					'TANK': 'C3',
+					'SHIELD_PROJECTOR': 'G5',
+					'TITAN': 'G1'
+				};
+				this.enqueueAudio(() => {
+					this.eliteScreech.triggerAttackRelease(notes[type] || 'A5', "8n", this.Tone.now());
+				});
+				break;
+			}
+
+			case 'interaction': {
+				this.enqueueAudio(() => {
+					this.tacticalHandshake.triggerAttackRelease(params.notes || ["C5", "G5"], "32n", this.Tone.now());
+				});
+				break;
+			}
+		}
+	}
 
     tryInteract() {
         if (this.isHackingTerminal || this.isTerminalMenuOpen || this.isShopOpen) return;
@@ -3633,6 +3687,7 @@ export class GameScene {
 
     resetMission() {
         // Reset non-persistent stats
+		this.cleanupAudio();
         this.scrap = 0;
         this.techCores = this.metaUpgrades.cores || 0; // Respect starting cores upgrade
         this.currentChamberIndex = 0;
@@ -3761,7 +3816,9 @@ export class GameScene {
     }
 
     animate() {
+		if (this.audioQueue) this.flushAudio();
         requestAnimationFrame(() => this.animate());
+		if (this.audioQueue) this.flushAudio();
         const deltaTime = this.clock.getDelta();
         this.update(deltaTime);
         this.renderer.render(this.scene, this.camera);
@@ -3949,4 +4006,13 @@ export class GameScene {
             list.appendChild(item);
         });
     }
+	cleanupAudio() {
+    if (!this.Tone) return;
+
+    Object.values(this).forEach(obj => {
+        if (obj && typeof obj.dispose === 'function') {
+            try { obj.dispose(); } catch {}
+        }
+    });
+}
 }
