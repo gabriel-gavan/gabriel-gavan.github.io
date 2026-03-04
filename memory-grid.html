@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Memory Grid</title>
+  <title data-i18n="memory_title">Memory Grid</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
   <style>
@@ -253,76 +253,71 @@
       .card { width: 64px; height: 64px; font-size: 20px; border-radius: 12px; }
     }
   </style>
+  <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 <div class="layout">
-  <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
+
 
   <!-- MAIN COLUMN -->
-  <main class="main-column">
-    <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
-    </div>
+<main class="main-column">
 
-    <!-- GAME HEADER -->
-    <div class="game-header">
-      <div class="title">🧠 Memory Grid</div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
-    </div>
 
-    <!-- GAME FRAME -->
-    <div class="frame" role="application" aria-label="Memory grid game">
-      <div class="subtext">Find all matching pairs. Tap/click two cards to flip them.</div>
+	  <!-- GAME HEADER -->
+	  <div class="game-header">
+		<div class="title" data-i18n="memory_header_title">🧠 Memory Grid</div>
+		<div>
+		  <a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+		</div>
+	  </div>
 
-      <div class="stage">
-        <div class="hud">
-          <div class="pill" id="movesPill">Moves: 0</div>
-          <div class="pill" id="pairsPill">Pairs: 0/8</div>
-          <div class="pill" id="bestPill">Best: —</div>
-        </div>
+	  <!-- GAME FRAME -->
+	  <div class="frame" role="application" aria-label="Memory grid game" data-i18n-aria="memory_aria_game">
+		
+		<div class="subtext" data-i18n="memory_subtext">
+		  Find all matching pairs. Tap/click two cards to flip them.
+		</div>
 
-        <div id="grid" class="grid" aria-label="Memory grid"></div>
+		<div class="stage">
 
-        <div id="msg" class="msg"></div>
-        <div class="hint">Mobile: tap cards · Desktop: click cards · Restart anytime.</div>
+		  <div class="hud">
+			<div class="pill" id="movesPill" data-i18n="memory_moves">Moves: 0</div>
+			<div class="pill" id="pairsPill" data-i18n="memory_pairs">Pairs: 0/8</div>
+			<div class="pill" id="bestPill" data-i18n="memory_best">Best: —</div>
+		  </div>
 
-        <div class="row">
-          <button class="btn primary" id="btnRestart" type="button">Restart</button>
-        </div>
-      </div>
-    </div>
-	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Memory Grid – Neon Memory Challenge</h1>
+		  <div id="grid" class="grid" aria-label="Memory grid" data-i18n-aria="memory_aria_grid"></div>
 
-<p>
-Flip cards, match identical symbols, and try to clear the grid in the fewest moves.
-This neon-themed memory game trains concentration and pattern recall.
-</p>
+		  <div id="msg" class="msg" data-i18n="memory_msg"></div>
 
-  </main>
+		  <div class="hint" data-i18n="memory_hint">
+			Mobile: tap cards · Desktop: click cards · Restart anytime.
+		  </div>
 
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
-</div>
+		  <div class="row">
+			<button class="btn primary" id="btnRestart" type="button" data-i18n="memory_restart">
+			  Restart
+			</button>
+		  </div>
+
+		</div>
+	  </div>
+
+	  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+
+		<h1 data-i18n="memory_long_title">Memory Grid – Neon Memory Challenge</h1>
+
+		<p data-i18n="memory_long_desc">
+		  Flip cards, match identical symbols, and try to clear the grid in the fewest moves.
+		  This neon-themed memory game trains concentration and pattern recall.
+		</p>
+
+	</main>
+
+
+	</div>
 
 <script>
 (() => {
@@ -363,11 +358,15 @@ This neon-themed memory game trains concentration and pattern recall.
     else msgEl.style.color = "#e5e7eb";
   }
 
-  function updateHUD() {
-    movesPill.textContent = `Moves: ${moves}`;
-    pairsPill.textContent = `Pairs: ${matched.size / 2}/${PAIRS}`;
-    bestPill.textContent = (best == null) ? "Best: —" : `Best: ${best} moves`;
-  }
+	function updateHUD() {
+	  movesPill.textContent = `${t("memory_moves_label")}: ${moves}`;
+	  pairsPill.textContent = `${t("memory_pairs_label")}: ${matched.size / 2}/${PAIRS}`;
+
+	  bestPill.textContent = best == null
+		? `${t("memory_best_label")}: —`
+		: `${t("memory_best_label")}: ${best} ${t("memory_moves_suffix")}`;
+	}
+
 
   function buildGrid() {
     gridEl.style.gridTemplateColumns = `repeat(${SIZE}, 70px)`;
@@ -402,8 +401,8 @@ This neon-themed memory game trains concentration and pattern recall.
 
     buildGrid();
     updateHUD();
-    setMessage("Find all pairs!", "");
-  }
+    setMessage(t("memory_msg_start"), "");
+}
 
   function showCard(idx, el) {
     el.textContent = String(values[idx]);
@@ -437,48 +436,54 @@ This neon-themed memory game trains concentration and pattern recall.
     const [a, b] = revealed;
 
     if (values[a.idx] === values[b.idx]) {
-      matched.add(a.idx);
-      matched.add(b.idx);
-      markMatched(a.el);
-      markMatched(b.el);
-      revealed = [];
-
-      updateHUD();
-
-      if (matched.size === TOTAL) {
-        if (best == null || moves < best) {
-          best = moves;
-          localStorage.setItem("memory_best_moves", String(best));
-        }
-        updateHUD();
-        setMessage(`✅ Cleared in ${moves} moves!`, "win");
-      } else {
-        setMessage("Nice match!", "");
-      }
-    } else {
-      lock = true;
-      setMessage("Nope — try again.", "bad");
-      setTimeout(() => {
-        hideCard(a.el);
-        hideCard(b.el);
+        matched.add(a.idx);
+        matched.add(b.idx);
+        markMatched(a.el);
+        markMatched(b.el);
         revealed = [];
-        lock = false;
-        setMessage("", "");
-      }, 650);
+
+        updateHUD();
+
+        if (matched.size === TOTAL) {
+            if (best == null || moves < best) {
+                best = moves;
+                localStorage.setItem("memory_best_moves", String(best));
+            }
+            updateHUD();
+            setMessage(`${t("memory_msg_win")} ${moves} ${t("memory_moves_suffix")}!`, "win");
+        } else {
+            setMessage(t("memory_msg_good"), "");
+        }
+
+    } else {
+        lock = true;
+        setMessage(t("memory_msg_bad"), "bad");
+        
+        setTimeout(() => {
+            hideCard(a.el);
+            hideCard(b.el);
+            revealed = [];
+            lock = false;
+            setMessage("", "");
+        }, 650);
     }
-  }
+}
 
   btnRestart.addEventListener("click", (e) => {
     e.preventDefault();
-    init();
-  });
+    document.addEventListener("i18n-ready", () => {
+        init();
+    });
+});
 
   // optional keyboard: R to restart
   window.addEventListener("keydown", (e) => {
     if (e.key === "r" || e.key === "R") init();
   });
 
-  init();
+  document.addEventListener("i18n-ready", () => {
+    init();
+});
 })();
 </script>
 <script src="/js/ads.js"></script>

@@ -32,7 +32,9 @@
       <link rel="preconnect" href="https://googleads.g.doubleclick.net">
       <link rel="preconnect" href="https://tpc.googlesyndication.com">
       <link rel="preconnect" href="https://neon-feedback.gabi-gabz.workers.dev">
-      <link rel="preload" as="image" href="images/header-bg.webp">
+      <link rel="preload" as="image" href="headers/header-bg.webp">
+
+
       <meta name="description" content="Play free neon-style HTML5 games instantly. No downloads, no accounts, just fast arcade fun.">
       <meta property="og:title" content="Neon Mini Game Hub">
       <meta property="og:description" content="A free collection of neon-style HTML5 mini-games.">
@@ -119,13 +121,28 @@
    <body>
   
       <header class="hero-card-section">
+									<!-- SUS: NEON MINI GAME -->
+				<h2 class="hero-top-title">NEON MINI GAME</h2>
+
+				<!-- MIJLOC: HUB -->
+				<h1 class="hero-hub-title">HUB</h1>
+
+				<!-- SUB HUB: TEXTUL TĂU ALB -->
+				<h2 class="hero-mainline" data-i18n="hero_mainline">
+					Play free neon-style arcade games instantly.
+				</h2>
+
+				<div class="hero-subline">
+					<span data-i18n="hero_feature_1">No download</span>
+					<span class="dot">|</span>
+					<span data-i18n="hero_feature_2">Keyboard + mouse friendly</span>
+					<span class="dot">|</span>
+					<span data-i18n="hero_feature_3">Great for quick breaks</span>
+				</div>
          <div class="hero-card">
-            <img src="images/header-bg.webp"
-               class="hero-img"
-               width="1600" height="500"
-               fetchpriority="high"
-               decoding="async"
-               alt="">
+			
+			
+            <img src="headers/header-bg.webp"	id="headerImage"  class="hero-img"  width="1600" height="500"  fetchpriority="high" decoding="async"  alt="">
             <div class="hero-overlay">
             </div>
 			<div id="langSwitcher" style="cursor:pointer; padding:5px 10px; border:1px solid #38bdf8; border-radius:6px; color:#38bdf8;">
@@ -155,9 +172,10 @@
 				  
 	
                </nav>
-			   
+			 
+ 
             </div>
-			
+
          </div>
 		 
       </header>
@@ -1173,7 +1191,7 @@
 	  <script src="/js/ads.js"></script>
 	  <script>
 			const defaultLang = "en";
-			const supportedLangs = ["en", "ro"];
+			const supportedLangs = ["en","ro","zh","hi","ja","ko","fr","it","de","sv","pt-br","es"];
 			let currentLang = localStorage.getItem("site-lang") || null;
 
 			// Auto-detect if no saved choice
@@ -1236,15 +1254,51 @@
 				btn.innerText = lang.toUpperCase();
 			}
 
-			// Switcher click
+			// -------------------------------
+							// 🌐 MULTI-LANGUAGE CYCLE SWITCHER
+			// -------------------------------
+
+			// Add all languages you want to support
+			// -------------------------------
+			// 🌐 MULTI-LANGUAGE CYCLE SWITCHER
+			// -------------------------------
+
+			const languages = [
+				"en", "ro", "zh", "hi", "ja", "ko", "fr", "it", "de", "sv", "pt-br", "es"
+			];
+
+			currentLang = localStorage.getItem("site-lang") || "en";
+
+			// Switch button click
 			document.getElementById("langSwitcher").addEventListener("click", () => {
-				currentLang = (currentLang === "en") ? "ro" : "en";
+				let index = languages.indexOf(currentLang);
+				let next = (index + 1) % languages.length;
+				currentLang = languages[next];
+
 				localStorage.setItem("site-lang", currentLang);
+
 				loadLanguage(currentLang);
+				updateHeaderImage(currentLang);
+
+				document.getElementById("langSwitcher").innerText = currentLang.toUpperCase();
 			});
 
-			// Load on startup
+			// On startup
 			loadLanguage(currentLang);
+			updateHeaderImage(currentLang);
+			document.getElementById("langSwitcher").innerText = currentLang.toUpperCase();
+			
+			function updateHeaderImage(lang) {
+
+				const img = document.getElementById("headerImage");
+
+				const langMap = {
+					"en": "headers/header-bg.webp",
+
+				};
+
+				img.src = langMap[lang] || langMap["en"];
+			}	
 			</script>
 
    </body>
