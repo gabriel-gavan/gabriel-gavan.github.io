@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Neon Beat Tap (Rhythm)</title>
+  <title data-i18n="beat_title">Neon Beat Tap (Rhythm)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
 
@@ -236,6 +236,7 @@
       .mini-select, .mini-range, .mini-check{ width:100%; justify-content:center; }
     }
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 <body>
 
@@ -246,8 +247,13 @@
     <div class="top-banner"><div class="top-banner-inner"></div></div>
 
     <div class="game-header">
-      <div class="title">🎵 Neon Beat Tap <span style="opacity:.65;font-weight:700;">(Rhythm)</span></div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
+      <div class="title">
+		  🎵 <span data-i18n="beat_title_main">Neon Beat Tap</span>
+			  <span style="opacity:.65;font-weight:700;" data-i18n="beat_rhythm">(Rhythm)</span>
+			</div>
+       <div>
+			<a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+		  </div>
     </div>
 
     <div class="game-body">
@@ -256,34 +262,34 @@
 
         <div class="controls">
           <div class="left-controls">
-            <button class="btn" id="btnStart">▶ Start</button>
-            <button class="btn" id="btnRetry">♻ Retry</button>
+            <button class="btn" id="btnStart">▶ <span data-i18n="beat_start">Start</span></button>
+            <button class="btn" id="btnRetry">♻ <span data-i18n="beat_retry">Retry</span></button>
 
             <select class="mini-select" id="difficulty">
-              <option value="easy">Easy</option>
-              <option value="normal" selected>Normal</option>
-              <option value="hard">Hard</option>
+                <option value="easy" data-i18n="beat_diff_easy">Easy</option>
+				<option value="normal" selected data-i18n="beat_diff_normal">Normal</option>
+				<option value="hard" data-i18n="beat_diff_hard">Hard</option>
             </select>
 
             <select class="mini-select" id="soundPack">
-              <option value="arcade" selected>Arcade Click Pack</option>
-              <option value="electro">Electronic Pack</option>
-              <option value="drum">Drum Kit Pack</option>
+                <option value="arcade" selected data-i18n="beat_pack_arcade">Arcade Click Pack</option>
+				<option value="electro" data-i18n="beat_pack_electro">Electronic Pack</option>
+				<option value="drum" data-i18n="beat_pack_drum">Drum Kit Pack</option>
             </select>
           </div>
 
           <div class="right-controls">
             <label class="mini-check" title="Toggle drum layer">
               <input type="checkbox" id="layerDrum" checked />
-              Drum
+              <span data-i18n="beat_layer_drum">Drum</span>
             </label>
             <label class="mini-check" title="Toggle electronic layer">
               <input type="checkbox" id="layerElectro" checked />
-              Electronic
+              <span data-i18n="beat_layer_electro">Electronic</span>
             </label>
             <label class="mini-check" title="Toggle arcade click layer">
               <input type="checkbox" id="layerClick" checked />
-              Click
+              <span data-i18n="beat_layer_click">Click</span>
             </label>
 
             <label class="mini-check" title="Master volume">
@@ -292,61 +298,90 @@
             </label>
 
             <div class="pill">
-              <span>Score: <b id="hudScore">0</b></span>
-              <span>Combo: <b id="hudCombo">0</b></span>
-              <span>Best: <b id="hudBest">0</b></span>
-              <span>Acc: <b id="hudAcc">0%</b></span>
+              <span><span data-i18n="beat_score">Score</span> : <b id="hudScore">0</b></span>
+              <span><span data-i18n="beat_combo">Combo</span>: <b id="hudCombo">0</b></span>
+              <span><span data-i18n="beat_best">Best</span>: <b id="hudBest">0</b></span>
+              <span><span data-i18n="beat_accuracy">Acc</span>: <b id="hudAcc">0%</b></span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="hint">
-        <b>Controls:</b> Hit lanes on the beat — <b>D F J K</b> (desktop) or <b>tap lanes</b> (mobile).
-        Timing windows: <b>Perfect</b> / <b>Good</b> / <b>Bad</b> / <b>Miss</b>.
-        <br/>
-        <span style="opacity:.9;">
-          Sounds: this version uses REAL samples (not ugly beeps). Put your audio files in <b>/sounds/beat/</b> (see notes inside code).
-        </span>
-      </div>
+		  <b data-i18n="beat_hint_controls">Controls:</b>
+		  <span data-i18n="beat_hint_play">
+			Hit lanes on the beat — <b>D F J K</b> (desktop) or <b>tap lanes</b> (mobile).
+		  </span>
+		  <br/>
+		  <span data-i18n="beat_hint_timing">
+			Timing windows: <b>Perfect</b> / <b>Good</b> / <b>Bad</b> / <b>Miss</b>.
+		  </span>
+		  <br/>
+		  <span style="opacity:.9;" data-i18n="beat_hint_audio">
+			Sounds: this version uses REAL samples (not ugly beeps). Put your audio files in <b>/sounds/beat/</b> (see notes inside code).
+		  </span>
+		</div>
 	  <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Neon Beat Tap – Rhythm Combat in a Neon Soundscape</h1>
+  <h1 data-i18n="beat_article_title">
+	Neon Beat Tap – Rhythm Combat in a Neon Soundscape
+	</h1>
 
-<h2>Feel the Music, Follow the Beat</h2>
-<p>
+	<h2 data-i18n="beat_article_music">
+		Feel the Music, Follow the Beat
+		</h2>
+<p data-i18n="beat_article_desc1">
 Neon Beat Tap transforms your browser into a glowing music arena where rhythm
 and precision determine your score. Notes descend along neon rails in sync
 with pulsating synthwave tracks. Tap them at the exact moment they cross the hit zone
 to chain combos and earn massive points.
 </p>
 
-<p>
+<p data-i18n="beat_article_desc2">
 This neon-drenched rhythm experience is built for both casual players
 and hardcore rhythm fans who crave fast-paced timing challenges.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="beat_article_how">
+How to Play
+</h2>
+<p data-i18n="beat_article_how_desc">
 Notes travel down the track toward the hit zone. Tap at the right time to hit them.
 Your accuracy determines your score and combo progress.
 </p>
 
-<h2>Controls</h2>
-<p><strong>Desktop:</strong> Click or press assigned keys per lane.</p>
-<p><strong>Mobile:</strong> Tap directly on the screen.</p>
+<h2 data-i18n="beat_article_controls">
+Controls
+</h2>
+<p data-i18n="beat_article_controls_desktop">
+<strong>Desktop:</strong> Click or press assigned keys per lane.
+</p>
+<p data-i18n="beat_article_controls_mobile">
+<strong>Mobile:</strong> Tap directly on the screen.
+</p>
 
-<h2>Tips & Strategy</h2>
+
+<h2 data-i18n="beat_article_tips">
+Tips & Strategy
+</h2>
 <ul>
-  <li>Focus on timing over speed — accuracy boosts combo multipliers.</li>
-  <li>Memorize note patterns for difficult songs.</li>
-  <li>Keep rhythm with background beats.</li>
+  <li data-i18n="beat_tip1">
+Focus on timing over speed — accuracy boosts combo multipliers.
+</li>
+<li data-i18n="beat_tip2">
+Memorize note patterns for difficult songs.
+</li>
+<li data-i18n="beat_tip3">
+Keep rhythm with background beats.
+</li>
 </ul>
 
-<h2>Developer Insights</h2>
-<p>
+<h2 data-i18n="beat_article_dev">
+Developer Insights
+</h2>
+<p data-i18n="beat_article_dev_desc">
 The entire note system is synced using audio time signatures to ensure rhythmic accuracy.
 Visual effects react dynamically to combos and streaks, enhancing immersion.
 </p>
@@ -524,7 +559,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
   }
 
   function packBase(){
-    return `sounds/beat/packs/${audioState.pack}`;
+    return `sounds/${audioState.pack}`;
   }
 
   // Main per-judgement sounds (pack-based)
@@ -532,7 +567,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
     // name: click | hit | perfect | miss
     if (!audioReady) return;
 
-    const url = `${packBase()}/${name}.wav`;
+    const url = `sounds/${name}.wav`;
     const buf = await loadBuffer(url);
     if (!buf) return;
 
@@ -562,7 +597,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
 
     // Load & play (quietly) so it adds texture without blasting
     for(const file of layers){
-      const url = `sounds/beat/layers/${file}`;
+      const url = `sounds/${file}`;
       const buf = await loadBuffer(url);
       if (!buf) continue;
 
@@ -582,15 +617,15 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
     // Warm cache: minimal pack + layers (non-blocking)
     const pack = audioState.pack;
     const warm = [
-      `sounds/beat/packs/${pack}/click.wav`,
-      `sounds/beat/packs/${pack}/hit.wav`,
-      `sounds/beat/packs/${pack}/perfect.wav`,
-      `sounds/beat/packs/${pack}/miss.wav`,
-      `sounds/beat/layers/drum_kick.wav`,
-      `sounds/beat/layers/drum_snare.wav`,
-      `sounds/beat/layers/synth_blip.wav`,
-      `sounds/beat/layers/synth_chord.wav`,
-      `sounds/beat/layers/arcade_tick.wav`,
+      `sounds/click.wav`,
+      `sounds/hit.wav`,
+      `sounds/perfect.wav`,
+      `sounds/miss.wav`,
+      `sounds/drum_kick.wav`,
+      `sounds/drum_snare.wav`,
+      `sounds/synth_blip.wav`,
+      `sounds/synth_chord.wav`,
+      `sounds/arcade_tick.wav`,
     ];
     warm.forEach(u => loadBuffer(u));
   }
@@ -668,7 +703,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
 
   function endGame(){
     state.mode = "over";
-    btnStart.textContent = "▶ Start";
+    btnStart.textContent = "▶ " + t("beat_start");
     if (state.score > state.best){
       state.best = Math.floor(state.score);
       try { localStorage.setItem(KEY_BEST, String(state.best)); } catch(e){}
@@ -775,7 +810,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
       state.hits++;
       state.combo++;
       state.score += 120 + state.combo * 2;
-      state.lastJudge = "PERFECT";
+      state.lastJudge = t("beat_perfect");
       state.judgeFlash = 0.35;
 
       sfx("perfect", state.combo);
@@ -787,7 +822,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
       state.hits++;
       state.combo++;
       state.score += 80 + state.combo;
-      state.lastJudge = "GOOD";
+      state.lastJudge = t("beat_good")
       state.judgeFlash = 0.30;
 
       sfx("hit", state.combo);
@@ -798,7 +833,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
       note.hit = true;
       state.combo = 0;
       state.score += 25;
-      state.lastJudge = "BAD";
+      state.lastJudge = t("beat_bad");
       state.judgeFlash = 0.25;
 
       sfx("hit", 0);
@@ -808,7 +843,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
     } else {
       // too far: miss
       state.combo = 0;
-      state.lastJudge = "MISS";
+      state.lastJudge = t("beat_miss");
       state.judgeFlash = 0.30;
 
       sfx("miss", 0);
@@ -955,7 +990,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
         n.miss = true;
         state.total++;
         state.combo = 0;
-        state.lastJudge = "MISS";
+        state.lastJudge = t("beat_miss");
         state.judgeFlash = 0.25;
         sfx("miss", 0);
         layeredFeel("miss", 0);
@@ -1180,7 +1215,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
 
       // top subtle label
       ctx.fillStyle = "rgba(156,163,175,0.55)";
-      ctx.fillText("TAP", x, trackY + 18);
+      ctx.fillText(t("beat_tap"), x, trackY + 18);
     }
 
     // judge text
@@ -1218,14 +1253,15 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
   function drawOverlay(){
     if (state.mode === "menu"){
       drawCenterPanel(
-        "NEON BEAT TAP",
-        "Hit the notes on the beat\nD F J K (desktop) • Tap lanes (mobile)\nPress Start to play"
+        t("beat_menu_title"),
+        t("beat_menu_desc")
       );
     } else if (state.mode === "over"){
       const acc = state.total > 0 ? Math.round((state.hits / state.total) * 100) : 0;
       drawCenterPanel(
-        "SET COMPLETE",
-        `Score: ${Math.floor(state.score)}   •   Accuracy: ${acc}%\nTap / Start to play again`
+        t("beat_set_complete"),
+        `${t("beat_score")}: ${Math.floor(state.score)}   •   ${t("beat_accuracy")}: ${acc}%`,
+		t("beat_play_again")
       );
     }
   }
@@ -1254,7 +1290,7 @@ Visual effects react dynamically to combos and streaks, enhancing immersion.
 
     ctx.fillStyle = "rgba(156,163,175,0.95)";
     ctx.font = "12px system-ui";
-    ctx.fillText("Audio tip: add your WAV files in /sounds/beat/ for pro sound.", W/2, H*0.56);
+    ctx.fillText(t("beat_audio_tip"), W/2, H*0.56);
 
     ctx.restore();
   }

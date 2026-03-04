@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Neon Arena – Campaign</title>
+  <title data-i18n="arena_campaign_title">Neon Arena – Campaign</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -256,6 +256,7 @@
       .mc-btn { width: 96px; height: 50px; }
     }
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 <body>
 
@@ -266,16 +267,21 @@
     <div class="top-banner"><div class="top-banner-inner"></div></div>
 
     <div class="game-header">
-      <div class="title">Neon Arena – Campaign</div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
-    </div>
+		  <div class="title" data-i18n="arena_campaign_title">
+			Neon Arena – Campaign
+		  </div>
+
+		  <div>
+			<a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+		  </div>
+		</div>
 
     <div class="game-body">
       <canvas id="gameCanvas" width="960" height="540"></canvas>
 
       <!-- ✅ Mobile controls overlay -->
       <div class="mobile-controls" id="mobileControls" aria-hidden="true">
-        <div class="mc-hint" id="mcHint">Use joystick to move • Drag on game to aim • Hold SHOOT • Tap to open map/menu</div>
+        <div class="mc-hint" id="mcHint" data-i18n="arena_mobile_hint">Use joystick to move • Drag on game to aim • Hold SHOOT • Tap to open map/menu</div>
 
         <div class="mc-joystick" id="joyBase">
           <div class="mc-knob" id="joyKnob"></div>
@@ -286,31 +292,51 @@
         </div>
 
         <div class="mc-buttons">
-          <div class="mc-row">
-            <button class="mc-btn dash" id="btnDash" type="button">DASH</button>
-          </div>
-          <div class="mc-row">
-            <button class="mc-btn shoot" id="btnShoot" type="button">SHOOT</button>
-          </div>
-        </div>
+
+		  <div class="mc-row">
+			<button class="mc-btn dash" id="btnDash" type="button" data-i18n="arena_btn_dash">
+			  DASH
+			</button>
+		  </div>
+
+		  <div class="mc-row">
+			<button class="mc-btn shoot" id="btnShoot" type="button" data-i18n="arena_btn_shoot">
+			  SHOOT
+			</button>
+		  </div>
+
+		</div>
       </div>
     </div>
 	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Neon Arena – Classic Neon Top-Down Shooter</h1>
+		<h1 data-i18n="arena_long_title">
+		Neon Arena – Classic Neon Top-Down Shooter
+		</h1>
 
-<h2>Fight Endless Waves</h2>
-<p>
-Neon Arena blends classic arcade shooter mechanics with a futuristic glow.
-Enemies rush toward you from every direction, forcing you to dodge, circle,
-and shoot your way out while collecting XP for upgrades.
-</p>
 
-<h2>Controls</h2>
-<p>Move with WASD, aim with mouse or auto-aim.</p>
+		<h2 data-i18n="arena_section_waves">
+		Fight Endless Waves
+		</h2>
 
+
+		<p data-i18n="arena_desc_1">
+		Neon Arena blends classic arcade shooter mechanics with a futuristic glow.
+		Enemies rush toward you from every direction, forcing you to dodge, circle,
+		and shoot your way out while collecting XP for upgrades.
+		</p>
+
+
+		<h2 data-i18n="arena_section_controls">
+		Controls
+		</h2>
+
+
+		<p data-i18n="arena_controls_text">
+		Move with WASD, aim with mouse or auto-aim.
+		</p>
   </main>
 
   <aside class="side-banner"></aside>
@@ -682,75 +708,78 @@ canvas.addEventListener("pointerleave", () => {
   ];
 
   // ---------- Levels ----------
-  game.levels = [
-    {
-      name: "Neon District",
-      description: "Intro zone: standard enemies and pulsing lasers.",
-      normalWaves: 4,
-      enemiesPerWave: 4,
-      waveScale: 1.0,
-      color: "#38bdf8",
-      bossHp: 500,
-      bossShootMultiplier: 1.0,
-      hazards: [
-        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.33, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 0 },
-        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.66, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 2 }
-      ]
-    },
-    {
-      name: "Crystal Dunes",
-      description: "Faster enemies, rotating blades and a central laser.",
-      normalWaves: 5,
-      enemiesPerWave: 5,
-      waveScale: 1.1,
-      color: "#f97316",
-      bossHp: 650,
-      bossShootMultiplier: 0.9,
-      hazards: [
-        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 150, angularSpeed: 1.2, bladeRadius: 18, startAngle: 0 },
-        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 220, angularSpeed: -0.8, bladeRadius: 16, startAngle: Math.PI / 2 },
-        { type: "laser", orientation: "vertical", x: WIDTH / 2, y: HEIGHT * 0.1, length: HEIGHT * 0.8, thickness: 12, cycle: 5, activeTime: 2.4, phase: 1 }
-      ]
-    },
-    {
-      name: "Void Sector",
-      description: "Dense waves, tanks, and tight corridors of walls.",
-      normalWaves: 6,
-      enemiesPerWave: 6,
-      waveScale: 1.2,
-      color: "#a855f7",
-      bossHp: 800,
-      bossShootMultiplier: 0.8,
-      hazards: [
-        { type: "wall", x: WIDTH / 2 - 200, y: HEIGHT / 2 - 12, w: 400, h: 24 },
-        { type: "wall", x: WIDTH / 2 - 12,  y: HEIGHT / 2 - 160, w: 24,  h: 320 },
-        { type: "blade", cx: WIDTH * 0.25, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: 1.4, bladeRadius: 18, startAngle: 0 },
-        { type: "blade", cx: WIDTH * 0.75, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: -1.4, bladeRadius: 18, startAngle: Math.PI / 2 }
-      ]
-    },
-    {
-      name: "Final Nexus",
-      description: "Lasers, blades and walls combine for a brutal finale.",
-      normalWaves: 7,
-      enemiesPerWave: 7,
-      waveScale: 1.3,
-      color: "#f43f5e",
-      bossHp: 1000,
-      bossShootMultiplier: 0.65,
-      hazards: [
-        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.25, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 0 },
-        { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.75, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 1.9 },
-        { type: "laser", orientation: "vertical",   x: WIDTH * 0.25, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 0.8 },
-        { type: "laser", orientation: "vertical",   x: WIDTH * 0.75, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 3.1 },
-        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: 1.8,  bladeRadius: 20, startAngle: 0 },
-        { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: -1.8, bladeRadius: 20, startAngle: Math.PI },
-        { type: "wall", x: 0, y: 0, w: 120, h: 60 },
-        { type: "wall", x: WIDTH - 120, y: 0, w: 120, h: 60 },
-        { type: "wall", x: 0, y: HEIGHT - 60, w: 120, h: 60 },
-        { type: "wall", x: WIDTH - 120, y: HEIGHT - 60, w: 120, h: 60 }
-      ]
-    }
-  ];
+ game.levels = [
+{
+  nameKey: "arena_level_neon_district",
+  descKey: "arena_level_neon_district_desc",
+  normalWaves: 4,
+  enemiesPerWave: 4,
+  waveScale: 1.0,
+  color: "#38bdf8",
+  bossHp: 500,
+  bossShootMultiplier: 1.0,
+  hazards: [
+    { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.33, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 0 },
+    { type: "laser", orientation: "horizontal", x: WIDTH * 0.1, y: HEIGHT * 0.66, length: WIDTH * 0.8, thickness: 10, cycle: 4, activeTime: 2, phase: 2 }
+  ]
+},
+
+{
+  nameKey: "arena_level_crystal_dunes",
+  descKey: "arena_level_crystal_dunes_desc",
+  normalWaves: 5,
+  enemiesPerWave: 5,
+  waveScale: 1.1,
+  color: "#f97316",
+  bossHp: 650,
+  bossShootMultiplier: 0.9,
+  hazards: [
+    { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 150, angularSpeed: 1.2, bladeRadius: 18, startAngle: 0 },
+    { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 220, angularSpeed: -0.8, bladeRadius: 16, startAngle: Math.PI / 2 },
+    { type: "laser", orientation: "vertical", x: WIDTH / 2, y: HEIGHT * 0.1, length: HEIGHT * 0.8, thickness: 12, cycle: 5, activeTime: 2.4, phase: 1 }
+  ]
+},
+
+{
+  nameKey: "arena_level_void_sector",
+  descKey: "arena_level_void_sector_desc",
+  normalWaves: 6,
+  enemiesPerWave: 6,
+  waveScale: 1.2,
+  color: "#a855f7",
+  bossHp: 800,
+  bossShootMultiplier: 0.8,
+  hazards: [
+    { type: "wall", x: WIDTH / 2 - 200, y: HEIGHT / 2 - 12, w: 400, h: 24 },
+    { type: "wall", x: WIDTH / 2 - 12,  y: HEIGHT / 2 - 160, w: 24,  h: 320 },
+    { type: "blade", cx: WIDTH * 0.25, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: 1.4, bladeRadius: 18, startAngle: 0 },
+    { type: "blade", cx: WIDTH * 0.75, cy: HEIGHT / 2, orbitRadius: 110, angularSpeed: -1.4, bladeRadius: 18, startAngle: Math.PI / 2 }
+  ]
+},
+
+{
+  nameKey: "arena_level_final_nexus",
+  descKey: "arena_level_final_nexus_desc",
+  normalWaves: 7,
+  enemiesPerWave: 7,
+  waveScale: 1.3,
+  color: "#f43f5e",
+  bossHp: 1000,
+  bossShootMultiplier: 0.65,
+  hazards: [
+    { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.25, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 0 },
+    { type: "laser", orientation: "horizontal", x: WIDTH * 0.1,  y: HEIGHT * 0.75, length: WIDTH * 0.8, thickness: 10, cycle: 3.8, activeTime: 1.8, phase: 1.9 },
+    { type: "laser", orientation: "vertical",   x: WIDTH * 0.25, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 0.8 },
+    { type: "laser", orientation: "vertical",   x: WIDTH * 0.75, y: HEIGHT * 0.1,  length: HEIGHT * 0.8, thickness: 10, cycle: 4.6, activeTime: 2.2, phase: 3.1 },
+    { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: 1.8, bladeRadius: 20, startAngle: 0 },
+    { type: "blade", cx: WIDTH / 2, cy: HEIGHT / 2, orbitRadius: 160, angularSpeed: -1.8, bladeRadius: 20, startAngle: Math.PI },
+    { type: "wall", x: 0, y: 0, w: 120, h: 60 },
+    { type: "wall", x: WIDTH - 120, y: 0, w: 120, h: 60 },
+    { type: "wall", x: 0, y: HEIGHT - 60, w: 120, h: 60 },
+    { type: "wall", x: WIDTH - 120, y: HEIGHT - 60, w: 120, h: 60 }
+  ]
+}
+];
 
   function damageEnemyAt(index, amount) {
     const e = enemies[index];
@@ -1333,7 +1362,7 @@ canvas.addEventListener("pointerleave", () => {
 
     ctx.font = "14px system-ui";
     ctx.fillStyle = "#9ca3af";
-    ctx.fillText("Tap a level card to start. Levels unlock as you beat bosses.", WIDTH / 2, 60);
+    ctx.fillText(t("arena_campaign_hint"), WIDTH / 2, 60);
 
     const levels = game.levels;
     const cardW = 280, cardH = 100, gap = 24, cols = 2;
@@ -1376,20 +1405,27 @@ canvas.addEventListener("pointerleave", () => {
       ctx.font = "15px system-ui";
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
-      ctx.fillText(`${i + 1}. ${level.name}`, x + 12, y + 12);
+      ctx.fillText(`${i + 1}. ${t(level.nameKey)}`, x + 12, y + 12);
 
       ctx.font = "12px system-ui";
       ctx.fillStyle = "#cbd5f5";
-      let desc = level.description;
+      let desc = t(level.descKey);
       if (desc.length > 42) desc = desc.slice(0, 39) + "...";
       ctx.fillText(desc, x + 12, y + 34);
 
       ctx.fillStyle = "#9ca3af";
-      ctx.fillText(`Waves: ${level.normalWaves} · Boss HP: ${level.bossHp}`, x + 12, y + 54);
+      ctx.fillText(  `${t("arena_waves")}: ${level.normalWaves} · ${t("arena_boss_hp")}: ${level.bossHp}`,
+				  x + 12,
+				  y + 54
+				);
 
       ctx.textAlign = "right";
       ctx.fillStyle = unlocked ? "#22c55e" : "#6b7280";
-      ctx.fillText(unlocked ? "Unlocked" : "Locked", x + cardW - 12, y + cardH - 20);
+      ctx.fillText(
+					  unlocked ? t("arena_unlocked") : t("arena_locked"),
+					  x + cardW - 12,
+					  y + cardH - 20
+					);
 
       if (!unlocked) {
         ctx.fillStyle = "rgba(15,23,42,0.8)";
@@ -1406,7 +1442,7 @@ canvas.addEventListener("pointerleave", () => {
     ctx.fillStyle = "#9ca3af";
     ctx.textAlign = "center";
     ctx.font = "11px system-ui";
-    ctx.fillText("Press M to return to main title", WIDTH / 2, HEIGHT - 26);
+    ctx.fillText(t("arena_press_m_title"), WIDTH / 2, HEIGHT - 26);
     ctx.restore();
   }
 
@@ -1505,19 +1541,22 @@ canvas.addEventListener("pointerleave", () => {
     ctx.font = "11px system-ui";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText("HP", x + 4, y + barHeight / 2);
+    ctx.fillText(t("arena_hp"), x + 4, y + barHeight / 2);
 
     if (level) {
       ctx.textAlign = "center";
       ctx.fillStyle = level.color;
       ctx.font = "13px system-ui";
-      ctx.fillText(level.name, WIDTH / 2, 18);
+      ctx.fillText(t(level.nameKey), WIDTH / 2, 18);
       ctx.fillStyle = "#9ca3af";
       ctx.font = "11px system-ui";
-      ctx.fillText(
-        `Wave ${game.wave} / ${game.normalWaves} · Boss: ${game.bossSpawned ? (game.bossAlive ? "ENGAGED" : "DEFEATED") : "Not yet"}`,
-        WIDTH / 2, 34
-      );
+      ctx.fillText(`${t("arena_wave")} ${game.wave} / ${game.normalWaves} · ${t("arena_boss")}: ${game.bossSpawned
+					  ? (game.bossAlive ? t("arena_boss_engaged") : t("arena_boss_defeated"))
+					  : t("arena_boss_not_yet")
+				  }`,
+				  WIDTH / 2,
+				  34
+				);
     }
 
     const panelWidth = 160;
@@ -1528,8 +1567,8 @@ canvas.addEventListener("pointerleave", () => {
     ctx.textAlign = "left";
     ctx.fillStyle = "#e5e7eb";
     ctx.font = "12px system-ui";
-    ctx.fillText(`Score: ${game.score}`, scoreX, scoreY);
-    ctx.fillText(`Best: ${game.highScore}`, scoreX, scoreY + 16);
+    ctx.fillText(`${t("arena_score")}: ${game.score}`, scoreX, scoreY);
+    ctx.fillText(`${t("arena_best")}: ${game.highScore}`, scoreX, scoreY + 16);
 
     const dashX = 20, dashY = 48, dashW = 140, dashH = 8;
     ctx.fillStyle = "#020617";
@@ -1542,13 +1581,26 @@ canvas.addEventListener("pointerleave", () => {
     ctx.fillStyle = "#9ca3af";
     ctx.font = "10px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText(IS_MOBILE ? "Dash (DASH button)" : "Dash (Space / Shift)", dashX, dashY + dashH + 10);
+    ctx.fillText( IS_MOBILE
+					? t("arena_dash_mobile")
+					: t("arena_dash_desktop"),
+				  dashX,
+				  dashY + dashH + 10
+				);
 
     let py = 70;
     ctx.textAlign = "left";
     ctx.font = "11px system-ui";
-    if (player.speedBoostTimer > 0) { ctx.fillStyle = "#6366f1"; ctx.fillText(`Speed: ${player.speedBoostTimer.toFixed(1)}s`, 20, py); py += 14; }
-    if (player.rapidFireTimer > 0) { ctx.fillStyle = "#ec4899"; ctx.fillText(`Rapid Fire: ${player.rapidFireTimer.toFixed(1)}s`, 20, py); py += 14; }
+    if (player.speedBoostTimer > 0) 
+		{ ctx.fillStyle = "#6366f1"; 
+		ctx.fillText(`${t("arena_speed")}: ${player.speedBoostTimer.toFixed(1)}s`, 20, py); 
+		py += 14; 
+		}
+    if (player.rapidFireTimer > 0) 
+	{ ctx.fillStyle = "#ec4899"; 
+	ctx.fillText(`${t("arena_rapid_fire")}: ${player.rapidFireTimer.toFixed(1)}s`, 20, py);
+	py += 14; 
+	}
 
     ctx.restore();
   }
@@ -1569,7 +1621,7 @@ canvas.addEventListener("pointerleave", () => {
     ctx.font = "14px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Main Menu", x + w / 2, y + h / 2);
+    ctx.fillText(t("arena_main_menu"), x + w / 2, y + h / 2);
     ctx.restore();
   }
 
@@ -1589,7 +1641,7 @@ canvas.addEventListener("pointerleave", () => {
     ctx.font = "14px system-ui";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Main Page", x + w / 2, y + h / 2);
+    ctx.fillText(t("arena_main_page"), x + w / 2, y + h / 2);
     ctx.restore();
   }
 
@@ -1605,10 +1657,16 @@ canvas.addEventListener("pointerleave", () => {
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "30px system-ui";
-      ctx.fillText("NEON ARENA – CAMPAIGN", WIDTH / 2, HEIGHT / 2 - 60);
+      ctx.fillText(t("arena_campaign_title"), WIDTH / 2, HEIGHT / 2 - 60);
       ctx.font = "15px system-ui";
-      ctx.fillText("Tap / click to open the campaign map", WIDTH / 2, HEIGHT / 2 + 10);
-      ctx.fillText(IS_MOBILE ? "Move: Joystick · Aim: drag on game · Shoot: SHOOT · Dash: DASH · Pause: ⏸" : "Move: WASD · Aim: Mouse · Shoot: Click · Dash: Space · Pause: P", WIDTH / 2, HEIGHT / 2 + 40);
+      ctx.fillText(t("arena_campaign_open_map"), WIDTH / 2, HEIGHT / 2 + 10);
+      ctx.fillText(
+				  IS_MOBILE
+					? t("arena_controls_mobile")
+					: t("arena_controls_desktop"),
+				  WIDTH / 2,
+				  HEIGHT / 2 + 40
+				);
     }
 
     if (game.state === "paused") {
@@ -1616,9 +1674,15 @@ canvas.addEventListener("pointerleave", () => {
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "26px system-ui";
-      ctx.fillText("PAUSED", WIDTH / 2, HEIGHT / 2 - 8);
+      ctx.fillText(t("arena_paused"), WIDTH / 2, HEIGHT / 2 - 8);
       ctx.font = "14px system-ui";
-      ctx.fillText(IS_MOBILE ? "Tap ⏸ to resume" : "Press P to resume", WIDTH / 2, HEIGHT / 2 + 20);
+      ctx.fillText(
+					  IS_MOBILE
+						? t("arena_resume_mobile")
+						: t("arena_resume_desktop"),
+					  WIDTH / 2,
+					  HEIGHT / 2 + 20
+					);
     }
 
     if (game.state === "gameover") {
@@ -1626,13 +1690,26 @@ canvas.addEventListener("pointerleave", () => {
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillStyle = "#f97373";
       ctx.font = "28px system-ui";
-      ctx.fillText("GAME OVER", WIDTH / 2, HEIGHT / 2 - 60);
+      ctx.fillText(t("arena_game_over"), WIDTH / 2, HEIGHT / 2 - 60);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "16px system-ui";
-      ctx.fillText(`Score: ${game.score}`, WIDTH / 2, HEIGHT / 2 - 24);
-      ctx.fillText(`Best: ${game.highScore}`, WIDTH / 2, HEIGHT / 2 + 0);
-      ctx.fillText(IS_MOBILE ? "Tap to open map, then pick level" : "Press ENTER to retry this level", WIDTH / 2, HEIGHT / 2 + 36);
-      ctx.fillText(IS_MOBILE ? "Or press Main Menu button" : "Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
+      ctx.fillText(`${t("arena_score")}: ${game.score}`, WIDTH / 2, HEIGHT / 2 - 24);
+      ctx.fillText(`${t("arena_best")}: ${game.highScore}`, WIDTH / 2, HEIGHT / 2);
+      ctx.fillText(
+				  IS_MOBILE
+					? t("arena_retry_mobile")
+					: t("arena_retry_desktop"),
+				  WIDTH / 2,
+				  HEIGHT / 2 + 36
+				);
+
+	 ctx.fillText(
+				  IS_MOBILE
+					? t("arena_menu_mobile")
+					: t("arena_menu_desktop"),
+				  WIDTH / 2,
+				  HEIGHT / 2 + 60
+				);
     }
 
     if (game.state === "levelcomplete") {
@@ -1640,16 +1717,31 @@ canvas.addEventListener("pointerleave", () => {
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
       ctx.fillStyle = "#22c55e";
       ctx.font = "28px system-ui";
-      ctx.fillText("LEVEL COMPLETE!", WIDTH / 2, HEIGHT / 2 - 60);
+      cctx.fillText(t("arena_level_complete"), WIDTH / 2, HEIGHT / 2 - 60);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "16px system-ui";
-      ctx.fillText(`${game.levelConfig ? game.levelConfig.name : ""} cleared`, WIDTH / 2, HEIGHT / 2 - 24);
-      ctx.fillText(`Score: ${game.score}`, WIDTH / 2, HEIGHT / 2 + 2);
+      ctx.fillText(`${game.levelConfig ? t(game.levelConfig.nameKey) : ""} ${t("arena_level_cleared")}`,
+				  WIDTH / 2,
+				  HEIGHT / 2 - 24
+				);
+      ctx.fillText(`${t("arena_score")}: ${game.score}`, WIDTH / 2, HEIGHT / 2 + 2);
 
       const nextIndex = game.currentLevelIndex + 1;
       const hasNext = nextIndex < game.levels.length;
-      ctx.fillText(hasNext ? (IS_MOBILE ? "Tap map to choose next" : "Press ENTER for next level") : "All levels complete!", WIDTH / 2, HEIGHT / 2 + 36);
-      ctx.fillText(IS_MOBILE ? "Tap to open map" : "Press M for campaign map", WIDTH / 2, HEIGHT / 2 + 60);
+      ctx.fillText(
+					  hasNext
+						? (IS_MOBILE ? t("arena_next_mobile") : t("arena_next_desktop"))
+						: t("arena_all_levels_complete"),
+					  WIDTH / 2,
+					  HEIGHT / 2 + 36
+					);
+      ctx.fillText(
+					  IS_MOBILE
+						? t("arena_map_mobile")
+						: t("arena_map_desktop"),
+					  WIDTH / 2,
+					  HEIGHT / 2 + 60
+					);
     }
 
     if (game.state === "playing" && game.showHelp) {
@@ -1664,21 +1756,23 @@ canvas.addEventListener("pointerleave", () => {
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "11px system-ui";
       ctx.textAlign = "left";
-      const lines = IS_MOBILE ? [
-        "Mobile Controls:",
-        "Move: Joystick (left)",
-        "Aim: drag on game screen",
-        "Shoot: hold SHOOT button",
-        "Dash: DASH button • Pause: ⏸",
-        "Toggle this help: H"
-      ] : [
-        "Controls:",
-        "Move: WASD / Arrow Keys",
-        "Aim: Mouse · Shoot: Left Click",
-        "Dash: Space / Shift",
-        "Avoid lasers, rotating blades and walls!",
-        "Pause: P · Toggle this help: H"
-      ];
+      const lines = IS_MOBILE
+		  ? [
+			  t("arena_help_mobile_title"),
+			  t("arena_help_mobile_move"),
+			  t("arena_help_mobile_aim"),
+			  t("arena_help_mobile_shoot"),
+			  t("arena_help_mobile_dash"),
+			  t("arena_help_mobile_toggle")
+			]
+		  : [
+			  t("arena_help_desktop_title"),
+			  t("arena_help_desktop_move"),
+			  t("arena_help_desktop_aim"),
+			  t("arena_help_desktop_dash"),
+			  t("arena_help_desktop_avoid"),
+			  t("arena_help_desktop_pause")
+			];
 
       let ty = y + 16;
       for (const line of lines) { ctx.fillText(line, x + 10, ty); ty += 14; }

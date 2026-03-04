@@ -6,8 +6,11 @@
   "nav_articles": "Articles",
   "nav_privacy": "Privacy",
   "nav_terms": "Terms",
-
-  "header_title": "Neon Mini Game Hub",
+ "hero_mainline": "Play free neon-style arcade games instantly.",
+  "hero_feature_1": "No download",
+  "hero_feature_2": "Keyboard + mouse friendly",
+  "hero_feature_3": "Great for quick breaks",
+  "hero_hub": "Neon Mini Game Hub",
   "header_subtitle": "Play 100+ Browser Games",
   "faq_q0": "❓ FAQ",
   "faq_q1": "Do I need to install anything?",
@@ -818,7 +821,343 @@
   "art10_p3": "The performance gap between browser games and native apps shrinks every year. WebGPU accelerates this transition dramatically.",
 
   "art10_h2_conclusion": "Conclusion",
-  "art10_conclusion": "The future of browser gaming is bright — literally and technologically. WebGPU will redefine what developers can build, and Neon Mini Game Hub is positioned for that future."
+  "art10_conclusion": "The future of browser gaming is bright — literally and technologically. WebGPU will redefine what developers can build, and Neon Mini Game Hub is positioned for that future.",
+  "memory_title": "Memory Grid",
+
+  "memory_header_title": "🧠 Memory Grid",
+  "back_to_hub": "⬅ Back to Hub",
+
+  "memory_subtext": "Find all matching pairs. Tap/click two cards to flip them.",
+
+  "memory_moves": "Moves: 0",
+  "memory_pairs": "Pairs: 0/8",
+  "memory_best": "Best: —",
+
+  "memory_aria_game": "Memory grid game",
+  "memory_aria_grid": "Memory grid",
+
+  "memory_msg": "",
+  "memory_hint": "Mobile: tap cards · Desktop: click cards · Restart anytime.",
+  "memory_restart": "Restart",
+
+  "memory_long_title": "Memory Grid – Neon Memory Challenge",
+  "memory_long_desc": "Flip cards, match identical symbols, and try to clear the grid in the fewest moves. This neon-themed memory game trains concentration and pattern recall.",
+  "footer_back": "Back to Arcade Hub",
+  "footer_privacy": "Privacy Policy",
+  "footer_terms": "Terms",
+  "footer_copyright": "© 2025 Neo Runner Arcade — All Rights Reserved.",
+  "memory_moves_label": "Moves",
+  "memory_pairs_label": "Pairs",
+  "memory_best_label": "Best",
+  "memory_moves_suffix": "moves",
+
+  "memory_msg_start": "Find all pairs!",
+  "memory_msg_win": "Cleared in",
+  "memory_msg_good": "Nice match!",
+  "memory_msg_bad": "Nope — try again.",
+  "mines_title": "Minesweeper",
+"mines_header": "Minesweeper",
+
+"mines_level_beginner": "Beginner",
+"mines_level_intermediate": "Intermediate",
+"mines_level_expert": "Expert",
+
+"mines_mode_reveal": "Reveal",
+"mines_mode_flag": "Flag",
+
+"mines_flag_mode": "Flag Mode",
+"mines_flag_mode_on": "Flag Mode: ON",
+
+"mines_flag_on": "Flag: ON",
+"mines_flag_off": "Flag: OFF",
+
+"mines_restart": "Restart",
+"mines_help": "How to play",
+
+"mines_hint": "Click a tile to reveal. Right-click (desktop) / long-press (mobile) to flag.",
+
+"mines_win_title": "Clean sweep!",
+"mines_win_desc": "You cleared the sector.",
+
+"mines_lose_title": "Boom.",
+"mines_lose_desc": "You hit a mine. Restart and try again.",
+  "mines_mines_remaining": "Mines remaining (approx)",
+  "mines_flags_placed": "Flags placed",
+  "mines_time": "Time",
+  "mines_seconds": "s",
+  "mines_long_title": "Neon Minesweeper – Futuristic Logic Puzzle Challenge",
+
+"mines_section_clear": "Clear the Grid, Avoid the Neon Mines",
+
+"mines_desc_1": "Neon Minesweeper revitalizes the iconic strategy puzzle with a glowing, futuristic interface designed for clarity and precision. The objective is simple yet addicting: reveal all safe tiles on the grid without triggering a mine. Numbers indicate how many mines touch a given tile, requiring careful deduction and logical reasoning.",
+
+"mines_desc_2": "Every board is randomly generated, making every round feel fresh and unpredictable. The neon aesthetic elevates the classic gameplay into a clean, modern puzzle experience.",
+
+"mines_section_how": "How to Play",
+
+"mines_how_text": "Click tiles to reveal them. If you reveal a mine — the game ends instantly. Use logic to deduce where mines must be and mark them before revealing new areas.",
+
+"mines_section_controls": "Controls",
+
+"mines_control_desktop_label": "Desktop:",
+"mines_control_desktop": "Left-click to reveal, right-click to flag mines.",
+
+"mines_control_mobile_label": "Mobile:",
+"mines_control_mobile": "Tap to reveal; long-press to place a flag.",
+
+"mines_section_tips": "Tips & Strategy",
+
+"mines_tip_1": "Always start by clearing large empty regions.",
+"mines_tip_2": "Flag tiles you are certain contain mines.",
+"mines_tip_3": "Use number clusters to triangulate mine positions.",
+"mines_tip_4": "Work from the safest known zone outward.",
+
+"mines_section_dev": "Developer Insights",
+
+"mines_dev_text": "This version of Minesweeper uses a custom grid engine optimized for instant response, smooth animations, and clean neon highlights. The glowing color-coded tiles ensure the game remains visually readable even during fast-paced logic solving.",
+
+"mines_section_faq": "FAQ",
+
+"mines_faq_q": "Is every grid solvable?",
+"mines_faq_a": "Almost all grids are solvable through logic alone, though classic Minesweeper rules allow rare guessing scenarios.",
+"mines_toast_victory": "Victory!",
+"mines_help_mobile": "Tap to reveal • Long-press to flag • Or enable Flag Mode",
+"mines_help_desktop": "Left-click reveal • Right-click flag • Or toggle Flag Mode (F)",
+
+"mines_toast_flag_on": "Flag Mode ON",
+"mines_toast_reveal_mode": "Reveal Mode",
+"mines_long_title": "Neon Minesweeper – Futuristic Logic Puzzle Challenge",
+"mines_diff_beginner": "Beginner (8×8, 10 mines)",
+"mines_diff_intermediate": "Intermediate (12×12, 24 mines)",
+"mines_diff_expert": "Expert (16×16, 50 mines)",
+"arena_campaign_title": "Neon Arena – Campaign",
+
+"arena_mobile_hint": "Use joystick to move • Drag on game to aim • Hold SHOOT • Tap to open map/menu",
+
+"arena_btn_dash": "DASH",
+"arena_btn_shoot": "SHOOT",
+
+"arena_long_title": "Neon Arena – Classic Neon Top-Down Shooter",
+
+"arena_section_waves": "Fight Endless Waves",
+
+"arena_desc_1": "Neon Arena blends classic arcade shooter mechanics with a futuristic glow. Enemies rush toward you from every direction, forcing you to dodge, circle, and shoot your way out while collecting XP for upgrades.",
+
+"arena_section_controls": "Controls",
+
+"arena_controls_text": "Move with WASD, aim with mouse or auto-aim.",
+"arena_level_neon_district": "Neon District",
+"arena_level_neon_district_desc": "Intro zone: standard enemies and pulsing lasers.",
+
+"arena_level_crystal_dunes": "Crystal Dunes",
+"arena_level_crystal_dunes_desc": "Faster enemies, rotating blades and a central laser.",
+
+"arena_level_void_sector": "Void Sector",
+"arena_level_void_sector_desc": "Dense waves, tanks, and tight corridors of walls.",
+
+"arena_level_final_nexus": "Final Nexus",
+"arena_level_final_nexus_desc": "Lasers, blades and walls combine for a brutal finale.",
+"arena_campaign_hint": "Tap a level card to start. Levels unlock as you beat bosses.",
+"arena_waves": "Waves",
+"arena_boss_hp": "Boss HP",
+"arena_unlocked": "Unlocked",
+"arena_locked": "Locked",
+"arena_press_m_title": "Press M to return to main title",
+"arena_hp": "HP",
+"arena_score": "Score",
+"arena_best": "Best",
+"arena_dash_mobile": "Dash (DASH button)",
+"arena_dash_desktop": "Dash (Space / Shift)",
+"arena_speed": "Speed",
+"arena_rapid_fire": "Rapid Fire",
+"arena_score": "Score",
+"arena_best": "Best",
+"arena_dash_mobile": "Dash (DASH button)",
+"arena_dash_desktop": "Dash (Space / Shift)",
+"arena_speed": "Speed",
+"arena_rapid_fire": "Rapid Fire",
+"arena_main_menu": "Main Menu",
+"arena_main_page": "Main Page",
+
+"arena_campaign_title": "NEON ARENA – CAMPAIGN",
+"arena_campaign_open_map": "Tap / click to open the campaign map",
+
+"arena_controls_mobile": "Move: Joystick · Aim: drag on game · Shoot: SHOOT · Dash: DASH · Pause: ⏸",
+"arena_controls_desktop": "Move: WASD · Aim: Mouse · Shoot: Click · Dash: Space · Pause: P",
+
+"arena_paused": "PAUSED",
+"arena_resume_mobile": "Tap ⏸ to resume",
+"arena_resume_desktop": "Press P to resume",
+
+"arena_game_over": "GAME OVER",
+
+"arena_retry_mobile": "Tap to open map, then pick level",
+"arena_retry_desktop": "Press ENTER to retry this level",
+
+"arena_menu_mobile": "Or press Main Menu button",
+"arena_menu_desktop": "Press M for campaign map",
+
+"arena_level_complete": "LEVEL COMPLETE!",
+"arena_all_levels_complete": "All levels complete!",
+
+"arena_next_mobile": "Tap map to choose next",
+"arena_next_desktop": "Press ENTER for next level",
+
+"arena_map_mobile": "Tap to open map",
+"arena_map_desktop": "Press M for campaign map",
+
+"arena_help_mobile_title": "Mobile Controls:",
+"arena_help_mobile_move": "Move: Joystick (left)",
+"arena_help_mobile_aim": "Aim: drag on game screen",
+"arena_help_mobile_shoot": "Shoot: hold SHOOT button",
+"arena_help_mobile_dash": "Dash: DASH button • Pause: ⏸",
+"arena_help_mobile_toggle": "Toggle this help: H",
+
+"arena_help_desktop_title": "Controls:",
+"arena_help_desktop_move": "Move: WASD / Arrow Keys",
+"arena_help_desktop_aim": "Aim: Mouse · Shoot: Left Click",
+"arena_help_desktop_dash": "Dash: Space / Shift",
+"arena_help_desktop_avoid": "Avoid lasers, rotating blades and walls!",
+"arena_help_desktop_pause": "Pause: P · Toggle this help: H",
+"arena_wave": "Wave",
+"arena_boss": "Boss",
+"arena_boss_not_yet": "Not Yet",
+"autobattler_title": "Neon Auto Battler",
+"autobattler_mini": "(Mini)",
+
+"autobattler_start_round": "Start Round",
+"autobattler_reroll": "Reroll (2g)",
+"autobattler_restart": "Restart",
+
+"autobattler_gold": "Gold",
+"autobattler_round": "Round",
+"autobattler_hp": "HP",
+"autobattler_shop": "Shop",
+"autobattler_shop_hint": "Click unit → click tile",
+
+"autobattler_how_to_play": "How to play:",
+"autobattler_how_text": "Buy units from the shop (bottom area), place them on your side (lower grid), then press Start Round. Units fight automatically. Combine 3 identical units to upgrade (★).",
+
+"autobattler_mobile_hint": "Mobile: tap unit → tap tile. Desktop: click unit → click tile.",
+
+"autobattler_long_title": "Neon Auto Battler – Tactical Combat in a Glowing Arena",
+
+"autobattler_section_build": "Build, Upgrade, Dominate",
+"autobattler_section_play": "How to Play",
+"autobattler_section_controls": "Controls",
+"autobattler_section_tips": "Tips & Strategy",
+"autobattler_section_dev": "Developer Insights",
+
+"autobattler_desc_1": "Neon Auto Battler is a strategy game where the battlefield resolves automatically, but your decisions determine everything.",
+"autobattler_desc_2": "Between rounds, use gold to purchase units, merge duplicates to upgrade them, and place them strategically on the board.",
+
+"autobattler_controls": "Click or tap units to place or move them on the grid.",
+
+"autobattler_tip_1": "Focus on merging duplicates early for quick power boosts.",
+"autobattler_tip_2": "Mix frontline tanks with ranged backline attackers.",
+"autobattler_tip_3": "Use synergies — multiple units of the same type unlock bonuses.",
+
+"autobattler_dev": "The AI engine is optimized for predictable but dynamic combat patterns.",
+
+"autobattler_unit_spark": "Spark",
+"autobattler_unit_ember": "Ember",
+"autobattler_unit_viper": "Viper",
+"autobattler_unit_bulwark": "Bulwark",
+"autobattler_unit_nova": "Nova",
+"autobattler_selected": "Selected:",
+"autobattler_place_tile": "Tap a bottom tile to place.",
+"autobattler_msg_buy_place_start": "Buy units, place them, start the round.",
+"autobattler_victory": "Victory!",
+"autobattler_defeat": "Defeat!",
+"autobattler_place_unit_first": "Place at least 1 unit before starting!",
+"autobattler_fight": "Fight!",
+"autobattler_game_over_restart": "Game over. Press Restart.",
+"autobattler_msg_upgrade_tip": "Buy & place units. Combine 3 identical to upgrade.",
+"autobattler_not_enough_gold": "Not enough gold.",
+"autobattler_place_bottom": "Place units on your side (bottom grid).",
+"autobattler_tile_occupied": "Tile occupied.",
+"autobattler_placed_buy_or_start": "Placed. Buy more or start round.",
+"autobattler_need_reroll_gold": "Need 2 gold to reroll.",
+"autobattler_shop_rerolled": "Shop rerolled.",
+"autobattler_shop_disabled": "Shop is disabled during fights.",
+"autobattler_round_in_progress": "Round in progress...",
+"autobattler_reroll_prep": "Reroll only in prep.",
+"autobattler_enemy": "ENEMY",
+"autobattler_you": "YOU",
+"autobattler_shop_tap": "SHOP (tap to select)",
+"autobattler_range": "Range",
+"autobattler_spd": "SPD",
+"autobattler_tap_place": "Tap a bottom tile to place",
+"autobattler_sold": "Sold",
+"autobattler_victory_big": "VICTORY!",
+"autobattler_defeat_big": "DEFEAT!",
+"autobattler_round_end": "ROUND END",
+"autobattler_next_round_hint": "Press Next Round to continue to next round",
+"autobattler_game_over": "GAME OVER",
+"autobattler_restart_hint": "Press Restart to try again",
+"autobattler_fighting": "Fighting...",
+"autobattler_next_round": "Next Round",
+"beat_title":"Neon Beat Tap (Rhythm)",
+"beat_title_main":"Neon Beat Tap",
+"beat_rhythm":"(Rhythm)",
+"beat_start":"Start",
+"beat_retry":"Retry",
+"beat_diff_easy":"Easy",
+"beat_diff_normal":"Normal",
+"beat_diff_hard":"Hard",
+"beat_pack_arcade":"Arcade Click Pack",
+"beat_pack_electro":"Electronic Pack",
+"beat_pack_drum":"Drum Kit Pack",
+"beat_layer_drum":"Drum",
+"beat_layer_electro":"Electronic",
+"beat_layer_click":"Click",
+"beat_score":"Score",
+"beat_combo":"Combo",
+"beat_best":"Best",
+"beat_accuracy":"Accuracy",
+"beat_controls":"Controls",
+"beat_tap":"TAP",
+"beat_perfect":"PERFECT",
+"beat_good":"GOOD",
+"beat_bad":"BAD",
+"beat_miss":"MISS",
+"beat_menu_title":"NEON BEAT TAP",
+"beat_menu_desc":"Hit the notes on the beat\nD F J K (desktop) • Tap lanes (mobile)\nPress Start to play",
+"beat_set_complete":"SET COMPLETE",
+"beat_play_again":"Tap / Start to play again",
+"beat_audio_tip":"Audio tip: add your WAV files in /sounds/beat/ for pro sound.",
+"beat_hint_controls":"Controls:",
+"beat_hint_play":"Hit lanes on the beat — D F J K (desktop) or tap lanes (mobile).",
+"beat_hint_timing":"Timing windows: Perfect / Good / Bad / Miss.",
+"beat_hint_audio":"Sounds: this version uses REAL samples (not ugly beeps). Put your audio files in /sounds/beat/ (see notes inside code).",
+
+"beat_article_title":"Neon Beat Tap – Rhythm Combat in a Neon Soundscape",
+"beat_article_music":"Feel the Music, Follow the Beat",
+
+"beat_article_desc1":"Neon Beat Tap transforms your browser into a glowing music arena where rhythm and precision determine your score. Notes descend along neon rails in sync with pulsating synthwave tracks. Tap them at the exact moment they cross the hit zone to chain combos and earn massive points.",
+
+"beat_article_desc2":"This neon-drenched rhythm experience is built for both casual players and hardcore rhythm fans who crave fast-paced timing challenges.",
+
+"beat_article_how":"How to Play",
+
+"beat_article_how_desc":"Notes travel down the track toward the hit zone. Tap at the right time to hit them. Your accuracy determines your score and combo progress.",
+
+"beat_article_controls":"Controls",
+"beat_article_controls_desktop":"Desktop: Click or press assigned keys per lane.",
+"beat_article_controls_mobile":"Mobile: Tap directly on the screen.",
+
+"beat_article_tips":"Tips & Strategy",
+
+"beat_tip1":"Focus on timing over speed — accuracy boosts combo multipliers.",
+"beat_tip2":"Memorize note patterns for difficult songs.",
+"beat_tip3":"Keep rhythm with background beats.",
+
+"beat_article_dev":"Developer Insights",
+
+"beat_article_dev_desc":"The entire note system is synced using audio time signatures to ensure rhythmic accuracy. Visual effects react dynamically to combos and streaks, enhancing immersion."
+
+
+
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Minesweeper</title>
+  <title data-i18n="mines_title">Minesweeper</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 
@@ -353,64 +353,84 @@
       text-align:center;
     }
   </style>
+    <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 <div class="layout">
   <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+ 
 
   <!-- MAIN COLUMN -->
   <main class="main-column">
     <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
-    </div>
+
 
     <!-- GAME HEADER -->
-    <div class="game-header">
-      <div class="title">💣 Minesweeper <span class="pill" id="pillLevel">Beginner</span> <span class="pill" id="pillMode">Reveal</span></div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
-    </div>
+	  <div class="game-header">
+		  <div class="title">
+			💣 <span data-i18n="mines_header">Minesweeper</span>
+			<span class="pill" id="pillLevel" data-i18n="mines_level_beginner">Beginner</span>
+			<span class="pill" id="pillMode" data-i18n="mines_mode_reveal">Reveal</span>
+		  </div>
+
+		  <div>
+			<a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+		  </div>
+		</div>
 
     <!-- GAME FRAME -->
     <div class="game-frame" role="region" aria-label="Minesweeper game frame">
       <div class="game-inner">
         <div class="hud">
           <div class="hud-left">
-            <select class="select" id="difficultySelect" aria-label="Difficulty">
-              <option value="beginner">Beginner (8×8, 10 mines)</option>
-              <option value="intermediate">Intermediate (12×12, 24 mines)</option>
-              <option value="expert">Expert (16×16, 50 mines)</option>
-            </select>
+            <<select class="select" id="difficultySelect" aria-label="Difficulty">
+			  <option value="beginner" data-i18n="mines_diff_beginner">
+				Beginner (8×8, 10 mines)
+			  </option>
 
-            <button class="btn flag" id="btnToggleFlag" type="button" title="Toggle flag mode (F)">🚩 Flag Mode</button>
-            <button class="btn reset" id="btnRestart" type="button" title="Restart (R)">Restart</button>
+			  <option value="intermediate" data-i18n="mines_diff_intermediate">
+				Intermediate (12×12, 24 mines)
+			  </option>
+
+			  <option value="expert" data-i18n="mines_diff_expert">
+				Expert (16×16, 50 mines)
+			  </option>
+			</select>
+
+            <button class="btn flag" id="btnToggleFlag"
+				data-i18n="mines_flag_mode"
+				title="Toggle flag mode (F)">
+				🚩 Flag Mode
+				</button>
+
+				<button class="btn reset" id="btnRestart"
+				data-i18n="mines_restart"
+				title="Restart (R)">
+				Restart
+				</button>
           </div>
 
-          <div class="hud-right">
-            <div class="stat" title="Mines remaining (approx)">
-              💣 <b id="minesLeft">10</b>
-            </div>
-            <div class="stat" title="Flags placed">
-              🚩 <b id="flagsCount">0</b>
-            </div>
-            <div class="stat" title="Time">
-              ⏱ <b id="time">0</b>s
-            </div>
-          </div>
+		   <div class="hud-right">
 
-          <div class="hint" id="status">
-            Click a tile to reveal. Right-click (desktop) / long-press (mobile) to flag.
-            Or toggle <b>Flag Mode</b> and tap tiles to place/remove flags.
-          </div>
+			  <div class="stat" data-i18n-title="mines_mines_remaining">
+				💣 <b id="minesLeft">10</b>
+			  </div>
+
+			  <div class="stat" data-i18n-title="mines_flags_placed">
+				🚩 <b id="flagsCount">0</b>
+			  </div>
+
+			  <div class="stat" data-i18n-title="mines_time">
+				⏱ <b id="time">0</b><span data-i18n="mines_seconds">s</span>
+			  </div>
+
+</div>
+
+          <div class="hint" id="status" data-i18n="mines_hint">
+			Click a tile to reveal. Right-click (desktop) / long-press (mobile) to flag.
+			Or toggle <b>Flag Mode</b> and tap tiles to place/remove flags.
+			</div>
         </div>
 
         <div class="board-wrap">
@@ -421,68 +441,113 @@
 
     <!-- ✅ MOBILE CONTROLS BELOW THE GAME FRAME -->
     <div class="controls-below" aria-hidden="false">
-      <button class="mc-btn hint" id="btnHelp" type="button">How to play</button>
-      <button class="mc-btn flag" id="btnFlagMobile" type="button">🚩 Flag: OFF</button>
-      <button class="mc-btn reset" id="btnRestartMobile" type="button">Restart</button>
+		<button class="mc-btn hint" id="btnHelp" data-i18n="mines_help">How to play</button>
+
+		<button class="mc-btn flag" id="btnFlagMobile">
+		🚩 <span data-i18n="mines_flag_off">Flag: OFF</span>
+		</button>
+
+		<button class="mc-btn reset" id="btnRestartMobile" data-i18n="mines_restart">
+		Restart
+		</button>
     </div>
 	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Neon Minesweeper – Futuristic Logic Puzzle Challenge</h1>
+				 <h1 data-i18n="mines_long_title">
+		Neon Minesweeper – Futuristic Logic Puzzle Challenge
+		</h1>
 
-<h2>Clear the Grid, Avoid the Neon Mines</h2>
-<p>
-Neon Minesweeper revitalizes the iconic strategy puzzle with a glowing, futuristic
-interface designed for clarity and precision. The objective is simple yet addicting:
-reveal all safe tiles on the grid without triggering a mine. Numbers indicate how many
-mines touch a given tile, requiring careful deduction and logical reasoning.
-</p>
+		<h2 data-i18n="mines_section_clear">
+		Clear the Grid, Avoid the Neon Mines
+		</h2>
 
-<p>
-Every board is randomly generated, making every round feel fresh and unpredictable.
-The neon aesthetic elevates the classic gameplay into a clean, modern puzzle experience.
-</p>
+		<p data-i18n="mines_desc_1">
+		Neon Minesweeper revitalizes the iconic strategy puzzle with a glowing, futuristic
+		interface designed for clarity and precision. The objective is simple yet addicting:
+		reveal all safe tiles on the grid without triggering a mine. Numbers indicate how many
+		mines touch a given tile, requiring careful deduction and logical reasoning.
+		</p>
 
-<h2>How to Play</h2>
-<p>
-Click tiles to reveal them. If you reveal a mine — the game ends instantly.
-Use logic to deduce where mines must be and mark them before revealing new areas.
-</p>
+		<p data-i18n="mines_desc_2">
+		Every board is randomly generated, making every round feel fresh and unpredictable.
+		The neon aesthetic elevates the classic gameplay into a clean, modern puzzle experience.
+		</p>
 
-<h2>Controls</h2>
-<p><strong>Desktop:</strong> Left-click to reveal, right-click to flag mines.</p>
-<p><strong>Mobile:</strong> Tap to reveal; long-press to place a flag.</p>
+		<h2 data-i18n="mines_section_how">
+		How to Play
+		</h2>
 
-<h2>Tips & Strategy</h2>
-<ul>
-  <li>Always start by clearing large empty regions.</li>
-  <li>Flag tiles you are certain contain mines.</li>
-  <li>Use number clusters to triangulate mine positions.</li>
-  <li>Work from the safest known zone outward.</li>
-</ul>
+		<p data-i18n="mines_how_text">
+		Click tiles to reveal them. If you reveal a mine — the game ends instantly.
+		Use logic to deduce where mines must be and mark them before revealing new areas.
+		</p>
 
-<h2>Developer Insights</h2>
-<p>
-This version of Minesweeper uses a custom grid engine optimized for instant response,
-smooth animations, and clean neon highlights. The glowing color-coded tiles ensure the
-game remains visually readable even during fast-paced logic solving.
-</p>
+		<h2 data-i18n="mines_section_controls">
+		Controls
+		</h2>
 
-<h2>FAQ</h2>
-<h3>Is every grid solvable?</h3>
-<p>Almost all grids are solvable through logic alone, though classic Minesweeper rules allow rare guessing scenarios.</p>
+		<p>
+		<strong data-i18n="mines_control_desktop_label">Desktop:</strong>
+		<span data-i18n="mines_control_desktop">
+		Left-click to reveal, right-click to flag mines.
+		</span>
+		</p>
 
+		<p>
+		<strong data-i18n="mines_control_mobile_label">Mobile:</strong>
+		<span data-i18n="mines_control_mobile">
+		Tap to reveal; long-press to place a flag.
+		</span>
+		</p>
+
+		<h2 data-i18n="mines_section_tips">
+		Tips & Strategy
+		</h2>
+
+		<ul>
+		  <li data-i18n="mines_tip_1">
+			Always start by clearing large empty regions.
+		  </li>
+
+		  <li data-i18n="mines_tip_2">
+			Flag tiles you are certain contain mines.
+		  </li>
+
+		  <li data-i18n="mines_tip_3">
+			Use number clusters to triangulate mine positions.
+		  </li>
+
+		  <li data-i18n="mines_tip_4">
+			Work from the safest known zone outward.
+		  </li>
+		</ul>
+
+		<h2 data-i18n="mines_section_dev">
+		Developer Insights
+		</h2>
+
+		<p data-i18n="mines_dev_text">
+		This version of Minesweeper uses a custom grid engine optimized for instant response,
+		smooth animations, and clean neon highlights. The glowing color-coded tiles ensure the
+		game remains visually readable even during fast-paced logic solving.
+		</p>
+
+		<h2 data-i18n="mines_section_faq">
+		FAQ
+		</h2>
+
+		<h3 data-i18n="mines_faq_q">
+		Is every grid solvable?
+		</h3>
+
+		<p data-i18n="mines_faq_a">
+		Almost all grids are solvable through logic alone, though classic Minesweeper rules allow rare guessing scenarios.
+		</p>
   </main>
 
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 </div>
 
 <div class="toast" id="toast"></div>
@@ -534,17 +599,30 @@ game remains visually readable even during fast-paced logic solving.
     showToast._t = setTimeout(() => toastEl.style.display = "none", 1800);
   }
 
-  function setModeUI(){
-    pillMode.textContent = flagMode ? "Flag" : "Reveal";
-    btnToggleFlag.textContent = flagMode ? "🚩 Flag Mode: ON" : "🚩 Flag Mode";
-    if (btnFlagMobile) btnFlagMobile.textContent = flagMode ? "🚩 Flag: ON" : "🚩 Flag: OFF";
-  }
+	function setModeUI(){
+
+	  pillMode.textContent = flagMode
+		? t("mines_mode_flag")
+		: t("mines_mode_reveal");
+
+	  btnToggleFlag.textContent = flagMode
+		? `🚩 ${t("mines_flag_mode_on")}`
+		: `🚩 ${t("mines_flag_mode")}`;
+
+	  if (btnFlagMobile){
+		btnFlagMobile.textContent = flagMode
+		  ? `🚩 ${t("mines_flag_on")}`
+		  : `🚩 ${t("mines_flag_off")}`;
+	  }
+
+	}
 
   function setLevelUI(key){
     const label =
-      key === "beginner" ? "Beginner" :
-      key === "intermediate" ? "Intermediate" : "Expert";
-    pillLevel.textContent = label;
+	  key === "beginner" ? t("mines_level_beginner") :
+	  key === "intermediate" ? t("mines_level_intermediate") :
+	  t("mines_level_expert");
+	pillLevel.textContent = label;
   }
 
   function stopTimer(){
@@ -693,28 +771,32 @@ game remains visually readable even during fast-paced logic solving.
     }
   }
 
-  function endGame(win){
-    gameOver = true;
-    stopTimer();
+	  function endGame(win){
+		gameOver = true;
+		stopTimer();
 
-    if (win){
-      statusEl.innerHTML = "🎉 <b>Clean sweep!</b> You cleared the sector.";
-      showToast("✅ Victory!");
-      // flag remaining mines automatically (nice touch)
-      for(let r=0;r<rows;r++){
-        for(let c=0;c<cols;c++){
-          const cell = board[r][c];
-          if(cell.mine && !cell.flagged){
-            cell.flagged = true;
-            flagsPlaced++;
-            cell.el.classList.add("flagged");
-            cell.el.textContent = "🚩";
-          }
-        }
-      }
-      updateStats();
-    } else {
-      statusEl.innerHTML = "💥 <b>Boom.</b> You hit a mine. Restart and try again.";
+		if (win){
+
+		  statusEl.innerHTML = `🎉 <b>${t("mines_win_title")}</b> ${t("mines_win_desc")}`;
+
+		  showToast(`✅ ${t("mines_toast_victory")}`);
+
+		  // flag remaining mines automatically (nice touch)
+		  for(let r=0;r<rows;r++){
+			for(let c=0;c<cols;c++){
+			  const cell = board[r][c];
+			  if(cell.mine && !cell.flagged){
+				cell.flagged = true;
+				flagsPlaced++;
+				cell.el.classList.add("flagged");
+				cell.el.textContent = "🚩";
+			  }
+			}
+		  }
+
+		  updateStats();
+	} else {
+      statusEl.innerHTML = `💥 <b>${t("mines_lose_title")}</b> ${t("mines_lose_desc")}`;
       showToast("💥 Boom!");
       revealAllMines();
     }
@@ -803,7 +885,7 @@ game remains visually readable even during fast-paced logic solving.
     flagsPlaced = 0;
     started = false;
 
-    statusEl.innerHTML = "Click a tile to reveal. Right-click / long-press to flag. Or use <b>Flag Mode</b>.";
+    statusEl.innerHTML = t("mines_hint");
     makeBoard();
     buildDOM();
     updateStats();
@@ -811,34 +893,50 @@ game remains visually readable even during fast-paced logic solving.
 
   // ---------- Buttons / keys ----------
   function toggleFlagMode(){
-    flagMode = !flagMode;
-    setModeUI();
-    showToast(flagMode ? "🚩 Flag Mode ON" : "🟦 Reveal Mode");
-  }
+	  flagMode = !flagMode;
+
+	  setModeUI();
+
+	  showToast(
+		flagMode
+		  ? `🚩 ${t("mines_toast_flag_on")}`
+		  : `🟦 ${t("mines_toast_reveal_mode")}`
+	  );
+	}
 
   btnToggleFlag?.addEventListener("click", (e) => { e.preventDefault(); toggleFlagMode(); });
   btnFlagMobile?.addEventListener("click", (e) => { e.preventDefault(); toggleFlagMode(); });
   btnRestart?.addEventListener("click", (e) => { e.preventDefault(); restart(); });
   btnRestartMobile?.addEventListener("click", (e) => { e.preventDefault(); restart(); });
 
-  btnHelp?.addEventListener("click", (e) => {
-    e.preventDefault();
-    showToast(IS_MOBILE
-      ? "Tap to reveal • Long-press to flag • Or enable Flag Mode"
-      : "Left-click reveal • Right-click flag • Or toggle Flag Mode (F)"
-    );
-  });
+	btnHelp?.addEventListener("click", (e) => {
+	  e.preventDefault();
+
+	  showToast(
+		IS_MOBILE
+		  ? t("mines_help_mobile")
+		  : t("mines_help_desktop")
+	  );
+
+	});
 
   difficultySelect?.addEventListener("change", () => {
     setDifficulty(difficultySelect.value);
   });
 
-  window.addEventListener("keydown", (e) => {
-    const k = e.key.toLowerCase();
-    if (k === "r") restart();
-    if (k === "f") toggleFlagMode();
-    if (k === "escape") { flagMode = false; setModeUI(); showToast("Reveal Mode"); }
-  });
+ window.addEventListener("keydown", (e) => {
+  const k = e.key.toLowerCase();
+
+  if (k === "r") restart();
+
+  if (k === "f") toggleFlagMode();
+
+  if (k === "escape") {
+    flagMode = false;
+    setModeUI();
+    showToast(t("mines_mode_reveal"));
+  }
+});
 
   // ---------- Init ----------
   setModeUI();

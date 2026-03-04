@@ -6,9 +6,14 @@
   "nav_articles": "Articole",
   "nav_privacy": "Confidențialitate",
   "nav_terms": "Termeni",
-
+  
+  "hero_mainline": "Joacă instant jocuri arcade în stil neon.",
+  "hero_feature_1": "Fără descărcare",
+  "hero_feature_2": "Compatibil cu tastatură și mouse",
+  "hero_feature_3": "Perfect pentru pauze scurte",
   "header_title": "Neon Mini Game Hub",
   "header_subtitle": "Joacă peste 100 de jocuri în browser",
+  
   "faq_q0": "❓ Intrebări Frecvente:",	
   "faq_q1": "Trebuie să instalez ceva?",
   "faq_a1": "Nu. Jocurile de pe Neon Mini Game Hub rulează direct în browser. Deschide pagina unui joc și joacă instant.",
@@ -818,7 +823,339 @@
   "art10_p3": "Diferența de performanță dintre jocurile browser și aplicațiile native scade anual. WebGPU accelerează această tranziție.",
 
   "art10_h2_conclusion": "Concluzie",
-  "art10_conclusion": "Viitorul gamingului în browser este luminos — la propriu și la figurat. WebGPU va redefini ce pot construi dezvoltatorii, iar Neon Mini Game Hub este deja pregătit pentru acest viitor."
+  "art10_conclusion": "Viitorul gamingului în browser este luminos — la propriu și la figurat. WebGPU va redefini ce pot construi dezvoltatorii, iar Neon Mini Game Hub este deja pregătit pentru acest viitor.",
+    "memory_title": "Memory Grid",
+
+  "memory_header_title": "🧠 Memory Grid",
+  "back_to_hub": "⬅ Inapoi la Hub",
+
+  "memory_subtext": "Gaseste toate perechile identice. Atinge/click pe doua carti pentru a le intoarce.",
+
+  "memory_moves": "Mutari: 0",
+  "memory_pairs": "Perechi: 0/8",
+  "memory_best": "Cel mai bun: —",
+
+  "memory_aria_game": "Joc de memorie tip grid",
+  "memory_aria_grid": "Grid de memorie",
+
+  "memory_msg": "",
+  "memory_hint": "Mobil: atinge cartile · Desktop: click pe carti · Poti reincepe oricand.",
+  "memory_restart": "Reincepe",
+
+  "memory_long_title": "Memory Grid – Provocarea Neon de Memorie",
+  "memory_long_desc": "Intoarce cartile, potriveste simbolurile identice si incearca sa cureti grila in cat mai putine miscari. Acest joc neon de memorie imbunatateste concentrarea si recunoasterea tiparelor.",
+   "footer_back": "Inapoi la Arcade Hub",
+  "footer_privacy": "Politica de confidentialitate",
+  "footer_terms": "Termeni",
+  "footer_copyright": "© 2025 Neo Runner Arcade — Toate drepturile rezervate.",
+   "memory_moves_label": "Miscari",
+  "memory_pairs_label": "Perechi",
+  "memory_best_label": "Cel mai bun",
+  "memory_moves_suffix": "miscari",
+
+  "memory_msg_start": "Gaseste toate perechile!",
+  "memory_msg_win": "Completat in",
+  "memory_msg_good": "Potrivire reusita!",
+  "memory_msg_bad": "Nu — incearca din nou.",
+    "mines_mines_remaining": "Mine rămase (aprox)",
+  "mines_flags_placed": "Steaguri plasate",
+  "mines_time": "Timp",
+  "mines_seconds": "s",
+    "mines_title": "Minesweeper",
+  "mines_header": "Minesweeper",
+
+  "mines_level_beginner": "Începător",
+  "mines_level_intermediate": "Intermediar",
+  "mines_level_expert": "Expert",
+
+  "mines_mode_reveal": "Descoperă",
+  "mines_mode_flag": "Steag",
+
+  "mines_flag_mode": "Mod Steag",
+  "mines_flag_mode_on": "Mod Steag: ACTIV",
+
+  "mines_flag_on": "Steag: ACTIV",
+  "mines_flag_off": "Steag: OPRIT",
+
+  "mines_restart": "Repornește",
+  "mines_help": "Cum se joacă",
+
+  "mines_hint": "Apasă pe o celulă pentru a o descoperi. Click dreapta (desktop) / apăsare lungă (mobil) pentru a pune un steag.",
+
+  "mines_win_title": "Tablă curățată!",
+  "mines_win_desc": "Ai curățat sectorul.",
+
+  "mines_lose_title": "Boom.",
+  "mines_lose_desc": "Ai lovit o mină. Repornește și încearcă din nou.",
+  "mines_section_clear": "Curăță grila, evită minele neon",
+
+"mines_desc_1": "Neon Minesweeper reinventează celebrul puzzle strategic cu o interfață futuristă și luminoasă, proiectată pentru claritate și precizie. Obiectivul este simplu dar captivant: descoperă toate celulele sigure din grilă fără să declanșezi o mină. Numerele indică câte mine se află în jurul unei celule, ceea ce necesită deducție atentă și gândire logică.",
+
+"mines_desc_2": "Fiecare tablă este generată aleatoriu, astfel încât fiecare rundă este nouă și imprevizibilă. Stilul vizual neon transformă gameplay-ul clasic într-o experiență modernă și curată.",
+
+"mines_section_how": "Cum se joacă",
+
+"mines_how_text": "Apasă pe celule pentru a le descoperi. Dacă descoperi o mină — jocul se termină instant. Folosește logica pentru a deduce unde se află minele și marchează-le înainte de a descoperi noi zone.",
+
+"mines_section_controls": "Controale",
+
+"mines_control_desktop_label": "Desktop:",
+"mines_control_desktop": "Click stânga pentru descoperire, click dreapta pentru a marca minele cu steag.",
+
+"mines_control_mobile_label": "Mobil:",
+"mines_control_mobile": "Apasă pentru descoperire; apăsare lungă pentru a plasa un steag.",
+
+"mines_section_tips": "Sfaturi și strategie",
+
+"mines_tip_1": "Începe întotdeauna prin a descoperi zone mari goale.",
+"mines_tip_2": "Marchează cu steag celulele despre care ești sigur că ascund mine.",
+"mines_tip_3": "Folosește grupurile de numere pentru a deduce poziția minelor.",
+"mines_tip_4": "Extinde-te treptat din zonele cele mai sigure.",
+
+"mines_section_dev": "Informații despre dezvoltare",
+
+"mines_dev_text": "Această versiune de Minesweeper utilizează un motor de grilă personalizat optimizat pentru răspuns instant, animații fluide și evidențieri neon clare. Culorile luminoase ale celulelor asigură o lizibilitate excelentă chiar și în timpul rezolvării rapide a puzzle-ului.",
+
+"mines_section_faq": "Întrebări frecvente",
+
+"mines_faq_q": "Este fiecare tablă rezolvabilă?",
+"mines_faq_a": "Aproape toate grilele pot fi rezolvate doar prin logică, însă regulile clasice Minesweeper permit uneori situații rare în care este necesară o presupunere.",
+"mines_toast_victory": "Victorie!",
+"mines_help_mobile": "Apasă pentru a descoperi • Apăsare lungă pentru steag • Sau activează Modul Steag",
+"mines_help_desktop": "Click stânga pentru descoperire • Click dreapta pentru steag • Sau activează Modul Steag (F)",
+
+"mines_toast_flag_on": "Mod Steag ACTIV",
+"mines_toast_reveal_mode": "Mod Descoperire",
+"mines_long_title": "Neon Minesweeper – Provocarea Logică Futuristă",
+"mines_diff_beginner": "Începător (8×8, 10 mine)",
+"mines_diff_intermediate": "Intermediar (12×12, 24 mine)",
+"mines_diff_expert": "Expert (16×16, 50 mine)",
+"arena_campaign_title": "Neon Arena – Campanie",
+
+"arena_mobile_hint": "Folosește joystick-ul pentru a te mișca • Trage pe ecran pentru a ținti • Ține apăsat SHOOT • Atinge pentru a deschide harta/meniul",
+
+"arena_btn_dash": "DASH",
+"arena_btn_shoot": "SHOOT",
+
+"arena_long_title": "Neon Arena – Shooter Neon Clasic Văzut de Sus",
+
+"arena_section_waves": "Luptă împotriva valurilor nesfârșite",
+
+"arena_desc_1": "Neon Arena combină mecanici clasice de shooter arcade cu un stil futurist luminos. Inamicii vin spre tine din toate direcțiile, obligându-te să te ferești, să te rotești și să tragi pentru a supraviețui în timp ce colectezi XP pentru upgrade-uri.",
+
+"arena_section_controls": "Controale",
+
+"arena_controls_text": "Mișcă-te cu WASD și țintește cu mouse-ul sau cu auto-aim.",
+"arena_level_neon_district": "Districtul Neon",
+"arena_level_neon_district_desc": "Zona introductivă: inamici standard și lasere pulsante.",
+
+"arena_level_crystal_dunes": "Dunele de Cristal",
+"arena_level_crystal_dunes_desc": "Inamici mai rapizi, lame rotative și un laser central.",
+
+"arena_level_void_sector": "Sectorul Vidului",
+"arena_level_void_sector_desc": "Valuri dense de inamici, tancuri și coridoare strâmte de ziduri.",
+
+"arena_level_final_nexus": "Nexusul Final",
+"arena_level_final_nexus_desc": "Laserele, lamele și zidurile se combină într-un final brutal.",
+"arena_campaign_hint": "Apasă pe un nivel pentru a începe. Nivelurile se deblochează pe măsură ce învingi boss-ii.",
+"arena_waves": "Valuri",
+"arena_boss_hp": "HP Boss",
+"arena_unlocked": "Deblocat",
+"arena_locked": "Blocat",
+"arena_press_m_title": "Apasă M pentru a reveni la meniul principal",
+"arena_hp": "Viață",
+"arena_score": "Scor",
+"arena_best": "Record",
+"arena_dash_mobile": "Dash (buton DASH)",
+"arena_dash_desktop": "Dash (Space / Shift)",
+"arena_speed": "Viteză",
+"arena_rapid_fire": "Foc Rapid",
+"arena_score": "Scor",
+"arena_best": "Record",
+"arena_dash_mobile": "Dash (buton DASH)",
+"arena_dash_desktop": "Dash (Space / Shift)",
+"arena_speed": "Viteză",
+"arena_rapid_fire": "Foc Rapid",
+"arena_main_menu": "Meniu Principal",
+"arena_main_page": "Pagina Principală",
+
+"arena_campaign_title": "NEON ARENA – CAMPANIE",
+"arena_campaign_open_map": "Apasă pentru a deschide harta campaniei",
+
+"arena_controls_mobile": "Mișcare: Joystick · Țintire: trage pe ecran · Trage: SHOOT · Dash: DASH · Pauză: ⏸",
+"arena_controls_desktop": "Mișcare: WASD · Țintire: Mouse · Trage: Click · Dash: Space · Pauză: P",
+
+"arena_paused": "PAUZĂ",
+"arena_resume_mobile": "Apasă ⏸ pentru a continua",
+"arena_resume_desktop": "Apasă P pentru a continua",
+
+"arena_game_over": "JOC TERMINAT",
+
+"arena_retry_mobile": "Apasă pentru a deschide harta și alege nivelul",
+"arena_retry_desktop": "Apasă ENTER pentru a reîncerca nivelul",
+
+"arena_menu_mobile": "Sau apasă butonul Meniu Principal",
+"arena_menu_desktop": "Apasă M pentru harta campaniei",
+
+"arena_level_complete": "NIVEL COMPLET!",
+"arena_all_levels_complete": "Toate nivelurile au fost finalizate!",
+
+"arena_next_mobile": "Apasă harta pentru nivelul următor",
+"arena_next_desktop": "Apasă ENTER pentru nivelul următor",
+
+"arena_map_mobile": "Apasă pentru a deschide harta",
+"arena_map_desktop": "Apasă M pentru harta campaniei",
+
+"arena_help_mobile_title": "Controale Mobile:",
+"arena_help_mobile_move": "Mișcare: Joystick (stânga)",
+"arena_help_mobile_aim": "Țintire: trage pe ecran",
+"arena_help_mobile_shoot": "Trage: ține apăsat SHOOT",
+"arena_help_mobile_dash": "Dash: buton DASH • Pauză: ⏸",
+"arena_help_mobile_toggle": "Arată / ascunde acest ajutor: H",
+
+"arena_help_desktop_title": "Controale:",
+"arena_help_desktop_move": "Mișcare: WASD / Săgeți",
+"arena_help_desktop_aim": "Țintire: Mouse · Trage: Click stânga",
+"arena_help_desktop_dash": "Dash: Space / Shift",
+"arena_help_desktop_avoid": "Evită laserele, lamele rotative și zidurile!",
+"arena_help_desktop_pause": "Pauză: P · Arată ajutor: H",
+"arena_wave": "Val",
+"arena_boss": "Boss",
+"arena_boss_not_yet": "Nu Inca",
+"autobattler_title": "Neon Auto Battler",
+"autobattler_mini": "(Mini)",
+
+"autobattler_start_round": "Începe Runda",
+"autobattler_reroll": "Reroll (2g)",
+"autobattler_restart": "Restart",
+
+"autobattler_gold": "Aur",
+"autobattler_round": "Rundă",
+"autobattler_hp": "Viață",
+"autobattler_shop": "Magazin",
+"autobattler_shop_hint": "Click unitate → click pe tile",
+
+"autobattler_how_to_play": "Cum se joacă:",
+"autobattler_how_text": "Cumpără unități din magazin (zona de jos), plasează-le pe partea ta (grila inferioară) și apoi apasă Incepe Runda. Unitățile luptă automat. Combină 3 unități identice pentru upgrade (★).",
+
+"autobattler_mobile_hint": "Mobil: apasă unitate → apasă tile. Desktop: click unitate → click tile.",
+
+"autobattler_long_title": "Neon Auto Battler – Luptă tactică într-o arenă neon",
+
+"autobattler_section_build": "Construiește, upgradează, domină",
+"autobattler_section_play": "Cum se joacă",
+"autobattler_section_controls": "Controale",
+"autobattler_section_tips": "Sfaturi și strategie",
+"autobattler_section_dev": "Informații pentru dezvoltatori",
+
+"autobattler_desc_1": "Neon Auto Battler este un joc de strategie în care lupta se desfășoară automat, dar deciziile tale determină totul.",
+"autobattler_desc_2": "Între runde, folosește aurul pentru a cumpăra unități, combină duplicatele pentru upgrade și poziționează-le strategic pe tablă.",
+
+"autobattler_controls": "Apasă sau fă click pe unități pentru a le plasa sau muta pe grilă.",
+
+"autobattler_tip_1": "Concentrează-te pe combinarea unităților identice pentru upgrade rapid.",
+"autobattler_tip_2": "Combină tancuri de linie frontală cu atacatori la distanță.",
+"autobattler_tip_3": "Folosește sinergii — mai multe unități de același tip oferă bonusuri.",
+
+"autobattler_dev": "Motorul AI este optimizat pentru modele de luptă dinamice și predictibile.",
+
+"autobattler_unit_spark": "Scânteie",
+"autobattler_unit_ember": "Jar",
+"autobattler_unit_viper": "Viperă",
+"autobattler_unit_bulwark": "Bastion",
+"autobattler_unit_nova": "Nova",
+"autobattler_selected": "Selectat:",
+"autobattler_place_tile": "Apasă pe o celulă de jos pentru a plasa.",
+"autobattler_msg_buy_place_start": "Cumpără unități, plasează-le și începe runda.",
+"autobattler_victory": "Victorie!",
+"autobattler_defeat": "Înfrângere!",
+"autobattler_place_unit_first": "Plasează cel puțin o unitate înainte de start!",
+"autobattler_fight": "Luptă!",
+"autobattler_game_over_restart": "Joc terminat. Apasă Restart.",
+"autobattler_msg_upgrade_tip": "Cumpără și plasează unități. Combină 3 identice pentru upgrade.",
+"autobattler_not_enough_gold": "Aur insuficient.",
+"autobattler_place_bottom": "Plasează unitățile pe partea ta (grila de jos).",
+"autobattler_tile_occupied": "Celula este ocupată.",
+"autobattler_placed_buy_or_start": "Plasat. Cumpără mai multe sau începe runda.",
+"autobattler_need_reroll_gold": "Ai nevoie de 2 aur pentru reroll.",
+"autobattler_shop_rerolled": "Magazin actualizat.",
+"autobattler_shop_disabled": "Magazinul este dezactivat în timpul luptei.",
+"autobattler_round_in_progress": "Runda este în desfășurare...",
+"autobattler_reroll_prep": "Reroll doar în faza de pregătire.",
+"autobattler_enemy": "INAMIC",
+"autobattler_you": "TU",
+"autobattler_shop_tap": "MAGAZIN (apasă pentru selectare)",
+"autobattler_range": "Rază",
+"autobattler_spd": "Viteză",
+"autobattler_tap_place": "Apasă pe o celulă de jos pentru plasare",
+"autobattler_sold": "Vândut",
+"autobattler_victory_big": "VICTORIE!",
+"autobattler_defeat_big": "ÎNFRÂNGERE!",
+"autobattler_round_end": "FINAL DE RUNDĂ",
+"autobattler_next_round_hint": "Apasă Runda Următoare pentru a continua",
+"autobattler_game_over": "JOC TERMINAT",
+"autobattler_restart_hint": "Apasă Restart pentru a încerca din nou",
+"autobattler_fighting": "Se luptă...",
+"autobattler_next_round": "Runda Următoare",
+"beat_title":"Neon Beat Tap (Ritm)",
+"beat_title_main":"Neon Beat Tap",
+"beat_rhythm":"(Ritm)",
+"beat_start":"Start",
+"beat_retry":"Reîncearcă",
+"beat_diff_easy":"Ușor",
+"beat_diff_normal":"Normal",
+"beat_diff_hard":"Greu",
+"beat_pack_arcade":"Pachet Arcade Click",
+"beat_pack_electro":"Pachet Electronic",
+"beat_pack_drum":"Pachet Drum Kit",
+"beat_layer_drum":"Tobe",
+"beat_layer_electro":"Electronic",
+"beat_layer_click":"Click",
+"beat_score":"Scor",
+"beat_combo":"Combo",
+"beat_best":"Cel mai bun",
+"beat_accuracy":"Precizie",
+"beat_controls":"Controale",
+"beat_tap":"APASĂ",
+"beat_perfect":"PERFECT",
+"beat_good":"BINE",
+"beat_bad":"SLAB",
+"beat_miss":"RATAT",
+"beat_menu_title":"NEON BEAT TAP",
+"beat_menu_desc":"Lovește notele pe ritm\nD F J K (desktop) • Apasă benzile (mobil)\nApasă Start pentru a juca",
+"beat_set_complete":"SET FINALIZAT",
+"beat_play_again":"Apasă / Start pentru a juca din nou",
+"beat_audio_tip":"Sfat audio: adaugă fișiere WAV în /sounds/beat/ pentru sunet profesional.",
+"beat_hint_controls":"Controale:",
+"beat_hint_play":"Lovește benzile pe ritm — D F J K (desktop) sau atinge benzile (mobil).",
+"beat_hint_timing":"Ferestre de timing: Perfect / Bine / Slab / Ratat.",
+"beat_hint_audio":"Sunete: această versiune folosește mostre reale (nu beep-uri urâte). Pune fișierele audio în /sounds/beat/ (vezi notele din cod).",
+
+"beat_article_title":"Neon Beat Tap – Luptă Ritmică într-un Peisaj Sonor Neon",
+"beat_article_music":"Simte Muzica, Urmează Ritmul",
+
+"beat_article_desc1":"Neon Beat Tap transformă browserul tău într-o arenă muzicală luminoasă unde ritmul și precizia îți determină scorul. Notele coboară pe șine neon sincronizate cu melodii synthwave pulsante. Apasă exact când ajung în zona de lovire pentru a crea combo-uri și a câștiga puncte mari.",
+
+"beat_article_desc2":"Această experiență ritmică neon este creată atât pentru jucători casual, cât și pentru fanii hardcore ai jocurilor de ritm care caută provocări rapide de timing.",
+
+"beat_article_how":"Cum se joacă",
+
+"beat_article_how_desc":"Notele coboară spre zona de lovire. Apasă la momentul potrivit pentru a le lovi. Precizia ta determină scorul și progresul combo-urilor.",
+
+"beat_article_controls":"Controale",
+"beat_article_controls_desktop":"Desktop: Click sau tastele atribuite pentru fiecare bandă.",
+"beat_article_controls_mobile":"Mobil: Atinge direct ecranul.",
+
+"beat_article_tips":"Sfaturi și Strategie",
+
+"beat_tip1":"Concentrează-te pe timing mai mult decât pe viteză — precizia crește multiplicatorul de combo.",
+"beat_tip2":"Memorează tiparele notelor pentru melodii dificile.",
+"beat_tip3":"Ține ritmul cu beat-urile din fundal.",
+
+"beat_article_dev":"Informații pentru Dezvoltatori",
+
+"beat_article_dev_desc":"Întregul sistem de note este sincronizat folosind semnături de timp audio pentru a asigura acuratețe ritmică. Efectele vizuale reacționează dinamic la combo-uri și serii, crescând imersiunea."
+
 
 
 

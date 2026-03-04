@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Neon Auto Battler</title>
+  <title data-i18n="autobattler_title">Neon Auto Battler</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
@@ -214,6 +214,7 @@
       .pill { width: 100%; justify-content: space-between; }
     }
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 <body>
 
@@ -224,10 +225,16 @@
   <main class="main-game">
     <div class="top-banner"><div class="top-banner-inner"></div></div>
 
-    <div class="game-header">
-      <div class="title">🧠 Neon Auto Battler <span style="opacity:.65;font-weight:700;">(Mini)</span></div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
-    </div>
+		<div class="game-header">
+		  <div class="title">
+			🧠 <span data-i18n="autobattler_title">Neon Auto Battler</span>
+			<span style="opacity:.65;font-weight:700;" data-i18n="autobattler_mini">(Mini)</span>
+		  </div>
+
+		  <div>
+			<a href="index.html" data-i18n="back_to_hub">⬅ Back to Hub</a>
+		  </div>
+		</div>
 
     <div class="game-body">
       <div class="frame">
@@ -235,69 +242,75 @@
 
         <div class="controls">
           <div class="left-controls">
-            <button class="btn" id="btnRound">▶ Start Round</button>
-            <button class="btn" id="btnReroll">🔄 Reroll (2g)</button>
-            <button class="btn" id="btnRestart">♻ Restart</button>
+			<button class="btn" id="btnRound" data-i18n="autobattler_start_round">▶ Start Round</button>
+			<button class="btn" id="btnReroll" data-i18n="autobattler_reroll">🔄 Reroll (2g)</button>
+			<button class="btn" id="btnRestart" data-i18n="autobattler_restart">♻ Restart</button>
           </div>
           <div class="right-controls">
             <div class="pill" id="hudPill">
-              <span>Gold: <b id="hudGold">10</b></span>
-              <span>Round: <b id="hudRound">1</b></span>
-              <span>HP: <b id="hudHP">20</b></span>
-              <span>Shop: <b>Click unit → click tile</b></span>
+                <span><span data-i18n="autobattler_gold">Gold</span>: <b id="hudGold">10</b></span>
+				<span><span data-i18n="autobattler_round">Round</span>: <b id="hudRound">1</b></span>
+				<span><span data-i18n="autobattler_hp">HP</span>: <b id="hudHP">20</b></span>
+				<span><span data-i18n="autobattler_shop">Shop</span>: <b data-i18n="autobattler_shop_hint">Click unit → click tile</b></span>
             </div>
           </div>
         </div>
       </div>
 
       <div class="hint">
-        <b>How to play:</b> Buy units from the shop (bottom area), place them on your side (lower grid),
-        then press <b>Start Round</b>. Units fight automatically. Combine <b>3 identical</b> units to upgrade (★).
-        <br/>
-        <span style="opacity:.9;">Mobile: tap unit → tap tile. Desktop: click unit → click tile.</span>
-      </div>
-    </div>
-	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Neon Auto Battler – Tactical Combat in a Glowing Arena</h1>
+  <b data-i18n="autobattler_how_to_play">How to play:</b>
+  <span data-i18n="autobattler_how_text">
+    Buy units from the shop (bottom area), place them on your side (lower grid),
+    then press Start Round. Units fight automatically. Combine 3 identical units to upgrade (★).
+  </span>
+  <br/>
+  <span style="opacity:.9;" data-i18n="autobattler_mobile_hint">
+    Mobile: tap unit → tap tile. Desktop: click unit → click tile.
+  </span>
+</div>
 
-<h2>Build, Upgrade, Dominate</h2>
-<p>
+
+<h1 data-i18n="autobattler_long_title">
+Neon Auto Battler – Tactical Combat in a Glowing Arena
+</h1>
+
+<h2 data-i18n="autobattler_section_build">Build, Upgrade, Dominate</h2>
+
+<p data-i18n="autobattler_desc_1">
 Neon Auto Battler is a strategy game where the battlefield resolves automatically,
-but your decisions determine everything. Choose units, position them wisely,
-upgrade your frontline, and combine powerful synergies that trigger unique effects.
-Once the battle begins, your squad fights autonomously against your opponent’s formation.
+but your decisions determine everything.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="autobattler_section_play">How to Play</h2>
+
+<p data-i18n="autobattler_desc_2">
 Between rounds, use gold to purchase units, merge duplicates to upgrade them,
-and place them strategically on the board. When the match starts, units attack on
-their own using AI combat logic.
+and place them strategically on the board.
 </p>
 
-<h2>Controls</h2>
-<p>Click or tap units to place or move them on the grid.</p>
+<h2 data-i18n="autobattler_section_controls">Controls</h2>
 
-<h2>Tips & Strategy</h2>
+<p data-i18n="autobattler_controls">
+Click or tap units to place or move them on the grid.
+</p>
+
+<h2 data-i18n="autobattler_section_tips">Tips & Strategy</h2>
+
 <ul>
-  <li>Focus on merging duplicates early for quick power boosts.</li>
-  <li>Mix frontline tanks with ranged backline attackers.</li>
-  <li>Use synergies — multiple units of the same type unlock bonuses.</li>
+  <li data-i18n="autobattler_tip_1">Focus on merging duplicates early for quick power boosts.</li>
+  <li data-i18n="autobattler_tip_2">Mix frontline tanks with ranged backline attackers.</li>
+  <li data-i18n="autobattler_tip_3">Use synergies — multiple units of the same type unlock bonuses.</li>
 </ul>
 
-<h2>Developer Insights</h2>
-<p>
+<h2 data-i18n="autobattler_section_dev">Developer Insights</h2>
+
+<p data-i18n="autobattler_dev">
 The AI engine is optimized for predictable but dynamic combat patterns,
 making battles feel lively without overwhelming players.
 </p>
 
   </main>
 
-  <!-- RIGHT COLUMN (kept empty for Auto Ads) -->
-  <aside class="side-banner"></aside>
 </div>
 
 <script>
@@ -367,11 +380,11 @@ making battles feel lively without overwhelming players.
 
   // --- Game data ---
   const UNIT_DB = [
-    { id:"spark",  name:"Spark",  color:"#38bdf8", hp:28, atk:7,  spd:1.0, range:110, cost:3, fx:"#38bdf8" },
-    { id:"ember",  name:"Ember",  color:"#f97316", hp:22, atk:10, spd:1.0, range:80,  cost:3, fx:"#f97316" },
-    { id:"viper",  name:"Viper",  color:"#a855f7", hp:18, atk:6,  spd:1.6, range:140, cost:3, fx:"#a855f7" },
-    { id:"bulwark",name:"Bulwark",color:"#22c55e", hp:46, atk:5,  spd:0.8, range:70,  cost:4, fx:"#22c55e" },
-    { id:"nova",   name:"Nova",   color:"#ec4899", hp:20, atk:8,  spd:1.2, range:130, cost:4, fx:"#ec4899" }
+    { id:"spark",  nameKey:"autobattler_unit_spark",  color:"#38bdf8", hp:28, atk:7,  spd:1.0, range:110, cost:3, fx:"#38bdf8" },
+    { id:"ember",  nameKey:"autobattler_unit_ember",  color:"#f97316", hp:22, atk:10, spd:1.0, range:80,  cost:3, fx:"#f97316" },
+    { id:"viper",  nameKey:"autobattler_unit_viper",  color:"#a855f7", hp:18, atk:6,  spd:1.6, range:140, cost:3, fx:"#a855f7" },
+    { id:"bulwark",nameKey:"autobattler_unit_bulwark",color:"#22c55e", hp:46, atk:5,  spd:0.8, range:70,  cost:4, fx:"#22c55e" },
+    { id:"nova",   nameKey:"autobattler_unit_nova",   color:"#ec4899", hp:20, atk:8,  spd:1.2, range:130, cost:4, fx:"#ec4899" }
   ];
 
   function makeUnit(def, team, star=1){
@@ -398,7 +411,7 @@ making battles feel lively without overwhelming players.
     round: 1,
     gold: 10,
     hp: 20,
-    message: "Buy units, place them, start the round.",
+    message: "",
     selectedShopIndex: null,
     shop: [],
     grid: Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null)),
@@ -434,7 +447,7 @@ making battles feel lively without overwhelming players.
     state.round = 1;
     state.gold = 10;
     state.hp = 20;
-    state.message = "Buy units, place them, start the round.";
+    state.message = t("autobattler_msg_buy_place_start");
     state.selectedShopIndex = null;
     state.grid = Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null));
     state.enemyGrid = Array.from({length:ROWS}, ()=>Array.from({length:COLS}, ()=>null));
@@ -707,10 +720,10 @@ making battles feel lively without overwhelming players.
       state.mode = "result";
       state.resultTimer = 1.0;
       if(playerAlive && !enemyAlive){
-        state.message = "✅ Victory! +5 gold";
+        state.message = `✅ ${t("autobattler_victory")} +5 ${t("autobattler_gold")}`;
         state.gold += 5;
       } else {
-        state.message = "❌ Defeat! -1 HP";
+        state.message = `❌ ${t("autobattler_defeat")} -1 ${t("autobattler_hp")}`;
         state.hp -= 1;
       }
       updateHUD();
@@ -726,7 +739,7 @@ making battles feel lively without overwhelming players.
       if(any) break;
     }
     if(!any){
-      state.message = "Place at least 1 unit before starting!";
+      state.message = t("autobattler_place_unit_first");
       return;
     }
 
@@ -735,12 +748,12 @@ making battles feel lively without overwhelming players.
     state.projectiles = [];
     state.particles = [];
     state.mode = "fight";
-    state.message = "Fight!";
+    state.message = t("autobattler_place_unit_first");
   }
 
   function nextPrep(){
     if(state.hp <= 0){
-      state.message = "💥 Game over. Press Restart.";
+      state.message = `💥 ${t("autobattler_game_over_restart")}`;
       state.mode = "prep";
       return;
     }
@@ -749,7 +762,7 @@ making battles feel lively without overwhelming players.
     rollShop();
     state.selectedShopIndex = null;
     state.mode = "prep";
-    state.message = "Buy & place units. Combine 3 identical to upgrade.";
+    state.message = t("autobattler_msg_upgrade_tip");
     updateHUD();
   }
 
@@ -759,11 +772,11 @@ making battles feel lively without overwhelming players.
     if(!def) return;
 
     if(state.gold < def.cost){
-      state.message = "Not enough gold.";
+      state.message = t("autobattler_not_enough_gold");
       return;
     }
     state.selectedShopIndex = shopIndex;
-    state.message = `Selected: ${def.name}. Tap a bottom tile to place.`;
+    state.message = `${t("autobattler_selected")} ${t(def.nameKey)}. ${t("autobattler_place_tile")}`;
   }
 
   function placeSelectedOn(cell){
@@ -771,15 +784,15 @@ making battles feel lively without overwhelming players.
     if(!def) return;
 
     if(!isPlayerCell(cell.r)){
-      state.message = "Place units on your side (bottom grid).";
+      state.message = t("autobattler_place_bottom");
       return;
     }
     if(state.grid[cell.r][cell.c]){
-      state.message = "Tile occupied.";
+      state.message = t("autobattler_placed_buy_or_start");
       return;
     }
     if(state.gold < def.cost){
-      state.message = "Not enough gold.";
+      state.message = t("autobattler_not_enough_gold");
       return;
     }
 
@@ -792,18 +805,18 @@ making battles feel lively without overwhelming players.
     state.shop[state.selectedShopIndex] = null;
     state.selectedShopIndex = null;
 
-    state.message = "Placed. Buy more or start round.";
+    state.message = t("autobattler_placed_buy_or_start");
     updateHUD();
   }
 
   function reroll(){
     if(state.gold < 2){
-      state.message = "Need 2 gold to reroll.";
+      state.message = t("autobattler_need_reroll_gold");
       return;
     }
     state.gold -= 2;
     rollShop();
-    state.message = "Shop rerolled.";
+    state.message = t("autobattler_shop_rerolled");
     updateHUD();
   }
 
@@ -830,7 +843,7 @@ making battles feel lively without overwhelming players.
       for(let i=0;i<slots.length;i++){
         const s = slots[i];
         if(p.x >= s.x && p.x <= s.x+s.w && p.y >= s.y && p.y <= s.y+s.h){
-          if(state.mode !== "prep"){ state.message = "Shop is disabled during fights."; return; }
+          if(state.mode !== "prep"){ state.message = t("autobattler_shop_disabled"); return; }
           if(state.shop[i]) buyUnit(i);
           return;
         }
@@ -848,12 +861,12 @@ making battles feel lively without overwhelming players.
   // --- Buttons ---
   btnRound.addEventListener("click", () => {
     if(state.mode === "prep") startRound();
-    else if(state.mode === "fight") state.message = "Round in progress...";
+    else if(state.mode === "fight") state.message = t("autobattler_round_in_progress");
     else if(state.mode === "result") nextPrep();
   });
 
   btnReroll.addEventListener("click", () => {
-    if(state.mode !== "prep"){ state.message = "Reroll only in prep."; return; }
+    if(state.mode !== "prep"){ state.message = t("autobattler_reroll_prep"); return; }
     reroll();
   });
 
@@ -895,7 +908,7 @@ making battles feel lively without overwhelming players.
     ctx.textAlign = "right";
     ctx.fillStyle = "#e5e7eb";
     ctx.font = "12px system-ui";
-    ctx.fillText(`Gold ${state.gold}  •  Round ${state.round}  •  HP ${state.hp}`, W - 18, 26);
+    ctx.fillText(`${t("autobattler_gold")} ${state.gold}  •  ${t("autobattler_round")} ${state.round}  •  ${t("autobattler_hp")} ${state.hp}`, W - 18, 26);
 
     ctx.restore();
   }
@@ -937,9 +950,9 @@ making battles feel lively without overwhelming players.
     ctx.fillStyle = "rgba(203,213,245,0.85)";
     ctx.font = "11px system-ui";
     ctx.textAlign = "left";
-    ctx.fillText("ENEMY", GRID_X, GRID_Y2 - 10);
+    ctx.fillText(t("autobattler_enemy"), GRID_X, GRID_Y2 - 10);
     ctx.textAlign = "right";
-    ctx.fillText("YOU", GRID_X + CELL*COLS, GRID_Y2 + CELL*ROWS + 18);
+    ctx.fillText(t("autobattler_you"), GRID_X + CELL*COLS, GRID_Y2 + CELL*ROWS + 18);
 
     ctx.restore();
   }
@@ -1032,7 +1045,7 @@ making battles feel lively without overwhelming players.
     ctx.font = "12px system-ui";
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText("SHOP (tap to select)", 18, y0 + 14);
+    ctx.fillText(t("autobattler_shop_tap"), 18, y0 + 14);
 
     const slots = getShopSlots();
     for(let i=0;i<slots.length;i++){
@@ -1062,12 +1075,12 @@ making battles feel lively without overwhelming players.
         ctx.font = "14px system-ui";
         ctx.textAlign = "left";
         ctx.textBaseline = "top";
-        ctx.fillText(def.name, s.x + 52, s.y + 14);
+        ctx.fillText(t(def.nameKey), s.x + 52, s.y + 14);
 
         ctx.fillStyle = "#9ca3af";
         ctx.font = "11px system-ui";
         ctx.fillText(`HP ${def.hp}  •  ATK ${def.atk}`, s.x + 52, s.y + 34);
-        ctx.fillText(`Range ${def.range}  •  SPD ${def.spd.toFixed(1)}`, s.x + 52, s.y + 50);
+        ctx.fillText(`${t("autobattler_range")} ${def.range}  •  ${t("autobattler_spd")} ${def.spd.toFixed(1)}`, s.x + 52, s.y + 50);
 
         ctx.textAlign = "right";
         ctx.fillStyle = "#facc15";
@@ -1078,14 +1091,14 @@ making battles feel lively without overwhelming players.
           ctx.textAlign = "center";
           ctx.fillStyle = "rgba(224,242,254,0.9)";
           ctx.font = "11px system-ui";
-          ctx.fillText("Tap a bottom tile to place", s.x + s.w/2, s.y + s.h - 18);
+          ctx.fillText(t("autobattler_tap_place"), s.x + s.w/2, s.y + s.h - 18);
         }
       } else {
         ctx.fillStyle = "rgba(148,163,184,0.35)";
         ctx.font = "12px system-ui";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Sold", s.x + s.w/2, s.y + s.h/2);
+        ctx.fillText(t("autobattler_sold"), s.x + s.w/2, s.y + s.h/2);
       }
 
       ctx.restore();
@@ -1155,13 +1168,14 @@ making battles feel lively without overwhelming players.
       ctx.textBaseline = "middle";
       ctx.font = "28px system-ui";
       ctx.fillText(
-        state.message.includes("Victory") ? "VICTORY!" :
-        state.message.includes("Defeat") ? "DEFEAT!" : "ROUND END",
+        state.message.includes(t("autobattler_victory")) ? t("autobattler_victory_big") :
+		state.message.includes(t("autobattler_defeat")) ? t("autobattler_defeat_big") :
+		t("autobattler_round_end"),
         W/2, H/2 - 30
       );
       ctx.font = "14px system-ui";
       ctx.fillStyle = "#cbd5f5";
-      ctx.fillText("Press Next Round to continue to next round", W/2, H/2 + 10);
+      ctx.fillText(t("autobattler_next_round_hint"), W/2, H/2 + 10);
       ctx.restore();
     }
     if(state.hp <= 0){
@@ -1172,10 +1186,10 @@ making battles feel lively without overwhelming players.
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.font = "28px system-ui";
-      ctx.fillText("GAME OVER", W/2, H/2 - 20);
+      ctx.fillText(t("autobattler_game_over"), W/2, H/2 - 20);
       ctx.fillStyle = "#e5e7eb";
       ctx.font = "14px system-ui";
-      ctx.fillText("Press Restart to try again", W/2, H/2 + 18);
+      ctx.fillText(t("autobattler_restart_hint"), W/2, H/2 + 18);
       ctx.restore();
     }
   }
@@ -1200,9 +1214,9 @@ making battles feel lively without overwhelming players.
 
   // --- Main loop ---
   let last = performance.now();
-  function loop(t){
-    const dt = Math.min(0.033, (t-last)/1000);
-    last = t;
+  function loop(ts){
+    const dt = Math.min(0.033, (ts-last)/1000);
+    last = ts;
 
     if(state.mode === "fight"){
       updateFight(dt);
@@ -1221,9 +1235,9 @@ making battles feel lively without overwhelming players.
       }
     }
 
-    if(state.mode === "prep") btnRound.textContent = "▶ Start Round";
-    else if(state.mode === "fight") btnRound.textContent = "⏳ Fighting...";
-    else if(state.mode === "result") btnRound.textContent = "➡ Next Round";
+    if(state.mode === "prep") btnRound.textContent = `▶ ${t("autobattler_start_round")}`;
+    else if(state.mode === "fight") btnRound.textContent = `⏳ ${t("autobattler_fighting")}`;
+    else if(state.mode === "result") btnRound.textContent = `➡ ${t("autobattler_next_round")}`;
 
     draw();
     requestAnimationFrame(loop);
@@ -1232,8 +1246,12 @@ making battles feel lively without overwhelming players.
   // --- Init ---
   resetAll();
   requestAnimationFrame(loop);
+  setTimeout(() => {
+  state.message = t("autobattler_msg_buy_place_start");
+}, 200);
 })();
 </script>
+
 <script src="/js/ads.js"></script>
 </body>
 <script src="footer.js"></script>

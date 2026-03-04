@@ -1,8 +1,15 @@
+window.i18n = {};
+window.currentLang = "en";
 async function loadLanguage(lang) {
     try {
-        const response = await fetch(`lang/${lang}.json`);
+        const response = await fetch(`../lang/${lang}.json`);
         const dict = await response.json();
 
+        // ✔ salvează dicționarul pentru funcția t()
+        window.i18n[lang] = dict;
+        window.currentLang = lang;
+
+        // ✔ aplică traducerile din DOM
         document.querySelectorAll("[data-i18n]").forEach(el => {
             const key = el.getAttribute("data-i18n");
             if (dict[key]) el.textContent = dict[key];
@@ -17,7 +24,10 @@ async function loadLanguage(lang) {
         console.error("Failed to load language file:", err);
     }
 }
-
+// 🔵 FUNCTIA t() — pentru texte in JavaScript
+function t(key) {
+    return window.i18n?.[window.currentLang]?.[key] || key;
+}
 
 function detectDefaultLanguage() {
     // 1. Respect user selection if saved
@@ -34,13 +44,20 @@ function detectDefaultLanguage() {
 
 
 // ====================== MAIN INITIALISER ======================
+
 (async () => {
     const lang = detectDefaultLanguage();
     await loadLanguage(lang);
+
+    // 🔥 notificăm că limbajul e pregătit (JOCUL AȘTEAPTĂ ASTA)
+    document.dispatchEvent(new Event("i18n-ready"));
 
     // Makes EN/RO buttons work globally
     window.setLanguage = async function(newLang) {
         localStorage.setItem("site-lang", newLang);
         await loadLanguage(newLang);
+
+        // 🔥 când schimbăm limba — retraducem și jocul
+        document.dispatchEvent(new Event("i18n-ready"));
     };
 })();
