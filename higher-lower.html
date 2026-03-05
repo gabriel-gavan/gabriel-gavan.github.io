@@ -2,91 +2,97 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Higher / Lower</title>
+  <title data-i18n="hl_title">Higher / Lower</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
+		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
 		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
     a { color:#a5b4fc; }
     .card-row { display:flex;justify-content:center;gap:1rem;margin:1rem 0; }
     .card { padding:.5rem 1rem;border-radius:.6rem;border:1px solid #374151;background:#111827;font-size:1.4rem;min-width:70px; }
     button { padding:.4rem .9rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin:0 .3rem; }
 	
-	/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+	.pc-only { display: block; }
 
-	/* Hide SEO text on mobile/tablet */
 	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
+	  .pc-only { display: none !important; }
 	}
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 <body>
 
-<h2>⬆⬇ Higher / Lower</h2>
-<a href="index.html">⬅ Back</a>
-<p>Guess if the next number (1–100) will be higher or lower than the current one.</p>
+<h2 data-i18n="hl_header">⬆⬇ Higher / Lower</h2>
+
+<a href="index.html" data-i18n="back_button">⬅ Back</a>
+
+<p data-i18n="hl_description">
+Guess if the next number (1–100) will be higher or lower than the current one.
+</p>
 
 <div class="card-row">
   <div class="card" id="current">?</div>
   <div class="card" id="next">?</div>
 </div>
 
-<button onclick="guess('higher')">Higher</button>
-<button onclick="guess('lower')">Lower</button>
+<button onclick="guess('higher')" data-i18n="hl_higher_btn">Higher</button>
+<button onclick="guess('lower')" data-i18n="hl_lower_btn">Lower</button>
 
 <p id="msg"></p>
-<p id="score">Score: 0</p>
+<p id="score" data-i18n="hl_score">Score: 0</p>
+
 <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Higher or Lower – Neon Probability Guessing Game</h1>
+<h1 data-i18n="hl_seo_title">Higher or Lower – Neon Probability Guessing Game</h1>
 
-<h2>Predict the Next Neon Number</h2>
-<p>
+<h2 data-i18n="hl_predict_title">Predict the Next Neon Number</h2>
+
+<p data-i18n="hl_predict_text">
 Higher or Lower is a fast-paced guessing game where your task is to predict whether the
 next card, number, or value will be higher or lower than the current one.
 The rules are simple, but the excitement grows quickly as streaks build and pressure rises.
 This neon-themed edition enhances the experience with glowing animations and instant feedback.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="hl_how_title">How to Play</h2>
+
+<p data-i18n="hl_how_text">
 A starting number appears on the screen. Choose “Higher” or “Lower” to predict what the
 next number will be. If your prediction is correct, your streak continues. If not, the
 round ends and your score resets.
 </p>
 
-<h2>Controls</h2>
-<p><strong>Desktop:</strong> Click Higher or Lower.</p>
-<p><strong>Mobile:</strong> Tap either button for an instant prediction.</p>
+<h2 data-i18n="hl_controls_title">Controls</h2>
 
-<h2>Tips & Strategy</h2>
+<p data-i18n="hl_controls_desktop"><strong>Desktop:</strong> Click Higher or Lower.</p>
+<p data-i18n="hl_controls_mobile"><strong>Mobile:</strong> Tap either button for an instant prediction.</p>
+
+<h2 data-i18n="hl_tips_title">Tips & Strategy</h2>
+
 <ul>
-  <li>If the current number is low (1–4), chances favor “Higher.”</li>
-  <li>If the number is high (7–10), “Lower” becomes statistically safer.</li>
-  <li>Play streaks strategically — know when to quit if your version allows it.</li>
+  <li data-i18n="hl_tip1">If the current number is low (1–4), chances favor “Higher.”</li>
+  <li data-i18n="hl_tip2">If the number is high (7–10), “Lower” becomes statistically safer.</li>
+  <li data-i18n="hl_tip3">Play streaks strategically — know when to quit if your version allows it.</li>
 </ul>
 
-<h2>Developer Insights</h2>
-<p>
+<h2 data-i18n="hl_dev_title">Developer Insights</h2>
+
+<p data-i18n="hl_dev_text">
 The game uses a random generator with uniform probability, ensuring fairness in every
 round. Animations and transitions are optimized to feel sharp and responsive across both
 desktop and touch devices.
 </p>
 
-<h2>FAQ</h2>
-<h3>Is the game luck-based?</h3>
-<p>Yes, but probability awareness significantly improves your streak potential.</p>
+<h2 data-i18n="hl_faq_title">FAQ</h2>
 
-<h3>Can the game adapt difficulty?</h3>
-<p>Some versions include modes with smaller ranges or special modifiers.</p>
+<h3 data-i18n="hl_faq1_q">Is the game luck-based?</h3>
+<p data-i18n="hl_faq1_a">Yes, but probability awareness significantly improves your streak potential.</p>
+
+<h3 data-i18n="hl_faq2_q">Can the game adapt difficulty?</h3>
+<p data-i18n="hl_faq2_a">Some versions include modes with smaller ranges or special modifiers.</p>
+
+</div>
 
 <script>
 let current=0, score=0;
@@ -102,14 +108,16 @@ function guess(type){
   const next = Math.floor(Math.random()*100)+1;
   document.getElementById("next").innerText=next;
   const correct = type==="higher" ? next>current : next<current;
-  if(correct){
-    score++;
-    document.getElementById("msg").innerText="✅ Correct!";
-  } else {
-    score=0;
-    document.getElementById("msg").innerText="❌ Wrong!";
-  }
-  document.getElementById("score").innerText="Score: "+score;
+
+if(correct){
+	  score++;
+	  document.getElementById("msg").innerText = t("hl_correct");
+	} else {
+	  score = 0;
+	  document.getElementById("msg").innerText = t("hl_wrong");
+	}
+
+	document.getElementById("score").innerText = t("hl_score_label") + ": " + score;	
   current=next;
   document.getElementById("current").innerText=current;
   document.getElementById("next").innerText="?";
@@ -117,6 +125,7 @@ function guess(type){
 
 newRound();
 </script>
+
 <script src="/js/ads.js"></script>
 </body>
 <script src="footer.js"></script>

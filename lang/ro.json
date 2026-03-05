@@ -1154,9 +1154,460 @@
 
 "beat_article_dev":"Informații pentru Dezvoltatori",
 
-"beat_article_dev_desc":"Întregul sistem de note este sincronizat folosind semnături de timp audio pentru a asigura acuratețe ritmică. Efectele vizuale reacționează dinamic la combo-uri și serii, crescând imersiunea."
+"beat_article_dev_desc":"Întregul sistem de note este sincronizat folosind semnături de timp audio pentru a asigura acuratețe ritmică. Efectele vizuale reacționează dinamic la combo-uri și serii, crescând imersiunea.",
+"patternlock_title":"Blocare Model",
+"patternlock_header":"Blocare Model",
+"patternlock_back":"Înapoi",
+"patternlock_instruction":"Apasă punctele în ordine pentru a reproduce modelul afișat.",
+"patternlock_reset":"Resetează introducerea",
+
+"patternlock_article_title":"Pattern Lock – Puzzle Logic Neon Connect-the-Dots",
+"patternlock_section_grid":"Sparge Grila de Securitate Luminoasă",
+
+"patternlock_desc":"Pattern Lock reinterpretează sistemul clasic de deblocare prin conectarea punctelor întâlnit pe dispozitive digitale. Sarcina ta este să trasezi un model luminos peste noduri în exact aceeași secvență afișată, replicând sistemele de securitate din interfețe neon futuriste. Cu fiecare nivel, modelele devin mai lungi și mai greu de memorat.",
+
+"patternlock_how":"Cum se joacă",
+"patternlock_how_desc":"Un model apare pentru scurt timp. Memorează ordinea și apoi reproduce secvența conectând nodurile neon într-o singură mișcare continuă.",
+
+"patternlock_controls":"Controale",
+"patternlock_controls_desktop":"Desktop: Click și trage peste noduri.",
+"patternlock_controls_mobile":"Mobil: Glisează continuu peste puncte.",
+
+"patternlock_tips":"Sfaturi",
+"patternlock_tip1":"Concentrează-te pe forma modelului, nu pe puncte individuale.",
+"patternlock_tip2":"Începe încet până când memoria musculară se îmbunătățește.",
+"patternlock_tip3":"Împarte modelele lungi în segmente mentale mai mici.",
+
+"patternlock_dev":"Informații pentru dezvoltatori",
+"patternlock_dev_desc":"Jocul folosește urmărirea gesturilor pentru recunoaștere precisă a modelului, oferind o experiență naturală similară ecranului de blocare pe mobil.",
+
+"patternlock_pattern":"Model",
+"patternlock_unlocked":"Deblocat!",
+"patternlock_wrong":"Model greșit!",
+"patternlock_input":"Introducere",
+"reaction.title": "Test de Reacție",
+  "reaction.header": "⚡ Test de Reacție",
+  "reaction.back": "⬅ Înapoi la Hub",
+
+  "reaction.instructions": "Apasă/click când devine <b>VERDE</b>. Dacă apeși prea devreme, pierzi runda.",
+  "reaction.start_button": "START",
+
+  "reaction.last": "Ultimul: —",
+  "reaction.best": "Cel mai bun: —",
+
+  "reaction.hint": "Desktop: click pe pad / apasă <b>Space</b> · Mobile: atinge ecranul.",
+
+  "reaction.start": "Start",
+  "reaction.restart": "Restart",
+
+  "reaction.seo_title": "Test de Reacție – Antrenor Neon pentru Reflexe",
+
+  "reaction.seo_fast_title": "Cât de rapide sunt reflexele tale?",
+  "reaction.seo_fast_text": "Reaction Test măsoară viteza pură de reacție provocându-te să atingi ecranul în momentul în care fundalul neon își schimbă culoarea. Perfect pentru gameri care vor să își îmbunătățească reflexele sau pentru oricine dorește să își măsoare timpul de reacție.",
+
+  "reaction.seo_play_title": "Cum se joacă",
+  "reaction.seo_play_text": "Așteaptă până când ecranul luminează. În momentul în care culoarea se schimbă, apasă imediat. Timpul tău este înregistrat în milisecunde.",
+
+  "reaction.seo_controls_title": "Controale",
+  "reaction.seo_controls_text": "Apasă sau dă click cât de repede poți.",
+
+  "reaction.seo_tips_title": "Sfaturi",
+  "reaction.tip1": "Rămâi concentrat — nu anticipa prea devreme.",
+  "reaction.tip2": "Joacă mai multe runde pentru a obține o medie a celui mai bun scor.",
+
+  "reaction.dev_title": "Note pentru dezvoltatori",
+  "reaction.dev_text": "Jocul utilizează funcții de cronometrare de înaltă precizie pentru a măsura timpul de reacție până la milisecundă.",
+"reaction.best_empty": "Cel mai bun: —",
+  "reaction.best_ms": "Cel mai bun: {value} ms",
+
+  "reaction.last_empty": "Ultimul: —",
+
+  "reaction.start_button": "START",
+
+  "reaction.wait_start": "Apasă Start, apoi așteaptă culoarea VERDE.",
+
+  "reaction.wait": "AȘTEAPTĂ…",
+
+  "reaction.wait_green": "Așteaptă VERDE…",
+
+  "reaction.tap": "APASĂ!",
+
+  "reaction.go_now": "GO! Apasă acum!",
+
+  "reaction.too_soon": "PREA DEVREME!",
+
+  "reaction.too_soon_msg": "Prea devreme 😅 Apasă Start pentru a încerca din nou.",
+  "reaction.last_ms": "Ultimul: {value} ms",
+  "rps.title":"Piatră Hârtie Foarfecă",
+"rps.header":"Piatră Hârtie Foarfecă",
+"rps.back":"⬅ Înapoi la Hub",
+
+"rps.hud_title":"RPS – Duel Neon",
+"rps.hud_sub":"Primul la 5 câștiguri. Apasă butoanele sau tastele R / P / S.",
+
+"rps.you":"Tu",
+"rps.cpu":"CPU",
+"rps.streak":"Serie",
+
+"rps.you_label":"TU",
+"rps.cpu_label":"CPU",
+
+"rps.vs":"VS",
+
+"rps.rock":"🪨 PIATRĂ",
+"rps.paper":"📄 HÂRTIE",
+"rps.scissors":"✂️ FOARFECĂ",
+
+"rps.reset":"RESET",
+
+"rps.start_msg":"Alege Piatră, Hârtie sau Foarfecă pentru a începe.",
+"rps.hint":"Tastatură: R = Piatră, P = Hârtie, S = Foarfecă",
+
+"rps.draw":"Egalitate! Amândoi ați ales {pick}.",
+"rps.win":"Ai câștigat! {player} bate {cpu}.",
+"rps.lose":"Ai pierdut! {cpu} bate {player}.",
+
+"rps.match_win":"🏆 Ai câștigat meciul!",
+"rps.match_lose":"💥 CPU a câștigat meciul!",
+"rps.match_end":"{result} (Primul la 5) Apasă RESET pentru a juca din nou.",
+"rps.seo_title": "Piatră Hârtie Foarfecă – Ediția Neon",
+
+"rps.seo_desc": "Clasicul joc Piatră Hârtie Foarfecă revine într-un stil neon. Alege mutarea ta și provoacă inteligența artificială în runde rapide care îți testează intuiția și recunoașterea tiparelor.",
+
+    "snake_neon_snake": "Șarpele Neon",
+    "snake_restart": "↻ Repornește",
+    "snake_restart_upper": "RESTART",
+    "snake_back_to_hub": "⬅ Înapoi la Hub",
+
+    "snake_score_best": "Scor: 0 · Record: 0",
+    "snake_score_best_values": "Scor: {score} · Record: {best}",
+
+    "snake_mobile_controls": "Mobil: Glisează pe joc SAU folosește ▲▼◀▶ mai jos.",
+    "snake_desktop_controls": "Desktop: Tastele săgeți / WASD. Space/Enter = Restart.",
+
+    "snake_eat_orb": "Mănâncă orb-ul. Nu lovi pereții sau propriul corp.",
+    "snake_snake_down": "Șarpele a căzut",
+
+    "snake_tap_restart": "Atinge pentru restart sau apasă RESTART.",
+    "snake_press_restart": "Apasă SPACE/ENTER sau click pe RESTART.",
+
+    "snake_tap_click_start": "Atinge / Click pentru Start · Butonul Restart este disponibil",
+
+    "snake_snake_neon_classic_arcade_chal": "Snake – Provocarea Arcade Neon",
+
+    "snake_snake_description": "Clasicul joc Snake primește un stil neon. Controlează un șarpe luminos pe o grilă minimalistă și consumă puncte de energie pentru a crește. Cu cât devii mai mare, cu atât jocul devine mai dificil — o singură greșeală înseamnă game over.",
+	"simon_title":"Simon Spune",
+"simon_heading":"🎵 Simon Spune (Culori)",
+"simon_back":"⬅ Înapoi",
+"simon_description":"Urmărește secvența de culori care clipesc, apoi repet-o apăsând culorile.",
+"simon_start":"Start",
+"simon_level_0":"Nivel: 0",
+"simon_level":"Nivel: {level}",
+
+"simon_watch":"Privește...",
+"simon_repeat":"Acum repetă!",
+"simon_good_next":"✅ Bine! Următorul nivel...",
+"simon_wrong_level":"❌ Greșit! Ai ajuns la nivelul {level}. Apasă Start pentru a încerca din nou.",
+
+"simon_seo_title":"Neon Simon – Joc de memorie cu secvențe",
+"simon_follow_lights":"Urmărește luminile neon",
+"simon_seo_desc":"Neon Simon îți testează memoria prin redarea unei secvențe de culori luminoase. Sarcina ta este să repeți exact aceeași ordine. Fiecare rundă reușită adaugă o culoare nouă, transformând rapid jocul într-un test real de memorie.",
+
+"simon_how_to_play":"Cum se joacă",
+"simon_how_to_play_text":"Privește luminile care clipesc. Apoi apasă pătratele în aceeași ordine pentru a repeta modelul. O singură greșeală înseamnă sfârșitul jocului.",
+
+"simon_controls":"Controale",
+"simon_controls_text":"Apasă pad-urile luminoase în ordine.",
+
+"simon_tips":"Sfaturi",
+"simon_tip_1":"Spune culorile cu voce tare pentru a memora mai ușor.",
+"simon_tip_2":"Împarte mental secvențele lungi în bucăți mai mici.",
+"puzzle_title":"Puzzle Glisant 3×3",
+"puzzle_heading":"🧩 Puzzle Glisant (3×3)",
+"puzzle_back":"⬅ Înapoi",
+"puzzle_description":"Apasă pe piesele de lângă spațiul gol pentru a le glisa. Ordinea corectă este 1–8.",
+"puzzle_shuffle":"Amestecă",
+
+"puzzle_solved":"🎉 Rezolvat!",
+
+"puzzle_seo_title":"Sliding Puzzle – Provocarea Neon de Rearanjare a Pieselor",
+"puzzle_rearrange_grid":"Rearanjează grila neon",
+
+"puzzle_seo_desc":"Sliding Puzzle aduce provocarea clasică de rearanjare a pieselor într-un mediu neon. Mută piesele în jurul spațiului gol pentru a recrea ordinea numerică corectă sau pentru a completa imaginea.",
+
+"puzzle_how_to_play":"Cum se joacă",
+"puzzle_how_to_play_text":"Apasă orice piesă adiacentă spațiului gol pentru a o glisa. Continuă până când puzzle-ul este complet rezolvat.",
+
+"puzzle_tips":"Sfaturi",
+"puzzle_tip_1":"Începe prin a rezolva primul rând.",
+"puzzle_tip_2":"Folosește strategic spațiul gol final.",
+"tictactoe_title":"X și 0 — Ediția Neon",
+
+"tictactoe_ai_thinking":"🤖 AI se gândește...",
+
+"tictactoe_restart":"Repornește",
+"tictactoe_reset_score":"Resetează scorul",
+
+"tictactoe_score_label":"Scor:",
+
+"tictactoe_player_wins":"{player} a câștigat!",
+
+"tictactoe_back_hub":"⬅ Înapoi la Hub",
+"bomb_title":"Bombă cu Timer",
+"bomb_heading":"⏳ Bombă cu Timer",
+"bomb_back":"⬅ Înapoi",
+
+"bomb_description":"Dezactivează bomba în 20 de secunde ghicind codul secret din 3 cifre (100–999).",
+
+"bomb_time":"Timp: {time}",
+
+"bomb_placeholder":"Introdu codul",
+"bomb_submit":"Trimite",
+
+"bomb_enter_number":"Introdu un număr!",
+
+"bomb_boom":"💥 Boom! Codul era {code}",
+
+"bomb_defused":"🧯 Dezactivată! Ai salvat ziua!",
+
+"bomb_too_low":"Prea mic!",
+"bomb_too_high":"Prea mare!",
+
+"bomb_seo_title":"Bombă cu Timer – Provocarea Neon cu Numărătoare",
+"bomb_seo_heading":"Învinge timpul și dezactivează bomba",
+
+"bomb_seo_desc":"Timer Bomb este o provocare rapidă în care trebuie să rezolvi mini-puzzle-uri înainte ca timpul să ajungă la zero. Cu fiecare succes, dificultatea crește iar timpul disponibil scade.",
+
+"bomb_how_to_play":"Cum se joacă",
+"bomb_how_to_play_text":"Urmează instrucțiunile afișate pe ecran — apasă, potrivește sau reacționează — înainte ca timerul bombei să expire.",
+
+"bomb_tips":"Sfaturi",
+"bomb_tip_1":"Rămâi calm — panica îți irosește secundele.",
+"bomb_tip_2":"Așteaptă-te ca regulile să se schimbe în fiecare rundă.",
+"typing_title": "Test de Viteză la Tastare",
+  "typing_left_ad": "Reclamă Stânga<br/>160×600",
+  "typing_right_ad": "Reclamă Dreapta<br/>160×600",
+  "typing_top_ad": "Banner Sus (728×90 / responsive)",
+
+  "typing_header": "⌨ Test de Viteză la Tastare",
+  "typing_back_to_hub": "⬅ Înapoi la Hub",
+
+  "typing_random_mode": "Mod aleator",
+  "typing_random_mode_tooltip": "Modul aleator alege o propoziție random în loc de ordine crescătoare.",
+  "typing_reset_saved_scores": "Resetează scorurile salvate",
+
+  "typing_placeholder": "Începe să scrii aici…",
+
+  "typing_tip_prefix": "Sfat: Când termini o propoziție, apasă",
+  "typing_enter": "Enter",
+  "typing_tip_suffix": "pentru Următoarea.",
+
+  "typing_restart": "Repornește",
+  "typing_next_sentence": "Următoarea propoziție ➜",
+
+  "typing_sentence": "Propoziția: {idx}/{total}",
+  "typing_time": "Timp: {time}s",
+  "typing_wpm": "WPM: {wpm}",
+  "typing_accuracy": "Acuratețe: {acc}%",
+  "typing_best_this": "Cel mai bun (aici): {best}",
+  "typing_best_overall": "Cel mai bun (total): {best}",
+
+  "typing_completed": "✅ Finalizat! {wpm} WPM · {acc}% acuratețe",
+  "typing_scores_cleared": "🧹 Scorurile salvate au fost șterse.",
+
+  "typing_seo_title": "Viteză Tastare – Tester Neon pentru Acuratețe & WPM",
+  "typing_seo_h2_1": "Cât de repede poți tasta?",
+  "typing_seo_p_1": "Typing Speed este un test de tastare cu temă neon care măsoară câte cuvinte pe minut (WPM) poți tasta menținând acuratețea. Perfect pentru elevi, profesioniști și gameri care vor să își urmărească și îmbunătățească viteza de tastare.",
+  "typing_seo_h2_2": "Cum se joacă",
+  "typing_seo_p_2": "Tastează textul afișat cât mai repede și corect. Scorul WPM este calculat pe baza vitezei și a greșelilor.",
+  "typing_seo_h2_3": "Sfaturi",
+  "typing_seo_tip_1": "Concentrează-te mai întâi pe acuratețe — viteza va veni.",
+  "typing_seo_tip_2": "Folosește toate degetele pentru eficiență maximă.",
+  "typing_seo_tip_3": "Ține ochii pe text, nu pe tastatură.",
+   "typing_sentences": 			[
+			"Tastează repede.",
+			"Rămâi calm.",
+			"Continuă.",
+			"Respiră și tastează.",
+			"Pașii mici contează.",
+			"Concentrează-te pe acuratețe.",
+			"Încălzește-ți mâinile.",
+			"Viteza vine cu practica.",
+			"Privirea înainte, degetele pregătite.",
+			"Propozițiile scurte cresc încrederea.",
+			"Un birou curat ajută concentrarea.",
+			"Greșelile fac parte din învățare.",
+			"O tastare lină este mai bună decât graba.",
+			"Relaxează-ți umerii și încheieturile.",
+			"Consecvența este adevărata superputere.",
+			"O postură bună face tastarea mai ușoară.",
+			"Acuratețea întâi, viteza va urma.",
+			"Atinge tastele ușor pentru a evita oboseala.",
+			"Citește înainte în timp ce tastezi.",
+			"Evită să apeși backspace prea des; păstrează ritmul.",
+			"Antrenează-te zilnic câteva minute.",
+			"Cea mai bună viteză este una constantă.",
+			"Încearcă să tastezi fără să privești prea des în jos.",
+			"Ține degetele relaxate, nu rigide.",
+			"Un ritm blând poate fi totuși rapid.",
+			"Resetează și reîncepe dacă te simți tensionat.",
+			"Exersează cu propoziții de lungimi diferite.",
+			"Unele propoziții sunt scurte; altele sunt lungi.",
+			"Vulpea maro rapidă sare peste câinele leneș.",
+			"Concentrarea puternică bate viteza brută de fiecare dată.",
+			"Un test rapid îți poate arăta punctele slabe.",
+			"Acuratețea construiește încredere în propriile mâini.",
+			"Dacă te poticnești, respiră și continuă să tastezi.",
+			"Ritmul contează mai mult decât apăsările haotice.",
+			"Mâinile ar trebui să plutească, nu să lovească tastele.",
+			"Când progresezi, sărbătorește pașii mici.",
+			"Tastarea este o abilitate care se poate antrena.",
+			"Ține cursorul în mișcare ca o bătaie calmă de inimă.",
+			"Cei mai buni dactilografi privesc înainte, nu la taste.",
+			"Puțină răbdare astăzi aduce rezultate mâine.",
+			"Încearcă un ritm constant, ca o muzică în minte.",
+			"Tastarea rapidă este mai ușoară când mintea este liniștită.",
+			"Poți fi rapid fără să fii agresiv.",
+			"Practica transformă mișcările stângace în mișcări fluide.",
+			"O propoziție tastată corect este o mică victorie.",
+			"Un început lent duce adesea la un final puternic.",
+			"Dacă degetele sunt rigide, fă o pauză.",
+			"Tastarea pe mobil este diferită, fii delicat.",
+			"Pentru propoziții lungi, respiră și păstrează ritmul.",
+			"Nu urmări perfecțiunea; urmărește confortul repetabil.",
+			"Poți îmbunătăți viteza mai târziu, dar acuratețea începe acum.",
+			"Imaginează-ți fiecare tastă apăsată lin.",
+			"Folosește aceleași poziții ale mâinilor.",
+			"Privirea ar trebui să-ți ghideze mâinile.",
+			"Cele mai mari creșteri de viteză vin din mai puține greșeli.",
+			"O minte calmă tastează mai repede decât una stresată.",
+			"Uneori cel mai bun progres este să exersezi zilnic.",
+			"La cuvinte dificile încetinește puțin.",
+			"Când tastezi lin, propoziția pare că se scrie singură.",
+			"Ține încheieturile într-o poziție neutră.",
+			"Dacă pierzi locul, privește din nou propoziția.",
+			"Exercițiile scurte sunt mai eficiente.",
+			"O încălzire bună îmbunătățește acuratețea.",
+			"Degetele învață modele ca un muzician gamele.",
+			"Dacă te dor mâinile, oprește-te și odihnește-te.",
+			"Viteza vine din repetiție corectă.",
+			"În fiecare rundă fă mai puține greșeli.",
+			"Când tastezi des același cuvânt, degetele îl memorează.",
+			"Nu trebuie să fii perfect, doar mai bun decât ieri.",
+			"Un ritm echilibrat ajută creierul să țină pasul.",
+			"Testele de tastare sunt ca oglinzile.",
+			"Unii tastează mai repede când sunt relaxați.",
+			"Un ritm constant reduce folosirea backspace.",
+			"Tratează fiecare propoziție ca un tur mic.",
+			"Dacă faci o greșeală, corectează și continuă.",
+			"Citește câteva caractere înainte.",
+			"Propozițiile lungi devin mai ușoare cu practica.",
+			"Când rămâi calm sub presiune, viteza devine constantă.",
+			"Tastarea înseamnă și claritate și precizie.",
+			"La propoziții foarte lungi păstrează ritmul.",
+			"Scopul este mai puține pauze și greșeli.",
+			"Ține vârfurile degetelor aproape de taste.",
+			"Dacă te blochezi, reîncepe și concentrează-te pe acuratețe.",
+			"Această propoziție este mai lungă dar ușor de citit.",
+			"O propoziție lungă cere atenție.",
+			"Când tastezi fraze lungi îți crești rezistența.",
+			"Cu cât exersezi mai mult, creierul anticipează cuvintele.",
+			"Chiar dacă tastezi încet, termină curat.",
+			"Exersează cu semne de punctuație.",
+			"Cele mai bune îmbunătățiri vin din schimbări mici.",
+			"Tastarea pe dispozitive diferite schimbă ritmul.",
+			"Unele propoziții includ virgule și pauze.",
+			"Dacă tastezi asta fără stres, devii mai puternic.",
+			"Aceasta este o propoziție mai lungă pentru ritm.",
+			"Un dactilograf bun rămâne relaxat.",
+			"Această propoziție este intenționat mai lungă.",
+			"Când propoziția devine lungă, respiră constant.",
+			"Propozițiile lungi pot părea intimidante.",
+			"Tastarea este ca alergarea: ritmul contează.",
+			"Iată o propoziție și mai lungă pentru control.",
+			"Această propoziție foarte lungă îți testează rezistența.",
+			"Dacă finalizezi texte lungi fără grabă, viteza devine stabilă."
+			],
+			"hl_title": "Mai Mare / Mai Mic",
+  "hl_header": "⬆⬇ Mai Mare / Mai Mic",
+  "back_button": "⬅ Înapoi",
+  "hl_description": "Ghicește dacă următorul număr (1–100) va fi mai mare sau mai mic decât cel curent.",
+  "hl_higher_btn": "Mai Mare",
+  "hl_lower_btn": "Mai Mic",
+  "hl_score": "Scor: 0",
+
+  "hl_seo_title": "Mai Mare sau Mai Mic – Joc Neon de Probabilitate",
+  "hl_predict_title": "Prezice Următorul Număr Neon",
+  "hl_predict_text": "Higher or Lower este un joc rapid de ghicire în care trebuie să prezici dacă următoarea carte, număr sau valoare va fi mai mare sau mai mică decât cea curentă. Regulile sunt simple, dar emoția crește rapid pe măsură ce seria de răspunsuri corecte continuă. Această ediție cu temă neon îmbunătățește experiența prin animații luminoase și feedback instant.",
+
+  "hl_how_title": "Cum se Joacă",
+  "hl_how_text": "Un număr inițial apare pe ecran. Alege „Mai Mare” sau „Mai Mic” pentru a prezice ce număr va urma. Dacă predicția este corectă, seria continuă. Dacă nu, runda se termină și scorul se resetează.",
+
+  "hl_controls_title": "Controale",
+  "hl_controls_desktop": "Desktop: Apasă pe Mai Mare sau Mai Mic.",
+  "hl_controls_mobile": "Mobil: Atinge unul dintre butoane pentru a face o predicție instant.",
+
+  "hl_tips_title": "Sfaturi și Strategie",
+  "hl_tip1": "Dacă numărul curent este mic (1–4), șansele favorizează „Mai Mare”.",
+  "hl_tip2": "Dacă numărul este mare (7–10), „Mai Mic” devine statistic mai sigur.",
+  "hl_tip3": "Joacă strategic — uneori este bine să te oprești dacă jocul permite.",
+
+  "hl_dev_title": "Informații pentru Dezvoltatori",
+  "hl_dev_text": "Jocul folosește un generator aleatoriu cu probabilitate uniformă, asigurând corectitudine în fiecare rundă. Animațiile și tranzițiile sunt optimizate pentru a fi rapide și fluide atât pe desktop cât și pe dispozitive mobile.",
+
+  "hl_faq_title": "Întrebări Frecvente",
+  "hl_faq1_q": "Este jocul bazat pe noroc?",
+  "hl_faq1_a": "Da, dar înțelegerea probabilității îți poate îmbunătăți semnificativ seria de răspunsuri corecte.",
+  "hl_faq2_q": "Poate jocul să adapteze dificultatea?",
+  "hl_faq2_a": "Unele versiuni includ moduri cu intervale mai mici sau modificatori speciali.",
+    "hl_correct": "✅ Corect!",
+  "hl_wrong": "❌ Greșit!",
+  "hl_score_label": "Scor",
+  "gtn_title":"Ghicește Numărul",
+"gtn_header":"🔢 Ghicește Numărul",
+"back_hub":"⬅ Înapoi la Hub",
+"gtn_intro":"Mă gândesc la un număr între 1 și 100. Îl poți ghici?",
+"gtn_placeholder":"Introdu 1–100",
+"gtn_try":"Încearcă",
+"gtn_restart":"Repornește",
+"gtn_tries":"Încercări",
+"gtn_best":"Record",
+"gtn_hint":"Sfat: Apasă Enter pentru a trimite numărul.",
+  "gtn_tries": "Încercări",
+  "gtn_best": "Record",
+  "gtn_type_number": "Introdu un număr mai întâi 🙂",
+  "gtn_range_warning": "Trebuie să fie între 1 și 100.",
+  "gtn_correct": "✅ Corect! Numărul era",
+  "gtn_too_low": "Prea mic. Încearcă mai mare ⬆️",
+  "gtn_too_high": "Prea mare. Încearcă mai mic ⬇️",
+   "gtn_tries": "Încercări",
+   "gtn_seo_title": "Ghicește Numărul – Provocarea Neon",
+  "gtn_seo_h1": "Găsește Numărul Neon Ascuns",
+  "gtn_seo_p1": "Ghicește Numărul este un joc logic simplu, dar foarte captivant, în care scopul este să descoperi un număr secret ales aleator de sistem.",
+
+  "gtn_how_title": "Cum se Joacă",
+  "gtn_how_text": "Introdu un număr în câmpul de input și trimite ghicirea. Jocul îți va răspunde imediat cu un indiciu evidențiat neon.",
+
+  "gtn_controls": "Controale",
+  "gtn_controls_desktop": "Desktop: Tastează un număr și apasă Enter sau click pe Guess.",
+  "gtn_controls_mobile": "Mobil: Apasă câmpul numeric și folosește tastatura de pe ecran.",
+
+  "gtn_strategy": "Sfaturi și Strategie",
+  "gtn_tip1": "Folosește metoda căutării binare: ghicește mereu mijlocul intervalului rămas.",
+  "gtn_tip2": "Ajustează rapid după fiecare indiciu.",
+  "gtn_tip3": "Încearcă să îți depășești recordul de încercări.",
+
+  "gtn_dev": "Informații pentru Dezvoltatori",
+  "gtn_dev_text": "Această versiune neon evidențiază fiecare stare de feedback cu culori luminoase pentru recunoaștere instant.",
+
+  "gtn_faq": "Întrebări Frecvente",
+  "gtn_faq_q1": "Care este cea mai bună strategie?",
+  "gtn_faq_a1": "Metoda optimă este căutarea binară.",
+  "gtn_faq_q2": "Jocul ține evidența recordurilor?",
+  "gtn_faq_a2": "Da — multe versiuni salvează local cel mai mic număr de încercări."
 
 
+  
 
 
 }

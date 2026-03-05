@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Rock Paper Scissors</title>
+  <script src="js/translation.js?v=5"></script>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 
@@ -338,31 +338,21 @@
       .big{ font-size: 64px; }
     }
   </style>
+  <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
   <div class="layout">
-    <!-- LEFT BANNER -->
-    <aside class="ad-vertical">
-      <div>
-        Left Banner Zone<br/>
-        <strong>160×600</strong><br/>
-        Paste your AdSense code here.
-      </div>
-    </aside>
+
 
     <!-- MAIN COLUMN -->
     <main class="main-column">
-      <!-- TOP LEADERBOARD -->
-      <div class="top-banner">
-        Top Banner Zone – recommended 728×90 (auto also works).<br/>
-        Paste your AdSense snippet here.
-      </div>
+ 
 
       <!-- GAME HEADER -->
       <div class="game-header">
-        <div class="title">Rock Paper Scissors</div>
-        <div><a href="index.html">⬅ Back to Hub</a></div>
+        <div class="title" data-i18n="rps.header">Rock Paper Scissors</div>
+        <a href="index.html" data-i18n="rps.back">⬅ Back to Hub</a>
       </div>
 
       <!-- GAME FRAME -->
@@ -370,14 +360,14 @@
         <div class="rps-frame" aria-label="Rock Paper Scissors game frame">
           <div class="rps-hudband">
             <div class="hud-left">
-              <div class="hud-title">RPS – Neon Duel</div>
-              <div class="hud-sub">First to 5 wins. Tap buttons or press R / P / S.</div>
+              <div class="hud-title" data-i18n="rps.hud_title">RPS – Neon Duel</div>
+              <div class="hud-sub" data-i18n="rps.hud_sub">First to 5 wins. Tap buttons or press R / P / S.</div>
             </div>
             <div class="hud-right">
-              <div class="chip">You <b id="youScore">0</b></div>
-              <div class="chip">CPU <b id="cpuScore">0</b></div>
-              <div class="chip">Streak <b id="streak">0</b></div>
-              <button class="btn secondary" id="btnReset" type="button">RESET</button>
+              <div class="chip"><span data-i18n="rps.you">You</span> <b id="youScore">0</b></div>
+              <div class="chip"><span data-i18n="rps.cpu">CPU</span> <b id="cpuScore">0</b></div>
+              <div class="chip"><span data-i18n="rps.streak">Streak</span> <b id="streak">0</b></div>
+              <button class="btn secondary" id="btnReset" type="button" data-i18n="rps.reset">RESET</button>
             </div>
           </div>
 
@@ -386,26 +376,26 @@
 
             <div class="arena" aria-label="duel arena">
               <div class="slot">
-                <div class="avatar">YOU</div>
+                <div class="avatar" data-i18n="rps.you_label">YOU</div>
                 <div class="big" id="youPick">❔</div>
               </div>
 
-              <div class="vs">VS</div>
+              <div class="vs" data-i18n="rps.vs">VS</div>
 
               <div class="slot">
-                <div class="avatar">CPU</div>
+                <div class="avatar" data-i18n="rps.cpu_label">CPU</div>
                 <div class="big" id="cpuPick">❔</div>
               </div>
             </div>
 
             <div class="choices">
-              <button class="btn rock" type="button" data-pick="rock">🪨 ROCK</button>
-              <button class="btn paper" type="button" data-pick="paper">📄 PAPER</button>
-              <button class="btn scissors" type="button" data-pick="scissors">✂️ SCISSORS</button>
+              <button class="btn rock" type="button" data-pick="rock" data-i18n="rps.rock">🪨 ROCK</button>
+              <button class="btn paper" type="button" data-pick="paper" data-i18n="rps.paper">📄 PAPER</button>
+              <button class="btn scissors" type="button" data-pick="scissors" data-i18n="rps.scissors">✂️ SCISSORS</button>
             </div>
 
-            <div class="output" id="out">Pick Rock, Paper, or Scissors to start.</div>
-            <div class="hint" id="hint">Keyboard: R = Rock, P = Paper, S = Scissors</div>
+            <div class="output" id="out" data-i18n="rps.start_msg">Pick Rock, Paper, or Scissors to start.</div>
+            <div class="hint" id="hint" data-i18n="rps.hint">Keyboard: R = Rock, P = Paper, S = Scissors</div>
           </div>
         </div>
       </div>
@@ -413,23 +403,16 @@
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Rock Paper Scissors – Neon Edition</h1>
-<p>
+<h1 data-i18n="rps.seo_title">Rock Paper Scissors – Neon Edition</h1>
+
+<p data-i18n="rps.seo_desc">
 The timeless game of Rock Paper Scissors returns with a neon aesthetic.
 Pick your move and challenge the AI to quick rounds that test intuition
 and pattern recognition.
 </p>
-
     </main>
 
-    <!-- RIGHT BANNER -->
-    <aside class="ad-vertical">
-      <div>
-        Right Banner Zone<br/>
-        <strong>160×600</strong><br/>
-        Paste your AdSense code here.
-      </div>
-    </aside>
+
   </div>
 
   <script>
@@ -469,7 +452,7 @@ and pattern recognition.
         youScore = 0; cpuScore = 0; streak = 0;
         youPickEl.textContent = "❔";
         cpuPickEl.textContent = "❔";
-        outEl.textContent = "Pick Rock, Paper, or Scissors to start.";
+        outEl.textContent = t("rps.start_msg");
         setScores();
       }
 
@@ -492,22 +475,24 @@ and pattern recognition.
 
         if (r === "draw") {
           streak = 0;
-          outEl.textContent = `Draw! You both chose ${nice(p)}.`;
+          outEl.textContent = t("rps.draw", { pick: nice(p) });
         } else if (r === "win") {
           youScore++;
           streak++;
-          outEl.textContent = `You win! ${nice(p)} beats ${nice(c)}.`;
+          outEl.textContent = t("rps.win", { player: nice(p), cpu: nice(c) });
         } else {
           cpuScore++;
           streak = 0;
-          outEl.textContent = `You lose! ${nice(c)} beats ${nice(p)}.`;
+          outEl.textContent = t("rps.lose", { cpu: nice(c), player: nice(p) });
         }
 
         setScores();
 
         if (youScore >= 5 || cpuScore >= 5) {
-          const final = youScore > cpuScore ? "🏆 You won the match!" : "💥 CPU won the match!";
-          outEl.textContent = `${final} (First to 5) Press RESET to play again.`;
+          const final = youScore > cpuScore
+										  ? t("rps.match_win")
+										  : t("rps.match_lose");
+          outEl.textContent = t("rps.match_end", { result: final });
         }
       }
 

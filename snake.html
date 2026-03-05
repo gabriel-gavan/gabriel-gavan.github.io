@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Neon Snake</title>
+   <div class="title" data-i18n="snake_neon_snake">Neon Snake</div>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 
@@ -262,44 +262,34 @@
       .btn { padding: 10px 12px; }
     }
   </style>
+  <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 <div class="layout">
-  <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 
   <!-- MAIN COLUMN -->
   <main class="main-column">
-    <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
-    </div>
 
     <!-- GAME HEADER -->
     <div class="game-header">
-      <div class="title">Neon Snake</div>
+       <div class="title" data-i18n="snake_neon_snake">Neon Snake</div>
       <div class="header-actions">
-        <button class="chip-btn" id="btnRestartTop" type="button">↻ Restart</button>
-        <a class="chip-link" href="index.html">⬅ Back to Hub</a>
-      </div>
+    <button class="chip-btn" id="btnRestartTop" type="button" data-i18n="snake_restart">↻ Restart</button>
+    <a class="chip-link" href="index.html" data-i18n="snake_back_to_hub">⬅ Back to Hub</a>
+  </div>
     </div>
 
     <!-- INFO BAR -->
-    <div class="hint-bar">
-      <div class="pill" id="scorePill">Score: 0 · Best: 0</div>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <div style="color:#9ca3af" id="controlsHint"></div>
-        <button class="btn restart" id="btnRestart" type="button">RESTART</button>
-      </div>
-    </div>
+	<div class="hint-bar">
+	  <div class="pill" id="scorePill" data-i18n="snake_score_best">Score: 0 · Best: 0</div>
+	  <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+		<div style="color:#9ca3af" id="controlsHint"></div>
+		<!-- MOBILE CONTROLS -->
+		<button class="btn restart" id="btnRestartMobile" type="button" data-i18n="snake_restart_upper">RESTART</button>
+	  </div>
+	</div>
 
     <!-- GAME CANVAS -->
     <div class="game-wrap">
@@ -323,16 +313,19 @@
       </div>
 
       <div class="mc-actions">
-        <button class="btn restart" id="btnRestartMobile" type="button">RESTART</button>
+        <button class="btn restart" id="btnRestartMobile" type="button" data-i18n="snake_restart_upper">RESTART</button>
       </div>
     </div>
 	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Snake – Neon Classic Arcade Challenge</h1>
+ <!-- SEO TEXT -->
+		<h1 data-i18n="snake_snake_neon_classic_arcade_chal">
+			Snake – Neon Classic Arcade Challenge
+			</h1>
 
-<p>
+<p data-i18n="snake_snake_description">
 The iconic Snake game gets a neon makeover.
 Control a glowing serpent through a minimal grid and consume energy dots to grow.
 The larger you become, the harder the game gets — one mistake means game over.
@@ -340,14 +333,6 @@ The larger you become, the harder the game gets — one mistake means game over.
 
   </main>
 
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
 </div>
 
 <script>
@@ -383,8 +368,8 @@ The larger you become, the harder the game gets — one mistake means game over.
   if (controlsBelow) controlsBelow.style.display = IS_MOBILE ? "flex" : "none";
 
   controlsHint.textContent = IS_MOBILE
-    ? "Mobile: Swipe on the game OR use ▲▼◀▶ below."
-    : "Desktop: Arrow keys / WASD. Space/Enter = Restart.";
+  ? t("snake_mobile_controls")
+  : t("snake_desktop_controls");
 
   // ---------- Game settings ----------
   const CELL = 24;
@@ -400,12 +385,14 @@ The larger you become, the harder the game gets — one mistake means game over.
   let nextDir = { x: 1, y: 0 };
   let food = { x: 10, y: 10 };
   let score = 0;
-  let best = Number(localStorage.getItem("snake_best") || 0);
+  let best = Number(localStorage.getItem("snake.best") || 0);
   let stepTime = 0.115;
   let acc = 0;
 
   function updateHUD() {
-    scorePill.textContent = `Score: ${score} · Best: ${best}`;
+    scorePill.textContent = t("snake_score_best_values")
+  .replace("{score}", score)
+  .replace("{best}", best);
   }
 
   function spawnFood() {
@@ -445,7 +432,7 @@ The larger you become, the harder the game gets — one mistake means game over.
   function die() {
     state = "dead";
     best = Math.max(best, score);
-    localStorage.setItem("snake_best", String(best));
+    localStorage.setItem("snake.best", String(best));
     updateHUD();
   }
 
@@ -473,7 +460,7 @@ The larger you become, the harder the game gets — one mistake means game over.
     if (isEating) {
       score += 10;
       best = Math.max(best, score);
-      localStorage.setItem("snake_best", String(best));
+      localStorage.setItem("snake.best", String(best));
       spawnFood();
       // speed up slightly
       stepTime = clamp(stepTime * 0.985, 0.06, 0.14);
@@ -682,28 +669,30 @@ The larger you become, the harder the game gets — one mistake means game over.
     ctx.fillStyle = "rgba(56,189,248,0.18)";
     ctx.strokeStyle = "rgba(56,189,248,0.35)";
     ctx.lineWidth = 1;
-    roundedRectPath(W / 2 - 120, y + 168, 240, 34, 12);
+    roundedRectPath(W / 2 - 178, y + 168, 350, 34, 12);
     ctx.fill(); ctx.stroke();
 
     ctx.fillStyle = "#e5e7eb";
     ctx.font = "13px system-ui";
-    ctx.fillText("Tap / Click to Start · Restart button available", W / 2, y + 185);
+    ctx.fillText(t("snake_tap_click_start"), W / 2, y + 185);
   }
 
   function drawOverlay() {
     if (state === "menu") {
       drawPanel(
-        "NEON SNAKE",
-        "Eat the orb. Don’t hit walls or yourself.",
-        IS_MOBILE ? "Swipe on the game OR use ▲▼◀▶ below." : "Use Arrow Keys / WASD to move."
-      );
-    } else if (state === "dead") {
+	  t("snake_neon_snake"),
+	  t("snake_eat_orb"),
+	  IS_MOBILE ? t("snake_mobile_controls") : t("snake_desktop_controls")
+	);
+		} else if (state === "dead") {
       drawPanel(
-        "SNAKE DOWN",
-        `Score: ${score} · Best: ${best}`,
-        IS_MOBILE ? "Tap to restart or press RESTART." : "Press SPACE/ENTER or click RESTART."
-      );
-    }
+	  t("snake_snake_down"),
+	  t("snake_score_best_values")
+		  .replace("{score}", score)
+		  .replace("{best}", best),
+	  IS_MOBILE ? t("snake_tap_restart") : t("snake_press_restart")
+	);
+		}
   }
 
   // ---------- Loop ----------
@@ -743,6 +732,11 @@ The larger you become, the harder the game gets — one mistake means game over.
   // init
   updateHUD();
   requestAnimationFrame(loop);
+  setTimeout(() => {
+  controlsHint.textContent = IS_MOBILE
+    ? t("snake_mobile_controls")
+    : t("snake_desktop_controls");
+}, 200);
 })();
 </script>
 <script src="/js/ads.js"></script>
