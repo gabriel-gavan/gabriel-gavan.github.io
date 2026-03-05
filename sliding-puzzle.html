@@ -1,122 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sliding Puzzle 3×3</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;;color:#fff;text-align:center; }
-    a { color:#a5b4fc; }
-    #grid { display:inline-grid;grid-template-columns:repeat(3,70px);gap:4px;margin-top:10px; }
-    .tile {
-      width:70px;height:70px;display:flex;align-items:center;justify-content:center;
-      background:#111827;border-radius:.6rem;border:1px solid #374151;font-size:20px;cursor:pointer;
-    }
-    .empty { background:transparent;border:none;cursor:default; }
-	/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+<meta charset="UTF-8">
+<title data-i18n="puzzle_title">Sliding Puzzle 3×3</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-  </style>
+<style>
+body{
+font-family:system-ui,sans-serif;
+background:
+linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+color:#fff;
+text-align:center;
+}
+
+a{ color:#a5b4fc; }
+
+#grid{
+display:inline-grid;
+grid-template-columns:repeat(3,70px);
+gap:4px;
+margin-top:10px;
+}
+
+.tile{
+width:70px;
+height:70px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#111827;
+border-radius:.6rem;
+border:1px solid #374151;
+font-size:20px;
+cursor:pointer;
+}
+
+.empty{
+background:transparent;
+border:none;
+cursor:default;
+}
+
+/* PC-only SEO text container */
+.pc-only{
+display:block;
+}
+
+@media (max-width:900px){
+.pc-only{
+display:none !important;
+}
+}
+</style>
+ <script src="js/translation.js?v=5"></script>
 </head>
+
 <body>
 
-<h2>🧩 Sliding Puzzle (3×3)</h2>
-<a href="index.html">⬅ Back</a>
-<p>Click tiles next to the empty space to slide them. Order 1–8.</p>
+<h2 data-i18n="puzzle_heading">🧩 Sliding Puzzle (3×3)</h2>
+
+<a href="index.html" data-i18n="puzzle_back">⬅ Back</a>
+
+<p data-i18n="puzzle_description">
+Click tiles next to the empty space to slide them. Order 1–8.
+</p>
 
 <div id="grid"></div>
-<p id="msg"></p>
-<button onclick="shuffle()">Shuffle</button>
-<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Sliding Puzzle – Neon Tile Rearrangement Challenge</h1>
 
-<h2>Rearrange the Neon Grid</h2>
-<p>
+<p id="msg"></p>
+
+<button onclick="shuffle()" data-i18n="puzzle_shuffle">Shuffle</button>
+
+
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+
+<h1 data-i18n="puzzle_seo_title">
+Sliding Puzzle – Neon Tile Rearrangement Challenge
+</h1>
+
+<h2 data-i18n="puzzle_rearrange_grid">
+Rearrange the Neon Grid
+</h2>
+
+<p data-i18n="puzzle_seo_desc">
 Sliding Puzzle brings the timeless tile rearrangement challenge into a neon environment.
 Shift tiles around the empty slot to recreate the correct numerical order or complete
 a glowing image. It’s simple in concept, but increasingly difficult as the puzzles grow.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="puzzle_how_to_play">How to Play</h2>
+
+<p data-i18n="puzzle_how_to_play_text">
 Tap any tile adjacent to the empty space to slide it. Continue sliding until the puzzle
 is fully solved.
 </p>
 
-<h2>Tips</h2>
+<h2 data-i18n="puzzle_tips">Tips</h2>
+
 <ul>
-  <li>Focus on solving the top row first.</li>
-  <li>Use the final empty space strategically.</li>
+<li data-i18n="puzzle_tip_1">Focus on solving the top row first.</li>
+<li data-i18n="puzzle_tip_2">Use the final empty space strategically.</li>
 </ul>
 
+</div>
+
 <script>
-let tiles=[]; // array of numbers 1..8 and null
+
+let tiles=[];
 
 const grid=document.getElementById("grid");
 
+
 function render(){
-  grid.innerHTML="";
-  tiles.forEach((v,idx)=>{
-    const d=document.createElement("div");
-    d.className="tile";
-    if(v===null){
-      d.classList.add("empty");
-    } else {
-      d.innerText=v;
-      d.onclick=()=>move(idx);
-    }
-    grid.appendChild(d);
-  });
+
+grid.innerHTML="";
+
+tiles.forEach((v,idx)=>{
+
+const d=document.createElement("div");
+
+d.className="tile";
+
+if(v===null){
+
+d.classList.add("empty");
+
+}else{
+
+d.innerText=v;
+
+d.onclick=()=>move(idx);
+
 }
+
+grid.appendChild(d);
+
+});
+
+}
+
 
 function neighbors(i){
-  const row=Math.floor(i/3), col=i%3;
-  const list=[];
-  if(row>0) list.push(i-3);
-  if(row<2) list.push(i+3);
-  if(col>0) list.push(i-1);
-  if(col<2) list.push(i+1);
-  return list;
+
+const row=Math.floor(i/3);
+
+const col=i%3;
+
+const list=[];
+
+if(row>0) list.push(i-3);
+
+if(row<2) list.push(i+3);
+
+if(col>0) list.push(i-1);
+
+if(col<2) list.push(i+1);
+
+return list;
+
 }
+
 
 function move(i){
-  const emptyIndex = tiles.indexOf(null);
-  if(neighbors(i).includes(emptyIndex)){
-    [tiles[i],tiles[emptyIndex]]=[tiles[emptyIndex],tiles[i]];
-    render();
-    checkWin();
-  }
+
+const emptyIndex=tiles.indexOf(null);
+
+if(neighbors(i).includes(emptyIndex)){
+
+[tiles[i],tiles[emptyIndex]]=[tiles[emptyIndex],tiles[i]];
+
+render();
+
+checkWin();
+
 }
+
+}
+
 
 function checkWin(){
-  const ok = tiles.slice(0,8).every((v,i)=>v===i+1) && tiles[8]===null;
-  if(ok) document.getElementById("msg").innerText="🎉 Solved!";
-  else document.getElementById("msg").innerText="";
+
+const ok=tiles.slice(0,8).every((v,i)=>v===i+1)&&tiles[8]===null;
+
+if(ok)
+document.getElementById("msg").innerText=t("puzzle_solved");
+
+else
+document.getElementById("msg").innerText="";
+
 }
 
+
 function shuffle(){
-  tiles=[1,2,3,4,5,6,7,8,null];
-  for(let i=0;i<50;i++){ move(Math.floor(Math.random()*9)); } // random moves
-  document.getElementById("msg").innerText="";
-  render();
+
+tiles=[1,2,3,4,5,6,7,8,null];
+
+for(let i=0;i<50;i++){
+
+move(Math.floor(Math.random()*9));
+
+}
+
+document.getElementById("msg").innerText="";
+
+render();
+
 }
 
 shuffle();
+
 </script>
+
 <script src="/js/ads.js"></script>
-</body>
 <script src="footer.js"></script>
+
+</body>
 </html>

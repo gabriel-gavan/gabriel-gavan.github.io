@@ -1154,12 +1154,460 @@
 
 "beat_article_dev":"Developer Insights",
 
-"beat_article_dev_desc":"The entire note system is synced using audio time signatures to ensure rhythmic accuracy. Visual effects react dynamically to combos and streaks, enhancing immersion."
+"beat_article_dev_desc":"The entire note system is synced using audio time signatures to ensure rhythmic accuracy. Visual effects react dynamically to combos and streaks, enhancing immersion.",
+"patternlock_title":"Pattern Lock",
+"patternlock_header":"Pattern Lock",
+"patternlock_back":"Back",
+"patternlock_instruction":"Click the dots in order to match the pattern shown.",
+"patternlock_reset":"Reset input",
 
+"patternlock_article_title":"Pattern Lock – Neon Connect-the-Dots Logic Puzzle",
+"patternlock_section_grid":"Crack the Glowing Security Grid",
 
+"patternlock_desc":"Pattern Lock reimagines the classic connect-the-dots unlocking system found on digital devices. Your task is to trace a glowing pattern across nodes in the exact sequence shown, replicating security locks found in futuristic neon interfaces. With each level, patterns grow longer, more complex, and harder to memorize.",
 
+"patternlock_how":"How to Play",
+"patternlock_how_desc":"A pattern preview appears briefly. Memorize the order, then draw the exact sequence by connecting the neon nodes in one continuous gesture.",
 
+"patternlock_controls":"Controls",
+"patternlock_controls_desktop":"Desktop: Click and drag over nodes.",
+"patternlock_controls_mobile":"Mobile: Swipe continuously over the dots.",
 
+"patternlock_tips":"Tips",
+"patternlock_tip1":"Focus on the pattern shape rather than individual points.",
+"patternlock_tip2":"Start slow until your muscle memory improves.",
+"patternlock_tip3":"Break long patterns into smaller mental segments.",
+
+"patternlock_dev":"Developer Insights",
+"patternlock_dev_desc":"This game uses gesture tracking for smooth, accurate pattern recognition, ensuring mobile users get a natural lock-screen-style experience.",
+
+"patternlock_pattern":"Pattern",
+"patternlock_unlocked":"Unlocked!",
+"patternlock_wrong":"Wrong pattern!",
+"patternlock_input":"Input",
+"reaction.title": "Reaction Test",
+  "reaction.header": "⚡ Reaction Test",
+  "reaction.back": "⬅ Back to Hub",
+
+  "reaction.instructions": "Tap/click when it turns <b>GREEN</b>. If you click too early, you lose the round.",
+  "reaction.start_button": "START",
+
+  "reaction.last": "Last: —",
+  "reaction.best": "Best: —",
+
+  "reaction.hint": "Desktop: click pad / press <b>Space</b> · Mobile: tap the pad.",
+
+  "reaction.start": "Start",
+  "reaction.restart": "Restart",
+
+  "reaction.seo_title": "Reaction Test – Neon Reflex Speed Trainer",
+
+  "reaction.seo_fast_title": "How Fast Are Your Reflexes?",
+  "reaction.seo_fast_text": "Reaction Test measures pure reaction speed by challenging you to tap the screen the moment the neon background changes color. Perfect for gamers looking to improve reflexes or anyone wanting to measure their reaction time scientifically.",
+
+  "reaction.seo_play_title": "How to Play",
+  "reaction.seo_play_text": "Wait for the screen to glow bright. The moment the color changes, tap instantly. Your time is recorded in milliseconds.",
+
+  "reaction.seo_controls_title": "Controls",
+  "reaction.seo_controls_text": "Tap or click the screen as fast as possible.",
+
+  "reaction.seo_tips_title": "Tips",
+  "reaction.tip1": "Stay focused — don’t anticipate too early.",
+  "reaction.tip2": "Play multiple rounds to average your best score.",
+
+  "reaction.dev_title": "Developer Notes",
+  "reaction.dev_text": "The game uses high-precision timing functions to measure reaction time accurately down to the millisecond for consistent results.",
+"reaction.best_empty": "Best: —",
+  "reaction.best_ms": "Best: {value} ms",
+
+  "reaction.last_empty": "Last: —",
+
+  "reaction.start_button": "START",
+
+  "reaction.wait_start": "Press Start, then wait for GREEN.",
+
+  "reaction.wait": "WAIT…",
+
+  "reaction.wait_green": "Wait for GREEN…",
+
+  "reaction.tap": "TAP!",
+
+  "reaction.go_now": "GO! Tap/click now!",
+
+  "reaction.too_soon": "TOO SOON!",
+
+  "reaction.too_soon_msg": "Too soon 😅 Tap Start to try again.",
+  "reaction.last_ms": "Last: {value} ms",
+  "rps.title":"Rock Paper Scissors",
+"rps.header":"Rock Paper Scissors",
+"rps.back":"⬅ Back to Hub",
+
+"rps.hud_title":"RPS – Neon Duel",
+"rps.hud_sub":"First to 5 wins. Tap buttons or press R / P / S.",
+
+"rps.you":"You",
+"rps.cpu":"CPU",
+"rps.streak":"Streak",
+
+"rps.you_label":"YOU",
+"rps.cpu_label":"CPU",
+
+"rps.vs":"VS",
+
+"rps.rock":"🪨 ROCK",
+"rps.paper":"📄 PAPER",
+"rps.scissors":"✂️ SCISSORS",
+
+"rps.reset":"RESET",
+
+"rps.start_msg":"Pick Rock, Paper, or Scissors to start.",
+"rps.hint":"Keyboard: R = Rock, P = Paper, S = Scissors",
+
+"rps.draw":"Draw! You both chose {pick}.",
+"rps.win":"You win! {player} beats {cpu}.",
+"rps.lose":"You lose! {cpu} beats {player}.",
+
+"rps.match_win":"🏆 You won the match!",
+"rps.match_lose":"💥 CPU won the match!",
+"rps.match_end":"{result} (First to 5) Press RESET to play again.",
+"rps.seo_title": "Rock Paper Scissors – Neon Edition",
+
+"rps.seo_desc": "The timeless game of Rock Paper Scissors returns with a neon aesthetic. Pick your move and challenge the AI to quick rounds that test intuition and pattern recognition.",
+
+    "snake_neon_snake": "Neon Snake",
+    "snake_restart": "↻ Restart",
+    "snake_restart_upper": "RESTART",
+    "snake_back_to_hub": "⬅ Back to Hub",
+
+    "snake_score_best": "Score: 0 · Best: 0",
+    "snake_score_best_values": "Score: {score} · Best: {best}",
+
+    "snake_mobile_controls": "Mobile: Swipe on the game OR use ▲▼◀▶ below.",
+    "snake_desktop_controls": "Desktop: Arrow keys / WASD. Space/Enter = Restart.",
+
+    "snake_eat_orb": "Eat the orb. Don’t hit walls or yourself.",
+    "snake_snake_down": "Snake Down",
+
+    "snake_tap_restart": "Tap to restart or press RESTART.",
+    "snake_press_restart": "Press SPACE/ENTER or click RESTART.",
+
+    "snake_tap_click_start": "Tap / Click to Start · Restart button available",
+
+    "snake_snake_neon_classic_arcade_chal": "Snake – Neon Classic Arcade Challenge",
+
+    "snake_snake_description": "The iconic Snake game gets a neon makeover. Control a glowing serpent through a minimal grid and consume energy dots to grow. The larger you become, the harder the game gets — one mistake means game over.".
+	"simon_title":"Simon Says",
+"simon_heading":"🎵 Simon Says (Colors)",
+"simon_back":"⬅ Back",
+"simon_description":"Watch the flashing sequence, then repeat it by clicking the colors.",
+"simon_start":"Start",
+"simon_level_0":"Level: 0",
+"simon_level":"Level: {level}",
+
+"simon_watch":"Watch...",
+"simon_repeat":"Now repeat!",
+"simon_good_next":"✅ Good! Next level...",
+"simon_wrong_level":"❌ Wrong! You reached level {level}. Press Start to try again.",
+
+"simon_seo_title":"Neon Simon – Memory Sequence Pattern Game",
+"simon_follow_lights":"Follow the Neon Lights",
+"simon_seo_desc":"Neon Simon challenges your memory by playing a sequence of glowing colors. Your task is to repeat the exact order. Each successful round extends the sequence by one, quickly turning the challenge into a true memory endurance test.",
+
+"simon_how_to_play":"How to Play",
+"simon_how_to_play_text":"Watch the lights flash. Then tap the squares in the same order to repeat the pattern. One mistake ends the game.",
+
+"simon_controls":"Controls",
+"simon_controls_text":"Tap the glowing pads in sequence.",
+
+"simon_tips":"Tips",
+"simon_tip_1":"Say the color names out loud to enhance retention.",
+"simon_tip_2":"Break long sequences into smaller chunks mentally.",
+"puzzle_title":"Sliding Puzzle 3×3",
+"puzzle_heading":"🧩 Sliding Puzzle (3×3)",
+"puzzle_back":"⬅ Back",
+"puzzle_description":"Click tiles next to the empty space to slide them. Order 1–8.",
+"puzzle_shuffle":"Shuffle",
+
+"puzzle_solved":"🎉 Solved!",
+
+"puzzle_seo_title":"Sliding Puzzle – Neon Tile Rearrangement Challenge",
+"puzzle_rearrange_grid":"Rearrange the Neon Grid",
+
+"puzzle_seo_desc":"Sliding Puzzle brings the timeless tile rearrangement challenge into a neon environment. Shift tiles around the empty slot to recreate the correct numerical order or complete a glowing image. It’s simple in concept, but increasingly difficult as the puzzles grow.",
+
+"puzzle_how_to_play":"How to Play",
+"puzzle_how_to_play_text":"Tap any tile adjacent to the empty space to slide it. Continue sliding until the puzzle is fully solved.",
+
+"puzzle_tips":"Tips",
+"puzzle_tip_1":"Focus on solving the top row first.",
+"puzzle_tip_2":"Use the final empty space strategically.",
+"tictactoe_title":"Tic Tac Toe — Neon Edition",
+
+"tictactoe_ai_thinking":"🤖 AI is thinking...",
+
+"tictactoe_restart":"Restart",
+"tictactoe_reset_score":"Reset Score",
+
+"tictactoe_score_label":"Score:",
+
+"tictactoe_player_wins":"{player} Wins!",
+
+"tictactoe_back_hub":"⬅ Back to Hub",
+"bomb_title":"Timer Bomb",
+"bomb_heading":"⏳ Timer Bomb",
+"bomb_back":"⬅ Back",
+
+"bomb_description":"Defuse the bomb in 20 seconds by guessing the secret 3-digit code (100–999).",
+
+"bomb_time":"Time: {time}",
+
+"bomb_placeholder":"Enter code",
+"bomb_submit":"Submit",
+
+"bomb_enter_number":"Enter a number!",
+
+"bomb_boom":"💥 Boom! The code was {code}",
+
+"bomb_defused":"🧯 Defused! You saved the day!",
+
+"bomb_too_low":"Too low!",
+"bomb_too_high":"Too high!",
+
+"bomb_seo_title":"Timer Bomb – Neon Countdown Puzzle Survival",
+"bomb_seo_heading":"Beat the Clock, Defuse the Bomb",
+
+"bomb_seo_desc":"Timer Bomb is a fast-paced challenge where you must solve micro-puzzles before the timer hits zero. With each success, the difficulty increases and the available time decreases.",
+
+"bomb_how_to_play":"How to Play",
+"bomb_how_to_play_text":"Complete the instructions shown on-screen — tap, match, solve, or react — before the bomb timer expires.",
+
+"bomb_tips":"Tips",
+"bomb_tip_1":"Stay calm — panic wastes precious seconds.",
+"bomb_tip_2":"Expect the rules to change every round.",
+"typing_title": "Typing Speed Test",
+  "typing_left_ad": "Left Ad<br/>160×600",
+  "typing_right_ad": "Right Ad<br/>160×600",
+  "typing_top_ad": "Top Banner Ad (728×90 / responsive)",
+
+  "typing_header": "⌨ Typing Speed Test",
+  "typing_back_to_hub": "⬅ Back to Hub",
+
+  "typing_random_mode": "Random mode",
+  "typing_random_mode_tooltip": "Random mode picks a random sentence instead of ascending order.",
+  "typing_reset_saved_scores": "Reset Saved Scores",
+
+  "typing_placeholder": "Start typing here…",
+
+  "typing_tip_prefix": "Tip: When you finish a sentence, press",
+  "typing_enter": "Enter",
+  "typing_tip_suffix": "for Next.",
+
+  "typing_restart": "Restart",
+  "typing_next_sentence": "Next Sentence ➜",
+
+  "typing_sentence": "Sentence: {idx}/{total}",
+  "typing_time": "Time: {time}s",
+  "typing_wpm": "WPM: {wpm}",
+  "typing_accuracy": "Accuracy: {acc}%",
+  "typing_best_this": "Best (this): {best}",
+  "typing_best_overall": "Best (overall): {best}",
+
+  "typing_completed": "✅ Completed! {wpm} WPM · {acc}% accuracy",
+  "typing_scores_cleared": "🧹 Saved scores cleared.",
+
+  "typing_seo_title": "Typing Speed – Neon Typing Accuracy & WPM Tester",
+  "typing_seo_h2_1": "How Fast Can You Type?",
+  "typing_seo_p_1": "Typing Speed is a neon-themed typing test that measures how many words per minute (WPM) you can type while maintaining accuracy. Perfect for students, professionals, and gamers who want to track and improve typing ability.",
+  "typing_seo_h2_2": "How to Play",
+  "typing_seo_p_2": "Type the text shown on screen as quickly and accurately as possible. Your WPM score is calculated based on speed and mistakes.",
+  "typing_seo_h2_3": "Tips",
+  "typing_seo_tip_1": "Focus on accuracy first — speed will follow.",
+  "typing_seo_tip_2": "Use all fingers for maximum efficiency.",
+  "typing_seo_tip_3": "Keep your eyes on the text, not the keyboard.",
+  
+  "typing_sentences": [
+	"Type fast.",
+    "Stay calm.",
+    "Keep going.",
+    "Breathe and type.",
+    "Small steps matter.",
+    "Focus on accuracy.",
+    "Warm up your hands.",
+    "Speed comes with practice.",
+    "Eyes forward, fingers ready.",
+    "Short lines build confidence.",
+    "A clean desk helps focus.",
+    "Mistakes are part of learning.",
+    "Smooth typing beats rushing hard.",
+    "Relax your shoulders and wrists.",
+    "Consistency is the real superpower.",
+    "Good posture makes typing easier.",
+    "Accuracy first, speed will follow.",
+    "Tap lightly to avoid finger fatigue.",
+    "Read ahead while you keep typing.",
+    "Avoid backspace spamming; keep rhythm.",
+    "Train daily for a few minutes only.",
+    "Your best speed is a steady speed.",
+    "Try to type without looking down much.",
+    "Keep your thumbs relaxed, not rigid.",
+    "A gentle pace can still be quick.",
+    "Reset and restart if you feel tense.",
+    "Practice on different sentence lengths.",
+    "Some sentences are short; some are long.",
+    "The quick brown fox jumps over the lazy dog.",
+    "Sharp focus beats raw speed every time.",
+    "A quick test can reveal your weak spots.",
+    "Accuracy builds trust in your own hands.",
+    "If you stumble, breathe, then continue typing.",
+    "Rhythm matters more than frantic keystrokes.",
+    "Your hands should float, not slam, on keys.",
+    "When you improve, celebrate small progress.",
+    "Typing is a skill, and skills can be trained.",
+    "Keep the cursor moving like a calm heartbeat.",
+    "The best typists look ahead, not at the keys.",
+    "A little patience today pays off tomorrow.",
+    "Try a steady cadence, like music in your head.",
+    "Fast typing is easier when your mind is quiet.",
+    "You can be quick without being aggressive at all.",
+    "Practice can turn awkward motion into smooth flow.",
+    "One clean sentence typed well is a small victory.",
+    "A slow start often leads to a strong finish.",
+    "If your fingers feel stiff, pause for a moment.",
+    "Typing on mobile is different, so be gentle there.",
+    "For long lines, keep breathing and keep your pace.",
+    "Don’t chase perfection; chase repeatable comfort.",
+    "You can fix speed later, but accuracy starts now.",
+    "Imagine each keypress landing softly and cleanly.",
+    "Use the same hand positions so movement stays small.",
+    "Your eyes should guide your hands like a navigator.",
+    "Most speed gains come from fewer mistakes, not rushing.",
+    "A calm mind will usually type faster than a stressed one.",
+    "Sometimes the best improvement is simply showing up daily.",
+    "On hard words, slow down slightly to avoid big error chains.",
+    "When you type smoothly, the sentence almost types itself.",
+    "Try to keep your wrists neutral rather than bent up or down.",
+    "If you lose your place, glance at the sentence and continue.",
+    "Short drills can be more effective than long exhausting sessions.",
+    "A good warm-up can improve accuracy in the first thirty seconds.",
+    "Over time, your fingers learn patterns like a musician learns scales.",
+    "If your hands hurt, stop and rest; pain is not a training strategy.",
+    "Speed is a byproduct of correct repetition done many times over.",
+    "In every run, aim for one thing: fewer mistakes than the last run.",
+    "When you type the same word often, your fingers start to automate it.",
+    "You don’t need to be perfect; you just need to be a little better today.",
+    "A balanced pace helps your brain keep up with your hands comfortably.",
+    "Typing tests are like mirrors; they show you where you can improve next.",
+    "Some people type faster by relaxing, because tension slows everything down.",
+    "A steady rhythm reduces backspaces, and fewer backspaces increases WPM.",
+    "Treat each sentence like a small lap; finish it cleanly, then move forward.",
+    "If you make a typo, don’t panic; keep calm, correct it, and regain rhythm.",
+    "Use your eyes to read a few characters ahead so your fingers never wait.",
+    "With practice, long sentences become easier because patterns start repeating.",
+    "When you learn to stay calm under pressure, your speed becomes consistent.",
+    "Typing is not only about speed; it is also about clarity and precision.",
+    "For very long sentences, aim to stay smooth rather than trying to sprint.",
+    "Your goal is to reduce friction: fewer pauses, fewer errors, softer hands.",
+    "A good technique is to keep your fingertips close to the keys at all times.",
+    "If you feel stuck, restart and focus on accuracy until rhythm returns again.",
+    "This sentence is designed to be longer and more complex, yet still readable.",
+    "A longer sentence requires attention, but attention becomes easier with practice.",
+    "When you type long phrases smoothly, you build endurance and stable confidence.",
+    "The more you practice, the more your brain predicts words before you type them.",
+    "Even if you type slowly, finishing cleanly is better than rushing into mistakes.",
+    "Practice with punctuation, because punctuation can disrupt rhythm if you’re tense.",
+    "The best improvements often come from tiny technique changes repeated for weeks.",
+    "Typing on different devices changes timing, so keep your expectations realistic.",
+    "Some sentences include commas, pauses, and rhythm changes to test your control.",
+    "If you can type this without stress, you are building durable typing strength.",
+    "This is a fairly long sentence with multiple clauses that tests steady pacing.",
+    "A strong typist stays relaxed, reads ahead, and keeps the cursor moving forward.",
+    "This sentence is intentionally longer, with more words, to test endurance and flow.",
+    "When the sentence gets long, keep your breathing steady and let your hands do the work.",
+    "Long sentences can feel intimidating, but your accuracy improves when you keep calm and consistent.",
+    "Typing is like running: if you sprint too early, you burn out; if you pace, you finish strong.",
+    "Here is an even longer sentence that rewards smooth rhythm, careful reading, and patient control while typing.",
+    "This very long sentence is designed to push your endurance and focus, so keep your shoulders relaxed and your hands light.",
+    "If you can complete long prompts without rushing, you will build reliable speed that holds up under pressure and fatigue."
+  ],
+  "hl_title": "Higher / Lower",
+  "hl_header": "⬆⬇ Higher / Lower",
+  "back_button": "⬅ Back",
+  "hl_description": "Guess if the next number (1–100) will be higher or lower than the current one.",
+  "hl_higher_btn": "Higher",
+  "hl_lower_btn": "Lower",
+  "hl_score": "Score: 0",
+
+  "hl_seo_title": "Higher or Lower – Neon Probability Guessing Game",
+  "hl_predict_title": "Predict the Next Neon Number",
+  "hl_predict_text": "Higher or Lower is a fast-paced guessing game where your task is to predict whether the next card, number, or value will be higher or lower than the current one. The rules are simple, but the excitement grows quickly as streaks build and pressure rises. This neon-themed edition enhances the experience with glowing animations and instant feedback.",
+
+  "hl_how_title": "How to Play",
+  "hl_how_text": "A starting number appears on the screen. Choose 'Higher' or 'Lower' to predict what the next number will be. If your prediction is correct, your streak continues. If not, the round ends and your score resets.",
+
+  "hl_controls_title": "Controls",
+  "hl_controls_desktop": "Desktop: Click Higher or Lower.",
+  "hl_controls_mobile": "Mobile: Tap either button for an instant prediction.",
+
+  "hl_tips_title": "Tips & Strategy",
+  "hl_tip1": "If the current number is low (1–4), chances favor 'Higher.'",
+  "hl_tip2": "If the number is high (7–10), 'Lower' becomes statistically safer.",
+  "hl_tip3": "Play streaks strategically — know when to quit if your version allows it.",
+
+  "hl_dev_title": "Developer Insights",
+  "hl_dev_text": "The game uses a random generator with uniform probability, ensuring fairness in every round. Animations and transitions are optimized to feel sharp and responsive across both desktop and touch devices.",
+
+  "hl_faq_title": "FAQ",
+  "hl_faq1_q": "Is the game luck-based?",
+  "hl_faq1_a": "Yes, but probability awareness significantly improves your streak potential.",
+  "hl_faq2_q": "Can the game adapt difficulty?",
+  "hl_faq2_a": "Some versions include modes with smaller ranges or special modifiers.",
+   "hl_correct": "✅ Correct!",
+  "hl_wrong": "❌ Wrong!",
+  "hl_score_label": "Score",
+  "gtn_title":"Guess The Number",
+"gtn_header":"🔢 Guess The Number",
+"back_hub":"⬅ Back to Hub",
+"gtn_intro":"I’m thinking of a number from 1 to 100. Can you guess it?",
+"gtn_placeholder":"Enter 1–100",
+"gtn_try":"Try",
+"gtn_restart":"Restart",
+"gtn_tries":"Tries",
+"gtn_best":"Best",
+"gtn_hint":"Tip: Press Enter to submit your guess.",
+"gtn_tries": "Tries",
+  "gtn_best": "Best",
+  "gtn_type_number": "Type a number first 🙂",
+  "gtn_range_warning": "Keep it between 1 and 100.",
+  "gtn_correct": "✅ Correct! The number was",
+  "gtn_too_low": "Too low. Try higher ⬆️",
+  "gtn_too_high": "Too high. Try lower ⬇️",
+  "gtn_tries": "Tries",
+  "gtn_seo_title": "Guess the Number – Neon Guessing Challenge",
+  "gtn_seo_h1": "Find the Hidden Neon Number",
+  "gtn_seo_p1": "Guess the Number is a simple yet highly addictive logic game where the goal is to uncover a secret number chosen randomly by the system.",
+
+  "gtn_how_title": "How to Play",
+  "gtn_how_text": "Enter a number into the input box and submit your guess. The game will immediately respond with a neon-highlighted hint.",
+
+  "gtn_controls": "Controls",
+  "gtn_controls_desktop": "Desktop: Type a number and press Enter or click Guess.",
+  "gtn_controls_mobile": "Mobile: Tap the number field and use the on-screen keyboard.",
+
+  "gtn_strategy": "Tips & Strategy",
+  "gtn_tip1": "Use binary search: always guess the middle of the remaining range.",
+  "gtn_tip2": "Adjust quickly after each hint.",
+  "gtn_tip3": "Try to beat your previous best attempt count.",
+
+  "gtn_dev": "Developer Insights",
+  "gtn_dev_text": "This neon version highlights each feedback state in glowing colors for instant recognition.",
+
+  "gtn_faq": "FAQ",
+  "gtn_faq_q1": "What is the best strategy?",
+  "gtn_faq_a1": "The optimal method is binary search.",
+  "gtn_faq_q2": "Does the game track best scores?",
+  "gtn_faq_a2": "Yes — many versions store your lowest attempt count locally."
+
+  
 
 
 

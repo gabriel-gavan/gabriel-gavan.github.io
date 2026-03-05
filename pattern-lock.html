@@ -1,120 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Pattern Lock</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
-    a { color:#a5b4fc; }
-    #grid { display:inline-grid;grid-template-columns:repeat(3,60px);gap:10px;margin-top:10px; }
-    .cell {
-      width:60px;height:60px;border-radius:999px;
-      border:2px solid #4b5563;display:flex;align-items:center;justify-content:center;
-      cursor:pointer;font-size:18px;
-    }
-    .cell.active { background:#6366f1;border-color:#a5b4fc; }
-		/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+<meta charset="UTF-8">
+<title data-i18n="patternlock_title">Pattern Lock</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-  </style>
+<style>
+body{
+font-family:system-ui,sans-serif;
+background:
+linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+color:#fff;
+text-align:center;
+}
+
+a{color:#a5b4fc;}
+
+#grid{
+display:inline-grid;
+grid-template-columns:repeat(3,60px);
+gap:10px;
+margin-top:10px;
+}
+
+.cell{
+width:60px;
+height:60px;
+border-radius:999px;
+border:2px solid #4b5563;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-size:18px;
+}
+
+.cell.active{
+background:#6366f1;
+border-color:#a5b4fc;
+}
+
+.pc-only{display:block;}
+
+@media (max-width:900px){
+.pc-only{display:none!important;}
+}
+</style>
+ <script src="js/translation.js?v=5"></script>
 </head>
+
 <body>
 
-<h2>🔒 Pattern Lock</h2>
-<a href="index.html">⬅ Back</a>
-<p>Click the dots in order to match the pattern shown.</p>
+<h2>🔒 <span data-i18n="patternlock_header">Pattern Lock</span></h2>
+
+<a href="index.html">
+<span data-i18n="patternlock_back">⬅ Back</span>
+</a>
+
+<p data-i18n="patternlock_instruction">
+Click the dots in order to match the pattern shown.
+</p>
 
 <p id="patternText"></p>
+
 <div id="grid"></div>
+
 <p id="msg"></p>
-<button onclick="resetPattern()">Reset input</button>
+
+<button onclick="resetPattern()" data-i18n="patternlock_reset">
+Reset input
+</button>
+
+
 <div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Pattern Lock – Neon Connect-the-Dots Logic Puzzle</h1>
 
-<h2>Crack the Glowing Security Grid</h2>
-<p>
-Pattern Lock reimagines the classic connect-the-dots unlocking system found on digital
-devices. Your task is to trace a glowing pattern across nodes in the exact sequence shown,
-replicating security locks found in futuristic neon interfaces. With each level, patterns
-grow longer, more complex, and harder to memorize.
+<h1 data-i18n="patternlock_article_title">
+Pattern Lock – Neon Connect-the-Dots Logic Puzzle
+</h1>
+
+<h2 data-i18n="patternlock_section_grid">
+Crack the Glowing Security Grid
+</h2>
+
+<p data-i18n="patternlock_desc">
+Pattern Lock reimagines the classic connect-the-dots unlocking system found on digital devices.
+Your task is to trace a glowing pattern across nodes in the exact sequence shown.
+With each level patterns grow longer and harder to memorize.
 </p>
 
-<h2>How to Play</h2>
-<p>
-A pattern preview appears briefly. Memorize the order, then draw the exact sequence by
-connecting the neon nodes in one continuous gesture.
+<h2 data-i18n="patternlock_how">How to Play</h2>
+
+<p data-i18n="patternlock_how_desc">
+A pattern preview appears briefly. Memorize the order then reproduce it by connecting the nodes.
 </p>
 
-<h2>Controls</h2>
-<p><strong>Desktop:</strong> Click and drag over nodes.</p>
-<p><strong>Mobile:</strong> Swipe continuously over the dots.</p>
+<h2 data-i18n="patternlock_controls">Controls</h2>
 
-<h2>Tips</h2>
+<p data-i18n="patternlock_controls_desktop">
+<strong>Desktop:</strong> Click and drag over nodes.
+</p>
+
+<p data-i18n="patternlock_controls_mobile">
+<strong>Mobile:</strong> Swipe continuously over the dots.
+</p>
+
+<h2 data-i18n="patternlock_tips">Tips</h2>
+
 <ul>
-  <li>Focus on the pattern shape rather than individual points.</li>
-  <li>Start slow until your muscle memory improves.</li>
-  <li>Break long patterns into smaller mental segments.</li>
+<li data-i18n="patternlock_tip1">Focus on the pattern shape rather than points.</li>
+<li data-i18n="patternlock_tip2">Start slow until muscle memory improves.</li>
+<li data-i18n="patternlock_tip3">Break long patterns into smaller segments.</li>
 </ul>
 
-<h2>Developer Insights</h2>
-<p>
-This game uses gesture tracking for smooth, accurate pattern recognition,
-ensuring mobile users get a natural lock-screen-style experience.
+<h2 data-i18n="patternlock_dev">Developer Insights</h2>
+
+<p data-i18n="patternlock_dev_desc">
+This game uses gesture tracking for smooth pattern recognition
+and a mobile lock-screen style experience.
 </p>
 
+</div>
+
+
 <script>
-const correctPattern = [1,2,5,8,9]; // positions 1-9
+
+const correctPattern=[1,2,5,8,9];
 let inputPattern=[];
 
 const grid=document.getElementById("grid");
+
 for(let i=1;i<=9;i++){
-  const d=document.createElement("div");
-  d.className="cell";
-  d.innerText=i;
-  d.onclick=()=>tap(i,d);
-  grid.appendChild(d);
+
+const d=document.createElement("div");
+d.className="cell";
+d.innerText=i;
+
+d.onclick=()=>tap(i,d);
+
+grid.appendChild(d);
+
 }
 
-document.getElementById("patternText").innerText="Pattern: "+correctPattern.join(" → ");
+document.getElementById("patternText").innerText =
+t("patternlock_pattern")+": "+correctPattern.join(" → ");
+
+
 
 function tap(i,el){
-  if(inputPattern.indexOf(i)!==-1) return; // don't repeat
-  inputPattern.push(i);
-  el.classList.add("active");
-  check();
+
+if(inputPattern.indexOf(i)!==-1)return;
+
+inputPattern.push(i);
+
+el.classList.add("active");
+
+check();
+
 }
+
+
 
 function check(){
-  const msg=document.getElementById("msg");
-  if(inputPattern.length===correctPattern.length){
-    const ok = correctPattern.every((v,idx)=>v===inputPattern[idx]);
-    msg.innerText = ok ? "✅ Unlocked!" : "❌ Wrong pattern!";
-  } else {
-    msg.innerText="Input: "+inputPattern.join(" → ");
-  }
+
+const msg=document.getElementById("msg");
+
+if(inputPattern.length===correctPattern.length){
+
+const ok=correctPattern.every((v,idx)=>v===inputPattern[idx]);
+
+msg.innerText= ok
+? "✅ "+t("patternlock_unlocked")
+: "❌ "+t("patternlock_wrong");
+
 }
 
-function resetPattern(){
-  inputPattern=[];
-  document.getElementById("msg").innerText="";
-  [...document.querySelectorAll(".cell")].forEach(c=>c.classList.remove("active"));
+else{
+
+msg.innerText=
+t("patternlock_input")+": "+inputPattern.join(" → ");
+
 }
+
+}
+
+
+
+function resetPattern(){
+
+inputPattern=[];
+
+document.getElementById("msg").innerText="";
+
+[...document.querySelectorAll(".cell")]
+.forEach(c=>c.classList.remove("active"));
+
+}
+
 </script>
+
+
+
 <script src="/js/ads.js"></script>
-</body>
 <script src="footer.js"></script>
+
+
+</body>
 </html>

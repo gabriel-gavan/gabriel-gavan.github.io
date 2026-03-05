@@ -1,98 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Timer Bomb</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
-    a { color:#a5b4fc; }
-    input { padding:.3rem .5rem;border-radius:.4rem;border:1px solid #374151;background:#0f172a;color:#fff; }
-    button { padding:.35rem .8rem;border-radius:999px;border:none;background:#6366f1;color:#fff;cursor:pointer;margin-left:.3rem; }
-	/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+<meta charset="UTF-8">
+<title data-i18n="bomb_title">Timer Bomb</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-  </style>
+<style>
+body{
+font-family:system-ui,sans-serif;
+background:
+linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+color:#fff;
+text-align:center;
+}
+
+a{ color:#a5b4fc; }
+
+input{
+padding:.3rem .5rem;
+border-radius:.4rem;
+border:1px solid #374151;
+background:#0f172a;
+color:#fff;
+}
+
+button{
+padding:.35rem .8rem;
+border-radius:999px;
+border:none;
+background:#6366f1;
+color:#fff;
+cursor:pointer;
+margin-left:.3rem;
+}
+
+/* PC-only SEO text container */
+.pc-only{
+display:block;
+}
+
+@media (max-width:900px){
+.pc-only{
+display:none !important;
+}
+}
+</style>
+<script src="js/translation.js?v=5"></script>
 </head>
+
 <body>
 
-<h2>⏳ Timer Bomb</h2>
-<a href="index.html">⬅ Back</a>
-<p>Defuse the bomb in 20 seconds by guessing the secret 3-digit code (100–999).</p>
+<h2 data-i18n="bomb_heading">⏳ Timer Bomb</h2>
 
-<p id="time">Time: 20</p>
-<input id="code" type="number" placeholder="Enter code">
-<button onclick="tryCode()">Submit</button>
+<a href="index.html" data-i18n="bomb_back">⬅ Back</a>
+
+<p data-i18n="bomb_description">
+Defuse the bomb in 20 seconds by guessing the secret 3-digit code (100–999).
+</p>
+
+<p id="time"></p>
+
+<input id="code" type="number" data-i18n-placeholder="bomb_placeholder" placeholder="Enter code">
+
+<button onclick="tryCode()" data-i18n="bomb_submit">Submit</button>
+
 <p id="hint"></p>
-<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Timer Bomb – Neon Countdown Puzzle Survival</h1>
 
-<h2>Beat the Clock, Defuse the Bomb</h2>
-<p>
+
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+
+<h1 data-i18n="bomb_seo_title">
+Timer Bomb – Neon Countdown Puzzle Survival
+</h1>
+
+<h2 data-i18n="bomb_seo_heading">
+Beat the Clock, Defuse the Bomb
+</h2>
+
+<p data-i18n="bomb_seo_desc">
 Timer Bomb is a fast-paced challenge where you must solve micro-puzzles before the timer
 hits zero. With each success, the difficulty increases and the available time decreases.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="bomb_how_to_play">How to Play</h2>
+
+<p data-i18n="bomb_how_to_play_text">
 Complete the instructions shown on-screen — tap, match, solve, or react — before the bomb
 timer expires.
 </p>
 
-<h2>Tips</h2>
+<h2 data-i18n="bomb_tips">Tips</h2>
+
 <ul>
-  <li>Stay calm — panic wastes precious seconds.</li>
-  <li>Expect the rules to change every round.</li>
+<li data-i18n="bomb_tip_1">Stay calm — panic wastes precious seconds.</li>
+<li data-i18n="bomb_tip_2">Expect the rules to change every round.</li>
 </ul>
 
+</div>
+
 <script>
+
 let target = Math.floor(Math.random()*900)+100;
-let time=20, timer, gameOver=false;
+let time = 20;
+let timer;
+let gameOver=false;
+
+const timeEl=document.getElementById("time");
+const hintEl=document.getElementById("hint");
+
+function updateTime(){
+timeEl.innerText =
+t("bomb_time").replace("{time}",time);
+}
 
 function tick(){
-  time--;
-  document.getElementById("time").innerText="Time: "+time;
-  if(time<=0){
-    clearInterval(timer);
-    if(!gameOver){
-      gameOver=true;
-      document.getElementById("hint").innerText="💥 Boom! The code was "+target;
-    }
-  }
+
+time--;
+
+updateTime();
+
+if(time<=0){
+
+clearInterval(timer);
+
+if(!gameOver){
+
+gameOver=true;
+
+hintEl.innerText =
+t("bomb_boom").replace("{code}",target);
+
+}
+
+}
+
 }
 
 function tryCode(){
-  if(gameOver) return;
-  const val=parseInt(document.getElementById("code").value,10);
-  const h=document.getElementById("hint");
-  if(isNaN(val)) { h.innerText="Enter a number!"; return; }
-  if(val===target){
-    gameOver=true;
-    clearInterval(timer);
-    h.innerText="🧯 Defused! You saved the day!";
-  } else if(val<target){
-    h.innerText="Too low!";
-  } else {
-    h.innerText="Too high!";
-  }
+
+if(gameOver) return;
+
+const val=parseInt(document.getElementById("code").value,10);
+
+if(isNaN(val)){
+
+hintEl.innerText=t("bomb_enter_number");
+
+return;
+
 }
 
+if(val===target){
+
+gameOver=true;
+
+clearInterval(timer);
+
+hintEl.innerText=t("bomb_defused");
+
+}
+
+else if(val<target){
+
+hintEl.innerText=t("bomb_too_low");
+
+}
+
+else{
+
+hintEl.innerText=t("bomb_too_high");
+
+}
+
+}
+
+updateTime();
+
 timer=setInterval(tick,1000);
+
 </script>
+
 <script src="/js/ads.js"></script>
-</body>
 <script src="footer.js"></script>
+
+</body>
 </html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tic Tac Toe – Neon Edition</title>
+<title> data-i18n="tictactoe_title">Tic Tac Toe — Neon Edition</title>
 
 <style>
 /* ---------- GLOBAL ---------- */
@@ -177,22 +177,24 @@ h1 {
     }
 }
 </style>
+ <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 
 <div class="main-wrap">
 
-    <h1>Tic Tac Toe — Neon Edition</h1>
+    <h1 data-i18n="tictactoe_title">Tic Tac Toe — Neon Edition</h1>
 
-    <div id="aiThinking">🤖 AI is thinking...</div>
+    <div id="aiThinking" data-i18n="tictactoe_ai_thinking">🤖 AI is thinking...</div>
 
     <div class="control-panel">
-        <button onclick="restartGame()">Restart</button>
-        <button onclick="resetScore()">Reset Score</button>
-        <p style="margin-top:6px;font-size:14px;opacity:0.8;">
-            Score: <span id="scoreX">0</span> – <span id="scoreO">0</span>
-        </p>
+        <button onclick="restartGame()" data-i18n="tictactoe_restart">Restart</button>
+		<button onclick="resetScore()" data-i18n="tictactoe_reset_score">Reset Score</button>
+        <<p style="margin-top:6px;font-size:14px;opacity:0.8;">
+        <span data-i18n="tictactoe_score_label">Score:</span>
+        <span id="scoreX">0</span> – <span id="scoreO">0</span>
+    </p>
     </div>
 
     <div class="board-frame">
@@ -370,7 +372,8 @@ function checkWin() {
             drawWinLine(w);
 
             gameOver=true;
-            statusEl.innerHTML = `${board[a]} Wins!`;
+            statusEl.innerHTML = t("tictactoe_player_wins")
+					.replace("{player}", board[a]);
 
             if (board[a]==="X") scoreX++; else scoreO++;
             document.getElementById("scoreX").innerHTML=scoreX;
@@ -440,7 +443,7 @@ function resetScore() {
 }
 </script>
 <div style="text-align:center; margin:15px 0;">
-  <a id="backToHub" href="index.html"
+  <a id="backToHub" href="index.html" data-i18n="tictactoe_back_hub"
      style="
        color:#38bdf8;
        font-size:14px;

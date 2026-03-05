@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Guess The Number</title>
+ <title data-i18n="gtn_title">Guess The Number</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 
@@ -213,108 +213,101 @@
       .input { width: 160px; }
     }
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 <div class="layout">
   <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 
   <!-- MAIN COLUMN -->
   <main class="main-column">
     <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
-    </div>
+
 
     <!-- GAME HEADER -->
     <div class="game-header">
-      <div class="title">🔢 Guess The Number</div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
+		<div class="title" data-i18n="gtn_header">🔢 Guess The Number</div>
+		<div><a href="index.html" data-i18n="back_hub">⬅ Back to Hub</a></div>
     </div>
 
     <!-- GAME FRAME -->
     <div class="frame" role="application" aria-label="Guess the number game">
-      <div class="subtext">I’m thinking of a number from <b>1</b> to <b>100</b>. Can you guess it?</div>
+      <div class="subtext" data-i18n="gtn_intro">I’m thinking of a number from <b>1</b> to <b>100</b>. Can you guess it?
+</div>
 
       <div class="controls">
         <input id="guess" class="input" type="number" min="1" max="100" inputmode="numeric" placeholder="Enter 1–100" />
-        <button class="btn primary" id="btnTry" type="button">Try</button>
-        <button class="btn" id="btnRestart" type="button">Restart</button>
+        <button class="btn primary" id="btnTry" type="button" data-i18n="gtn_try">
+			Try
+			</button>
+
+			<button class="btn" id="btnRestart" type="button" data-i18n="gtn_restart">
+			Restart
+			</button>
       </div>
 
       <div class="pill-row">
-        <div class="pill" id="triesPill">Tries: 0</div>
-        <div class="pill" id="bestPill">Best: —</div>
+        <div class="pill" id="triesPill" data-i18n="gtn_tries">Tries: 0</div>
+		<div class="pill" id="bestPill" data-i18n="gtn_best">Best: —</div>
       </div>
 
       <p class="msg" id="msg"></p>
-      <div class="hint">Tip: Press <b>Enter</b> to submit your guess.</div>
+      <div class="hint" data-i18n="gtn_hint">Tip: Press <b>Enter</b> to submit your guess.
+</div>
     </div>
 	<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Guess the Number – Neon Guessing Challenge</h1>
+  <h1 data-i18n="gtn_seo_title">Guess the Number – Neon Guessing Challenge</h1>
 
-<h2>Find the Hidden Neon Number</h2>
-<p>
+<h2 data-i18n="gtn_seo_h1">Find the Hidden Neon Number</h2>
+
+<p data-i18n="gtn_seo_p1">
 Guess the Number is a simple yet highly addictive logic game where the goal is to uncover
-a secret number chosen randomly by the system. Ranging from 1 to 100 (or custom ranges
-depending on mode), the game gives you glowing neon hints such as “Higher” or “Lower”
-after each attempt. Your challenge is to correctly guess the mystery number in as few
-tries as possible.
+a secret number chosen randomly by the system.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="gtn_how_title">How to Play</h2>
+
+<p data-i18n="gtn_how_text">
 Enter a number into the input box and submit your guess. The game will immediately respond
-with a neon-highlighted hint. Use these clues to narrow down the possibilities until
-you find the exact value.
+with a neon-highlighted hint.
 </p>
 
-<h2>Controls</h2>
-<p><strong>Desktop:</strong> Type a number and press Enter or click Guess.</p>
-<p><strong>Mobile:</strong> Tap the number field and use the on-screen keyboard.</p>
+<h2 data-i18n="gtn_controls">Controls</h2>
 
-<h2>Tips & Strategy</h2>
+<p data-i18n="gtn_controls_desktop"><strong>Desktop:</strong> Type a number and press Enter or click Guess.</p>
+
+<p data-i18n="gtn_controls_mobile"><strong>Mobile:</strong> Tap the number field and use the on-screen keyboard.</p>
+
+<h2 data-i18n="gtn_strategy">Tips & Strategy</h2>
+
 <ul>
-  <li>Use binary search: always guess the middle of the remaining range.</li>
-  <li>Adjust quickly after each hint — don’t repeat impossible numbers.</li>
-  <li>Try to beat your previous best attempt count.</li>
+<li data-i18n="gtn_tip1">Use binary search: always guess the middle of the remaining range.</li>
+<li data-i18n="gtn_tip2">Adjust quickly after each hint.</li>
+<li data-i18n="gtn_tip3">Try to beat your previous best attempt count.</li>
 </ul>
 
-<h2>Developer Insights</h2>
-<p>
+<h2 data-i18n="gtn_dev">Developer Insights</h2>
+
+<p data-i18n="gtn_dev_text">
 This neon version highlights each feedback state in glowing colors for instant recognition.
-The random number generator ensures every session feels fresh, while the simple gameplay
-offers endless replay value.
 </p>
 
-<h2>FAQ</h2>
-<h3>What is the best strategy?</h3>
-<p>The optimal method is binary search, which guarantees the number in ~7 guesses.</p>
+<h2 data-i18n="gtn_faq">FAQ</h2>
 
-<h3>Does the game track best scores?</h3>
-<p>Yes — many versions store your lowest attempt count locally.</p>
+<h3 data-i18n="gtn_faq_q1">What is the best strategy?</h3>
+<p data-i18n="gtn_faq_a1">The optimal method is binary search.</p>
+
+<h3 data-i18n="gtn_faq_q2">Does the game track best scores?</h3>
+<p data-i18n="gtn_faq_a2">Yes — many versions store your lowest attempt count locally.</p>
 
   </main>
 
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 </div>
 
 <script>
@@ -336,9 +329,9 @@ offers endless replay value.
     target = (Math.random() * 100 | 0) + 1;
     tries = 0;
     msgEl.textContent = "";
-    triesPill.textContent = "Tries: 0";
-    if (best != null) bestPill.textContent = `Best: ${best}`;
-    else bestPill.textContent = "Best: —";
+    triesPill.textContent = t("gtn_tries") + ": 0";
+    if (best != null) bestPill.textContent = t("gtn_best") + ": " + best;
+    else bestPill.textContent = t("gtn_best") + ": —";
     guessEl.value = "";
     guessEl.focus();
   }
@@ -353,28 +346,28 @@ offers endless replay value.
   function check() {
     const v = parseInt(guessEl.value, 10);
     if (!Number.isFinite(v)) {
-      setMessage("Type a number first 🙂", "warn");
+      setMessage(t("gtn_type_number"), "warn");
       return;
     }
     if (v < 1 || v > 100) {
-      setMessage("Keep it between 1 and 100.", "warn");
+      setMessage(t("gtn_range_warning"), "warn");
       return;
     }
 
     tries++;
-    triesPill.textContent = `Tries: ${tries}`;
+    triesPill.textContent = t("gtn_tries") + ": " + tries;
 
     if (v === target) {
-      setMessage(`✅ Correct! The number was ${target}.`, "win");
+      setMessage(t("gtn_correct") + " " + target + ".", "win");
       if (best == null || tries < best) {
         best = tries;
         localStorage.setItem("guess_best", String(best));
-        bestPill.textContent = `Best: ${best}`;
+        bestPill.textContent = t("gtn_best") + ": " + best;
       }
     } else if (v < target) {
-      setMessage("Too low. Try higher ⬆️", "");
+      setMessage(t("gtn_too_low"), "");
     } else {
-      setMessage("Too high. Try lower ⬇️", "");
+      setMessage(t("gtn_too_high"), "");
     }
   }
 

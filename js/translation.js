@@ -25,8 +25,14 @@ async function loadLanguage(lang) {
     }
 }
 // 🔵 FUNCTIA t() — pentru texte in JavaScript
-function t(key) {
-    return window.i18n?.[window.currentLang]?.[key] || key;
+function t(key, vars = {}) {
+    let str = window.i18n?.[window.currentLang]?.[key] || key;
+
+    Object.keys(vars).forEach(k => {
+        str = str.replace(`{${k}}`, vars[k]);
+    });
+
+    return str;
 }
 
 function detectDefaultLanguage() {

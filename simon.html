@@ -1,145 +1,252 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Simon Says</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font-family: system-ui,sans-serif; background:
-		linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)), /* dark overlay */
-		url("images/hub-bg.jpg") center center / cover no-repeat fixed;color:#fff;text-align:center; }
-    a { color:#a5b4fc; }
-    .row { display:flex;justify-content:center;gap:10px;margin-top:15px; }
-    .btn {
-      width:80px;height:80px;border-radius:10px;border:none;
-      cursor:pointer;opacity:0.9;transition:transform .1s, filter .1s;
-    }
-    .btn.active { transform:scale(1.05); filter:brightness(1.4); }
-    #b0 { background:#ef4444; }
-    #b1 { background:#22c55e; }
-    #b2 { background:#3b82f6; }
-    #b3 { background:#eab308; }
-	/* PC-only SEO text container */
-	.pc-only {
-	  display: block;
-	}
+<meta charset="UTF-8">
+<title data-i18n="simon_title">Simon Says</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-	/* Hide SEO text on mobile/tablet */
-	@media (max-width: 900px) {
-	  .pc-only {
-		display: none !important;
-	  }
-	}
-  </style>
+<style>
+body {
+font-family: system-ui,sans-serif;
+background:
+linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
+url("images/hub-bg.jpg") center center / cover no-repeat fixed;
+color:#fff;
+text-align:center;
+}
+
+a { color:#a5b4fc; }
+
+.row{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:15px;
+}
+
+.btn{
+width:80px;
+height:80px;
+border-radius:10px;
+border:none;
+cursor:pointer;
+opacity:0.9;
+transition:transform .1s, filter .1s;
+}
+
+.btn.active{
+transform:scale(1.05);
+filter:brightness(1.4);
+}
+
+#b0{ background:#ef4444; }
+#b1{ background:#22c55e; }
+#b2{ background:#3b82f6; }
+#b3{ background:#eab308; }
+
+/* PC-only SEO text container */
+.pc-only{
+display:block;
+}
+
+/* Hide SEO text on mobile/tablet */
+@media (max-width:900px){
+.pc-only{
+display:none !important;
+}
+}
+</style>
+ <script src="js/translation.js?v=5"></script>
 </head>
+
 <body>
 
-<h2>🎵 Simon Says (Colors)</h2>
-<a href="index.html">⬅ Back</a>
-<p>Watch the flashing sequence, then repeat it by clicking the colors.</p>
+<h2 data-i18n="simon_heading">🎵 Simon Says (Colors)</h2>
 
-<button id="start">Start</button>
-<p id="info">Level: 0</p>
+<a href="index.html" data-i18n="simon_back">⬅ Back</a>
+
+<p data-i18n="simon_description">
+Watch the flashing sequence, then repeat it by clicking the colors.
+</p>
+
+<button id="start" data-i18n="simon_start">Start</button>
+
+<p id="info" data-i18n="simon_level_0">Level: 0</p>
+
 <p id="msg"></p>
 
 <div class="row">
-  <button id="b0" class="btn" data-i="0"></button>
-  <button id="b1" class="btn" data-i="1"></button>
+<button id="b0" class="btn" data-i="0"></button>
+<button id="b1" class="btn" data-i="1"></button>
 </div>
-<div class="row">
-  <button id="b2" class="btn" data-i="2"></button>
-  <button id="b3" class="btn" data-i="3"></button>
-</div>
-<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
-  
-  <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
-  <!-- Example placeholder: -->
-  <h1>Neon Simon – Memory Sequence Pattern Game</h1>
 
-<h2>Follow the Neon Lights</h2>
-<p>
+<div class="row">
+<button id="b2" class="btn" data-i="2"></button>
+<button id="b3" class="btn" data-i="3"></button>
+</div>
+
+
+<div class="pc-only" style="max-width:1200px;margin:40px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65;">
+
+<h1 data-i18n="simon_seo_title">
+Neon Simon – Memory Sequence Pattern Game
+</h1>
+
+<h2 data-i18n="simon_follow_lights">
+Follow the Neon Lights
+</h2>
+
+<p data-i18n="simon_seo_desc">
 Neon Simon challenges your memory by playing a sequence of glowing colors.
 Your task is to repeat the exact order. Each successful round extends the
 sequence by one, quickly turning the challenge into a true memory endurance test.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="simon_how_to_play">How to Play</h2>
+
+<p data-i18n="simon_how_to_play_text">
 Watch the lights flash. Then tap the squares in the same order to repeat the pattern.
 One mistake ends the game.
 </p>
 
-<h2>Controls</h2>
-<p>Tap the glowing pads in sequence.</p>
+<h2 data-i18n="simon_controls">Controls</h2>
 
-<h2>Tips</h2>
+<p data-i18n="simon_controls_text">
+Tap the glowing pads in sequence.
+</p>
+
+<h2 data-i18n="simon_tips">Tips</h2>
+
 <ul>
-  <li>Say the color names out loud to enhance retention.</li>
-  <li>Break long sequences into smaller chunks mentally.</li>
+<li data-i18n="simon_tip_1">Say the color names out loud to enhance retention.</li>
+<li data-i18n="simon_tip_2">Break long sequences into smaller chunks mentally.</li>
 </ul>
 
+</div>
+
+
 <script>
-let seq=[], step=0, accepting=false, level=0;
 
-const buttons = [...document.querySelectorAll(".btn")];
-const info = document.getElementById("info");
-const msg = document.getElementById("msg");
+let seq=[];
+let step=0;
+let accepting=false;
+let level=0;
 
-function randomColor() { return Math.floor(Math.random()*4); }
+const buttons=[...document.querySelectorAll(".btn")];
+
+const info=document.getElementById("info");
+const msg=document.getElementById("msg");
+
+
+function randomColor(){
+return Math.floor(Math.random()*4);
+}
+
 
 function flash(i){
-  const b=buttons[i];
-  b.classList.add("active");
-  setTimeout(()=>b.classList.remove("active"),400);
+const b=buttons[i];
+b.classList.add("active");
+
+setTimeout(()=>b.classList.remove("active"),400);
 }
+
 
 function playSequence(){
-  accepting=false; step=0;
-  msg.innerText="Watch...";
-  let i=0;
-  const interval=setInterval(()=>{
-    flash(seq[i]);
-    i++;
-    if(i>=seq.length){
-      clearInterval(interval);
-      accepting=true;
-      msg.innerText="Now repeat!";
-    }
-  },600);
+
+accepting=false;
+step=0;
+
+msg.innerText=t("simon_watch");
+
+let i=0;
+
+const interval=setInterval(()=>{
+
+flash(seq[i]);
+
+i++;
+
+if(i>=seq.length){
+
+clearInterval(interval);
+
+accepting=true;
+
+msg.innerText=t("simon_repeat");
+
 }
+
+},600);
+
+}
+
 
 function nextLevel(){
-  level++;
-  info.innerText="Level: "+level;
-  seq.push(randomColor());
-  setTimeout(playSequence,400);
+
+level++;
+
+info.innerText=t("simon_level").replace("{level}",level);
+
+seq.push(randomColor());
+
+setTimeout(playSequence,400);
+
 }
 
+
 document.getElementById("start").onclick=()=>{
-  seq=[]; level=0; msg.innerText="";
-  nextLevel();
+
+seq=[];
+level=0;
+
+msg.innerText="";
+
+nextLevel();
+
 };
 
+
 buttons.forEach(b=>{
-  b.onclick=()=>{
-    if(!accepting) return;
-    const i=parseInt(b.dataset.i,10);
-    flash(i);
-    if(i===seq[step]){
-      step++;
-      if(step===seq.length){
-        msg.innerText="✅ Good! Next level...";
-        accepting=false;
-        setTimeout(nextLevel,700);
-      }
-    } else {
-      msg.innerText="❌ Wrong! You reached level "+level+". Press Start to try again.";
-      accepting=false;
-    }
-  };
+
+b.onclick=()=>{
+
+if(!accepting) return;
+
+const i=parseInt(b.dataset.i,10);
+
+flash(i);
+
+if(i===seq[step]){
+
+step++;
+
+if(step===seq.length){
+
+msg.innerText=t("simon_good_next");
+
+accepting=false;
+
+setTimeout(nextLevel,700);
+
+}
+
+}else{
+
+msg.innerText=
+t("simon_wrong_level").replace("{level}",level);
+
+accepting=false;
+
+}
+
+};
+
 });
+
 </script>
+
 <script src="/js/ads.js"></script>
-</body>
 <script src="footer.js"></script>
+
+</body>
 </html>

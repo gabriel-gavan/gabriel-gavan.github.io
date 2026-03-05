@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Reaction Test</title>
+  <title data-i18n="reaction.title">Reaction Test</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
 
@@ -239,51 +239,71 @@
       .bigbtn { height: 160px; font-size: 21px; }
     }
   </style>
+   <script src="js/translation.js?v=5"></script>
 </head>
 
 <body>
 <div class="layout">
-  <!-- LEFT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Left Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 
   <!-- MAIN COLUMN -->
   <main class="main-column">
     <!-- TOP LEADERBOARD -->
-    <div class="top-banner">
-      Top Banner Zone – recommended 728×90 (auto also works).<br/>
-      Paste your AdSense snippet here.
-    </div>
+
 
     <!-- GAME HEADER -->
     <div class="game-header">
-      <div class="title">⚡ Reaction Test</div>
-      <div><a href="index.html">⬅ Back to Hub</a></div>
+		<div class="title" data-i18n="reaction.header">⚡ Reaction Test</div>
+
+		<div>
+		  <a href="index.html" data-i18n="reaction.back">⬅ Back to Hub</a>
+		</div>
     </div>
 
     <!-- GAME FRAME -->
     <div class="frame" role="application" aria-label="Reaction test game">
-      <div class="subtext">Tap/click when it turns <b>GREEN</b>. If you click too early, you lose the round.</div>
+      <div class="subtext" data-i18n="reaction.instructions">
+			Tap/click when it turns <b>GREEN</b>. If you click too early, you lose the round.
+			</div>
 
       <div class="stage">
-        <button id="pad" class="bigbtn" type="button" aria-label="Reaction pad">START</button>
+        <button id="pad"
+				class="bigbtn"
+				type="button"
+				aria-label="Reaction pad"
+				data-i18n="reaction.start_button">
+			START
+		</button>
 
         <div class="pill-row">
-          <div class="pill" id="lastPill">Last: —</div>
-          <div class="pill" id="bestPill">Best: —</div>
+          <div class="pill" id="lastPill" data-i18n="reaction.last">
+			Last: —
+			</div>
+
+			<div class="pill" id="bestPill" data-i18n="reaction.best">
+			Best: —
+			</div>
         </div>
 
         <div class="msg" id="msg"></div>
-        <div class="hint">Desktop: click pad / press <b>Space</b> · Mobile: tap the pad.</div>
+        <div class="hint" data-i18n="reaction.hint">
+			Desktop: click pad / press <b>Space</b> · Mobile: tap the pad.
+			</div>
 
         <div class="row">
-          <button class="btn primary" id="btnStart" type="button">Start</button>
-          <button class="btn" id="btnRestart" type="button">Restart</button>
+			<button class="btn primary"
+					id="btnStart"
+					type="button"
+					data-i18n="reaction.start">
+			Start
+			</button>
+
+			<button class="btn"
+					id="btnRestart"
+					type="button"
+					data-i18n="reaction.restart">
+			Restart
+			</button>
         </div>
       </div>
     </div>
@@ -291,46 +311,50 @@
   
   <!-- PLACE THE LONG HTML CONTENT FOR THIS GAME HERE -->
   <!-- Example placeholder: -->
-  <h1>Reaction Test – Neon Reflex Speed Trainer</h1>
+  <h1 data-i18n="reaction.seo_title">
+Reaction Test – Neon Reflex Speed Trainer
+</h1>
 
-<h2>How Fast Are Your Reflexes?</h2>
-<p>
+<h2 data-i18n="reaction.seo_fast_title">
+How Fast Are Your Reflexes?
+</h2>
+
+<p data-i18n="reaction.seo_fast_text">
 Reaction Test measures pure reaction speed by challenging you to tap the screen
 the moment the neon background changes color. Perfect for gamers looking to improve
 reflexes or anyone wanting to measure their reaction time scientifically.
 </p>
 
-<h2>How to Play</h2>
-<p>
+<h2 data-i18n="reaction.seo_play_title">How to Play</h2>
+
+<p data-i18n="reaction.seo_play_text">
 Wait for the screen to glow bright. The moment the color changes, tap instantly.
 Your time is recorded in milliseconds.
 </p>
 
-<h2>Controls</h2>
-<p>Tap or click the screen as fast as possible.</p>
+<h2 data-i18n="reaction.seo_controls_title">Controls</h2>
 
-<h2>Tips</h2>
+<p data-i18n="reaction.seo_controls_text">
+Tap or click the screen as fast as possible.
+</p>
+
+<h2 data-i18n="reaction.seo_tips_title">Tips</h2>
+
 <ul>
-  <li>Stay focused — don’t anticipate too early.</li>
-  <li>Play multiple rounds to average your best score.</li>
+  <li data-i18n="reaction.tip1">Stay focused — don’t anticipate too early.</li>
+  <li data-i18n="reaction.tip2">Play multiple rounds to average your best score.</li>
 </ul>
 
-<h2>Developer Notes</h2>
-<p>
+<h2 data-i18n="reaction.dev_title">Developer Notes</h2>
+
+<p data-i18n="reaction.dev_text">
 The game uses high-precision timing functions to measure reaction time accurately
 down to the millisecond for consistent results.
 </p>
 
   </main>
 
-  <!-- RIGHT BANNER -->
-  <aside class="ad-vertical">
-    <div>
-      Right Banner Zone<br/>
-      <strong>160×600</strong><br/>
-      Paste your AdSense code here.
-    </div>
-  </aside>
+
 </div>
 
 <script>
@@ -365,7 +389,7 @@ down to the millisecond for consistent results.
   }
 
   function updateBestUI() {
-    bestPill.textContent = (best == null) ? "Best: —" : `Best: ${best} ms`;
+    bestPill.textContent = (best == null)  ? t("reaction.best_empty")  : t("reaction.best_ms", { value: best });
   }
 
   function clearTimer() {
@@ -376,30 +400,30 @@ down to the millisecond for consistent results.
     clearTimer();
     state = "idle";
     startTime = 0;
-    setPad("", "START");
-    setMessage("Press Start, then wait for GREEN.", "");
-    lastPill.textContent = "Last: —";
+    setPad("", t("reaction.start_button"));
+    setMessage(t("reaction.wait_start"), "");
+    lastPill.textContent = t("reaction.last_empty");
     updateBestUI();
   }
 
   function startRound() {
     clearTimer();
     state = "waiting";
-    setPad("waiting", "WAIT…");
-    setMessage("Wait for GREEN…", "warn");
+    setPad("waiting", t("reaction.wait"));
+    setMessage(t("reaction.wait_green"), "warn");
 
     const delay = 1000 + Math.random() * 3000;
     timer = setTimeout(() => {
       state = "go";
       startTime = performance.now();
-      setPad("go", "TAP!");
-      setMessage("GO! Tap/click now!", "win");
+      setPad("go", t("reaction.tap"));
+      setMessage(t("reaction.go_now"), "win");
     }, delay);
   }
 
   function finishRound(ms) {
     state = "done";
-    lastPill.textContent = `Last: ${ms} ms`;
+    lastPill.textContent = t("reaction.last_ms", { value: ms });
 
     if (best == null || ms < best) {
       best = ms;
@@ -410,16 +434,16 @@ down to the millisecond for consistent results.
       setMessage(`⏱ ${ms} ms`, "");
     }
 
-    setPad("", "START");
+    setPad("", t("reaction.start_button"));
   }
 
   function tooSoon() {
     clearTimer();
     state = "done";
-    setPad("toosoon", "TOO SOON!");
-    setMessage("Too soon 😅 Tap Start to try again.", "bad");
-    lastPill.textContent = "Last: —";
-    setTimeout(() => { if (state === "done") setPad("", "START"); }, 650);
+    setPad("toosoon", t("reaction.too_soon"));
+    setMessage(t("reaction.too_soon_msg"), "bad");
+    lastPill.textContent = t("reaction.last_empty");
+    setTimeout(() => { if (state === "done") setPad("", t("reaction.start_button")); }, 650);
   }
 
   function onPadAction() {
@@ -457,6 +481,9 @@ down to the millisecond for consistent results.
   });
 
   hardReset();
+setTimeout(() => {
+  setMessage(t("reaction.wait_start"), "");
+}, 200);
 })();
 </script>
 <script src="/js/ads.js"></script>
