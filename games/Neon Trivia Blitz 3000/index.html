@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trivia Blitz 3000</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://esm.sh/three@0.160.0",
+          "three/": "https://esm.sh/three@0.160.0/",
+          "tone": "https://esm.sh/tone@14.7.77"
+        }
+      }
+    </script>
+    <style>
+      html, body { 
+        margin: 0; 
+        padding: 0; 
+        background-color: #050505; 
+        overflow: hidden;
+        user-select: none;
+      }
+      #trivia-ui button:active {
+        transform: scale(0.95);
+      }
+      #trivia-ui .answer-btn:hover {
+        background: rgba(0, 255, 204, 0.2) !important;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/" style="
+      position: fixed; 
+      top: 10px; 
+      right: 10px; 
+      z-index: 10000; 
+      color: #00ffcc; 
+      text-decoration: none; 
+      font-family: 'Orbitron', sans-serif; 
+      background: rgba(0,0,0,0.6); 
+      padding: 8px 16px; 
+      border: 1px solid #00ffcc; 
+      border-radius: 4px; 
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    " onmouseover="this.style.background='#00ffcc'; this.style.color='black';" onmouseout="this.style.background='rgba(0,0,0,0.6)'; this.style.color='#00ffcc';">
+      Back to Hub
+    </a>
+    <script type="module" src="main.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ChatManager.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ImageGenerator.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ProgressLogger.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/OGP.js"></script>
+	<script src="/js/ads.js"></script>
+  </body>
+</html>

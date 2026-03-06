@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cybershard: The Neon Protocol</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://esm.sh/three@0.160.0",
+          "three/": "https://esm.sh/three@0.160.0/",
+          "tone": "https://esm.sh/tone@14.7.77"
+        }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        background-color: #020617; /* Dark navy */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #f472b6;
+      }
+      .banner-container {
+        position: relative;
+        width: 100%;
+        height: 150px;
+        overflow: hidden;
+        border-bottom: 2px solid #f472b6;
+        margin-bottom: 20px;
+        box-shadow: 0 0 20px rgba(244,114,182,0.3);
+      }
+      #game-banner {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .banner-text-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: rgba(2, 6, 23, 0.3);
+        pointer-events: none;
+      }
+      .banner-title {
+        font-size: 42px;
+        font-weight: 900;
+        color: #f472b6;
+        text-transform: uppercase;
+        letter-spacing: 10px;
+        text-shadow: 
+          0 0 5px #f472b6,
+          0 0 10px #f472b6,
+          0 0 20px #f472b6,
+          0 0 40px rgba(244, 114, 182, 0.5);
+        margin: 0;
+        animation: neon-flicker 3s infinite;
+      }
+      .banner-subtitle {
+        font-size: 14px;
+        color: #38bdf8;
+        text-transform: uppercase;
+        letter-spacing: 6px;
+        text-shadow: 0 0 10px #38bdf8;
+        margin-top: 5px;
+        opacity: 0.9;
+      }
+      @keyframes neon-flicker {
+        0%, 18%, 22%, 25%, 53%, 57%, 100% {
+          text-shadow: 
+            0 0 5px #f472b6,
+            0 0 10px #f472b6,
+            0 0 20px #f472b6,
+            0 0 40px rgba(244, 114, 182, 0.5);
+        }
+        20%, 24%, 55% {
+          text-shadow: none;
+          opacity: 0.5;
+        }
+      }
+      #ui-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        z-index: 5;
+      }
+      .hud-top {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        pointer-events: auto;
+      }
+      .stat-box {
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid #f472b6;
+        padding: 10px 20px;
+        border-radius: 4px;
+        box-shadow: 0 0 15px rgba(244,114,182,0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 100px;
+      }
+      .stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        opacity: 0.7;
+        margin-bottom: 5px;
+      }
+      .stat-value {
+        font-size: 20px;
+        font-weight: bold;
+        text-shadow: 0 0 10px #f472b6;
+      }
+      .hud-bottom {
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        pointer-events: auto;
+      }
+      #menu-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('assets/cybershard-hub-background.png.webp');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        z-index: 10;
+      }
+      #menu-overlay::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(2, 6, 23, 0.85);
+        backdrop-filter: blur(4px);
+      }
+      #menu-overlay.hidden {
+        display: none;
+      }
+      .menu-card {
+        position: relative;
+        background: rgba(15, 23, 42, 0.85);
+        padding: 40px;
+        border-radius: 8px;
+        text-align: center;
+        color: #e2e8f0;
+        max-width: 500px;
+        border: 1px solid #f472b6;
+        box-shadow: 0 0 40px rgba(244,114,182,0.2);
+        backdrop-filter: blur(4px);
+      }
+      .menu-card h1 {
+        margin-top: 0;
+        color: #f472b6;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        text-shadow: 0 0 20px #f472b6;
+        font-size: 32px;
+      }
+      .subtitle {
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        opacity: 0.6;
+        margin-bottom: 30px;
+      }
+      .btn {
+        background: transparent;
+        color: #f472b6;
+        border: 1px solid #f472b6;
+        padding: 12px 30px;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 0 10px rgba(244,114,182,0.1);
+        margin: 10px;
+      }
+      .btn:hover {
+        background: #f472b6;
+        color: #020617;
+        box-shadow: 0 0 25px #f472b6;
+      }
+      .btn.success {
+        border-color: #22c55e;
+        color: #22c55e;
+      }
+      .btn.success:hover {
+        background: #22c55e;
+        color: #020617;
+        box-shadow: 0 0 25px #22c55e;
+      }
+      .puzzle-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin: 20px 0;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 10px;
+      }
+      .puzzle-grid::-webkit-scrollbar {
+        width: 4px;
+      }
+      .puzzle-grid::-webkit-scrollbar-thumb {
+        background: #f472b6;
+        border-radius: 2px;
+      }
+      .puzzle-item {
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: 1px solid #1e293b;
+        padding: 5px;
+      }
+      .puzzle-item:hover {
+        transform: scale(1.05);
+        border-color: #f472b6;
+      }
+      .puzzle-item.selected {
+        border-color: #f472b6;
+        box-shadow: 0 0 15px rgba(244,114,182,0.5);
+      }
+      .puzzle-item img {
+        width: 100%;
+        display: block;
+      }
+      .puzzle-info {
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-top: 5px;
+        opacity: 0.8;
+      }
+      .zoom-preview {
+        width: 100px;
+        height: 100px;
+        border: 1px solid #f472b6;
+        padding: 3px;
+        background: #0f172a;
+        box-shadow: 0 0 15px rgba(244,114,182,0.2);
+        cursor: pointer;
+        position: relative;
+      }
+      .zoom-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.3;
+        transition: opacity 0.3s;
+      }
+      .zoom-preview:hover img {
+        opacity: 1;
+      }
+      .zoom-preview::after {
+        content: 'PREVIEW';
+        position: absolute;
+        bottom: -20px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 9px;
+        letter-spacing: 2px;
+      }
+      .progress-bar-bg {
+        width: 100%;
+        height: 12px;
+        background: rgba(2, 6, 23, 0.8);
+        border: 1px solid #38bdf8;
+        border-radius: 6px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+      }
+      .progress-bar-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #38bdf8, #f472b6);
+        box-shadow: 0 0 20px #38bdf8, 0 0 40px rgba(56, 189, 248, 0.4);
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+      }
+      .progress-bar-fill::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: #fff;
+        box-shadow: 0 0 10px #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <a href="/index.html" class="btn small" style="position: absolute; top: 20px; right: 20px; pointer-events: auto; text-decoration: none; z-index: 200;">BACK TO HUB</a>
+
+    <div id="ui-overlay">
+      <div class="hud-top">
+        <div class="stat-box">
+          <span class="stat-label">Protocol</span>
+          <span id="protocol-text" class="stat-value">---</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Moves</span>
+          <span id="moves-text" class="stat-value">0</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Time</span>
+          <span id="timer-text" class="stat-value">00:00</span>
+        </div>
+      </div>
+
+      <div id="progress-container" style="padding: 0 20px; pointer-events: auto;">
+        <div class="stat-label" style="text-align: center; margin-bottom: 5px;">Decryption Progress</div>
+        <div class="progress-bar-bg">
+          <div id="progress-fill" class="progress-bar-fill"></div>
+        </div>
+      </div>
+
+      <div class="hud-bottom">
+        <button id="hint-btn" class="btn small">Hint</button>
+        <div id="zoom-preview" class="zoom-preview">
+          <img id="preview-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Target">
+        </div>
+        <a href="index.html" class="btn small" style="text-decoration: none; display: inline-block;">BACK TO MAIN PAGE</a>
+      </div>
+    </div>
+
+    <div id="menu-overlay">
+      <!-- Start Menu -->
+      <div id="start-menu" class="menu-card">
+        <div class="banner-container">
+          <img id="game-banner" src="assets/cybershard-background-only.png.webp" alt="Cybershard">
+          <div class="banner-text-overlay">
+            <h1 class="banner-title">Cybershard</h1>
+            <span class="banner-subtitle">The Neon Protocol</span>
+          </div>
+        </div>
+        <div id="puzzle-grid" class="puzzle-grid">
+          <!-- Populated by main.js -->
+        </div>
+        <button class="btn" id="start-btn">Initiate Decryption</button>
+      </div>
+
+      <!-- Win Menu -->
+      <div id="win-menu" class="menu-card hidden">
+        <h1 style="color: #22c55e; text-shadow: 0 0 20px #22c55e;">Hack Success</h1>
+        <p class="subtitle">Image Data Reconstructed</p>
+        <div style="margin: 20px 0;">
+          <p>Time: <span id="final-time">00:00</span></p>
+          <p>Moves: <span id="final-moves">0</span></p>
+        </div>
+        <button class="btn success" id="next-btn">Next Protocol</button>
+      </div>
+
+      <!-- Lose Menu -->
+      <div id="lose-menu" class="menu-card hidden">
+        <h1 style="color: #f43f5e; text-shadow: 0 0 20px #f43f5e;">Access Denied</h1>
+        <p class="subtitle">Data Corruption Detected</p>
+        <button class="btn" id="retry-btn">Retry Protocol</button>
+      </div>
+    </div>
+
+    <script type="module" src="main.js"></script>
+	<script src="/js/ads.js"></script>
+  </body>
+</html>
