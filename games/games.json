@@ -17,6 +17,20 @@
       ],
       "category": "top"
     },
+	{
+      "id": "neon-obby-legend",
+      "title": "Neon Obby Legend",
+      "url": "games/Neon Obby Legend/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Racing Arcade!!!",
+      "tags": [
+	  "arcade",
+	  "featured",
+        "logic",
+        "skill"
+      ],
+      "category": "top"
+    },
 	
 		 {
       "id": "NeonRunnerVelocity",
@@ -96,6 +110,46 @@
       "url": "neon-sudoku.html",
       "thumb": "images/thumb1.webp",
       "desc": "Clean neon-style Sudoku with difficulty levels, mobile numpad, auto-check and smooth design.",
+      "tags": [
+        "logic",
+        "puzzle",
+        "classic"
+      ],
+      "category": "top"
+    },
+	
+    {
+      "id": "neon-mystery-files",
+      "title": "Neon Mistery Files",
+      "url": "games/Project Dimension Zero/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Unlock puzzles to move to next levels",
+      "tags": [
+        "logic",
+        "puzzle",
+        "classic"
+      ],
+      "category": "top"
+    },
+	    {
+      "id": "neon-trivia-blitz-3000",
+      "title": "Neon Trivia Blitz 3000",
+      "url": "games/Neon Trivia Blitz 3000/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Unlock puzzles to move to next levels",
+      "tags": [
+        "logic",
+        "puzzle",
+        "classic"
+      ],
+      "category": "top"
+    },
+	{
+      "id": "cybershard-neon-protocol",
+      "title": "Cybershard - The Neon Protocol",
+      "url": "games/Cybershard - The Neon Protocol/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Unlock puzzles to move to next levels",
       "tags": [
         "logic",
         "puzzle",

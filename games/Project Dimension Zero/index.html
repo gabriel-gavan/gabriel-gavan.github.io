@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Neon Mystery Files: Weekly Puzzle</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.3.1",
+          "react-dom": "https://esm.sh/react-dom@18.3.1",
+          "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+          "framer-motion": "https://esm.sh/framer-motion@10.16.4?external=react,react-dom",
+          "lucide-react": "https://esm.sh/lucide-react@0.284.0?external=react",
+          "three": "https://esm.sh/three@0.160.0",
+          "three/": "https://esm.sh/three@0.160.0/",
+          "tone": "https://esm.sh/tone@14.7.77",
+          "htm": "https://esm.sh/htm@3.1.1"
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --neon-cyan: #00ffff;
+        --neon-magenta: #ff00ff;
+        --neon-green: #39ff14;
+        --neon-yellow: #fefe33;
+        --dark-bg: #050505;
+        --terminal-bg: #0a0a0a;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--dark-bg);
+        color: #fff;
+        font-family: 'Share Tech Mono', monospace;
+        overflow-x: hidden;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      /* Scanline Effect */
+      body::before {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+        z-index: 100;
+        background-size: 100% 2px, 3px 100%;
+        pointer-events: none;
+      }
+
+      /* Scanline Effect */
+      body::after {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: rgba(18, 16, 16, 0.1);
+        opacity: 0;
+        z-index: 101;
+        pointer-events: none;
+        animation: flicker 0.15s infinite;
+      }
+
+      @keyframes flicker {
+        0% { opacity: 0.1; }
+        5% { opacity: 0.2; }
+        10% { opacity: 0.1; }
+        15% { opacity: 0.3; }
+        20% { opacity: 0.2; }
+        25% { opacity: 0.1; }
+        30% { opacity: 0.2; }
+        35% { opacity: 0.1; }
+        40% { opacity: 0.2; }
+        45% { opacity: 0.3; }
+        50% { opacity: 0.2; }
+        55% { opacity: 0.1; }
+        60% { opacity: 0.2; }
+        65% { opacity: 0.3; }
+        70% { opacity: 0.2; }
+        75% { opacity: 0.1; }
+        80% { opacity: 0.2; }
+        85% { opacity: 0.3; }
+        90% { opacity: 0.2; }
+        95% { opacity: 0.1; }
+        100% { opacity: 0.2; }
+      }
+
+      .neon-glow-cyan {
+        text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+      }
+
+      .neon-border-cyan {
+        border: 1px solid var(--neon-cyan);
+        box-shadow: 0 0 5px var(--neon-cyan), inset 0 0 5px var(--neon-cyan);
+      }
+
+      .neon-glow-magenta {
+        text-shadow: 0 0 5px var(--neon-magenta), 0 0 10px var(--neon-magenta);
+      }
+
+      .neon-border-magenta {
+        border: 1px solid var(--neon-magenta);
+        box-shadow: 0 0 5px var(--neon-magenta), inset 0 0 5px var(--neon-magenta);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="main.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ChatManager.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ImageGenerator.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ProgressLogger.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/OGP.js"></script>
+	<script src="/js/ads.js"></script>
+
+  </body>
+</html>
