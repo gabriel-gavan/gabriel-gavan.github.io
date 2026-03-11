@@ -1,6 +1,18 @@
 
 /* ================= CLEAN HERO SYSTEM ================= */
 
+/* Fix game title color */
+.game-card h3{
+    color:#38bdf8 !important;
+    margin:10px 0 0;
+    font-size:16px;
+    font-weight:600;
+}
+
+.game-card:hover h3{
+    color:#67e8f9 !important;
+    text-shadow:0 0 6px rgba(56,189,248,0.7);
+}
 .hero-card-section {
   width: 100%;
   padding: 0;
@@ -111,7 +123,7 @@
   overflow: hidden;
 }
 
-}
+
 
  
   
@@ -214,10 +226,11 @@
 	  position:relative;
 	  margin: 0 auto;  
       background-attachment: scroll; /* fixed backgrounds can lag on mobile */
+	  border-top: 1px solid rgba(255,255,255,0.08);
   }
 
       
-      border-top: 1px solid rgba(255,255,255,0.08);
+      
     }
 	.ng-grid {
 	  display: flex;
@@ -979,13 +992,16 @@
   border-radius:999px;
   border:1px solid rgba(147,197,253,0.35);
   background:rgba(2,6,23,0.55);
-  color:#93c5fd;
+  color:#22d3ee;
   text-decoration:none;
   font-size:0.78rem;
+  
 }
 .value-links a:hover{
   border-color: rgba(56,189,248,0.65);
   box-shadow: 0 0 16px rgba(56,189,248,0.18);
+  color:#67e8f9;
+  text-shadow:0 0 8px rgba(34,211,238,0.7);
 }
 
 /* FAQ block */
@@ -1921,13 +1937,17 @@
   border-radius:999px;
   border:1px solid rgba(147,197,253,0.35);
   background:rgba(2,6,23,0.55);
-  color:#93c5fd;
+  color:#22d3ee;
   text-decoration:none;
   font-size:0.78rem;
+    text-decoration:none;
+  font-weight:600;
+  text-shadow:0 0 8px rgba(34,211,238,0.7);
 }
 .value-links a:hover{
   border-color: rgba(56,189,248,0.65);
   box-shadow: 0 0 16px rgba(56,189,248,0.18);
+  color:#67e8f9;
 }
 
 /* FAQ block */
@@ -2297,7 +2317,7 @@ body {  background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
 
 }
 
-// PC DO NOT CHANGE
+/* PC DO NOT CHANGE*/
 /* ====== NEON MINI GAME (super sus) ====== */
 .hero-top-title {
     position: absolute;
@@ -2478,7 +2498,7 @@ body {  background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
 	  gap: 12px;
 	  flex-wrap: wrap;
 	  font-size: 8px;
-	
+	}	
 @media (max-width: 900px){
   .layout-row{
      display:block;
@@ -2488,3 +2508,4 @@ body {  background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
      display:none;
   }
 }
+
