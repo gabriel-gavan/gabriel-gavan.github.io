@@ -50,10 +50,10 @@
   if (window.innerWidth > 768) {
 
     // Desktop Social Bar (BLOCK MOBILE)
-    loadScript(
-      "https://pl28700278.effectivegatecpm.com/26/13/e8/2613e8380f7bdfa828796e21eede7894.js",
-      document.head
-    );
+   // loadScript(
+     // "https://pl28700278.effectivegatecpm.com/26/13/e8/2613e8380f7bdfa828796e21eede7894.js",
+     // document.head
+   // );
 
     // Native Banner (Desktop Only)
     setTimeout(() => {
@@ -70,11 +70,11 @@
     }, 1200);
 
     // Popunder (Desktop Only)
-    setTimeout(() => {
-      loadScript(
-        "https://pl28741283.effectivegatecpm.com/c2/46/66/c24666ba56d10524410f231d33bf7708.js"
-      );
-    }, 3000);
+//setTimeout(() => {
+      //loadScript(
+       // "https://pl28741283.effectivegatecpm.com/c2/46/66/c24666ba56d10524410f231d33bf7708.js"
+//);
+   // }, 3000);
   }
 
   // =============================
