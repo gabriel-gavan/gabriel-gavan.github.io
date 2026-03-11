@@ -76,6 +76,25 @@
     margin: 0 auto;
     background-attachment: scroll;
 	}
+	.layout-row{
+		  display:flex;
+		  gap:30px;
+		  align-items:flex-start;
+		  max-width:1300px;
+		  margin:0 auto;
+	}
+
+	.sidebar-ad{
+	      width:300px;
+		  min-height:600px;
+		  position:sticky;
+		  top:120px;
+		  flex-shrink:0;
+	}
+
+	.main-content{
+	  flex:1;
+	}
 
 
 
@@ -83,9 +102,9 @@
 
     /* --------- MAIN CONTENT (HUB) --------- */
   .main-content {
-  max-width: 1300px;
-  width: 100%;
-  margin: 0 auto;   /* THIS centers it */
+   flex:1;
+  min-width:0;
+ 
   background: rgba(0,0,0,0.6);
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
@@ -1062,8 +1081,9 @@
 
 
     /* --------- MAIN CONTENT (HUB) --------- */
-    .main-content {     width: 100%;
-    max-width: 1300px;
+    .main-content {    
+	  flex:1;
+  min-width:0;
     height: auto;
     border-radius: 16px;
     overflow: hidden;
@@ -1071,7 +1091,7 @@
     background: linear-gradient(145deg, #020617, #0a0f24);
     box-shadow: none;
     position: relative;
-    margin: 0 auto;
+    
     background-attachment: scroll;
 	    border-top-left-radius: 24px;
     border-top-right-radius: 24px;
@@ -2106,20 +2126,7 @@ footer {
 
 
 
-ins.adsbygoogle {
-  height: 100px !important;
-  max-height: 100px !important;
-}
 
-ins.adsbygoogle > div {
-  height: 100px !important;
-  max-height: 100px !important;
-}
-
-ins.adsbygoogle iframe {
-  height: 100px !important;
-  max-height: 100px !important;
-}
 
 
 
@@ -2263,6 +2270,7 @@ ins.adsbygoogle iframe {
     transform: none;
     box-shadow: none;
   }
+
 }
 
 @media(max-width:768px){
@@ -2470,5 +2478,13 @@ body {  background:linear-gradient(135deg, rgba(0,0,0,0.8), rgba(15,23,42,0.9)),
 	  gap: 12px;
 	  flex-wrap: wrap;
 	  font-size: 8px;
-	}
+	
+@media (max-width: 900px){
+  .layout-row{
+     display:block;
+  }
+
+  .sidebar-ad{
+     display:none;
+  }
 }
