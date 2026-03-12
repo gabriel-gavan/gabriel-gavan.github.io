@@ -115,7 +115,7 @@
 			  ]
 			}
 			</script>
-
+<script defer src="js/translation.js"></script>
 	  <script defer src="js/loadgames.js"></script>
    </head>
    <body>
@@ -1233,6 +1233,16 @@
 				const userLang = navigator.language || navigator.userLanguage;
 
 				if (userLang.startsWith("ro")) currentLang = "ro";
+				else if (userLang.startsWith("zh")) currentLang = "zh";
+				else if (userLang.startsWith("hi")) currentLang = "hi";
+				else if (userLang.startsWith("ja")) currentLang = "ja";
+				else if (userLang.startsWith("ko")) currentLang = "ko";
+				else if (userLang.startsWith("fr")) currentLang = "fr";
+				else if (userLang.startsWith("it")) currentLang = "it";
+				else if (userLang.startsWith("de")) currentLang = "de";
+				else if (userLang.startsWith("sv")) currentLang = "sv";
+				else if (userLang.startsWith("pt")) currentLang = "pt-br";
+				else if (userLang.startsWith("es")) currentLang = "es";
 				else currentLang = defaultLang;
 
 				localStorage.setItem("site-lang", currentLang);
@@ -1242,8 +1252,16 @@
 			async function loadLanguage(lang) {
 				const response = await fetch(`/lang/${lang}.json`);
 				const translations = await response.json();
+
+				window.translations = translations;
+
 				applyTranslations(translations);
 				updateLangButton(lang);
+
+				// 🔥 IMPORTANT
+				if (typeof loadGames === "function") {
+					loadGames();
+				}
 			}
 
 			function applyTranslations(dict) {
@@ -1304,17 +1322,24 @@
 			currentLang = localStorage.getItem("site-lang") || "en";
 
 			// Switch button click
-			document.getElementById("langSwitcher").addEventListener("click", () => {
+			document.getElementById("langSwitcher").addEventListener("click", async () => {
+
 				let index = languages.indexOf(currentLang);
 				let next = (index + 1) % languages.length;
 				currentLang = languages[next];
 
 				localStorage.setItem("site-lang", currentLang);
 
-				loadLanguage(currentLang);
-				updateHeaderImage(currentLang);
+				await loadLanguage(currentLang);
 
+				// 🔥 reload games so titles update
+				if (typeof loadGames === "function") {
+					loadGames();
+				}
+
+				updateHeaderImage(currentLang);
 				document.getElementById("langSwitcher").innerText = currentLang.toUpperCase();
+
 			});
 
 			// On startup

@@ -24,29 +24,34 @@ function fillGrid(id, list) {
     const c = document.getElementById(id);
     if (!c) return;
 
-    c.innerHTML = list.map(g => `
-    <div class="game-card"
-         data-id="${g.id}"
-         data-title="${g.title}"
-         data-desc="${g.desc || ''}"
-         data-tags="${(g.tags || []).join(',')}">
+    c.innerHTML = list.map(g => {
 
-        <a href="${g.url}" class="game-link">
-            <img 
-                class="game-thumb"
-                src="${thumbFallback(g.id)}"
-                srcset="${thumbSrcset(g.id)}"
-                sizes="(max-width: 600px) 50vw, (max-width: 480px) 45vw, 240px"
-                loading="lazy"
-                decoding="async"
-                alt="${g.title}"
-            >
-            <h3>${g.title}</h3>
-        </a>
+        const title = typeof t === "function" ? t(g.title) : g.title;
 
-    </div>
-`).join("");
+        return `
+        <div class="game-card"
+             data-id="${g.id}"
+             data-title="${title}"
+             data-desc="${g.desc || ''}"
+             data-tags="${(g.tags || []).join(',')}">
+
+            <a href="${g.url}" class="game-link">
+                <img 
+                    class="game-thumb"
+                    src="${thumbFallback(g.id)}"
+                    srcset="${thumbSrcset(g.id)}"
+                    sizes="(max-width: 600px) 50vw, (max-width: 480px) 45vw, 240px"
+                    loading="lazy"
+                    decoding="async"
+                    alt="${title}"
+                >
+                <h3>${title}</h3>
+            </a>
+
+        </div>
+        `;
+    }).join("");
 }
 
 
-document.addEventListener("DOMContentLoaded", loadGames);
+//document.addEventListener("DOMContentLoaded", loadGames);
