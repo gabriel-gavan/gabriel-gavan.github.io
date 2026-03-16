@@ -1263,5 +1263,6 @@
   "t_game_quiz": "미니 퀴즈",
   "t_game_timer_bomb": "타이머 폭탄",
   "t_game_pattern_lock": "패턴 잠금",
-  "t_game_sliding_puzzle": "슬라이딩 퍼즐 (3×3)"
+  "t_game_sliding_puzzle": "슬라이딩 퍼즐 (3×3)",
+  "t_game_neonnebula_strike": "네온 성운 스트라이크"
 }

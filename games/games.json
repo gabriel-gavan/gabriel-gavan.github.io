@@ -15,6 +15,21 @@
       ],
       "category": "top"
     },
+	{
+      "id": "neonnebulastrike",
+      "title": "t_game_neonnebula_strike",
+      "url": "games/Neon Nebula Strike/index.html",
+      "thumb": "images/thumb1.webp",
+      "desc": "Shooter FPS!!!",
+      "tags": [
+        "arcade",
+        "featured",
+        "logic",
+        "skill",
+        "classic"
+      ],
+      "category": "top"
+    },
     {
       "id": "neon-obby-legend",
       "title": "t_game_neon_obby_legend",

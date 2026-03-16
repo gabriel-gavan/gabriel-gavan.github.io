@@ -1264,6 +1264,7 @@
   "t_game_quiz": "Mini Quiz",
   "t_game_timer_bomb": "Bombe à Minuterie",
   "t_game_pattern_lock": "Verrou Motif",
-  "t_game_sliding_puzzle": "Puzzle Coulissant (3×3)"
+  "t_game_sliding_puzzle": "Puzzle Coulissant (3×3)",
+  "t_game_neonnebula_strike": "Frappe de la Nébuleuse Néon"
 
 }

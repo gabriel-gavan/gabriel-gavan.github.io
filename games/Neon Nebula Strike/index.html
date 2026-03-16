@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alien Exploration FPS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://esm.sh/three@0.160.0",
+          "three/": "https://esm.sh/three@0.160.0/",
+          "tone": "https://esm.sh/tone@14.7.77"
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --ad-safe-zone-top: 0px; /* Adjust to 50px or 90px if integrating ads */
+        --ad-safe-zone-bottom: 0px;
+      }
+
+      html, body { 
+        margin: 0; 
+        padding: 0; 
+        background-color: #000; 
+        overflow: hidden; 
+        font-family: 'Orbitron', sans-serif;
+        color: #fff;
+        user-select: none;
+        touch-action: none; /* Critical for mobile games */
+      }
+      canvas { display: block; }
+
+      #ui-overlay {
+        position: absolute;
+        top: var(--ad-safe-zone-top);
+        bottom: var(--ad-safe-zone-bottom);
+        left: 0;
+        width: 100%;
+        height: calc(100% - var(--ad-safe-zone-top) - var(--ad-safe-zone-bottom));
+        pointer-events: none;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      #hud-top {
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+      }
+
+      /* Mobile Responsive Tweaks */
+      @media (max-width: 768px) {
+        #hud-top { padding: 10px; }
+        .stat { font-size: 14px !important; }
+        #minimap-container { width: 100px; height: 100px; }
+        #main-menu h1 { font-size: 40px; letter-spacing: 5px; }
+        .menu-button-container { padding: 20px; }
+        #weapon-container { width: 200px; height: 200px; bottom: -20px; }
+        #level-grid { grid-template-columns: repeat(3, 1fr); }
+        #xp-bar-container { width: 100px; bottom: 80px; }
+        #xp-text { bottom: 65px; font-size: 8px; }
+        #weapon-hud { bottom: 100px; left: 10px; gap: 5px; }
+        .weapon-slot { width: 40px; height: 40px; }
+        #buff-container { bottom: 100px; right: 10px; }
+      }
+
+      @media (max-width: 480px) {
+        #level-grid { grid-template-columns: repeat(2, 1fr); }
+        #main-menu h1 { font-size: 32px; }
+        #campaign-list { gap: 10px; }
+        .campaign-card { width: 100%; height: 120px; }
+        #hud-bottom { padding: 10px; }
+        #boss-hud { width: 90%; }
+      }
+
+      #hud-bottom {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+      }
+
+      #buff-container {
+        position: absolute;
+        bottom: 120px;
+        right: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end;
+        pointer-events: none;
+      }
+
+      .buff-icon {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #00ff7f;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0,0,0,0.5);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .buff-icon img {
+        width: 70%;
+        height: 70%;
+        object-fit: contain;
+      }
+
+      .buff-timer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background: rgba(0, 255, 127, 0.3);
+        transform-origin: bottom;
+        z-index: -1;
+      }
+
+      #weapon-hud {
+        position: absolute;
+        bottom: 150px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+
+      .weapon-slot {
+        width: 50px;
+        height: 50px;
+        background: rgba(0, 40, 20, 0.6);
+        border: 2px solid rgba(0, 255, 127, 0.3);
+        border-radius: 5px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        transition: all 0.3s;
+        opacity: 0.5;
+      }
+
+      .weapon-slot.active {
+        border-color: #00ff7f;
+        box-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
+        opacity: 1;
+        transform: scale(1.1);
+      }
+
+      .weapon-slot.locked {
+        filter: grayscale(1) brightness(0.5);
+      }
+
+      .weapon-slot img {
+        width: 80%;
+        height: 80%;
+        object-fit: contain;
+      }
+
+      .weapon-key {
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        background: #00ff7f;
+        color: #000;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 2px 5px;
+        border-radius: 3px;
+      }
+
+      #xp-bar-container {
+        position: absolute;
+        bottom: 125px;
+        left: 20px;
+        width: 150px;
+        height: 6px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(0, 255, 127, 0.3);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      #xp-bar-fill {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(to right, #00ff7f, #00ffff);
+        transition: width 0.3s ease-out;
+      }
+
+      #xp-text {
+        position: absolute;
+        bottom: 110px;
+        left: 20px;
+        font-size: 10px;
+        color: #00ff7f;
+        text-shadow: 0 0 5px rgba(0, 255, 127, 0.5);
+      }
+
+      #combo-meter {
+        position: absolute;
+        top: 250px;
+        left: 20px;
+        display: none;
+        flex-direction: column;
+        align-items: flex-start;
+        pointer-events: none;
+        z-index: 100;
+      }
+
+      #combo-text {
+        font-size: 48px;
+        font-weight: bold;
+        color: #ffcc00;
+        text-shadow: 0 0 10px rgba(255, 204, 0, 0.8), 2px 2px 4px #000;
+        margin: 0;
+        font-style: italic;
+      }
+
+      #combo-multiplier {
+        font-size: 24px;
+        color: #fff;
+        background: #ff4d4d;
+        padding: 2px 10px;
+        border-radius: 4px;
+        margin-top: -10px;
+        box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+      }
+
+      #combo-timer-bar {
+        width: 150px;
+        height: 6px;
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(255, 204, 0, 0.3);
+        margin-top: 5px;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      #combo-timer-fill {
+        width: 100%;
+        height: 100%;
+        background: #ffcc00;
+      }
+
+      .combo-pop {
+        animation: combo-pop-anim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes ability-ready-pulse {
+        0% { box-shadow: 0 0 0px #00ff7f; border-color: rgba(255,255,255,0.2); }
+        50% { box-shadow: 0 0 20px #00ff7f; border-color: #00ff7f; transform: scale(1.05); }
+        100% { box-shadow: 0 0 0px #00ff7f; border-color: rgba(255,255,255,0.2); transform: scale(1); }
+      }
+      
+      .ability-ready-notif {
+        animation: ability-ready-pulse 0.5s ease-in-out 2;
+      }
+
+      @keyframes combo-pop-anim {
+        0% { transform: scale(0.5); opacity: 0; }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      #minimap-container {
+        width: 150px;
+        height: 150px;
+        background: rgba(0, 10, 5, 0.85);
+        border: 1px solid rgba(0, 255, 127, 0.4);
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+      }
+
+      #minimap {
+        width: 100%;
+        height: 100%;
+      }
+
+      .stat-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      .stat {
+        font-size: 24px;
+        text-shadow: 2px 2px 4px #000;
+        letter-spacing: 2px;
+      }
+
+      #crosshair {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30px;
+        height: 30px;
+        transform: translate(-50%, -50%);
+        border: 2px solid rgba(0, 255, 127, 0.7);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #crosshair::after {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: rgba(0, 255, 127, 0.9);
+        border-radius: 50%;
+      }
+
+      #weapon-container {
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        width: 350px;
+        height: 350px;
+        transform: translateX(-50%);
+        pointer-events: none;
+        transition: transform 0.05s ease-out;
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+      }
+
+      #muzzle-flash {
+        position: absolute;
+        top: 10%;
+        left: 50%;
+        width: 100px;
+        height: 100px;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(255, 200, 0, 0.8) 40%, transparent 70%);
+        pointer-events: none;
+        display: none;
+        filter: blur(5px);
+        mix-blend-mode: screen;
+        z-index: 11;
+      }
+
+      #weapon-sprite {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      #game-over {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 100;
+        pointer-events: all;
+      }
+
+      #game-over h1 {
+        font-size: 64px;
+        color: #ff4d4d;
+        margin-bottom: 20px;
+      }
+
+      #mission-summary {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 107;
+        pointer-events: all;
+      }
+
+      #mission-summary h1 {
+        font-size: 54px;
+        color: #00ff7f;
+        text-shadow: 0 0 20px rgba(0, 255, 127, 0.5);
+        margin-bottom: 30px;
+        letter-spacing: 5px;
+      }
+
+      #summary-content {
+        background: rgba(0, 255, 127, 0.05);
+        border: 1px solid rgba(0, 255, 127, 0.3);
+        padding: 40px;
+        border-radius: 10px;
+        width: 80%;
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 30px;
+      }
+
+      .summary-stat {
+        font-size: 20px;
+        margin: 10px 0;
+        color: #fff;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .btn {
+        background: #00ff7f;
+        color: #000;
+        border: none;
+        padding: 15px 20px;
+        font-family: inherit;
+        font-weight: bold;
+        font-size: 18px;
+        cursor: pointer;
+        transition: transform 0.2s, background 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .btn:hover {
+        background: #00cc66;
+        transform: scale(1.05);
+      }
+
+      .btn.secondary {
+        background: transparent;
+        border: 2px solid #00ff7f;
+        color: #00ff7f;
+        margin-top: 20px;
+        padding: 10px 30px;
+        font-size: 16px;
+      }
+
+      .btn.secondary:hover {
+        background: rgba(0, 255, 127, 0.1);
+      }
+
+      #start-screen {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url('assets/game_thumbnail_alien_exploration.webp') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 101;
+        text-align: center;
+      }
+
+      #campaign-selection {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.9);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 105;
+        pointer-events: all;
+      }
+
+      #level-selection {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.95);
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 106;
+        pointer-events: all;
+      }
+
+      #level-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 15px;
+        width: 90%;
+        max-width: 800px;
+        margin: 30px 0;
+      }
+
+      .level-card {
+        background: rgba(0, 255, 127, 0.05);
+        border: 1px solid rgba(0, 255, 127, 0.2);
+        padding: 15px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 18px;
+        color: #fff;
+      }
+
+      .level-card:hover {
+        background: #00ff7f;
+        color: #000;
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(0, 255, 127, 0.5);
+      }
+
+      .level-card.boss {
+        border-color: #ff4d4d;
+        color: #ff4d4d;
+        background: rgba(255, 77, 77, 0.1);
+        box-shadow: 0 0 10px rgba(255, 77, 77, 0.3);
+        animation: pulse-boss 2s infinite ease-in-out;
+      }
+
+      .level-card.boss::after {
+        content: ' 💀';
+        font-size: 14px;
+      }
+
+      .level-card.final-boss {
+        border-color: #ffcc00;
+        color: #ffcc00;
+        background: rgba(255, 204, 0, 0.1);
+        box-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+        animation: pulse-final-boss 1s infinite alternate;
+        font-weight: bold;
+      }
+
+      .level-card.final-boss::after {
+        content: ' 🔱';
+        font-size: 18px;
+      }
+
+      @keyframes pulse-boss {
+        0% { box-shadow: 0 0 5px rgba(255, 77, 77, 0.3); }
+        50% { box-shadow: 0 0 20px rgba(255, 77, 77, 0.6); }
+        100% { box-shadow: 0 0 5px rgba(255, 77, 77, 0.3); }
+      }
+
+      @keyframes pulse-final-boss {
+        from { box-shadow: 0 0 10px rgba(255, 204, 0, 0.4); transform: scale(1); }
+        to { box-shadow: 0 0 25px rgba(255, 204, 0, 0.8); transform: scale(1.1); }
+      }
+
+      .level-card.boss:hover {
+        background: #ff4d4d;
+        color: #000;
+        box-shadow: 0 0 20px rgba(255, 77, 77, 0.8);
+      }
+
+      .level-card.final-boss:hover {
+        background: #ffcc00;
+        color: #000;
+        box-shadow: 0 0 30px rgba(255, 204, 0, 1);
+      }
+
+      #main-menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0,10,5,0.4), rgba(0,0,0,0.8)), url('assets/game_thumbnail_alien_exploration.webp') no-repeat center center;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 110;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      #main-menu::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1) 0px, rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      #main-menu h1 {
+        font-size: 80px;
+        color: #00ff7f;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8), 0 0 5px rgba(0, 255, 127, 0.2);
+        margin-bottom: 5px;
+        letter-spacing: 15px;
+        position: relative;
+        z-index: 2;
+        animation: glitch-text 4s infinite;
+      }
+
+      @keyframes glitch-text {
+        0%, 90%, 100% { transform: skew(0); }
+        92% { transform: skew(10deg); opacity: 0.8; }
+        94% { transform: skew(-10deg); opacity: 0.9; }
+      }
+
+      .menu-subtitle {
+        font-size: 14px;
+        color: rgba(0, 255, 127, 0.6);
+        letter-spacing: 8px;
+        margin-bottom: 40px;
+        text-transform: uppercase;
+        z-index: 2;
+      }
+
+      .menu-button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        width: 90%;
+        max-width: 650px;
+        z-index: 2;
+        background: rgba(0, 255, 127, 0.03);
+        padding: 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 255, 127, 0.1);
+        backdrop-filter: blur(10px);
+        position: relative;
+      }
+
+      .menu-button-container::before, .menu-button-container::after {
+        content: '';
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 2px solid #00ff7f;
+      }
+
+      .menu-button-container::before { top: -10px; left: -10px; border-right: 0; border-bottom: 0; }
+      .menu-button-container::after { bottom: -10px; right: -10px; border-left: 0; border-top: 0; }
+
+      .btn {
+        background: rgba(0, 255, 127, 0.1);
+        color: #00ff7f;
+        border: 1px solid rgba(0, 255, 127, 0.5);
+        padding: 20px;
+        font-family: inherit;
+        font-weight: bold;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn span.sub {
+        font-size: 9px;
+        opacity: 0.6;
+        letter-spacing: 1px;
+        margin-top: 4px;
+      }
+
+      .btn:hover {
+        background: rgba(0, 255, 127, 0.25);
+        border-color: #00ff7f;
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(0, 255, 127, 0.3), inset 0 0 10px rgba(0, 255, 127, 0.2);
+        color: #fff;
+      }
+
+      .btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        transition: 0.5s;
+      }
+
+      .btn:hover::before {
+        left: 100%;
+      }
+
+      .btn.secondary {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      .btn.secondary:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      #campaign-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+        width: 90%;
+        max-width: 1200px;
+        margin: 40px 0;
+      }
+
+      .campaign-card {
+        background: rgba(0, 255, 127, 0.05);
+        border: 1px solid rgba(0, 255, 127, 0.3);
+        padding: 0;
+        width: 300px;
+        height: 200px;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+      }
+
+      .campaign-preview {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        transition: transform 0.5s;
+        z-index: 1;
+      }
+
+      .campaign-card:hover .campaign-preview {
+        transform: scale(1.1);
+      }
+
+      .campaign-overlay {
+        position: relative;
+        z-index: 2;
+        background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        width: 100%;
+        padding: 20px 0;
+      }
+
+      .campaign-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: #00ff7f;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+      }
+
+      .campaign-card:hover {
+        background: rgba(0, 255, 127, 0.1);
+        border-color: rgba(0, 255, 127, 0.6);
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .campaign-card:hover::before {
+        transform: scaleX(1);
+      }
+
+      .campaign-card h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #fff;
+        letter-spacing: 1px;
+      }
+
+      .campaign-card p {
+        font-size: 11px;
+        color: #00ff7f;
+        margin-top: 15px;
+        opacity: 0.7;
+        text-transform: uppercase;
+      }
+
+      .campaign-card .difficulty {
+        font-size: 10px;
+        margin-top: 5px;
+        color: #aaa;
+      }
+
+      #start-screen h1 {
+        font-size: 48px;
+        color: #00ff7f;
+        margin-bottom: 10px;
+      }
+
+      #start-screen p {
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #aaa;
+      }
+
+      .damage-flash {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 0, 0, 0.3);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.1s;
+      }
+
+      #level-up-notification {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.5);
+        font-size: 64px;
+        font-weight: bold;
+        color: #00ff7f;
+        text-shadow: 0 0 20px rgba(0, 255, 127, 0.8);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        z-index: 102;
+      }
+
+      #level-up-notification.visible {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      /* Hazard Warning UI */
+      #hazard-warning {
+        position: absolute;
+        top: 25%;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 30px;
+        background: rgba(255, 0, 0, 0.2);
+        border: 2px solid #ff4d4d;
+        color: #ff4d4d;
+        font-weight: bold;
+        letter-spacing: 4px;
+        font-size: 24px;
+        display: none;
+        z-index: 150;
+        pointer-events: none;
+        animation: hazard-blink 0.5s infinite alternate;
+        text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+      }
+
+      @keyframes hazard-blink {
+        from { opacity: 0.4; transform: translateX(-50%) scale(0.95); }
+        to { opacity: 1; transform: translateX(-50%) scale(1.05); }
+      }
+
+      /* Boss HUD */
+      #boss-hud {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        z-index: 100;
+        pointer-events: none;
+      }
+
+      #boss-name {
+        font-size: 24px;
+        color: #ff4d4d;
+        text-shadow: 2px 2px 4px #000;
+        margin-bottom: 10px;
+        letter-spacing: 4px;
+        font-weight: bold;
+      }
+
+      #boss-health-container {
+        width: 100%;
+        height: 16px;
+        background: rgba(0, 0, 0, 0.7);
+        border: 2px solid #ff4d4d;
+        box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+        position: relative;
+        overflow: hidden;
+      }
+
+      #boss-phase-markers {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        pointer-events: none;
+        z-index: 5;
+      }
+
+      .phase-marker {
+        width: 2px;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 5px #000;
+      }
+
+      #boss-health-bar {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, #800000, #ff4d4d, #ff9999);
+        transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        z-index: 2;
+      }
+
+      #boss-health-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 10px;
+        height: 100%;
+        background: #fff;
+        filter: blur(5px);
+        opacity: 0.8;
+      }
+
+      /* Ad Interstitial */
+      #ad-interstitial {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 500;
+        pointer-events: all;
+      }
+
+      #ad-content-sim {
+        width: 80%;
+        max-width: 800px;
+        aspect-ratio: 16 / 9;
+        background: #111;
+        border: 2px solid #333;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #ad-skip-btn {
+        position: absolute;
+        top: calc(20px + var(--ad-safe-zone-top));
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #fff;
+        color: #fff;
+        padding: 5px 15px;
+        font-size: 12px;
+        cursor: pointer;
+        display: none;
+        z-index: 501;
+      }
+
+      #ad-timer {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        font-size: 14px;
+        color: #fff;
+        opacity: 0.7;
+      }
+
+      #ad-loading-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: #00ff7f;
+        width: 0%;
+        transition: width 1s linear;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="nickname-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('assets/game_thumbnail_alien_exploration.webp') no-repeat center center; background-size: cover; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 300; pointer-events: all; text-align: center;">
+        <div style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 50px; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 255, 127, 0.1); width: 80%; max-width: 500px; backdrop-filter: blur(10px);">
+            <div style="font-size: 14px; color: #00ff7f; letter-spacing: 4px; margin-bottom: 10px; opacity: 0.8;">PILOT IDENTIFICATION REQUIRED</div>
+            <h1 style="font-size: 32px; color: #fff; text-shadow: 0 0 20px rgba(0, 255, 127, 0.5); margin-bottom: 30px; letter-spacing: 2px;">ENTER YOUR PILOT NAME</h1>
+            
+            <input type="text" id="nickname-input" placeholder="PILOT NAME" maxlength="16" style="background: rgba(0,0,0,0.6); border: 2px solid rgba(0, 255, 127, 0.5); color: #fff; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 20px; text-align: center; outline: none; width: 100%; box-sizing: border-box; margin-bottom: 10px; transition: all 0.3s; border-radius: 5px;">
+            <div id="nickname-error" style="color: #ff4d4d; font-size: 12px; height: 16px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s;">MINIMUM 3 CHARACTERS REQUIRED</div>
+            
+            <button id="nickname-submit-btn" class="btn" style="width: 100%; letter-spacing: 2px;">START MISSION</button>
+            
+            <div style="margin-top: 30px; font-size: 10px; color: #555; letter-spacing: 1px;">ALPHANUMERIC CHARACTERS ONLY</div>
+        </div>
+    </div>
+
+    <div id="main-menu">
+      <h1>ALIEN EXPLORATION</h1>
+      <div class="menu-subtitle">Interstellar Tactical Response Unit</div>
+
+      <div id="daily-mission-menu" style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 15px; margin-bottom: 30px; border-radius: 8px; width: 400px; text-align: center; position: relative; z-index: 2;">
+        <div style="color: #00ff7f; font-size: 12px; margin-bottom: 5px; font-weight: bold; letter-spacing: 3px;">DAILY CHALLENGE</div>
+        <div id="daily-mission-desc" style="font-size: 16px; margin-bottom: 10px; color: #fff;">LOADING CHALLENGE...</div>
+        <div id="daily-mission-progress-container" style="width: 100%; height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; margin-top: 10px;">
+          <div id="daily-mission-bar" style="width: 0%; height: 100%; background: #00ff7f; box-shadow: 0 0 10px #00ff7f; transition: width 0.3s ease;"></div>
+        </div>
+        <div id="daily-mission-status" style="font-size: 10px; margin-top: 8px; color: rgba(255,255,255,0.5);">PROGRESS: 0%</div>
+      </div>
+
+      <div class="menu-button-container">
+        <div style="display: flex; gap: 15px; width: 100%;">
+          <button id="main-start-btn" class="btn" style="flex: 1;">
+            CAMPAIGN
+            <span class="sub">TACTICAL OPS</span>
+          </button>
+          <button id="endless-start-btn" class="btn" style="flex: 1; border-color: rgba(255, 204, 0, 0.5); color: #ffcc00; background: rgba(255, 204, 0, 0.05);">
+            SURVIVAL
+            <span class="sub" style="color: #ffcc00; opacity: 0.6;">ENDLESS WAVE</span>
+          </button>
+        </div>
+        <button id="armory-btn" class="btn secondary">
+          THE ARMORY
+          <span class="sub">META-PROGRESSION</span>
+        </button>
+        <div style="display: flex; gap: 15px; width: 100%;">
+          <button id="leaderboard-btn" class="btn secondary" style="flex: 1;">
+            RANKINGS
+            <span class="sub">GLOBAL STATS</span>
+          </button>
+          <button id="hub-btn" class="btn secondary" style="flex: 1;">
+            EXIT TO HUB
+            <span class="sub">SYSTEM DISCONNECT</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+      <div id="armory-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 250; pointer-events: all;">
+        <h1 style="font-size: 54px; color: #00ff7f; text-shadow: 0 0 20px rgba(0, 255, 127, 0.5); margin-bottom: 10px;">THE ARMORY</h1>
+        <div style="font-size: 18px; color: #ffcc00; margin-bottom: 20px;">TECH POINTS: <span id="tech-points-val">0</span></div>
+        
+        <div id="armory-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; width: 95%; max-width: 900px;">
+          <button id="tab-meta" class="btn active" style="flex: 1; padding: 10px; font-size: 14px; background: rgba(0, 255, 127, 0.2);">META UPGRADES</button>
+          <button id="tab-workbench" class="btn" style="flex: 1; padding: 10px; font-size: 14px; background: rgba(0, 255, 127, 0.05);">PROJECTILE WORKBENCH</button>
+        </div>
+
+        <div id="meta-upgrades-container" style="width: 95%; max-width: 900px; display: block;">
+          <div id="meta-upgrades-list" style="display: flex; flex-direction: column; gap: 15px; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+            <!-- Meta upgrades go here -->
+          </div>
+        </div>
+
+        <div id="workbench-container" style="width: 95%; max-width: 900px; display: none;">
+          <div style="text-align: center; margin-bottom: 15px;">
+            <p style="font-size: 11px; color: #888; letter-spacing: 2px;">CUSTOMIZE YOUR BALLISTICS FEEDBACK AND STATUS EFFECTS</p>
+          </div>
+          <div id="workbench-list" style="display: grid; grid-template-columns: 1fr; gap: 15px; max-height: 50vh; overflow-y: auto; padding-right: 10px;">
+            <!-- Projectile Mods go here -->
+          </div>
+        </div>
+
+        <button id="armory-back-btn" class="btn secondary" style="margin-top: 30px;">BACK TO MISSION</button>
+      </div>
+
+      <div id="world-event-notif" style="position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 200; text-align: center; display: none;">
+        <h2 id="event-msg" style="font-size: 48px; color: #ffcc00; text-shadow: 0 0 20px rgba(255, 204, 0, 0.8); margin: 0; background: rgba(0,0,0,0.5); padding: 10px 40px; border: 2px solid #ffcc00; border-radius: 10px;">⚠ METEOR STORM INCOMING</h2>
+        <div id="event-timer" style="font-size: 24px; color: #fff; margin-top: 10px;">30s</div>
+      </div>
+
+      <div id="ui-overlay">
+        <div id="hud-top">
+          <div id="minimap-container">
+            <canvas id="minimap" width="150" height="150"></canvas>
+          </div>
+          <div id="endless-hud" style="display: none; align-items: center; justify-content: center; position: absolute; left: 50%; transform: translateX(-50%); top: 40px; text-align: center;">
+            <div style="font-size: 32px; color: #ffcc00; font-weight: bold; letter-spacing: 2px;">WAVE <span id="wave-num">1</span></div>
+            <div style="font-size: 14px; color: #fff; opacity: 0.8;">ENEMIES REMAINING: <span id="wave-enemies">0</span></div>
+          </div>
+          
+          <!-- Ability HUD -->
+          <div id="ability-hud" style="position: absolute; bottom: 120px; right: 20px; display: none; flex-direction: column; align-items: flex-end; gap: 5px;">
+              <div id="ability-name" style="color: #fff; font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">ABILITY</div>
+              <div style="width: 150px; height: 10px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; overflow: hidden; position: relative;">
+                  <div id="ability-cooldown-fill" style="width: 100%; height: 100%; background: #00ff7f; transition: width 0.1s linear;"></div>
+                  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 8px; font-weight: bold; pointer-events: none;">PRESS [F]</div>
+              </div>
+          </div>
+          <div class="stat-group">
+          <div class="stat" id="campaign-display">CAMPAIGN: <span id="campaign-name">NEBULA OUTPOST</span></div>
+          <div class="stat">LEVEL: <span id="level">1</span>/25</div>
+          <div class="stat">SCORE: <span id="score">0</span></div>
+          <div class="stat" id="objective-container" style="color: #ffcc00; font-weight: bold;">
+            OBJECTIVE: <span id="objective-progress">0/3</span>
+          </div>
+          <div class="stat">ENEMIES: <span id="enemies-count">0</span></div>
+        </div>
+      </div>
+      <div id="crosshair"></div>
+      
+      <div id="hazard-warning">HAZARD DETECTED</div>
+
+      <div id="combo-meter">
+          <div id="combo-text">COMBO x2</div>
+          <div id="combo-multiplier">3 KILL STREAK</div>
+          <div id="combo-timer-bar">
+              <div id="combo-timer-fill"></div>
+          </div>
+      </div>
+
+      <div id="buff-container"></div>
+
+      <div id="weapon-hud">
+        <div class="weapon-slot active" id="slot-1">
+          <span class="weapon-key">1</span>
+          <img src="assets/realistic_tactical_rifle_v3.webp" alt="Rifle">
+        </div>
+        <div class="weapon-slot locked" id="slot-2">
+          <span class="weapon-key">2</span>
+          <img src="assets/scifi_shotgun_icon.webp" alt="Shotgun">
+        </div>
+        <div class="weapon-slot locked" id="slot-3">
+          <span class="weapon-key">3</span>
+          <img src="assets/plasma_rifle_icon.webp" alt="Plasma">
+        </div>
+        <div class="weapon-slot locked" id="slot-4">
+          <span class="weapon-key">4</span>
+          <img src="assets/railgun_icon.webp" alt="Railgun">
+        </div>
+      </div>
+
+      <div id="xp-bar-container">
+        <div id="xp-bar-fill"></div>
+      </div>
+      <div id="xp-text">WEAPON XP: 0 / 1000</div>
+
+      <div id="boss-hud">
+        <div id="boss-name">ANCIENT OVERLORD</div>
+        <div id="boss-health-container">
+          <div id="boss-phase-markers"></div>
+          <div id="boss-health-bar"></div>
+        </div>
+      </div>
+      <div id="weapon-container">
+        <div id="muzzle-flash"></div>
+        <img id="weapon-sprite" src="assets/realistic_tactical_rifle_v3.webp" alt="Weapon">
+      </div>
+      <div id="hud-bottom">
+        <div class="stat">GRENADES: <span id="grenade-count">3</span></div>
+        <div class="stat">HEALTH: <span id="health">100</span>%</div>
+      </div>
+    </div>
+
+    <div id="start-screen">
+      <h1>ALIEN EXPLORATION</h1>
+      <p>WASD to Move | Mouse to Look | Click to Shoot</p>
+      <button id="start-btn" class="btn">START EXPLORATION</button>
+    </div>
+
+    <div id="campaign-selection">
+      <h1>SELECT CAMPAIGN</h1>
+      <div id="campaign-list">
+        <!-- Dynamically populated from main.js -->
+      </div>
+      <button id="back-to-start" class="btn secondary">BACK TO MENU</button>
+    </div>
+
+    <div id="level-selection">
+      <h1 id="level-selection-title">SELECT MISSION</h1>
+      <div id="level-grid">
+        <!-- Dynamically populated from main.js -->
+      </div>
+      <button id="back-to-campaigns" class="btn secondary">BACK TO CAMPAIGNS</button>
+    </div>
+
+    <div id="game-over">
+      <h1>MISSION FAILED</h1>
+      <p>Score: <span id="final-score">0</span></p>
+      <div id="game-over-name-input" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+        <label style="color: #ff4d4d; margin-bottom: 10px;">SUBMIT SCORE TO GLOBAL RANKINGS</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="player-name-input-fail" placeholder="ENTER CALLSIGN" style="background: rgba(0,0,0,0.5); border: 2px solid #ff4d4d; color: #fff; padding: 10px; font-family: inherit; font-size: 18px; text-align: center; outline: none; width: 250px;">
+          <button id="submit-score-btn-fail" class="btn" style="background: #ff4d4d; padding: 10px 20px; font-size: 16px;">SUBMIT</button>
+        </div>
+      </div>
+      <div class="menu-button-container">
+        <button id="restart-btn" class="btn">RETRY MISSION</button>
+        <button id="leaderboard-btn-fail" class="btn secondary">GLOBAL RANKINGS</button>
+        <button id="back-to-campaigns-fail" class="btn secondary">CHANGE MISSION</button>
+      </div>
+    </div>
+
+    <div id="mission-summary">
+      <h1>MISSION ACCOMPLISHED</h1>
+      <div id="summary-content">
+        <div class="summary-stat">Enemies Neutralized: <span id="stat-enemies">0</span></div>
+        <div class="summary-stat">Objectives Completed: <span id="stat-objectives">0/0</span></div>
+        <div class="summary-stat">Grenades Deployed: <span id="stat-grenades">0</span></div>
+        <div class="summary-stat">Accuracy: <span id="stat-accuracy">0%</span></div>
+        <div class="summary-stat">Damage Sustained: <span id="stat-damage">0</span></div>
+        <hr style="border: 0; border-top: 1px solid rgba(0, 255, 127, 0.3); width: 100%; margin: 20px 0;">
+        <div class="summary-stat" style="color: #ffcc00; font-size: 24px;">REWARD: <span id="stat-reward">+20% HP & AMMO REFILL</span></div>
+      </div>
+      <div id="name-input-container" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+        <label style="color: #00ff7f; margin-bottom: 10px;">SUBMIT SCORE TO GLOBAL RANKINGS</label>
+        <div style="display: flex; gap: 10px;">
+          <input type="text" id="player-name-input" placeholder="ENTER CALLSIGN" style="background: rgba(0,0,0,0.5); border: 2px solid #00ff7f; color: #fff; padding: 10px; font-family: inherit; font-size: 18px; text-align: center; outline: none; width: 250px;">
+          <button id="submit-score-btn" class="btn" style="padding: 10px 20px; font-size: 16px;">SUBMIT</button>
+        </div>
+      </div>
+      <button id="summary-continue-btn" class="btn">CHOOSE UPGRADE</button>
+    </div>
+
+    <div id="leaderboard-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; pointer-events: all;">
+        <h1 style="font-size: 54px; color: #00ff7f; text-shadow: 0 0 20px rgba(0, 255, 127, 0.5); margin-bottom: 30px; letter-spacing: 5px;">GLOBAL RANKINGS</h1>
+        
+        <div id="leaderboard-content" style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 30px; border-radius: 10px; width: 80%; max-width: 800px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
+            <div style="width: 100%; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 255, 127, 0.5); padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; color: #00ff7f;">
+                <span style="width: 10%;">RANK</span>
+                <span style="width: 40%;">CALLSIGN</span>
+                <span style="width: 30%;">MISSION</span>
+                <span style="width: 20%; text-align: right;">SCORE</span>
+            </div>
+            <div id="leaderboard-list" style="width: 100%; max-height: 400px; overflow-y: auto;">
+                <!-- Entries will be populated here -->
+            </div>
+        </div>
+
+        <button id="leaderboard-back-btn" class="btn">BACK</button>
+    </div>
+
+    <div id="upgrade-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 108; pointer-events: all;">
+        <h1 style="font-size: 48px; color: #00ff7f; margin-bottom: 40px; letter-spacing: 5px;">LEVEL UP: CHOOSE PERK</h1>
+        <div id="upgrade-options" style="display: flex; gap: 30px;">
+            <!-- Options dynamically added here -->
+        </div>
+    </div>
+
+    <div id="damage-flash" class="damage-flash"></div>
+    <div id="level-up-notification">LEVEL COMPLETE</div>
+
+    <div id="ad-interstitial">
+      <div id="ad-content-sim">
+        <div style="font-size: 10px; color: #555; position: absolute; top: 10px; left: 10px;">ADVERTISEMENT</div>
+        <h2 style="color: #00ff7f; margin: 0; letter-spacing: 5px;">ALIEN EXPLORATION</h2>
+        <div style="font-size: 14px; opacity: 0.6; margin-top: 10px;">TRANSMITTING PILOT DATA...</div>
+        <div id="ad-timer">AD ENDS IN 5s</div>
+        <div id="ad-loading-bar"></div>
+      </div>
+      <button id="ad-skip-btn">SKIP AD ≫</button>
+    </div>
+
+    <script type="module" src="main.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ChatManager.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ImageGenerator.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/ProgressLogger.js"></script>
+    <script src="https://storage.googleapis.com/rosebud_staticfiles/OGP.js"></script>
+	<script src="/js/ads.js"></script>
+  </body>
+</html>

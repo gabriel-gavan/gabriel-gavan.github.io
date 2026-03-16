@@ -1263,5 +1263,6 @@
   "t_game_quiz": "ミニクイズ",
   "t_game_timer_bomb": "タイマーボム",
   "t_game_pattern_lock": "パターンロック",
-  "t_game_sliding_puzzle": "スライドパズル (3×3)"
+  "t_game_sliding_puzzle": "スライドパズル (3×3)",
+  "t_game_neonnebula_strike": "ネオン星雲ストライク"
 }
