@@ -371,28 +371,97 @@ class Game {
 
     showAdInterstitial(callback) {
 
-	  if (typeof adBreak !== "undefined") {
+    // --- Official Google H5 Games SDK ---
+    if (typeof window.adBreak === 'function') {
+        this.onAdComplete = callback;
 
-		adBreak({
-		  type: "next",
-		  name: "level_end",
+        window.adBreak({
+            type: 'next',
+            name: 'level-complete',
 
-		  beforeAd: () => {
-			this.gameActive = false;
-		  },
+            beforeAd: () => {
+                console.log('Ad starting...');
+                this.gameActive = false;
+            },
 
-		  afterAd: () => {
-			this.gameActive = true;
-			if (callback) callback();
-		  }
+            afterAd: () => {
+                console.log('Ad finished.');
+                this.closeAdInterstitial();
+            },
 
-		});
+            adDismissed: () => { this.closeAdInterstitial(); },
+            adViewed: () => { this.closeAdInterstitial(); },
 
-	  } else {
-		if (callback) callback();
-	  }
+            adBreakDone: (info) => {
+                console.log('Ad break done', info);
+                this.closeAdInterstitial();
+            }
+        });
 
-	}
+        return;
+    }
+
+    // --- AdSense fallback ---
+    if (!this.adInterstitialEl) {
+        if (callback) callback();
+        return;
+    }
+
+    this.onAdComplete = callback;
+
+    this.adInterstitialEl.style.display = 'flex';
+    this.adSkipBtn.style.display = 'none';
+
+    // Inject real AdSense ad
+    const adContainer = document.getElementById("gameInterstitialAd");
+
+    if (adContainer && !adContainer.hasChildNodes()) {
+
+        adContainer.innerHTML = `
+            <ins class="adsbygoogle"
+                style="display:block"
+                data-ad-client="ca-pub-5482914432517813"
+                data-ad-slot="1234567890"
+                data-ad-format="auto"
+                data-full-width-responsive="true">
+            </ins>
+        `;
+
+        try {
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {
+            console.log("AdSense push error", e);
+        }
+    }
+
+    // Countdown timer
+    let timeLeft = 5;
+
+    this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
+    this.adLoadingBar.style.width = '0%';
+
+    const timerInterval = setInterval(() => {
+
+        timeLeft--;
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            this.adSkipBtn.style.display = 'block';
+            this.adTimerEl.innerText = 'AD READY TO SKIP';
+            this.adLoadingBar.style.width = '100%';
+
+        } else {
+
+            this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
+            this.adLoadingBar.style.width =
+                `${((5 - timeLeft) / 5) * 100}%`;
+
+        }
+
+    }, 1000);
+}
 
     closeAdInterstitial() {
         this.adInterstitialEl.style.display = 'none';
@@ -1278,9 +1347,13 @@ class Game {
         this.level = (campaignIndex * CONFIG.LEVELS.PER_CAMPAIGN) + levelInCampaign;
         this.levelStartTime = Date.now();
         
-        // Calculate score threshold for this level
-        this.score = (this.level - 1) * CONFIG.LEVELS.SCORE_PER_LEVEL;
-        this.scoreForNextLevel = this.level * CONFIG.LEVELS.SCORE_PER_LEVEL;
+         // Calculate dynamic score threshold for this level
+        const baseThreshold = CONFIG.LEVELS.SCORE_PER_LEVEL;
+        const levelMult = 1 + (this.level * CONFIG.LEVELS.SCALING_FACTOR);
+        this.scoreForNextLevel = Math.round(baseThreshold * levelMult);
+        
+        // Always start level from 0 relative score (it resets per level now)
+        this.score = 0;
         
         // --- Apply Meta Stats ---
         const metaHpBonus = 1 + (this.metaUpgrades.meta_hp || 0) * 0.1;
@@ -1313,7 +1386,9 @@ class Game {
         } else {
             const currentCampaign = CONFIG.CAMPAIGNS[this.campaignIndex];
             if (currentCampaign.objective !== "Extermination") {
-                const count = currentCampaign.objective === "Sabotage" ? 3 + Math.floor(this.level/20) : 3 + Math.floor(this.level/15);
+                const count = currentCampaign.objective === "Sabotage" 
+                    ? 4 + Math.floor(this.level/10) 
+                    : 4 + Math.floor(this.level/12);
                 this.world.spawnObjectives(currentCampaign.objective, count);
             } else {
                 this.world.clearObjectives();
@@ -2124,7 +2199,7 @@ class Game {
 
             this.bossSpawned = false;
             this.bossHud.style.display = 'none';
-            this.scoreForNextLevel += CONFIG.LEVELS.SCORE_PER_LEVEL;
+            //this.scoreForNextLevel += CONFIG.LEVELS.SCORE_PER_LEVEL;
             
             const newCampaignIndex = Math.floor((this.level - 1) / CONFIG.LEVELS.PER_CAMPAIGN);
             const levelInCampaign = ((this.level - 1) % CONFIG.LEVELS.PER_CAMPAIGN) + 1;
