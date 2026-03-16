@@ -188,9 +188,9 @@ class Game {
         
         // Ad Interstitial
         this.adInterstitialEl = document.getElementById('ad-interstitial');
-        this.adSkipBtn = document.getElementById('ad-skip-btn');
-        this.adTimerEl = document.getElementById('ad-timer');
-        this.adLoadingBar = document.getElementById('ad-loading-bar');
+		this.adSkipBtn = document.getElementById('adSkipBtn');
+		this.adTimerEl = document.getElementById('adTimer');
+		this.adLoadingBar = null;
         
         // Endless & World Event HUD
         this.endlessHud = document.getElementById('endless-hud');
@@ -438,7 +438,7 @@ class Game {
     let timeLeft = 5;
 
     this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-    this.adLoadingBar.style.width = '0%';
+    
 
     const timerInterval = setInterval(() => {
 
@@ -455,8 +455,7 @@ class Game {
         } else {
 
             this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-            this.adLoadingBar.style.width =
-                `${((5 - timeLeft) / 5) * 100}%`;
+
 
         }
 
