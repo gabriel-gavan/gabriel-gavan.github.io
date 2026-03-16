@@ -210,7 +210,8 @@ export const CONFIG = {
     LEVELS: {
         COUNT: 125,
         PER_CAMPAIGN: 25,
-        SCORE_PER_LEVEL: 1000
+        SCORE_PER_LEVEL: 5000,
+		SCALING_FACTOR: 0.15   // Added scaling factor per level
     },
     META_UPGRADES: {
         MAX_HEALTH: { id: 'meta_hp', name: 'TITANIUM PLATING', cost: 1000, bonus: 0.1, desc: '+10% MAX HEALTH', tier: 1 },
