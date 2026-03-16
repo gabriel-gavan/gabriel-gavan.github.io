@@ -188,9 +188,9 @@ class Game {
         
         // Ad Interstitial
         this.adInterstitialEl = document.getElementById('ad-interstitial');
-        this.adSkipBtn = document.getElementById('ad-skip-btn');
-        this.adTimerEl = document.getElementById('ad-timer');
-        this.adLoadingBar = document.getElementById('ad-loading-bar');
+		this.adSkipBtn = document.getElementById('adSkipBtn');
+		this.adTimerEl = document.getElementById('adTimer');
+		this.adLoadingBar = null;
         
         // Endless & World Event HUD
         this.endlessHud = document.getElementById('endless-hud');
@@ -421,7 +421,7 @@ class Game {
             <ins class="adsbygoogle"
                 style="display:block"
                 data-ad-client="ca-pub-5482914432517813"
-                data-ad-slot="1234567890"
+                data-ad-slot="8527470351"
                 data-ad-format="auto"
                 data-full-width-responsive="true">
             </ins>
@@ -438,7 +438,7 @@ class Game {
     let timeLeft = 5;
 
     this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-    this.adLoadingBar.style.width = '0%';
+    
 
     const timerInterval = setInterval(() => {
 
@@ -450,13 +450,12 @@ class Game {
 
             this.adSkipBtn.style.display = 'block';
             this.adTimerEl.innerText = 'AD READY TO SKIP';
-            this.adLoadingBar.style.width = '100%';
+          
 
         } else {
 
             this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-            this.adLoadingBar.style.width =
-                `${((5 - timeLeft) / 5) * 100}%`;
+
 
         }
 

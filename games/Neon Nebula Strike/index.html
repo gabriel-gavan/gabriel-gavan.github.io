@@ -1023,52 +1023,7 @@
         pointer-events: all;
       }
 
-      #ad-content-sim {
-        width: 80%;
-        max-width: 800px;
-        aspect-ratio: 16 / 9;
-        background: #111;
-        border: 2px solid #333;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-      }
-
-      #ad-skip-btn {
-        position: absolute;
-        top: calc(20px + var(--ad-safe-zone-top));
-        right: 20px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid #fff;
-        color: #fff;
-        padding: 5px 15px;
-        font-size: 12px;
-        cursor: pointer;
-        display: none;
-        z-index: 501;
-      }
-
-      #ad-timer {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        font-size: 14px;
-        color: #fff;
-        opacity: 0.7;
-      }
-
-      #ad-loading-bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 4px;
-        background: #00ff7f;
-        width: 0%;
-        transition: width 1s linear;
-      }
+      
     </style>
 	<script async
 		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
@@ -1360,14 +1315,7 @@
 	  <button id="adSkipBtn">Skip</button>
 
 	</div>
-        <div style="font-size: 10px; color: #555; position: absolute; top: 10px; left: 10px;">ADVERTISEMENT</div>
-        <h2 style="color: #00ff7f; margin: 0; letter-spacing: 5px;">ALIEN EXPLORATION</h2>
-        <div style="font-size: 14px; opacity: 0.6; margin-top: 10px;">TRANSMITTING PILOT DATA...</div>
-        <div id="ad-timer">AD ENDS IN 5s</div>
-        <div id="ad-loading-bar"></div>
-      </div>
-      <button id="ad-skip-btn">SKIP AD ≫</button>
-    </div>
+
     <script type="module" src="main.js"></script>
     <script src="https://storage.googleapis.com/rosebud_staticfiles/ChatManager.js"></script>
     <script src="https://storage.googleapis.com/rosebud_staticfiles/ImageGenerator.js"></script>
