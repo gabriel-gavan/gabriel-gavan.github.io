@@ -1263,5 +1263,6 @@
   "t_game_quiz": "Mini Quiz",
   "t_game_timer_bomb": "Zeitbombe",
   "t_game_pattern_lock": "Mustersperre",
-  "t_game_sliding_puzzle": "Schiebepuzzle (3×3)"
+  "t_game_sliding_puzzle": "Schiebepuzzle (3×3)",
+  "t_game_neonnebula_strike": "Neon-Nebelstoß"
 }
