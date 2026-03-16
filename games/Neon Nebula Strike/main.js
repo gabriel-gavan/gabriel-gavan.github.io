@@ -13,6 +13,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 
 class Game {
     constructor() {
+		this.levelsSinceAd = 0;
         this.leaderboard = new LeaderboardManager();
         this.dailyMission = new DailyMissionManager();
         
@@ -21,6 +22,7 @@ class Game {
         this.metaUpgrades = JSON.parse(localStorage.getItem('alien_exploration_meta_upgrades')) || {};
         this.prestigeLevel = parseInt(localStorage.getItem('alien_exploration_prestige_level')) || 0;
         this.pilotClass = localStorage.getItem('alien_exploration_pilot_class') || null;
+		this.maxUnlockedLevel = parseInt(localStorage.getItem('alien_exploration_max_level')) || 1;
         
         // --- Workbench Customizations ---
         this.workbenchCustoms = JSON.parse(localStorage.getItem('alien_exploration_workbench')) || {
@@ -988,7 +990,21 @@ class Game {
             this.health = (this.health / oldMax) * newMax;
         }
 
-        this.showAdInterstitial(() => this.proceedToNextLevel());
+        this.levelsSinceAd++;
+
+		if (this.levelsSinceAd >= 3) {
+
+			this.levelsSinceAd = 0;
+
+			this.showAdInterstitial(() => {
+				this.proceedToNextLevel();
+			});
+
+		} else {
+
+			this.proceedToNextLevel();
+
+		}
     }
 
     onResize() {
@@ -1161,8 +1177,10 @@ class Game {
         // Clear and populate campaign list
         this.campaignListEl.innerHTML = '';
         CONFIG.CAMPAIGNS.forEach((campaign, index) => {
+			const firstLevelOfCampaign = (index * CONFIG.LEVELS.PER_CAMPAIGN) + 1;
+            const isLocked = firstLevelOfCampaign > this.maxUnlockedLevel;
             const card = document.createElement('div');
-            card.className = 'campaign-card';
+            card.className = `campaign-card ${isLocked ? 'locked' : ''}`;
             const difficulty = index === 0 ? 'Normal' : index < 3 ? 'Hard' : 'Expert';
             card.innerHTML = `
                 <div class="campaign-preview" style="background-image: url('${campaign.preview}')"></div>
@@ -1188,8 +1206,9 @@ class Game {
         this.levelGridEl.innerHTML = '';
         for (let i = 1; i <= CONFIG.LEVELS.PER_CAMPAIGN; i++) {
             const globalLevel = (campaignIndex * CONFIG.LEVELS.PER_CAMPAIGN) + i;
+			const isLocked = globalLevel > this.maxUnlockedLevel;
             const card = document.createElement('div');
-            card.className = 'level-card';
+            card.className = `level-card ${isLocked ? 'locked' : ''}`;
             
             if (globalLevel === CONFIG.LEVELS.COUNT) {
                 card.classList.add('final-boss');
@@ -1198,7 +1217,9 @@ class Game {
             }
             
             card.innerText = i;
-            card.addEventListener('click', () => this.startGame(campaignIndex, i));
+            if (!isLocked) {
+                card.addEventListener('click', () => this.startGame(campaignIndex, i));
+            }
             this.levelGridEl.appendChild(card);
         }
     }
@@ -2094,6 +2115,13 @@ class Game {
     proceedToNextLevel() {
         if (this.level < CONFIG.LEVELS.COUNT) {
             this.level++;
+			 
+            // --- Update Persistent Progression ---
+            if (this.level > this.maxUnlockedLevel) {
+                this.maxUnlockedLevel = this.level;
+                localStorage.setItem('alien_exploration_max_level', this.maxUnlockedLevel);
+            }
+
             this.bossSpawned = false;
             this.bossHud.style.display = 'none';
             this.scoreForNextLevel += CONFIG.LEVELS.SCORE_PER_LEVEL;
