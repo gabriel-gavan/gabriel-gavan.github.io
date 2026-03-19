@@ -1308,6 +1308,24 @@
 			background: #00ff7f;
 			border-radius: 10px;
 		}
+		.tab {
+			padding: 8px 16px;
+			border: 1px solid rgba(0,255,127,0.3);
+			background: transparent;
+			color: #00ff7f;
+			cursor: pointer;
+		}
+
+		.tab.active {
+			background: #00ff7f;
+			color: #000;
+			box-shadow: 0 0 10px #00ff7f;
+		}
+		@keyframes popUp {
+			0% { opacity:0; transform:translate(-50%,20px) scale(0.5); }
+			50% { opacity:1; transform:translate(-50%,0) scale(1.2); }
+			100% { opacity:0; transform:translate(-50%,-20px) scale(1); }
+		}
     </style>
 	<script async
 		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
@@ -1437,7 +1455,7 @@
           <div class="stat" id="objective-container" style="color: #ffcc00; font-weight: bold;">
             OBJECTIVE: <span id="objective-progress">0/3</span>
           </div>
-          <div class="stat">ENEMIES: <span id="enemies-count">0</span></div>
+          <div class="stat">TOTAL KILLS: <span id="enemies-count">0</span></div>
         </div>
       </div>
       <div id="crosshair"></div>
@@ -1558,6 +1576,11 @@
     <div id="leaderboard-screen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 200; pointer-events: all;">
         <h1 style="font-size: 54px; color: #00ff7f; text-shadow: 0 0 20px rgba(0, 255, 127, 0.5); margin-bottom: 30px; letter-spacing: 5px;">GLOBAL RANKINGS</h1>
         
+		<div id="leaderboard-tabs" style="display:flex; gap:10px; margin-bottom:15px;">
+			<button class="tab active" data-type="all">ALL</button>
+			<button class="tab" data-type="weekly">WEEK</button>
+			<button class="tab" data-type="today">TODAY</button>
+		</div>
         <div id="leaderboard-content" style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 30px; border-radius: 10px; width: 80%; max-width: 800px; display: flex; flex-direction: column; align-items: center; margin-bottom: 30px;">
             <div style="width: 100%; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(0, 255, 127, 0.5); padding-bottom: 10px; margin-bottom: 15px; font-weight: bold; color: #00ff7f;">
                 <span style="width: 10%;">RANK</span>
@@ -1565,6 +1588,7 @@
                 <span style="width: 30%;">MISSION</span>
                 <span style="width: 20%; text-align: right;">SCORE</span>
             </div>
+			
             <div id="leaderboard-list" style="width: 100%; max-height: 400px; overflow-y: auto;">
                 <!-- Entries will be populated here -->
             </div>

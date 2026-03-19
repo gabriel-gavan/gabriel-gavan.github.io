@@ -2,8 +2,12 @@ export class LeaderboardManager {
     constructor() {
         this.API_URL = "https://neonnebulastrikeleaderboard.gabi-gabz.workers.dev";
         this.NAME_KEY = 'alien_exploration_player_name';
+		this.ID_KEY = 'alien_exploration_player_id';
+	
     }
-
+	getPlayerId() {
+		return localStorage.getItem(this.ID_KEY);
+	}
     getPlayerName() {
         return localStorage.getItem(this.NAME_KEY) || '';
     }
@@ -11,24 +15,43 @@ export class LeaderboardManager {
     setPlayerName(name) {
         localStorage.setItem(this.NAME_KEY, name);
     }
+	registerPlayer(name) {
+		const existingId = localStorage.getItem(this.ID_KEY);
 
+		// If already registered → only update name
+		if (existingId) {
+			localStorage.setItem(this.NAME_KEY, name);
+			return existingId;
+		}
+
+		// Create NEW player
+		const id = "P-" + Date.now() + "-" + Math.floor(Math.random() * 1000000);
+
+		localStorage.setItem(this.ID_KEY, id);
+		localStorage.setItem(this.NAME_KEY, name);
+
+		return id;
+	}
     async submitScore(name, score, level) {
-        try {
-            await fetch(`${this.API_URL}/submit`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    name,
-                    score,
-                    level
-                })
-            });
-        } catch (e) {
-            console.log("Submit error:", e);
-        }
-    }
+		try {
+			const playerId = this.getPlayerId();
+
+			await fetch(`${this.API_URL}/submit`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					id: playerId,   // 👈 NEW
+					name,
+					score,
+					level
+				})
+			});
+		} catch (e) {
+			console.log("Submit error:", e);
+		}
+	}
 
     async getGlobalScores() {
 		try {
@@ -42,7 +65,13 @@ export class LeaderboardManager {
 		}
 	}
 
-		
+	async isNameTaken(name) {
+		const scores = await this.getGlobalScores();
+
+		return scores.some(s => 
+			s.name.toLowerCase() === name.toLowerCase()
+		);
+	}	
 	getPlayerRank(scores = []) {
 		const playerName = this.getPlayerName();
 
