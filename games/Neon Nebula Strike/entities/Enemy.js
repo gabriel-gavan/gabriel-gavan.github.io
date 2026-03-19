@@ -105,6 +105,8 @@ export class Enemy {
         this.frozenTimer = 0;
         this.stunTimer = 0;
         this.acidTimer = 0;
+        this.stalkTimer = Math.random() * 5; // Initial stalk time
+        this.aiState = 'CHASE'; // 'CHASE', 'STALK'
 
         // Health Bar Setup
         this.maxHealth = this.health;
@@ -221,19 +223,37 @@ export class Enemy {
             return;
         }
 
+        // --- AI Stealth Tactics (Stalking) ---
+        // Switch between CHASE and STALK states
+        this.stalkTimer -= deltaTime;
+        if (this.stalkTimer <= 0) {
+            this.aiState = this.aiState === 'CHASE' ? 'STALK' : 'CHASE';
+            this.stalkTimer = this.aiState === 'STALK' ? (2 + Math.random() * 3) : (4 + Math.random() * 5);
+        }
+
         // --- Advanced Steering ---
         const steering = new THREE.Vector3();
         const playerPos = this.player.position.clone();
         
-        // Target Point (Pincer Logic)
+        // Target Point (Pincer/Flank Logic)
         let target = playerPos;
         if (this.isArmored && !this.pincerOffset) {
             // Give armored units a fixed pincer offset
             const side = Math.random() > 0.5 ? 1 : -1;
-            this.pincerOffset = new THREE.Vector3(side * 8, 0, side * 8).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.random() * Math.PI);
+            this.pincerOffset = new THREE.Vector3(side * 12, 0, side * 12).applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.random() * Math.PI);
         }
 
-        if (this.isArmored && this.pincerOffset) {
+        if (this.aiState === 'STALK' && !this.isHeavy) {
+            // Favor dark regions when stalking - stay at a distance and move toward flanks
+            const angleToPlayer = Math.atan2(this.sprite.position.z - playerPos.z, this.sprite.position.x - playerPos.x);
+            const stalkDist = 18 + Math.random() * 5;
+            const flankAngle = angleToPlayer + (Math.sin(Date.now() * 0.001) * 0.5); // Slow zig-zag
+            target = new THREE.Vector3(
+                playerPos.x + Math.cos(flankAngle) * stalkDist,
+                0,
+                playerPos.z + Math.sin(flankAngle) * stalkDist
+            );
+        } else if (this.isArmored && this.pincerOffset) {
             target = playerPos.clone().add(this.pincerOffset);
         }
 
@@ -279,8 +299,11 @@ export class Enemy {
         const attackRange = this.isHeavy ? 2.5 : 2.0;
         const distanceToPlayer = this.sprite.position.distanceTo(playerPos);
 
+        // --- Execute Movement ---
         if (distanceToPlayer > attackRange) {
-            this.sprite.position.addScaledVector(steering, this.speed * deltaTime);
+            // Speed boost in "darkness" (away from center or lights)
+            const darknessMult = (this.sprite.position.length() > 100) ? 1.3 : 1.0;
+            this.sprite.position.addScaledVector(steering, this.speed * darknessMult * deltaTime);
             
             // Ground Walking Animation
             const animSpeed = this.isHeavy ? 8 : 12;
@@ -296,6 +319,11 @@ export class Enemy {
             // Attack animation (shaking)
             this.sprite.material.rotation = Math.sin(Date.now() * 0.05) * 0.2;
         }
+
+        // --- Boundary Clamping (Boss Persistence fix) ---
+        const limit = 245; // Arena size is 500x500 (±250)
+        this.sprite.position.x = Math.max(-limit, Math.min(limit, this.sprite.position.x));
+        this.sprite.position.z = Math.max(-limit, Math.min(limit, this.sprite.position.z));
     }
 
     updateBossAI(deltaTime, phase) {
@@ -349,6 +377,11 @@ export class Enemy {
         } else if (this.attackState === 'BARRAGE') {
             this.handleBarrage(deltaTime);
         }
+
+        // --- Boundary Clamping for Bosses (Fix persistence) ---
+        const limit = 245;
+        this.sprite.position.x = Math.max(-limit, Math.min(limit, this.sprite.position.x));
+        this.sprite.position.z = Math.max(-limit, Math.min(limit, this.sprite.position.z));
 
         // Face player
         this.sprite.material.rotation = Math.sin(Date.now() * 0.01) * 0.1;
@@ -522,6 +555,11 @@ export class Enemy {
         // Move towards player in air
         const dir = new THREE.Vector3().subVectors(this.player.position, this.sprite.position).normalize();
         this.sprite.position.addScaledVector(dir, 10 * deltaTime);
+
+        // Boundary Clamping (Air)
+        const limit = 245;
+        this.sprite.position.x = Math.max(-limit, Math.min(limit, this.sprite.position.x));
+        this.sprite.position.z = Math.max(-limit, Math.min(limit, this.sprite.position.z));
 
         const groundLevel = this.sprite.scale.y / 2;
         if (this.sprite.position.y < groundLevel) {

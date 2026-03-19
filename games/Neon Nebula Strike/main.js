@@ -235,31 +235,45 @@ class Game {
         // Event listeners
         window.addEventListener('resize', () => this.onResize());
         
-        document.getElementById('main-start-btn').addEventListener('click', () => {
-            TONE.start(); // Ensure audio context is started
+		const handleBtn = (id, callback) => {
+            const btn = document.getElementById(id);
+            if (!btn) return;
+            btn.addEventListener('click', (e) => {
+                TONE.start();
+                callback(e);
+            });
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                TONE.start();
+                callback(e);
+            }, { passive: false });
+        };
+
+        handleBtn('main-start-btn', () => {
             this.gameMode = 'campaign';
             this.showCampaignSelection();
         });
-        document.getElementById('endless-start-btn').addEventListener('click', () => {
-            TONE.start();
+        handleBtn('endless-start-btn', () => {
+				
             this.gameMode = 'endless';
             this.startEndless();
         });
-        document.getElementById('armory-btn').addEventListener('click', () => {
+        handleBtn('armory-btn', () => {
             this.showArmory();
         });
-        document.getElementById('armory-back-btn').addEventListener('click', () => {
+        handleBtn('armory-back-btn', () => {
             this.armoryScreen.style.display = 'none';
         });
         
         // Tab switching
-        document.getElementById('tab-meta').addEventListener('click', () => {
+        handleBtn('tab-meta', () => {
             document.getElementById('meta-upgrades-container').style.display = 'block';
             document.getElementById('workbench-container').style.display = 'none';
             document.getElementById('tab-meta').style.background = 'rgba(0, 255, 127, 0.2)';
             document.getElementById('tab-workbench').style.background = 'rgba(0, 255, 127, 0.05)';
         });
-        document.getElementById('tab-workbench').addEventListener('click', () => {
+        handleBtn('tab-workbench', () => {
             document.getElementById('meta-upgrades-container').style.display = 'none';
             document.getElementById('workbench-container').style.display = 'block';
             document.getElementById('tab-meta').style.background = 'rgba(0, 255, 127, 0.05)';
@@ -267,33 +281,33 @@ class Game {
             this.renderWorkbench();
         });
 
-        document.getElementById('hub-btn').addEventListener('click', () => {
+       handleBtn('hub-btn', () => {
             window.location.href = './index.html';
         });
 
-        document.getElementById('leaderboard-btn').addEventListener('click', () => {
+        handleBtn('leaderboard-btn', () => {
             this.openLeaderboard();
         });
 
-        document.getElementById('leaderboard-btn-fail').addEventListener('click', () => {
+        handleBtn('leaderboard-btn-fail', () => {
             this.openLeaderboard();
         });
 
-        document.getElementById('leaderboard-back-btn').addEventListener('click', () => {
+        handleBtn('leaderboard-back-btn', () => {
             this.closeLeaderboard();
         });
 
-        document.getElementById('start-btn').addEventListener('click', () => this.showCampaignSelection());
-        document.getElementById('back-to-start').addEventListener('click', () => this.showMainMenu());
-        document.getElementById('back-to-campaigns').addEventListener('click', () => this.showCampaignSelection());
-        document.getElementById('back-to-campaigns-fail').addEventListener('click', () => {
+        handleBtn('start-btn', () => this.showCampaignSelection());
+        handleBtn('back-to-start', () => this.showMainMenu());
+        handleBtn('back-to-campaigns', () => this.showCampaignSelection());
+        handleBtn('back-to-campaigns-fail', () => {
             this.enemies.forEach(e => e.die());
             this.enemies = [];
             this.showCampaignSelection();
         });
-        document.getElementById('restart-btn').addEventListener('click', () => this.restartGame());
-        document.getElementById('summary-continue-btn').addEventListener('click', () => this.showUpgradeScreen());
-        
+        handleBtn('restart-btn', () => this.restartGame());
+        handleBtn('summary-continue-btn', () => this.showUpgradeScreen());
+     
         window.addEventListener('mousedown', (e) => {
             if (this.gameActive) {
                 if (e.button === 0) {
@@ -347,10 +361,39 @@ class Game {
             }
         });
 
-        this.nicknameSubmitBtn.addEventListener('click', () => this.handleNicknameSubmit());
-        this.nicknameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.handleNicknameSubmit();
+        this.nicknameSubmitBtn.addEventListener('click', () => {
+            TONE.start();
+            this.handleNicknameSubmit();
         });
+        this.nicknameSubmitBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            TONE.start();
+            this.handleNicknameSubmit();
+        });
+        this.nicknameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                TONE.start();
+                this.handleNicknameSubmit();
+            }
+        });
+        this.nicknameInput.addEventListener('touchstart', (e) => {
+            e.stopPropagation();
+            this.nicknameInput.focus();
+        }, { passive: true });
+
+        // Ensure mobile controls are hidden initially
+        if (this.controller.mobileControls) {
+            this.controller.mobileControls.hide();
+        }
+
+        // --- Mobile Settings Logic ---
+        this.setupMobileSettings();
+
+        // Link camera controller to mobile controls for steering
+        if (this.controller.mobileControls) {
+            this.controller.mobileControls.cameraController = this.cameraController;
+        } 
 
         this.updateDailyMissionUI();
         this.checkNickname();
@@ -369,7 +412,76 @@ class Game {
         this.animate();
     }
 
-    showAdInterstitial(callback) {
+    setupMobileSettings() {
+        const overlay = document.getElementById('mobile-settings-overlay');
+        const lookSensInput = document.getElementById('input-look-sens');
+        const joySensInput = document.getElementById('input-joy-sens');
+        const joySteerInput = document.getElementById('input-joy-steer');
+        const lookSensVal = document.getElementById('val-look-sens');
+        const joySensVal = document.getElementById('val-joy-sens');
+        const closeBtn = document.getElementById('close-mobile-settings');
+
+        if (!overlay || !lookSensInput || !joySensInput || !joySteerInput) return;
+											   
+									 
+
+        // Load current values
+        const currentLookSens = localStorage.getItem('alien_exploration_look_sensitivity') || 1.0;
+        const currentJoySens = localStorage.getItem('alien_exploration_joystick_sensitivity') || 1.0;
+        const currentJoySteer = localStorage.getItem('alien_exploration_joystick_steering') !== 'false';
+
+        lookSensInput.value = currentLookSens;
+        joySensInput.value = currentJoySens;
+        joySteerInput.checked = currentJoySteer;
+        lookSensVal.innerText = parseFloat(currentLookSens).toFixed(1);
+        joySensVal.innerText = parseFloat(currentJoySens).toFixed(1);
+
+        lookSensInput.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            lookSensVal.innerText = val.toFixed(1);
+            if (this.cameraController) {
+                this.cameraController.lookSensitivity = val;
+            }
+            localStorage.setItem('alien_exploration_look_sensitivity', val);
+        });
+
+        joySensInput.addEventListener('input', (e) => {
+            const val = parseFloat(e.target.value);
+            joySensVal.innerText = val.toFixed(1);
+            if (this.controller && this.controller.mobileControls) {
+                this.controller.mobileControls.updateJoystickSensitivity(val);
+            }
+        });
+
+        joySteerInput.addEventListener('change', (e) => {
+            const enabled = e.target.checked;
+            if (this.controller && this.controller.mobileControls) {
+                this.controller.mobileControls.updateJoystickSteering(enabled);
+            }
+        });
+
+        const toggleSettings = () => {
+            const isVisible = overlay.style.display === 'flex';
+            overlay.style.display = isVisible ? 'none' : 'flex';
+            
+            // Pause/Unpause game logic if needed
+            if (!isVisible) {
+                // Pause if possible
+            }
+        };
+
+        window.addEventListener('toggleMobileSettings', toggleSettings);
+        
+        closeBtn.onclick = () => {
+            overlay.style.display = 'none';
+        };
+        closeBtn.ontouchstart = (e) => {
+            e.preventDefault();
+            overlay.style.display = 'none';
+        };
+    }
+	
+	showAdInterstitial(callback) {
 
     // --- Official Google H5 Games SDK ---
     if (typeof window.adBreak === 'function') {
@@ -510,6 +622,11 @@ class Game {
         this.nicknameInput.style.borderColor = '#ff4d4d';
         this.nicknameInput.style.boxShadow = '0 0 10px rgba(255, 77, 77, 0.5)';
         
+		        // Add shake animation
+        this.nicknameError.classList.remove('error-shake');
+        void this.nicknameError.offsetWidth; // Force reflow
+        this.nicknameError.classList.add('error-shake');		
+		
         setTimeout(() => {
             this.nicknameError.style.opacity = '0';
             this.nicknameInput.style.borderColor = 'rgba(0, 255, 127, 0.5)';
@@ -1084,42 +1201,48 @@ class Game {
         }
     }
 
-    openLeaderboard() {
-        const leaderboardScreen = document.getElementById('leaderboard-screen');
-        const listEl = document.getElementById('leaderboard-list');
-        leaderboardScreen.style.display = 'flex';
-        
-        // --- Refresh nickname in leaderboard before showing ---
-        const playerName = this.leaderboard.getPlayerName();
-        const scores = this.leaderboard.getGlobalScores();
-        listEl.innerHTML = '';
-        
-        scores.forEach((entry, index) => {
-            const row = document.createElement('div');
-            const isSelf = entry.isPlayer || (playerName && entry.name === playerName);
-            row.style.cssText = `
-                width: 100%;
-                display: flex;
-                justify-content: space-between;
-                padding: 12px 15px;
-                box-sizing: border-box;
-                border-bottom: 1px solid rgba(0, 255, 127, 0.1);
-                color: ${isSelf ? '#00ff7f' : '#fff'};
-                font-weight: ${isSelf ? 'bold' : 'normal'};
-                background: ${isSelf ? 'rgba(0, 255, 127, 0.15)' : 'transparent'};
-                box-shadow: ${isSelf ? 'inset 0 0 10px rgba(0, 255, 127, 0.1)' : 'none'};
-                transition: background 0.2s;
-            `;
-            
-            row.innerHTML = `
-                <span style="width: 10%; opacity: 0.8;">#${index + 1}</span>
-                <span style="width: 40%; text-transform: uppercase; letter-spacing: 1px;">${entry.name} ${isSelf ? '<span style="font-size: 10px; vertical-align: middle;">(YOU)</span>' : ''}</span>
-                <span style="width: 30%; font-size: 12px; opacity: 0.7;">${entry.level}</span>
-                <span style="width: 20%; text-align: right; color: ${isSelf ? '#00ff7f' : '#ffcc00'};">${entry.score.toLocaleString()}</span>
-            `;
-            listEl.appendChild(row);
-        });
-    }
+    async openLeaderboard() {
+		const leaderboardScreen = document.getElementById('leaderboard-screen');
+		const listEl = document.getElementById('leaderboard-list');
+		leaderboardScreen.style.display = 'flex';
+
+		const playerName = this.leaderboard.getPlayerName();
+
+		let scores = await this.leaderboard.getGlobalScores();
+
+		// 🔥 SAFETY FIX
+		if (!Array.isArray(scores)) {
+			console.log("Invalid leaderboard data:", scores);
+			scores = [];
+		}
+
+		listEl.innerHTML = '';
+
+		scores.forEach((entry, index) => {
+			const row = document.createElement('div');
+
+			const isSelf = playerName && entry.name === playerName;
+
+			row.style.cssText = `
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				padding: 12px 15px;
+				border-bottom: 1px solid rgba(0, 255, 127, 0.1);
+				color: ${isSelf ? '#00ff7f' : '#fff'};
+				font-weight: ${isSelf ? 'bold' : 'normal'};
+			`;
+
+			row.innerHTML = `
+				<span>#${index + 1}</span>
+				<span>${entry.name}</span>
+				<span>${entry.level || 1}</span>
+				<span>${entry.score}</span>
+			`;
+
+			listEl.appendChild(row);
+		});
+	}
 
     closeLeaderboard() {
         document.getElementById('leaderboard-screen').style.display = 'none';
@@ -1145,7 +1268,10 @@ class Game {
     }
 
     showMainMenu() {
-        this.mainMenuEl.style.display = 'flex';
+		if (this.controller.mobileControls) {
+            this.controller.mobileControls.hide();
+        }									 
+		this.mainMenuEl.style.display = 'flex';
         this.startScreenEl.style.display = 'none';
         this.campaignSelectionEl.style.display = 'none';
         this.levelSelectionEl.style.display = 'none';
@@ -1153,7 +1279,7 @@ class Game {
         this.updateDailyMissionUI();
     }
 
-    updateDailyMissionUI() {
+    async updateDailyMissionUI() {
         const state = this.dailyMission.state;
         const descEl = document.getElementById('daily-mission-desc');
         const barEl = document.getElementById('daily-mission-bar');
@@ -1163,7 +1289,7 @@ class Game {
 
         // --- Update Global Info in Main Menu ---
         const rank = this.leaderboard.getPlayerRank();
-        const best = this.leaderboard.getLocalBest();
+        const best = await this.leaderboard.getLocalBest();
         const pilotName = this.leaderboard.getPlayerName();
         
         const infoDivId = 'pilot-global-info';
@@ -1258,7 +1384,16 @@ class Game {
                     <div class="difficulty">Difficulty: ${difficulty}</div>
                 </div>
             `;
-            card.addEventListener('click', () => this.showLevelSelection(index));
+			if (!isLocked) {
+                const select = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    TONE.start();
+                    this.showLevelSelection(index);
+                };
+                card.addEventListener('click', select);
+                card.addEventListener('touchstart', select, { passive: false });
+            }
             this.campaignListEl.appendChild(card);
         });
     }
@@ -1286,7 +1421,14 @@ class Game {
             
             card.innerText = i;
             if (!isLocked) {
-                card.addEventListener('click', () => this.startGame(campaignIndex, i));
+				const select = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    TONE.start();
+                    this.startGame(campaignIndex, i);
+                };
+                card.addEventListener('click', select);
+                card.addEventListener('touchstart', select, { passive: false });
             }
             this.levelGridEl.appendChild(card);
         }
@@ -1300,7 +1442,12 @@ class Game {
         this.missionSummaryEl.style.display = 'none';
         this.upgradeScreenEl.style.display = 'none';
         this.mainMenuEl.style.display = 'none';
-        this.cameraController.enable();
+	    // Show mobile controls if on mobile
+        if (this.controller.mobileControls) {
+            this.controller.mobileControls.show();
+        }
+		
+		this.cameraController.enable();
         this.gameActive = true;
 
         // Reset Ability State
@@ -1508,6 +1655,9 @@ class Game {
 
     gameOver() {
         this.gameActive = false;
+		if (this.controller.mobileControls) {
+            this.controller.mobileControls.hide();
+        }
         this.cameraController.disable();
         this.gameOverEl.style.display = 'flex';
         this.finalScoreEl.innerText = this.score;
@@ -1531,9 +1681,16 @@ class Game {
         `;
         
         // Re-attach event listener
+		const nameInputFail = document.getElementById('player-name-input-fail');
+        if (nameInputFail) {
+            nameInputFail.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                nameInputFail.focus();
+            }, { passive: true });
+        }
         document.getElementById('submit-score-btn-fail').addEventListener('click', () => {
-            const nameInput = document.getElementById('player-name-input-fail');
-            if (nameInput.value.trim()) this.submitScoreToGlobal();
+            
+			if (nameInputFail.value.trim()) this.submitScoreToGlobal();
         });
     }
 
@@ -2130,7 +2287,10 @@ class Game {
 
     levelUp() {
         this.gameActive = false;
-        this.cameraController.disable();
+		if (this.controller.mobileControls) {
+            this.controller.mobileControls.hide();
+        }									 
+		this.cameraController.disable();
         document.exitPointerLock();
 
         // --- Save Tech Points ---
@@ -2180,9 +2340,16 @@ class Game {
         `;
         
         // Re-attach event listener
+		const nameInputSuccess = document.getElementById('player-name-input');
+        if (nameInputSuccess) {
+            nameInputSuccess.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                nameInputSuccess.focus();
+            }, { passive: true });
+        }
         document.getElementById('submit-score-btn').addEventListener('click', () => {
-            const nameInput = document.getElementById('player-name-input');
-            if (nameInput.value.trim()) this.submitScoreToGlobal();
+            
+			if (nameInputSuccess.value.trim()) this.submitScoreToGlobal();
         });
     }
 
@@ -2938,6 +3105,10 @@ class Game {
         const deltaTime = this.clock.getDelta();
 
         if (this.gameActive) {
+			// Update mobile controls (especially for continuous joystick aiming)
+            if (this.controller.mobileControls) {
+                this.controller.mobileControls.update(deltaTime);
+            }
             // --- World Event Management ---
             this.eventTimer += deltaTime;
             if (!this.currentEvent && this.eventTimer >= this.nextEventIn) {

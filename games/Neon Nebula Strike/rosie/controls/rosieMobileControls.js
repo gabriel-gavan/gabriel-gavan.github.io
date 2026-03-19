@@ -24,19 +24,21 @@ const MobileUtils = {
       pointer-events: none;
       z-index: 1000;
       font-family: Arial, sans-serif;
+      display: none; /* Hidden by default, managed by Game class */
     `;
 
-    // Virtual Joystick
+    // Virtual Joystick (Left - Movement)
     const joystickContainer = document.createElement('div');
     joystickContainer.id = 'virtual-joystick';
+    joystickContainer.className = 'joystick-base';
     joystickContainer.style.cssText = `
       position: absolute;
-      bottom: 20px;
-      left: 20px;
+      bottom: 40px;
+      left: 40px;
       width: 120px;
       height: 120px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       pointer-events: auto;
       touch-action: none;
@@ -44,19 +46,52 @@ const MobileUtils = {
 
     const joystickKnob = document.createElement('div');
     joystickKnob.id = 'virtual-joystick-knob';
+    joystickKnob.className = 'joystick-knob';
     joystickKnob.style.cssText = `
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.8);
+      width: 50px;
+      height: 50px;
+      background: rgba(255, 255, 255, 0.6);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      transition: all 0.1s ease;
+      pointer-events: none;
+    `;
+    joystickContainer.appendChild(joystickKnob);
+
+    // Look Joystick (Right - Aiming)
+    const lookJoystickContainer = document.createElement('div');
+    lookJoystickContainer.id = 'look-joystick';
+    lookJoystickContainer.className = 'joystick-base';
+    lookJoystickContainer.style.cssText = `
+      position: absolute;
+      bottom: 40px;
+      right: 140px;
+      width: 120px;
+      height: 120px;
+      background: rgba(0, 255, 127, 0.05);
+      border: 2px solid rgba(0, 255, 127, 0.2);
+      border-radius: 50%;
+      pointer-events: auto;
+      touch-action: none;
     `;
 
-    joystickContainer.appendChild(joystickKnob);
+    const lookJoystickKnob = document.createElement('div');
+    lookJoystickKnob.id = 'look-joystick-knob';
+    lookJoystickKnob.className = 'joystick-knob';
+    lookJoystickKnob.style.cssText = `
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      background: rgba(0, 255, 127, 0.4);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    `;
+    lookJoystickContainer.appendChild(lookJoystickKnob);
 
     // Jump Button
     const jumpButton = document.createElement('div');
@@ -64,12 +99,12 @@ const MobileUtils = {
     jumpButton.className = 'mobile-action-btn';
     jumpButton.style.cssText = `
       position: absolute;
-      bottom: 20px;
-      right: 20px;
+      bottom: 40px;
+      right: 40px;
       width: 70px;
       height: 70px;
-      background: rgba(0, 255, 127, 0.2);
-      border: 2px solid rgba(0, 255, 127, 0.5);
+      background: rgba(0, 255, 127, 0.1);
+      border: 2px solid rgba(0, 255, 127, 0.4);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -79,22 +114,21 @@ const MobileUtils = {
       font-weight: bold;
       pointer-events: auto;
       touch-action: none;
-      user-select: none;
     `;
     jumpButton.textContent = 'JUMP';
 
-    // Fire Button (Right side, slightly above jump)
+    // Fire Button
     const fireButton = document.createElement('div');
     fireButton.id = 'fire-button';
     fireButton.className = 'mobile-action-btn';
     fireButton.style.cssText = `
       position: absolute;
-      bottom: 100px;
-      right: 20px;
-      width: 90px;
-      height: 90px;
-      background: rgba(255, 77, 77, 0.3);
-      border: 2px solid rgba(255, 77, 77, 0.6);
+      bottom: 130px;
+      right: 40px;
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 77, 77, 0.2);
+      border: 2px solid rgba(255, 77, 77, 0.5);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -104,23 +138,22 @@ const MobileUtils = {
       font-weight: bold;
       pointer-events: auto;
       touch-action: none;
-      user-select: none;
-      box-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
+      box-shadow: 0 0 15px rgba(255, 77, 77, 0.2);
     `;
     fireButton.textContent = 'FIRE';
 
-    // Ability Button (Right side, left of fire)
+    // Ability Button
     const abilityButton = document.createElement('div');
     abilityButton.id = 'ability-button';
     abilityButton.className = 'mobile-action-btn';
     abilityButton.style.cssText = `
       position: absolute;
-      bottom: 120px;
-      right: 120px;
+      bottom: 180px;
+      right: 140px;
       width: 60px;
       height: 60px;
-      background: rgba(0, 204, 255, 0.2);
-      border: 2px solid rgba(0, 204, 255, 0.5);
+      background: rgba(0, 204, 255, 0.1);
+      border: 2px solid rgba(0, 204, 255, 0.4);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -130,16 +163,45 @@ const MobileUtils = {
       font-weight: bold;
       pointer-events: auto;
       touch-action: none;
-      user-select: none;
     `;
     abilityButton.textContent = 'ABILITY';
 
     container.appendChild(joystickContainer);
+    container.appendChild(lookJoystickContainer);
     container.appendChild(jumpButton);
     container.appendChild(fireButton);
     container.appendChild(abilityButton);
 
-    return { container, joystickContainer, joystickKnob, jumpButton, fireButton, abilityButton };
+    // Settings Button (Top left)
+    const settingsButton = document.createElement('div');
+    settingsButton.id = 'mobile-settings-btn';
+    settingsButton.style.cssText = `
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      pointer-events: auto;
+      touch-action: none;
+      z-index: 1001;
+    `;
+    settingsButton.innerHTML = '⚙️';
+    container.appendChild(settingsButton);
+
+    return { 
+      container, 
+      joystickContainer, joystickKnob, 
+      lookJoystickContainer, lookJoystickKnob,
+      jumpButton, fireButton, abilityButton, settingsButton 
+    };
   },
 
   removeMobileUI() {
@@ -159,6 +221,7 @@ class VirtualJoystick {
     this.knob = knob;
     this.onInputChange = onInputChange;
     this.isActive = false;
+    this.touchId = null;
     this.center = { x: 60, y: 60 }; // Center of joystick
     this.maxDistance = 40; // Maximum distance from center
     this.currentPos = { x: 0, y: 0 }; // Current position (-1 to 1)
@@ -168,16 +231,34 @@ class VirtualJoystick {
 
   setupEvents() {
     const handleStart = (e) => {
+      if (this.isActive) return;
       e.preventDefault();
+      
+      const touch = e.touches ? e.touches[e.touches.length - 1] : e;
+      if (e.touches) this.touchId = touch.identifier;
+      
       this.isActive = true;
       this.container.style.background = 'rgba(255, 255, 255, 0.3)';
     };
 
     const handleMove = (e) => {
       if (!this.isActive) return;
+      
+      let touch = null;
+      if (e.touches) {
+        for (let i = 0; i < e.touches.length; i++) {
+          if (e.touches[i].identifier === this.touchId) {
+            touch = e.touches[i];
+            break;
+          }
+        }
+      } else {
+        touch = e;
+      }
+
+      if (!touch) return;
       e.preventDefault();
 
-      const touch = e.touches ? e.touches[0] : e;
       const rect = this.container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -187,7 +268,7 @@ class VirtualJoystick {
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       if (distance <= this.maxDistance) {
-        this.knob.style.transform = `translate(${deltaX - 20}px, ${deltaY - 20}px)`;
+        this.knob.style.transform = `translate(${deltaX - 25}px, ${deltaY - 25}px)`;
         this.currentPos.x = deltaX / this.maxDistance;
         this.currentPos.y = deltaY / this.maxDistance;
       } else {
@@ -195,7 +276,7 @@ class VirtualJoystick {
         const limitedX = Math.cos(angle) * this.maxDistance;
         const limitedY = Math.sin(angle) * this.maxDistance;
 
-        this.knob.style.transform = `translate(${limitedX - 20}px, ${limitedY - 20}px)`;
+        this.knob.style.transform = `translate(${limitedX - 25}px, ${limitedY - 25}px)`;
         this.currentPos.x = limitedX / this.maxDistance;
         this.currentPos.y = limitedY / this.maxDistance;
       }
@@ -208,11 +289,25 @@ class VirtualJoystick {
     };
 
     const handleEnd = (e) => {
+      if (!this.isActive) return;
+
+      if (e.touches && this.touchId !== null) {
+        let stillActive = false;
+        for (let i = 0; i < e.touches.length; i++) {
+          if (e.touches[i].identifier === this.touchId) {
+            stillActive = true;
+            break;
+          }
+        }
+        if (stillActive) return;
+      }
+
       e.preventDefault();
       this.isActive = false;
-      this.knob.style.transform = 'translate(-20px, -20px)';
+      this.touchId = null;
+      this.knob.style.transform = 'translate(-25px, -25px)';
       this.currentPos = { x: 0, y: 0 };
-      this.container.style.background = 'rgba(255, 255, 255, 0.2)';
+      this.container.style.background = 'rgba(255, 255, 255, 0.1)';
 
       // Notify of input change
       this.onInputChange({ x: 0, y: 0 });
@@ -220,8 +315,9 @@ class VirtualJoystick {
 
     // Touch events
     this.container.addEventListener('touchstart', handleStart);
-    document.addEventListener('touchmove', handleMove);
+    document.addEventListener('touchmove', handleMove, { passive: false });
     document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd);
 
     // Mouse events for testing on desktop
     this.container.addEventListener('mousedown', handleStart);
@@ -245,7 +341,12 @@ class MobileControls {
 
     this.mobileUI = null;
     this.virtualJoystick = null;
+    this.lookJoystick = null;
     this.currentInput = { x: 0, y: 0 };
+    this.currentLookInput = { x: 0, y: 0 };
+    this.joystickSensitivity = parseFloat(localStorage.getItem('alien_exploration_joystick_sensitivity')) || 1.0;
+    this.joystickSteering = localStorage.getItem('alien_exploration_joystick_steering') !== 'false'; // Default to true
+    this.cameraController = null; // Will be set by Game class
 
     this.setupPlayerControls();
   }
@@ -255,16 +356,64 @@ class MobileControls {
     this.mobileUI = MobileUtils.createMobileUI();
     document.body.appendChild(this.mobileUI.container);
 
-    // Setup virtual joystick
+    // Setup movement joystick
     this.virtualJoystick = new VirtualJoystick(
       this.mobileUI.joystickContainer,
       this.mobileUI.joystickKnob,
       (input) => this.handleJoystickInput(input)
     );
 
+    // Setup look joystick
+    this.lookJoystick = new VirtualJoystick(
+      this.mobileUI.lookJoystickContainer,
+      this.mobileUI.lookJoystickKnob,
+      (input) => this.handleLookJoystickInput(input)
+    );
+
     // Setup jump button
     this.setupJumpButton();
     this.setupActionButtons();
+    this.setupSettingsButton();
+  }
+
+  handleLookJoystickInput(input) {
+    this.currentLookInput = input;
+  }
+
+  update(deltaTime) {
+    if (!this.cameraController || !this.isMobile) return;
+
+    const deadzone = 0.1;
+    const lookSens = this.cameraController.lookSensitivity || 1.0;
+    
+    // Constant rotation speed when holding the joystick
+    // 2.0 radians per second at max tilt
+    const rotationSpeed = 2.0 * this.joystickSensitivity * lookSens * deltaTime;
+
+    // Horizontal Look (Yaw)
+    if (Math.abs(this.currentLookInput.x) > deadzone) {
+      this.cameraController.rotationY -= this.currentLookInput.x * rotationSpeed;
+    }
+
+    // Vertical Look (Pitch)
+    if (Math.abs(this.currentLookInput.y) > deadzone) {
+      // Non-inverted: Pushing stick UP (positive input.y) makes us look UP (negative rotationX)
+      this.cameraController.rotationX -= this.currentLookInput.y * rotationSpeed;
+      
+      // Clamp vertical rotation
+      this.cameraController.rotationX = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.cameraController.rotationX));
+    }
+  }
+
+  setupSettingsButton() {
+    const handleSettings = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('toggleMobileSettings'));
+    };
+
+    this.mobileUI.settingsButton.addEventListener('touchstart', handleSettings);
+    this.mobileUI.settingsButton.addEventListener('click', handleSettings);
   }
 
   setupActionButtons() {
@@ -336,6 +485,12 @@ class MobileControls {
   handleJoystickInput(input) {
     this.currentInput = input;
 
+    // Apply sensitivity to the input magnitude
+    const scaledInput = {
+      x: input.x * this.joystickSensitivity,
+      y: input.y * this.joystickSensitivity
+    };
+
     // Clear all movement keys first
     this.controller.keys['KeyW'] = false;
     this.controller.keys['KeyS'] = false;
@@ -345,20 +500,53 @@ class MobileControls {
     // Set keys based on joystick input (with deadzone)
     const deadzone = 0.1;
 
-    if (Math.abs(input.y) > deadzone) {
-      if (input.y > 0) {
+    // Vertical movement (Forward/Backward)
+    if (Math.abs(scaledInput.y) > deadzone) {
+      if (scaledInput.y > 0) {
         this.controller.keys['KeyW'] = true; // Forward
       } else {
         this.controller.keys['KeyS'] = true; // Backward
       }
     }
 
-    if (Math.abs(input.x) > deadzone) {
-      if (input.x > 0) {
-        this.controller.keys['KeyD'] = true; // Right
+    // Horizontal logic
+    if (Math.abs(scaledInput.x) > deadzone) {
+      if (this.joystickSteering && this.cameraController) {
+        // Steering Mode: Horizontal joystick rotates the camera
+        // Scaled by look sensitivity for a consistent feel
+        const lookSens = this.cameraController.lookSensitivity || 1.0;
+        const turnSpeed = 0.03 * this.joystickSensitivity * lookSens;
+        this.cameraController.rotationY -= scaledInput.x * turnSpeed;
       } else {
-        this.controller.keys['KeyA'] = true; // Left
+        // Tactical Mode: Horizontal joystick strafes left/right
+        if (scaledInput.x > 0) {
+          this.controller.keys['KeyD'] = true; // Right
+        } else {
+          this.controller.keys['KeyA'] = true; // Left
+        }
       }
+    }
+  }
+
+  updateJoystickSteering(enabled) {
+    this.joystickSteering = enabled;
+    localStorage.setItem('alien_exploration_joystick_steering', enabled);
+  }
+
+  updateJoystickSensitivity(value) {
+    this.joystickSensitivity = value;
+    localStorage.setItem('alien_exploration_joystick_sensitivity', value);
+  }
+
+  show() {
+    if (this.mobileUI && this.mobileUI.container) {
+      this.mobileUI.container.style.display = 'block';
+    }
+  }
+
+  hide() {
+    if (this.mobileUI && this.mobileUI.container) {
+      this.mobileUI.container.style.display = 'none';
     }
   }
 
