@@ -1202,46 +1202,53 @@ class Game {
     }
 
     async openLeaderboard() {
+		let html = "";
 		const leaderboardScreen = document.getElementById('leaderboard-screen');
 		const listEl = document.getElementById('leaderboard-list');
-		leaderboardScreen.style.display = 'flex';
 
-		const playerName = this.leaderboard.getPlayerName();
+		leaderboardScreen.style.display = 'flex';
 
 		let scores = await this.leaderboard.getGlobalScores();
 
-		// 🔥 SAFETY FIX
 		if (!Array.isArray(scores)) {
 			console.log("Invalid leaderboard data:", scores);
 			scores = [];
 		}
 
-		listEl.innerHTML = '';
+		scores.forEach((entry, i) => {
+			const score = Number(entry.score) || 0;
 
-		scores.forEach((entry, index) => {
-			const row = document.createElement('div');
+			let medal = "";
+			if (i === 0) medal = "🥇";
+			else if (i === 1) medal = "🥈";
+			else if (i === 2) medal = "🥉";
 
-			const isSelf = playerName && entry.name === playerName;
+			const isPlayer = entry.name === this.leaderboard.getPlayerName();
+			if (scores.length === 0) {
+				listEl.innerHTML = `
+					<div style="text-align:center; padding:40px; color:#00ff7f;">
+						NO PILOTS YET 🚀<br>
+						BE THE FIRST TO DOMINATE
+					</div>
+				`;
+				return;
+			}
+			html += `
+				<div class="leaderboard-row ${isPlayer ? "player-row" : ""} ${i < 3 ? "top-rank" : ""}"
+					 style="animation-delay:${i * 0.05}s">
 
-			row.style.cssText = `
-				width: 100%;
-				display: flex;
-				justify-content: space-between;
-				padding: 12px 15px;
-				border-bottom: 1px solid rgba(0, 255, 127, 0.1);
-				color: ${isSelf ? '#00ff7f' : '#fff'};
-				font-weight: ${isSelf ? 'bold' : 'normal'};
+					<span class="rank">${medal || "#" + (i + 1)}</span>
+					<span class="name">
+						${entry.name} ${isPlayer ? "🟢 YOU" : ""}
+					</span>
+					<span class="mission">${entry.level}</span>
+					<span class="score">${score.toLocaleString()}</span>
+				</div>
 			`;
-
-			row.innerHTML = `
-				<span>#${index + 1}</span>
-				<span>${entry.name}</span>
-				<span>${entry.level || 1}</span>
-				<span>${entry.score}</span>
-			`;
-
-			listEl.appendChild(row);
 		});
+
+		
+		listEl.innerHTML = html;
 	}
 
     closeLeaderboard() {

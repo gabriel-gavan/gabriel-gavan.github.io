@@ -1198,6 +1198,116 @@
         width: 0%;
         transition: width 1s linear;
       }
+		.leaderboard-row {
+			display: grid;
+			grid-template-columns: 80px 1fr 1fr 120px;
+			padding: 12px 16px;
+			border-bottom: 1px solid rgba(0,255,127,0.1);
+
+			opacity: 1; /* 👈 always visible fallback */
+			transform: translateY(10px);
+
+			animation: fadeInUp 0.4s ease forwards;
+		}
+
+		/* ✨ smooth entry animation */
+		@keyframes fadeInUp {
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
+
+		/* 🏆 TOP 3 GLOW */
+		.top-rank {
+			font-weight: bold;
+		}
+
+		.top-rank:nth-child(1) {
+			color: #ffd700;
+			text-shadow: 0 0 12px #ffd700;
+		}
+
+		.top-rank:nth-child(2) {
+			color: #c0c0c0;
+			text-shadow: 0 0 10px #c0c0c0;
+		}
+
+		.top-rank:nth-child(3) {
+			color: #cd7f32;
+			text-shadow: 0 0 10px #cd7f32;
+		}
+
+		/* 🟢 PLAYER HIGHLIGHT */
+		.player-row {
+			background: rgba(0,255,127,0.08);
+			border: 1px solid rgba(0,255,127,0.3);
+			box-shadow: 0 0 10px rgba(0,255,127,0.2);
+		}
+
+		/* 💎 HOVER EFFECT */
+		.leaderboard-row:hover {
+			background: rgba(0,255,127,0.15);
+			transform: scale(1.02);
+		}
+
+		/* ALIGNMENTS */
+		.leaderboard-row .rank {
+			font-weight: bold;
+		}
+
+		.leaderboard-row .score {
+			text-align: right;
+			font-weight: bold;
+		}
+
+		/* ✨ Neon subtle pulse */
+		.player-row {
+			animation: pulseGlow 2s infinite alternate;
+		}
+
+		@keyframes pulseGlow {
+			from {
+				box-shadow: 0 0 5px rgba(0,255,127,0.2);
+			}
+			to {
+				box-shadow: 0 0 20px rgba(0,255,127,0.5);
+			}
+		}
+		
+		#leaderboard-content::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: linear-gradient(
+				120deg,
+				transparent 0%,
+				rgba(0,255,127,0.08) 50%,
+				transparent 100%
+			);
+			animation: scan 4s linear infinite;
+			pointer-events: none;
+		}
+
+		@keyframes scan {
+			0% { transform: translateX(-100%); }
+			100% { transform: translateX(100%); }
+		}
+		.leaderboard-row {
+			box-shadow: 0 0 0 rgba(0,255,127,0);
+		}
+
+		.leaderboard-row:hover {
+			box-shadow: 0 0 15px rgba(0,255,127,0.4);
+		}
+		#leaderboard-list::-webkit-scrollbar {
+			width: 6px;
+		}
+
+		#leaderboard-list::-webkit-scrollbar-thumb {
+			background: #00ff7f;
+			border-radius: 10px;
+		}
     </style>
 	<script async
 		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
