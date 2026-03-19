@@ -287,10 +287,12 @@ class Game {
 
         handleBtn('leaderboard-btn', () => {
             this.openLeaderboard();
+			setTimeout(() => this.showRankChange(), 300);
         });
 
         handleBtn('leaderboard-btn-fail', () => {
             this.openLeaderboard();
+			setTimeout(() => this.showRankChange(), 300);
         });
 
         handleBtn('leaderboard-back-btn', () => {
@@ -410,6 +412,16 @@ class Game {
         };
 
         this.animate();
+		document.querySelectorAll('.tab').forEach(btn => {
+			btn.onclick = () => {
+				document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+
+				this.currentLeaderboardType = btn.dataset.type;
+
+				this.openLeaderboard();
+			};
+		});
     }
 
     setupMobileSettings() {
@@ -583,15 +595,17 @@ class Game {
     }
 
     checkNickname() {
-        const savedName = this.leaderboard.getPlayerName();
-        if (savedName && savedName.trim().length >= 3) {
-            this.nicknameOverlay.style.display = 'none';
-        } else {
-            this.nicknameOverlay.style.display = 'flex';
-        }
-    }
+		const name = this.leaderboard.getPlayerName();
+		const id = this.leaderboard.getPlayerId();
 
-    handleNicknameSubmit() {
+		if (name && id) {
+			this.nicknameOverlay.style.display = 'none';
+		} else {
+			this.nicknameOverlay.style.display = 'flex';
+		}
+	}
+	
+    async handleNicknameSubmit() {
         const name = this.nicknameInput.value.trim();
         const validPattern = /^[a-zA-Z0-9 _]+$/;
 
@@ -611,9 +625,17 @@ class Game {
         }
 
         // Success
-        this.leaderboard.setPlayerName(name);
-        this.nicknameOverlay.style.display = 'none';
-        this.synth.triggerAttackRelease('C4', '8n');
+        const isTaken = await this.leaderboard.isNameTaken(name);
+
+		if (isTaken) {
+			this.showNicknameError("NAME ALREADY TAKEN");
+			return;
+		}
+
+		// OK → register
+		this.leaderboard.registerPlayer(name);
+		this.nicknameOverlay.style.display = 'none';
+		this.synth.triggerAttackRelease('C4', '8n');
     }
 
     showNicknameError(msg) {
@@ -1200,19 +1222,98 @@ class Game {
             this.composer.setSize(window.innerWidth, window.innerHeight);
         }
     }
+	startLeaderboardLiveUpdate() {
+		if (this.lbInterval) clearInterval(this.lbInterval);
 
+		this.lbInterval = setInterval(() => {
+			if (document.getElementById('leaderboard-screen').style.display === 'flex') {
+				this.openLeaderboard();
+				setTimeout(() => this.showRankChange(), 300);
+			}
+		}, 5000); // every 5 sec
+	}
+	async showRankChange() {
+		const scores = await this.leaderboard.getGlobalScores();
+		const playerName = this.leaderboard.getPlayerName();
+
+		const index = scores.findIndex(s => s.name === playerName);
+
+		if (index === -1) return;
+
+		const row = document.querySelectorAll('.leaderboard-row')[index];
+		if (!row) return;
+
+		row.style.transform = "scale(1.2)";
+		row.style.boxShadow = "0 0 25px #00ff7f";
+
+		setTimeout(() => {
+			row.style.transform = "";
+			row.style.boxShadow = "";
+		}, 800);
+	}						
     async openLeaderboard() {
-		let html = "";
 		const leaderboardScreen = document.getElementById('leaderboard-screen');
 		const listEl = document.getElementById('leaderboard-list');
 
 		leaderboardScreen.style.display = 'flex';
 
+		// --- INIT TAB STATE ---
+		if (!this.currentLeaderboardType) {
+			this.currentLeaderboardType = "all";
+		}
+
+		// --- GET SCORES ---
 		let scores = await this.leaderboard.getGlobalScores();
 
 		if (!Array.isArray(scores)) {
 			console.log("Invalid leaderboard data:", scores);
 			scores = [];
+		}
+
+		// --- FILTER LOGIC ---
+		const now = Date.now();
+
+		scores = scores.filter(entry => {
+			const time = new Date(entry.date).getTime();
+
+			if (this.currentLeaderboardType === "today") {
+				return now - time < 86400000;
+			}
+
+			if (this.currentLeaderboardType === "weekly") {
+				return now - time < 7 * 86400000;
+			}
+
+			return true;
+		});
+		const bestScores = {};
+
+			scores.forEach(s => {
+				if (!bestScores[s.id] || s.score > bestScores[s.id].score) {
+					bestScores[s.id] = s;
+				}
+			});
+
+
+			scores = Object.values(bestScores);
+		// --- SORT DESC ---
+		scores.sort((a, b) => b.score - a.score);
+
+		// --- PLAYER ---
+		const playerId = this.leaderboard.getPlayerId();
+		const newRank = scores.findIndex(s => s.id === playerId);
+
+		// --- BUILD HTML ---
+		let html = "";
+
+		if (scores.length === 0) {
+			listEl.innerHTML = `
+				<div style="text-align:center; padding:40px; color:#00ff7f;">
+					NO PILOTS YET 🚀<br>
+					BE THE FIRST
+				</div>
+			`;
+			return;
 		}
 
 		scores.forEach((entry, i) => {
@@ -1223,32 +1324,79 @@ class Game {
 			else if (i === 1) medal = "🥈";
 			else if (i === 2) medal = "🥉";
 
-			const isPlayer = entry.name === this.leaderboard.getPlayerName();
-			if (scores.length === 0) {
-				listEl.innerHTML = `
-					<div style="text-align:center; padding:40px; color:#00ff7f;">
-						NO PILOTS YET 🚀<br>
-						BE THE FIRST TO DOMINATE
-					</div>
-				`;
-				return;
-			}
-			html += `
-				<div class="leaderboard-row ${isPlayer ? "player-row" : ""} ${i < 3 ? "top-rank" : ""}"
-					 style="animation-delay:${i * 0.05}s">
+			const isPlayer = entry.id === playerId;
 
+			html += `
+				<div class="leaderboard-row ${isPlayer ? "player-row" : ""} ${i < 3 ? "top-rank" : ""}">
 					<span class="rank">${medal || "#" + (i + 1)}</span>
-					<span class="name">
-						${entry.name} ${isPlayer ? "🟢 YOU" : ""}
-					</span>
+					<span class="name">${entry.name} ${isPlayer ? "🟢 YOU" : ""}</span>
 					<span class="mission">${entry.level}</span>
 					<span class="score">${score.toLocaleString()}</span>
 				</div>
 			`;
 		});
 
-		
 		listEl.innerHTML = html;
+
+		// =========================
+		// 💎 RANK CHANGE EFFECT
+		// =========================
+		const lastRank = localStorage.getItem("lastRank");
+
+		if (lastRank !== null && newRank !== -1 && newRank < lastRank) {
+			const diff = lastRank - newRank;
+
+			const notif = document.createElement("div");
+			notif.innerText = `+${diff} RANKS ↑`;
+
+			notif.style.cssText = `
+				position: fixed;
+				top: 20%;
+				left: 50%;
+				transform: translateX(-50%);
+				color: #00ff7f;
+				font-size: 32px;
+				font-weight: bold;
+				text-shadow: 0 0 20px #00ff7f;
+				z-index: 999;
+				animation: popUp 1s ease forwards;
+			`;
+
+			document.body.appendChild(notif);
+
+			setTimeout(() => notif.remove(), 1000);
+		}
+
+		if (newRank !== -1) {
+			localStorage.setItem("lastRank", newRank);
+		}
+
+		// =========================
+		// 🔥 PLAYER ROW ANIMATION
+		// =========================
+		setTimeout(() => {
+			const rows = document.querySelectorAll('.leaderboard-row');
+			if (rows[newRank]) {
+				rows[newRank].style.transform = "scale(1.1)";
+				rows[newRank].style.boxShadow = "0 0 20px #00ff7f";
+
+				setTimeout(() => {
+					rows[newRank].style.transform = "";
+					rows[newRank].style.boxShadow = "";
+				}, 800);
+			}
+		}, 200);
+
+		// =========================
+		// ⚡ LIVE UPDATE LOOP
+		// =========================
+		if (this.lbInterval) clearInterval(this.lbInterval);
+
+		this.lbInterval = setInterval(() => {
+			if (leaderboardScreen.style.display === 'flex') {
+				this.openLeaderboard();
+			}
+		}, 5000);
 	}
 
     closeLeaderboard() {
@@ -1265,7 +1413,7 @@ class Game {
         const name = nameInput.value.trim() || 'Anonymous Pilot';
         const currentCampaign = CONFIG.CAMPAIGNS[this.campaignIndex]?.name || 'Unknown';
         
-        this.leaderboard.setPlayerName(name);
+        this.leaderboard.registerPlayer(name);
         this.leaderboard.submitScore(name, this.score, currentCampaign);
         
         // Visual feedback instead of opening whole leaderboard
@@ -1645,19 +1793,25 @@ class Game {
             this.campaignNameEl.innerText = currentCampaign.name.toUpperCase();
             
             // Update Objective UI
+			this.objectiveContainerEl.style.display = 'block';
             if (this.gameMode === 'endless') {
-                this.objectiveContainerEl.style.display = 'none';
+                this.objectiveProgressEl.innerText = `${Math.floor(this.score)} / ${this.scoreForNextLevel}`;
+                const label = this.objectiveContainerEl.firstChild;
+                if (label && label.nodeType === 3) label.textContent = 'SCORE TARGET: ';
             } else if (currentCampaign.objective === "Extermination") {
                 this.objectiveContainerEl.style.display = 'none';
             } else {
-                this.objectiveContainerEl.style.display = 'block';
+                
                 const total = this.world.objectives.length;
                 const completed = this.world.objectives.filter(o => !o.alive).length;
                 this.objectiveProgressEl.innerText = `${completed}/${total}`;
+				const label = this.objectiveContainerEl.firstChild;
+                if (label && label.nodeType === 3) label.textContent = 'OBJECTIVE: ';
             }
+            
         }
 
-        this.enemiesCountEl.innerText = this.enemies.length;
+        this.enemiesCountEl.innerText = this.levelStats.enemiesKilled;
     }
 
     gameOver() {
@@ -1686,6 +1840,9 @@ class Game {
                 <button id="submit-score-btn-fail" class="btn" style="background: #ff4d4d; padding: 10px 20px; font-size: 16px;">SUBMIT</button>
             </div>
         `;
+		if (savedName) {
+			document.getElementById('player-name-input-fail').disabled = true;
+		}
         
         // Re-attach event listener
 		const nameInputFail = document.getElementById('player-name-input-fail');
@@ -2345,7 +2502,9 @@ class Game {
                 <button id="submit-score-btn" class="btn" style="padding: 10px 20px; font-size: 16px;">SUBMIT</button>
             </div>
         `;
-        
+        if (savedName) {
+			document.getElementById('player-name-input').disabled = true;
+		}
         // Re-attach event listener
 		const nameInputSuccess = document.getElementById('player-name-input');
         if (nameInputSuccess) {
