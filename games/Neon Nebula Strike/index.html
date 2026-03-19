@@ -39,17 +39,18 @@
         font-family: 'Orbitron', sans-serif;
         color: #fff;
         user-select: none;
-        touch-action: none; /* Critical for mobile games */
+        -webkit-user-select: none;
+        touch-action: manipulation;
       }
-      canvas { display: block; }
+      canvas { display: block; touch-action: none; }
 
       #ui-overlay {
         position: absolute;
-        top: var(--ad-safe-zone-top);
+        top: calc(var(--ad-safe-zone-top) + 20px);
         bottom: var(--ad-safe-zone-bottom);
         left: 0;
         width: 100%;
-        height: calc(100% - var(--ad-safe-zone-top) - var(--ad-safe-zone-bottom));
+        height: calc(100% - var(--ad-safe-zone-top) - var(--ad-safe-zone-bottom) - 20px);
         pointer-events: none;
         display: flex;
         flex-direction: column;
@@ -65,27 +66,103 @@
 
       /* Mobile Responsive Tweaks */
       @media (max-width: 768px) {
-        #hud-top { padding: 10px; }
-        .stat { font-size: 14px !important; }
-        #minimap-container { width: 100px; height: 100px; }
-        #main-menu h1 { font-size: 40px; letter-spacing: 5px; }
-        .menu-button-container { padding: 20px; }
-        #weapon-container { width: 200px; height: 200px; bottom: -20px; }
-        #level-grid { grid-template-columns: repeat(3, 1fr); }
-        #xp-bar-container { width: 100px; bottom: 80px; }
-        #xp-text { bottom: 65px; font-size: 8px; }
-        #weapon-hud { bottom: 100px; left: 10px; gap: 5px; }
-        .weapon-slot { width: 40px; height: 40px; }
-        #buff-container { bottom: 100px; right: 10px; }
+        #hud-top { 
+          padding: 10px; 
+          flex-direction: column;
+          align-items: flex-start;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+          gap: 5px;
+        }
+        .stat-group {
+          align-items: flex-start;
+          margin-top: 5px;
+          gap: 2px;
+        }
+        .stat { font-size: 11px !important; letter-spacing: 0.5px; line-height: 1.2; }
+        #minimap-container { width: 70px; height: 70px; margin-bottom: 5px; }
+        
+        #main-menu { justify-content: flex-start; padding-top: 40px; }
+        #main-menu h1, #start-screen h1 { font-size: 24px !important; letter-spacing: 2px !important; margin-top: 0px; margin-bottom: 5px; }
+        .menu-subtitle { font-size: 8px; letter-spacing: 2px; margin-bottom: 15px; }
+        #start-screen p { font-size: 10px !important; margin-bottom: 15px !important; }
+        #start-screen { background-position: center; }
+        #daily-mission-menu { width: 90%; padding: 10px; margin-bottom: 15px; }
+        #daily-mission-desc { font-size: 12px; }
+        #pilot-global-info { margin-top: 10px; padding: 5px; }
+        .menu-button-container { padding: 15px; width: 95%; box-sizing: border-box; gap: 8px; background: rgba(0, 255, 127, 0.05); }
+        
+        #weapon-container { width: 160px; height: 160px; bottom: 0; }
+        #level-grid { grid-template-columns: repeat(5, 1fr); gap: 6px; width: 95%; }
+        .level-card { padding: 8px; font-size: 14px; }
+        
+        #xp-bar-container { width: 100px; bottom: 110px; left: 10px; height: 4px; }
+        #xp-text { bottom: 100px; left: 10px; font-size: 7px; }
+        #weapon-hud { bottom: 130px; left: 10px; gap: 4px; }
+        .weapon-slot { width: 32px; height: 32px; }
+        #buff-container { bottom: 130px; right: 10px; }
+        
+        #boss-hud { width: 90%; top: 8%; }
+        #boss-name { font-size: 14px; margin-bottom: 5px; }
+        #boss-health-container { height: 10px; }
+        
+        #combo-meter { top: 140px; left: 10px; transform: scale(0.6); transform-origin: left top; }
+        
+        .btn { padding: 12px; font-size: 12px; }
+        .btn span.sub { font-size: 7px; margin-top: 2px; }
+        
+        #upgrade-options { 
+            flex-direction: column; 
+            gap: 10px; 
+            overflow-y: auto; 
+            max-height: 60vh; 
+            padding: 10px; 
+            align-items: center;
+            width: 100%;
+        }
+        #upgrade-screen h1 { font-size: 20px; margin-bottom: 15px; text-align: center; width: 90%; }
+        
+        #summary-content { padding: 15px; width: 90%; margin-bottom: 15px; }
+        .summary-stat { font-size: 12px; margin: 5px 0; }
+        #mission-summary h1 { font-size: 22px; letter-spacing: 1px; margin-bottom: 15px; }
+        
+        #armory-screen h1 { font-size: 28px; margin-bottom: 5px; }
+        #armory-tabs { flex-direction: row; gap: 5px; }
+        #armory-tabs .btn { font-size: 10px; padding: 8px; }
+        #meta-upgrades-list { max-height: 45vh; }
+        
+        #leaderboard-screen h1 { font-size: 24px; letter-spacing: 1px; margin-bottom: 15px; }
+        #leaderboard-content { padding: 10px; width: 95%; margin-bottom: 15px; }
+        #leaderboard-list { max-height: 250px; font-size: 10px; }
+        #leaderboard-content div[style*="font-weight: bold"] { font-size: 10px; }
       }
 
       @media (max-width: 480px) {
-        #level-grid { grid-template-columns: repeat(2, 1fr); }
-        #main-menu h1 { font-size: 32px; }
-        #campaign-list { gap: 10px; }
-        .campaign-card { width: 100%; height: 120px; }
-        #hud-bottom { padding: 10px; }
-        #boss-hud { width: 90%; }
+        #level-grid { grid-template-columns: repeat(5, 1fr); }
+        #main-menu { padding-top: 15px; }
+        #main-menu h1, #start-screen h1 { font-size: 20px !important; letter-spacing: 1px !important; margin-top: 0px; }
+        .menu-subtitle { font-size: 7px; margin-bottom: 5px; letter-spacing: 1px !important; }
+        #start-screen p { font-size: 9px !important; margin-bottom: 10px !important; }
+        #daily-mission-menu { width: 85%; padding: 8px; margin-bottom: 10px; }
+        #daily-mission-desc { font-size: 10px; }
+        .menu-button-container { padding: 10px; width: 95%; box-sizing: border-box; gap: 6px; }
+        
+        #campaign-list { gap: 10px; padding: 10px; width: 95%; }
+        .campaign-card { width: 100%; height: 90px; }
+        .campaign-card h3 { font-size: 14px; }
+        .campaign-card .difficulty { font-size: 8px; }
+        
+        #hud-bottom { padding: 8px; }
+        .stat { font-size: 10px !important; }
+        
+        #nickname-overlay > div { padding: 25px !important; width: 90% !important; box-sizing: border-box; }
+        #nickname-overlay h1 { font-size: 18px !important; margin-bottom: 15px !important; }
+        #nickname-input { font-size: 16px !important; padding: 10px !important; }
+        #nickname-submit-btn { padding: 12px !important; font-size: 14px !important; }
+        
+        /* Compact menu buttons for mobile */
+        .btn { padding: 8px 4px; font-size: 10px; }
+        .btn span.sub { font-size: 6px; }
+        .menu-button-container { padding: 15px; width: 90%; gap: 10px; }
       }
 
       #hud-bottom {
@@ -267,7 +344,51 @@
       .combo-pop {
         animation: combo-pop-anim 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
+	#nickname-input {
+        background: rgba(0,0,0,0.6); 
+        border: 2px solid rgba(0, 255, 127, 0.5); 
+        color: #fff; 
+        padding: 15px; 
+        font-family: 'Orbitron', sans-serif; 
+        font-size: 20px; 
+        text-align: center; 
+        outline: none; 
+        width: 100%; 
+        box-sizing: border-box; 
+        margin-bottom: 10px; 
+        transition: all 0.3s; 
+        border-radius: 5px;
+        touch-action: auto !important;
+        user-select: text !important;
+        -webkit-user-select: text !important;
+      }
 
+      #nickname-input:focus {
+        border-color: #00ff7f;
+        box-shadow: 0 0 15px rgba(0, 255, 127, 0.3);
+      }
+
+      #nickname-error {
+        color: #ff4d4d; 
+        font-size: 12px; 
+        height: 16px; 
+        margin-bottom: 20px; 
+        opacity: 0; 
+        transition: opacity 0.3s;
+        font-weight: bold;
+      }
+
+      .error-shake {
+        animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+      }
+
+
+      @keyframes shake {
+        10%, 90% { transform: translate3d(-1px, 0, 0); }
+        20%, 80% { transform: translate3d(2px, 0, 0); }
+        30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+        40%, 60% { transform: translate3d(4px, 0, 0); }
+      }
       @keyframes ability-ready-pulse {
         0% { box-shadow: 0 0 0px #00ff7f; border-color: rgba(255,255,255,0.2); }
         50% { box-shadow: 0 0 20px #00ff7f; border-color: #00ff7f; transform: scale(1.05); }
@@ -494,12 +615,14 @@
         background: rgba(0,0,0,0.9);
         display: none;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         z-index: 105;
         pointer-events: all;
-      }
-
+		overflow-y: auto;
+        padding: 60px 0;
+        box-sizing: border-box;
+		}		
       #level-selection {
         position: absolute;
         top: 0;
@@ -509,10 +632,13 @@
         background: rgba(0,0,0,0.95);
         display: none;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         align-items: center;
         z-index: 106;
         pointer-events: all;
+	    overflow-y: auto;
+        padding: 60px 0;
+        box-sizing: border-box;							  
       }
 
       #level-grid {
@@ -640,7 +766,10 @@
         align-items: center;
         z-index: 110;
         text-align: center;
-        overflow: hidden;
+        overflow-x: hidden;
+		overflow-y: auto;
+        padding: 20px 0;
+        box-sizing: border-box;			   
       }
 
       #main-menu::after {
@@ -689,7 +818,7 @@
         max-width: 650px;
         z-index: 2;
         background: rgba(0, 255, 127, 0.03);
-        padding: 40px;
+        padding: 30px;
         border-radius: 20px;
         border: 1px solid rgba(0, 255, 127, 0.1);
         backdrop-filter: blur(10px);
@@ -1023,7 +1152,52 @@
         pointer-events: all;
       }
 
-      
+      #ad-content-sim {
+        width: 80%;
+        max-width: 800px;
+        aspect-ratio: 16 / 9;
+        background: #111;
+        border: 2px solid #333;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #ad-skip-btn {
+        position: absolute;
+        top: calc(20px + var(--ad-safe-zone-top));
+        right: 20px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid #fff;
+        color: #fff;
+        padding: 5px 15px;
+        font-size: 12px;
+        cursor: pointer;
+        display: none;
+        z-index: 501;
+      }
+
+      #ad-timer {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        font-size: 14px;
+        color: #fff;
+        opacity: 0.7;
+      }
+
+      #ad-loading-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 4px;
+        background: #00ff7f;
+        width: 0%;
+        transition: width 1s linear;
+      }
     </style>
 	<script async
 		src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5482914432517813"
@@ -1041,12 +1215,12 @@
 		</script>
   </head>
   <body>
-    <div id="nickname-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('assets/game_thumbnail_alien_exploration.webp') no-repeat center center; background-size: cover; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 300; pointer-events: all; text-align: center;">
+    <div id="nickname-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)), url('https://rosebud.ai/assets/game_thumbnail_alien_exploration.webp.webp?ZvpI') no-repeat center center; background-size: cover; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 300; pointer-events: all; text-align: center; touch-action: auto;">
         <div style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 50px; border-radius: 20px; box-shadow: 0 0 50px rgba(0, 255, 127, 0.1); width: 80%; max-width: 500px; backdrop-filter: blur(10px);">
             <div style="font-size: 14px; color: #00ff7f; letter-spacing: 4px; margin-bottom: 10px; opacity: 0.8;">PILOT IDENTIFICATION REQUIRED</div>
             <h1 style="font-size: 32px; color: #fff; text-shadow: 0 0 20px rgba(0, 255, 127, 0.5); margin-bottom: 30px; letter-spacing: 2px;">ENTER YOUR PILOT NAME</h1>
             
-            <input type="text" id="nickname-input" placeholder="PILOT NAME" maxlength="16" style="background: rgba(0,0,0,0.6); border: 2px solid rgba(0, 255, 127, 0.5); color: #fff; padding: 15px; font-family: 'Orbitron', sans-serif; font-size: 20px; text-align: center; outline: none; width: 100%; box-sizing: border-box; margin-bottom: 10px; transition: all 0.3s; border-radius: 5px;">
+            <input type="text" id="nickname-input" placeholder="PILOT NAME" maxlength="16">
             <div id="nickname-error" style="color: #ff4d4d; font-size: 12px; height: 16px; margin-bottom: 20px; opacity: 0; transition: opacity 0.3s;">MINIMUM 3 CHARACTERS REQUIRED</div>
             
             <button id="nickname-submit-btn" class="btn" style="width: 100%; letter-spacing: 2px;">START MISSION</button>
@@ -1059,7 +1233,7 @@
       <h1>ALIEN EXPLORATION</h1>
       <div class="menu-subtitle">Interstellar Tactical Response Unit</div>
 
-      <div id="daily-mission-menu" style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 15px; margin-bottom: 30px; border-radius: 8px; width: 400px; text-align: center; position: relative; z-index: 2;">
+      <div id="daily-mission-menu" style="background: rgba(0, 255, 127, 0.05); border: 1px solid rgba(0, 255, 127, 0.3); padding: 15px; margin-bottom: 30px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center; position: relative; z-index: 2;">
         <div style="color: #00ff7f; font-size: 12px; margin-bottom: 5px; font-weight: bold; letter-spacing: 3px;">DAILY CHALLENGE</div>
         <div id="daily-mission-desc" style="font-size: 16px; margin-bottom: 10px; color: #fff;">LOADING CHALLENGE...</div>
         <div id="daily-mission-progress-container" style="width: 100%; height: 4px; background: rgba(0,0,0,0.5); border-radius: 2px; overflow: hidden; margin-top: 10px;">
@@ -1298,7 +1472,35 @@
 
     <div id="damage-flash" class="damage-flash"></div>
     <div id="level-up-notification">LEVEL COMPLETE</div>
+	
+	 <!-- Mobile Settings Modal -->
+    <div id="mobile-settings-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 2000; pointer-events: all; backdrop-filter: blur(10px);">
+        <div style="background: rgba(0, 255, 127, 0.05); border: 2px solid rgba(0, 255, 127, 0.3); padding: 30px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center;">
+            <h2 style="color: #00ff7f; margin-top: 0; letter-spacing: 3px;">CONTROL SETTINGS</h2>
+            
+            <div style="margin: 25px 0; text-align: left;">
+                <label style="display: block; color: #fff; font-size: 12px; margin-bottom: 10px; opacity: 0.8; letter-spacing: 1px;">LOOK SENSITIVITY: <span id="val-look-sens">1.0</span></label>
+                <input type="range" id="input-look-sens" min="0.1" max="5.0" step="0.1" value="1.0" style="width: 100%; accent-color: #00ff7f; cursor: pointer;">
+				 
+            </div>
 
+            <div style="margin: 25px 0; text-align: left;">
+                <label style="display: block; color: #fff; font-size: 12px; margin-bottom: 10px; opacity: 0.8; letter-spacing: 1px;">JOYSTICK SENSITIVITY: <span id="val-joy-sens">1.0</span></label>
+                <input type="range" id="input-joy-sens" min="0.5" max="2.0" step="0.1" value="1.0" style="width: 100%; accent-color: #00ff7f; cursor: pointer;">
+            </div>
+
+            <div style="margin: 25px 0; text-align: left; display: flex; flex-direction: column; gap: 5px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <label style="color: #fff; font-size: 12px; opacity: 0.8; letter-spacing: 1px;">JOYSTICK STEERING</label>
+                    <input type="checkbox" id="input-joy-steer" style="width: 25px; height: 25px; accent-color: #00ff7f;">
+                </div>
+                <p style="font-size: 9px; color: #00ff7f; opacity: 0.6; margin: 0; letter-spacing: 1px;">ON: STICK TURNS CAMERA | OFF: STICK STRAFES</p>
+            </div>
+            
+            <button id="close-mobile-settings" class="btn" style="width: 100%; margin-top: 10px;">SAVE & CLOSE</button>
+        </div>
+    </div>
+	
     <div id="ad-interstitial">
 
 	  <div id="gameInterstitialAd" style="

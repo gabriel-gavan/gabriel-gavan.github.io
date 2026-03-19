@@ -264,6 +264,7 @@ class FirstPersonCameraController {
     // Configuration
     this.eyeHeight = options.eyeHeight || 1.6;
     this.mouseSensitivity = options.mouseSensitivity || 0.002;
+    this.lookSensitivity = parseFloat(localStorage.getItem('alien_exploration_look_sensitivity')) || 1.0;
 
     // State
     this.enabled = false;
@@ -328,8 +329,9 @@ class FirstPersonCameraController {
         const deltaX = touch.clientX - touchStart.x;
         const deltaY = touch.clientY - touchStart.y;
 
-        this.rotationY -= deltaX * this.mouseSensitivity * 2;
-        this.rotationX -= deltaY * this.mouseSensitivity * 2;
+        const sensitivity = this.mouseSensitivity * this.lookSensitivity * 2;
+        this.rotationY -= deltaX * sensitivity;
+        this.rotationX -= deltaY * sensitivity;
         this.rotationX = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.rotationX));
 
         touchStart = { x: touch.clientX, y: touch.clientY };
