@@ -165,17 +165,21 @@
 function createAsideAd() {
   const aside = document.createElement("aside");
   aside.className = "sidebar-ad";
+  aside.style.width = "160px";   // 🔥 IMPORTANT
+  aside.style.minHeight = "600px"; // 🔥 IMPORTANT
 
   const ins = document.createElement("ins");
   ins.className = "adsbygoogle";
   ins.style.display = "block";
+  ins.style.width = "160px";     // 🔥 FORCE WIDTH
+  ins.style.height = "600px";    // 🔥 FORCE HEIGHT
+
   ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-  ins.setAttribute("data-ad-slot", "3456789012"); // your slot
-  ins.setAttribute("data-ad-format", "auto");
+  ins.setAttribute("data-ad-slot", "3456789012");
+  ins.setAttribute("data-ad-format", "vertical");
 
   aside.appendChild(ins);
 
- 
   return aside;
 }
 
@@ -227,9 +231,11 @@ function addSideAds() {
 
       document.body.appendChild(left);
 
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {}
+      setTimeout(() => {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      }, 500);
     }
 
     // RIGHT
@@ -243,12 +249,14 @@ function addSideAds() {
 
       document.body.appendChild(right);
 
-      try {
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (e) {}
+      setTimeout(() => {
+        try {
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch (e) {}
+      }, 500);
     }
 
-  }, 1500); // 🔥 IMPORTANT delay
+  }, 1500);
 }
 
 // =============================
