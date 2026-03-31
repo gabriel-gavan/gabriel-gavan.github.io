@@ -8,7 +8,7 @@ export class CreditChip {
         this.isCollected = false;
         
         const loader = new THREE.TextureLoader();
-        const map = loader.load('assets/credit_chip_sprite.webp');
+        const map = loader.load('https://rosebud.ai/assets/credit_chip_sprite.png.webp?pwu0');
         const material = new THREE.SpriteMaterial({ map: map, transparent: true });
         this.mesh = new THREE.Sprite(material);
         this.mesh.position.copy(position);
@@ -37,9 +37,10 @@ export class CreditChip {
         const dist = this.mesh.position.distanceTo(playerPos);
         
         // Magnetic pull if close
-        if (dist < 3) {
+        if (dist < 5.0) {
+            const pullSpeed = 12.0;
             const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
-            this.mesh.position.add(dir.multiplyScalar(deltaTime * 10));
+            this.mesh.position.add(dir.multiplyScalar(deltaTime * pullSpeed));
         }
 
         if (dist < 1) {

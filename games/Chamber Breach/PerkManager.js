@@ -53,28 +53,85 @@ export const PERKS = {
     ],
     CORE: [
         {
-            id: 'core_regen',
-            name: 'Nano-Repair',
-            description: 'Slowly regenerate health over time (2 HP/sec).',
-            icon: '💉',
+            id: 'core_fire_build',
+            name: 'Inferno Core',
+            description: 'All bullets burn enemies. EVERY enemy neutralized triggers a massive fire explosion.',
+            icon: '🔥',
+            type: 'BUILD',
+            rarity: 'INSANE',
+            apply: (player) => { 
+                player.perks.fireBuild = true;
+                player.perks.explosiveBullets = true;
+                player.perks.burnChance = 1.0; // 100% burn chance
+            }
+        },
+        {
+            id: 'core_shock_build',
+            name: 'Tesla Architecture',
+            description: 'Every shot chains lightning to 10 targets with 100% stun chance.',
+            icon: '🌩️',
+            type: 'BUILD',
+            rarity: 'INSANE',
+            apply: (player) => { 
+                player.perks.shockBuild = true;
+                player.perks.chainBullets = true; 
+                player.perks.chainChance = 1.0; // 100% chain chance
+                player.perks.chainTargets = 10;
+            }
+        },
+        {
+            id: 'core_gravity_build',
+            name: 'Singularity Engine',
+            description: 'Every shot pulls enemies together. Kills create persistent mini-black holes.',
+            icon: '🌌',
+            type: 'BUILD',
+            rarity: 'INSANE',
+            apply: (player) => { 
+                player.perks.gravityBuild = true;
+                player.perks.pullOnHit = true;
+                player.perks.critChance = (player.perks.critChance || 0) + 0.5;
+            }
+        },
+        {
+            id: 'core_drone_god',
+            name: 'Swarm Intelligence',
+            description: 'Deploy 8 elite combat drones. Drones inherit all your build perks.',
+            icon: '🐝',
+            type: 'BUILD',
+            rarity: 'INSANE',
+            apply: (player) => { 
+                player.perks.droneBuild = true;
+                if (window.game) {
+                    for(let i=0; i<8; i++) window.game.spawnAllyDrone();
+                }
+            }
+        },
+        {
+            id: 'core_vampiric',
+            name: 'Vampiric Link',
+            description: 'Recover 10% of damage dealt as health.',
+            icon: '🧛',
             type: 'BEHAVIOR',
-            apply: (player) => { player.perks.regen = 2; }
+            apply: (player) => { player.perks.vampiric = 0.1; }
         },
         {
-            id: 'core_scavenger',
-            name: 'Resource Siphon',
-            description: 'Enemies drop 50% more ammo and credits.',
-            icon: '💰',
+            id: 'core_trap_sniff',
+            name: 'Neural Sniffer',
+            description: 'Trapped terminals emit a distinct red pulse. Gain 50% chance to auto-disarm traps.',
+            icon: '👃',
+            type: 'BEHAVIOR',
+            apply: (player) => { player.perks.trapSniffer = true; }
+        },
+        {
+            id: 'core_glass_cannon',
+            name: 'Glass Cannon',
+            description: '+200% damage output, but lose 5 HP/sec.',
+            icon: '💎',
             type: 'STAT',
-            apply: (player) => { player.perks.scavenger = 1.5; }
-        },
-        {
-            id: 'core_adrenaline',
-            name: 'Stress Response',
-            description: 'Movement speed increased by 30% for 2s after taking damage.',
-            icon: '🏃',
-            type: 'TRIGGER',
-            apply: (player) => { player.perks.adrenaline = true; }
+            apply: (player) => { 
+                player.perks.damageMult = (player.perks.damageMult || 1) * 3;
+                player.perks.drainHP = (player.perks.drainHP || 0) + 5;
+            }
         }
     ]
 };
@@ -84,24 +141,33 @@ export class PerkManager {
         this.player = player;
         this.activePerks = new Set();
         
-        // Initialize perk flags on player/weapons
-        this.player.perks = {
-            regen: 0,
-            scavenger: 1.0,
-            adrenaline: false,
-            adrenalineTimer: 0
-        };
+        // Initialize perk flags on player/weapons if not already present
+        if (!this.player.perks) {
+            this.player.perks = {
+                regen: 0,
+                scavenger: 1.0,
+                adrenaline: false,
+                adrenalineTimer: 0,
+                vampiric: 0,
+                damageMult: 1.0,
+                drainHP: 0,
+                chainBullets: false,
+                critChance: 0
+            };
+        }
         
         Object.values(this.player.weapons).forEach(w => {
-            w.perks = {
-                ricochet: false,
-                overclock: false,
-                overclockTimer: 0,
-                explosiveKills: false,
-                penetration: 0,
-                ammoRecall: false,
-                shieldBreaker: false
-            };
+            if (!w.perks) {
+                w.perks = {
+                    ricochet: false,
+                    overclock: false,
+                    overclockTimer: 0,
+                    explosiveKills: false,
+                    penetration: 0,
+                    ammoRecall: false,
+                    shieldBreaker: false
+                };
+            }
         });
     }
 
@@ -133,8 +199,15 @@ export class PerkManager {
 
     update(deltaTime) {
         // Handle time-based perks
-        if (this.player.perks.regen > 0 && !this.player.isDead) {
-            this.player.health = Math.min(this.player.maxHealth, this.player.health + this.player.perks.regen * deltaTime);
+        if (!this.player.isDead) {
+            // Regeneration
+            if (this.player.perks.regen > 0) {
+                this.player.health = Math.min(this.player.maxHealth, this.player.health + this.player.perks.regen * deltaTime);
+            }
+            // Damage drain (Glass Cannon)
+            if (this.player.perks.drainHP > 0) {
+                this.player.takeDamage(this.player.perks.drainHP * deltaTime);
+            }
         }
 
         if (this.player.perks.adrenalineTimer > 0) {
@@ -157,10 +230,19 @@ export class PerkManager {
             weapon.perks.overclockTimer = 3.0;
         }
 
-        if (weapon.perks.explosiveKills) {
+        if (weapon.perks.explosiveKills || this.player.perks.explosiveBullets) {
             // Trigger explosion at enemy position
             if (window.game && window.game.triggerExplosion) {
-                window.game.triggerExplosion(enemy.mesh.position, 5, 100, 0xff5500);
+                const radius = this.player.perks.fireBuild ? 12 : 6;
+                const damage = this.player.perks.fireBuild ? 250 : 100;
+                window.game.triggerExplosion(enemy.mesh.position, radius, damage, 0xff5500);
+            }
+        }
+
+        if (this.player.perks.gravityBuild) {
+            // Spawn a mini-black hole on kill
+            if (window.game && window.game.lootManager) {
+                window.game.lootManager.applyLootEffect('BLACK_HOLE_CORE', 'LEGENDARY', enemy.mesh.position.clone());
             }
         }
     }

@@ -1,6 +1,15 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const MATH = {
+    v1: new THREE.Vector3(),
+    v2: new THREE.Vector3()
+};
+
+// --- Reusable Math Objects for Zero Allocation ---
+const REUSABLE_SPHERE = new THREE.Sphere();
+const REUSABLE_BOX = new THREE.Box3();
+
 export class Grenade {
     constructor(scene, particleSystem) {
         this.scene = scene;
@@ -10,11 +19,12 @@ export class Grenade {
         this.mesh.visible = false;
         this.scene.add(this.mesh);
         this.isExploded = true;
+        this.velocity = new THREE.Vector3();
     }
 
     spawn(position, velocity, onExplode) {
         this.mesh.position.copy(position);
-        this.velocity = velocity.clone();
+        this.velocity.copy(velocity);
         this.onExplode = onExplode;
         this.isExploded = false;
         this.timer = 2000;
@@ -43,29 +53,33 @@ export class Grenade {
 
         this.timer -= deltaTime * 1000;
 
-        // Physics
+        // Physics - zero allocation
         this.velocity.y -= this.gravity * deltaTime;
-        const nextPos = this.mesh.position.clone().add(this.velocity.clone().multiplyScalar(deltaTime));
+        MATH.v1.copy(this.velocity).multiplyScalar(deltaTime);
+        this.mesh.position.add(MATH.v1);
+
+        const currentPos = this.mesh.position;
 
         // Basic collision with floor
-        if (nextPos.y < 0.2) {
-            nextPos.y = 0.2;
+        if (currentPos.y < 0.2) {
+            currentPos.y = 0.2;
             this.velocity.y *= -0.4; // Bounce
-            this.velocity.multiplyScalar(0.7); // Friction
+            this.velocity.x *= 0.7; // Friction
+            this.velocity.z *= 0.7;
         }
 
-        // Basic collision with walls/obstacles
-        const sphere = new THREE.Sphere(nextPos, 0.3);
-        for (const wall of walls) {
-            const box = new THREE.Box3().setFromObject(wall);
-            if (box.intersectsSphere(sphere)) {
-                // Reflect velocity (naive bounce)
+        // Basic collision with walls/obstacles using reusable objects
+        REUSABLE_SPHERE.set(currentPos, 0.3);
+        for (let i = 0; i < walls.length; i++) {
+            const wall = walls[i];
+            // Only update box if visible or within a certain range
+            REUSABLE_BOX.setFromObject(wall); // Still slightly expensive but better than new Box3()
+            if (REUSABLE_BOX.intersectsSphere(REUSABLE_SPHERE)) {
                 this.velocity.multiplyScalar(-0.5);
                 break;
             }
         }
 
-        this.mesh.position.copy(nextPos);
         this.mesh.rotation.x += deltaTime * 5;
         this.mesh.rotation.z += deltaTime * 3;
 
@@ -90,3 +104,4 @@ export class Grenade {
         }
     }
 }
+

@@ -23,6 +23,8 @@ class PlayerController {
     this.cameraMode = 'third-person'; // Default camera mode
     this.radius = options.radius || 0.6; // Collision radius
     this.raycaster = new THREE.Raycaster();
+    this.isLocked = false; // New property to block movement/jumping
+    this.isSprinting = false;
 
     // Setup input handlers
     this.setupInput();
@@ -57,6 +59,10 @@ class PlayerController {
    * @param {Array} collisionObjects Objects to check for collisions against.
    */
   update(deltaTime, cameraRotation, collisionObjects = []) {
+    // Horizontal movement suppression while interaction menus are open
+    // We still allow gravity to process so the player doesn't freeze mid-air
+    const horizontalLocked = this.isLocked;
+
     // Apply gravity
     if (this.player.position.y > this.groundLevel) {
       this.velocity.y -= this.gravity * deltaTime;
@@ -69,14 +75,8 @@ class PlayerController {
       this.canJump = true; 
     }
 
-    // Ceiling collision
-    if (this.player.position.y > this.ceilingLevel) {
-        this.player.position.y = this.ceilingLevel;
-        this.velocity.y = Math.min(0, this.velocity.y); // Stop upward momentum
-    }
-
     // Handle jumping
-    if (this.keys['Space'] && this.isOnGround && this.canJump) {
+    if (!horizontalLocked && this.keys['Space'] && this.isOnGround && this.canJump) {
       this.velocity.y = this.jumpForce;
       this.isOnGround = false;
       this.canJump = false; // Prevent double jumps until grounded again
@@ -87,26 +87,29 @@ class PlayerController {
     // Reset horizontal velocity each frame
     let moveXInput = 0;
     let moveZInput = 0;
+    this.isSprinting = !!(this.keys['ShiftLeft'] || this.keys['ShiftRight']);
 
-    // Calculate movement direction vectors relative to the camera's horizontal rotation
-    const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
-    const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
+    if (!horizontalLocked) {
+        // Calculate movement direction vectors relative to the camera's horizontal rotation
+        const forward = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
+        const right = new THREE.Vector3(1, 0, 0).applyAxisAngle(new THREE.Vector3(0, 1, 0), cameraRotation);
 
-    if (this.keys['KeyW']) { // Forward
-      moveXInput += forward.x;
-      moveZInput += forward.z;
-    }
-    if (this.keys['KeyS']) { // Backward
-      moveXInput -= forward.x;
-      moveZInput -= forward.z;
-    }
-    if (this.keys['KeyA']) { // Left
-      moveXInput -= right.x;
-      moveZInput -= right.z;
-    }
-    if (this.keys['KeyD']) { // Right
-      moveXInput += right.x;
-      moveZInput += right.z;
+        if (this.keys['KeyW']) { // Forward
+          moveXInput += forward.x;
+          moveZInput += forward.z;
+        }
+        if (this.keys['KeyS']) { // Backward
+          moveXInput -= forward.x;
+          moveZInput -= forward.z;
+        }
+        if (this.keys['KeyA']) { // Left
+          moveXInput -= right.x;
+          moveZInput -= right.z;
+        }
+        if (this.keys['KeyD']) { // Right
+          moveXInput += right.x;
+          moveZInput += right.z;
+        }
     }
 
     // Normalize movement
@@ -116,14 +119,26 @@ class PlayerController {
     }
 
     // Set horizontal velocity
-    this.velocity.x = moveDirection.x * this.moveSpeed;
-    this.velocity.z = moveDirection.z * this.moveSpeed;
+    const currentSpeed = this.isSprinting ? this.moveSpeed * 1.5 : this.moveSpeed;
+    this.velocity.x = moveDirection.x * currentSpeed;
+    this.velocity.z = moveDirection.z * currentSpeed;
+
+    if (horizontalLocked) {
+        this.velocity.x = 0;
+        this.velocity.z = 0;
+    }
 
 
     // --- Update Player Position with Collisions ---
     
     // Y Position (Gravity/Jump) - Apply first
     this.player.position.y += this.velocity.y * deltaTime;
+
+    // Ceiling collision
+    if (this.player.position.y > this.ceilingLevel) {
+        this.player.position.y = this.ceilingLevel;
+        this.velocity.y = Math.min(0, this.velocity.y); // Stop upward momentum
+    }
 
     // X and Z Position with simple sliding collision check
     if (collisionObjects.length > 0) {
@@ -329,6 +344,7 @@ class FirstPersonCameraController {
     // Configuration
     this.eyeHeight = options.eyeHeight || 1.6;
     this.mouseSensitivity = options.mouseSensitivity || 0.002;
+    this.ceilingLevel = options.ceilingLevel || 5;
 
     // State
     this.enabled = false;
@@ -366,9 +382,9 @@ class FirstPersonCameraController {
         const element = document.elementFromPoint(touch.clientX, touch.clientY);
         return element && (
           element.id === 'mobile-game-controls' ||
-          element.id === 'virtual-joystick' ||
-          element.id === 'virtual-joystick-knob' ||
-          element.id === 'jump-button' ||
+          element.id === 'mobile-joystick-container' ||
+          element.id === 'mobile-joystick-knob' ||
+          element.classList.contains('mobile-btn') ||
           element.closest('#mobile-game-controls')
         );
       };
@@ -393,8 +409,8 @@ class FirstPersonCameraController {
         const deltaX = touch.clientX - touchStart.x;
         const deltaY = touch.clientY - touchStart.y;
 
-        this.rotationY -= deltaX * this.mouseSensitivity * 2;
-        this.rotationX -= deltaY * this.mouseSensitivity * 2;
+        this.rotationY -= deltaX * this.mouseSensitivity * 3;
+        this.rotationX -= deltaY * this.mouseSensitivity * 3;
         this.rotationX = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, this.rotationX));
 
         touchStart = { x: touch.clientX, y: touch.clientY };
@@ -459,10 +475,16 @@ class FirstPersonCameraController {
     // Set player rotation to match camera's horizontal rotation
     this.player.rotation.y = this.rotationY;
 
-    // Position camera at player eye height
+    // Position camera at player eye height (eyeHeight is relative to feet, position.y is center)
+    // Assuming center is 1 unit above feet
     this.camera.position.x = this.player.position.x;
-    this.camera.position.y = this.player.position.y + this.eyeHeight;
+    this.camera.position.y = (this.player.position.y - 1) + this.eyeHeight;
     this.camera.position.z = this.player.position.z;
+
+    // Clamp camera to ceiling
+    if (this.camera.position.y > this.ceilingLevel - 0.2) {
+        this.camera.position.y = this.ceilingLevel - 0.2;
+    }
 
     // Set camera rotation
     this.camera.rotation.order = 'YXZ';

@@ -14,7 +14,7 @@ export class AmmoCrate {
 
     createMesh() {
         const loader = new THREE.TextureLoader();
-        const map = loader.load('assets/ammo_box_sprite.webp');
+        const map = loader.load('https://rosebud.ai/assets/ammo_box_sprite.webp?plqH');
         const color = this.type === 'RIFLE' ? 0xffffff : 0x00ffff; // Tint sniper blue
         const material = new THREE.SpriteMaterial({ map: map, color: color });
         const sprite = new THREE.Sprite(material);
@@ -37,6 +37,14 @@ export class AmmoCrate {
 
         // Simple distance check for collection
         const dist = this.mesh.position.distanceTo(playerPos);
+        
+        // Magnetic pull if close
+        if (dist < 5.0) {
+            const pullSpeed = 12.0;
+            const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
+            this.mesh.position.add(dir.multiplyScalar(deltaTime * pullSpeed));
+        }
+
         if (dist < 1.8) {
             this.isCollected = true;
         }

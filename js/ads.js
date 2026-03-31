@@ -121,5 +121,106 @@
 
   // Run every 1 sec
   setInterval(hideBlankAds, 1000);
+	
+// =============================
+// 6️⃣ EXTRA ADSENSE ZONES (TOP / BOTTOM / LEFT / RIGHT)
+// =============================
 
+// Create AdSense <aside> block
+function createAsideAd() {
+  const aside = document.createElement("aside");
+  aside.className = "sidebar-ad";
+
+  const ins = document.createElement("ins");
+  ins.className = "adsbygoogle";
+  ins.style.display = "block";
+  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+  ins.setAttribute("data-ad-slot", "3456789012"); // your slot
+  ins.setAttribute("data-ad-format", "auto");
+
+  aside.appendChild(ins);
+
+  // push ad
+  setTimeout(() => {
+    try {
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {}
+  }, 300);
+
+  return aside;
+}
+
+// =============================
+// TOP
+// =============================
+function addTopAd() {
+  const top = document.querySelector(".top-banner");
+  if (!top || top.dataset.extraAd) return;
+
+  top.innerHTML = "";
+  top.appendChild(createAsideAd());
+  top.dataset.extraAd = "1";
+}
+
+// =============================
+// BOTTOM
+// =============================
+function addBottomAd() {
+  if (document.getElementById("extra-bottom-ad")) return;
+
+  const bottom = document.createElement("div");
+  bottom.id = "extra-bottom-ad";
+  bottom.style.maxWidth = "960px";
+  bottom.style.margin = "30px auto";
+  bottom.style.textAlign = "center";
+
+  bottom.appendChild(createAsideAd());
+
+  document.querySelector(".main-column")?.appendChild(bottom);
+}
+
+// =============================
+// LEFT + RIGHT (DESKTOP ONLY)
+// =============================
+function addSideAds() {
+  if (window.innerWidth < 1000) return;
+
+  const layout = document.querySelector(".layout");
+  if (!layout) return;
+
+  // LEFT
+  if (!document.getElementById("extra-left-ad")) {
+    const left = document.createElement("aside");
+    left.id = "extra-left-ad";
+    left.className = "ad-vertical";
+    left.appendChild(createAsideAd());
+
+    layout.insertBefore(left, layout.firstChild);
+  }
+
+  // RIGHT
+  if (!document.getElementById("extra-right-ad")) {
+    const right = document.createElement("aside");
+    right.id = "extra-right-ad";
+    right.className = "ad-vertical";
+    right.appendChild(createAsideAd());
+
+    layout.appendChild(right);
+  }
+}
+
+// =============================
+// INIT EXTRA ADS
+// =============================
+function initExtraAds() {
+  addTopAd();
+  addBottomAd();
+  addSideAds();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initExtraAds);
+} else {
+  initExtraAds();
+}
 })();

@@ -32,14 +32,15 @@ export class LaserGrid {
             side: THREE.DoubleSide
         });
         
+        // PERFORMANCE FIX: Create geometry once and reuse for all beams
         const beamCount = 5;
         const beamSpacing = 0.5;
         
+        const beamGeo = this.horizontal ? 
+            new THREE.BoxGeometry(this.width, 0.05, 0.05) :
+            new THREE.BoxGeometry(0.05, 0.05, this.width);
+        
         for (let i = 0; i < beamCount; i++) {
-            const beamGeo = this.horizontal ? 
-                new THREE.BoxGeometry(this.width, 0.05, 0.05) :
-                new THREE.BoxGeometry(0.05, 0.05, this.width);
-            
             const beam = new THREE.Mesh(beamGeo, laserMat);
             beam.position.y = i * beamSpacing - (beamCount * beamSpacing) / 2;
             group.add(beam);
