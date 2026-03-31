@@ -30,24 +30,23 @@ export class SpatialGrid {
      * Add or update an entity in the grid
      */
     updateEntity(entity) {
-        if (!entity.mesh) return;
+        const mesh = entity.mesh;
+        if (!mesh) return;
         
-        const pos = entity.mesh.position;
+        const pos = mesh.position;
         const key = this._getKey(pos.x, pos.z);
+        const lastKey = entity._lastGridKey;
         
-        // Only update if the cell changed or if it hasn't been added yet
-        if (entity._lastGridKey === key) return;
+        if (lastKey === key) return;
 
-        // Remove from old cell
-        if (entity._lastGridKey !== undefined) {
-            const oldCell = this.grid.get(entity._lastGridKey);
+        if (lastKey !== undefined) {
+            const oldCell = this.grid.get(lastKey);
             if (oldCell) {
                 oldCell.delete(entity);
-                if (oldCell.size === 0) this.grid.delete(entity._lastGridKey);
+                if (oldCell.size === 0) this.grid.delete(lastKey);
             }
         }
         
-        // Add to new cell
         let cell = this.grid.get(key);
         if (!cell) {
             cell = new Set();
@@ -62,11 +61,12 @@ export class SpatialGrid {
      * Remove entity from grid
      */
     removeEntity(entity) {
-        if (entity._lastGridKey !== undefined) {
-            const cell = this.grid.get(entity._lastGridKey);
+        const lastKey = entity._lastGridKey;
+        if (lastKey !== undefined) {
+            const cell = this.grid.get(lastKey);
             if (cell) {
                 cell.delete(entity);
-                if (cell.size === 0) this.grid.delete(entity._lastGridKey);
+                if (cell.size === 0) this.grid.delete(lastKey);
             }
             delete entity._lastGridKey;
         }
@@ -88,26 +88,28 @@ export class SpatialGrid {
         const results = SpatialGrid._resultsPool[poolIndex];
         results.length = 0;
         const radiusSq = radius * radius;
+        const cellSize = this.cellSize;
         
-        const minX = Math.floor((position.x - radius) / this.cellSize);
-        const maxX = Math.floor((position.x + radius) / this.cellSize);
-        const minZ = Math.floor((position.z - radius) / this.cellSize);
-        const maxZ = Math.floor((position.z + radius) / this.cellSize);
+        const minX = Math.floor((position.x - radius) / cellSize);
+        const maxX = Math.floor((position.x + radius) / cellSize);
+        const minZ = Math.floor((position.z - radius) / cellSize);
+        const maxZ = Math.floor((position.z + radius) / cellSize);
         
         for (let x = minX; x <= maxX; x++) {
             for (let z = minZ; z <= maxZ; z++) {
                 const key = (x << 16) | (z & 0xFFFF);
                 const cell = this.grid.get(key);
-                if (cell) {
-                    for (const entity of cell) {
-                        if (entity.mesh) {
-                            const ePos = entity.mesh.position;
-                            const dx = ePos.x - position.x;
-                            const dz = ePos.z - position.z;
-                            if (dx*dx + dz*dz <= radiusSq) {
-                                results.push(entity);
-                            }
-                        }
+                if (!cell) continue;
+
+                for (const entity of cell) {
+                    const mesh = entity.mesh;
+                    if (!mesh) continue;
+
+                    const ePos = mesh.position;
+                    const dx = ePos.x - position.x;
+                    const dz = ePos.z - position.z;
+                    if (dx * dx + dz * dz <= radiusSq) {
+                        results.push(entity);
                     }
                 }
             }

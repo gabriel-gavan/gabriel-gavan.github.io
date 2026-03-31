@@ -678,6 +678,11 @@ export class Enemy {
         const myPos = this.mesh.position;
         const distToPlayerSq = playerPos ? myPos.distanceToSquared(playerPos) : 10000;
         const performanceTier = distToPlayerSq > 3600 ? 2 : (distToPlayerSq > 900 ? 1 : 0);
+        const meshId = this.mesh.id;
+        const frameId = frameCounter + meshId;
+        const closeRangeSq = 225;
+        const attackRangeSq = this.attackRange * this.attackRange;
+        const cullDistSq = CONFIG.ENEMY.LOD.CULL_DIST * CONFIG.ENEMY.LOD.CULL_DIST;
         if (this.spawnBurstCooldown > 0) this.spawnBurstCooldown -= deltaTime * 1000;
         const isWarmingUp = nowMs - this.spawnTime < this.spawnWarmupMs;
 
@@ -686,9 +691,9 @@ export class Enemy {
         else if (distToPlayerSq > 900) updateModulo = 6;
         else if (distToPlayerSq > 225) updateModulo = 2;
 
-        const shouldUpdateLogic = (frameCounter + this.mesh.id) % updateModulo === 0;
-        const shouldUpdateVisuals = performanceTier === 0 || (performanceTier === 1 && (frameCounter + this.mesh.id) % 2 === 0);
-        const shouldUpdateCombat = !isWarmingUp && shouldUpdateLogic && this.spawnBurstCooldown <= 0 && (performanceTier === 0 || (frameCounter + (this.mesh.id * 7)) % (updateModulo * 2) === 0);
+        const shouldUpdateLogic = frameId % updateModulo === 0;
+        const shouldUpdateVisuals = performanceTier === 0 || (performanceTier === 1 && frameId % 2 === 0);
+        const shouldUpdateCombat = !isWarmingUp && shouldUpdateLogic && this.spawnBurstCooldown <= 0 && (performanceTier === 0 || (frameId + (meshId * 6)) % (updateModulo * 2) === 0);
 
         if (this.isAlly && this.targetingLine && shouldUpdateVisuals) {
             this.updateTargetingLine();
@@ -698,11 +703,13 @@ export class Enemy {
             if (this.targetingLine) this.targetingLine.visible = false; 
             if (this.deathTimer > 0) {
                 this.deathTimer -= deltaTime;
-                this.sprites.forEach(sprite => {
+                const opacity = Math.max(0, this.deathTimer / 0.2);
+                for (let i = 0, len = this.sprites.length; i < len; i++) {
+                    const sprite = this.sprites[i];
                     if (sprite && sprite.material) {
-                        sprite.material.opacity = Math.max(0, this.deathTimer / 0.2);
+                        sprite.material.opacity = opacity;
                     }
-                });
+                }
                 this.mesh.scale.addScalar(deltaTime * 1.5);
                 if (this.deathTimer <= 0) {
                     this.scene.remove(this.mesh);
@@ -712,7 +719,7 @@ export class Enemy {
         }
 
         if (!shouldUpdateLogic) {
-            if (distToPlayerSq > (CONFIG.ENEMY.LOD.CULL_DIST * CONFIG.ENEMY.LOD.CULL_DIST)) {
+            if (distToPlayerSq > cullDistSq) {
                 this.mesh.visible = false;
                 return;
             } else {
@@ -815,7 +822,8 @@ export class Enemy {
                 const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 15) : otherEnemies;
                 for (let i = 0, len = nearby.length; i < len; i++) {
                     const e = nearby[i];
-                    if (!e.isAlly && !e.isDead && (e.type === 'STALKER' || e.isElite || e.isTitan)) {
+                    if (e === this || e.isAlly || e.isDead) continue;
+                    if (e.type === 'STALKER' || e.isElite || e.isTitan) {
                         if (myPos.distanceToSquared(e.mesh.position) < huntRangeSq) {
                             highThreatTarget = e;
                             break;
@@ -860,13 +868,12 @@ export class Enemy {
                     const nearby = spatialGrid ? spatialGrid.getNearby(myPos, detRange) : otherEnemies;
                     for (let i = 0, len = nearby.length; i < len; i++) {
                         const e = nearby[i];
-                        if (e !== this && !e.isAlly && !e.isDead) {
-                            const dSq = myPos.distanceToSquared(e.mesh.position);
-                            if (dSq < minDistSq && dSq < detRangeSq) {
-                                minDistSq = dSq;
-                                this.targetEnemy = e;
-                                if (dSq < 25) break;
-                            }
+                        if (e === this || e.isAlly || e.isDead) continue;
+                        const dSq = myPos.distanceToSquared(e.mesh.position);
+                        if (dSq < minDistSq && dSq < detRangeSq) {
+                            minDistSq = dSq;
+                            this.targetEnemy = e;
+                            if (dSq < 25) break;
                         }
                     }
                 }
@@ -880,14 +887,13 @@ export class Enemy {
                 const nearby = spatialGrid ? spatialGrid.getNearby(myPos, CONFIG.ENEMY.DETECTION_RANGE) : otherEnemies;
                 for (let i = 0, len = nearby.length; i < len; i++) {
                     const e = nearby[i];
-                    if (e.isAlly && !e.isDead && !e.isCloaked && !e.isPhased) {
-                        const dSq = myPos.distanceToSquared(e.mesh.position);
-                        if (dSq < minDistSq) {
-                            minDistSq = dSq;
-                            this.targetEnemy = e;
-                            this.hostileTargetPos = e.mesh.position;
-                            targetingPlayer = false;
-                        }
+                    if (e === this || !e.isAlly || e.isDead || e.isCloaked || e.isPhased) continue;
+                    const dSq = myPos.distanceToSquared(e.mesh.position);
+                    if (dSq < minDistSq) {
+                        minDistSq = dSq;
+                        this.targetEnemy = e;
+                        this.hostileTargetPos = e.mesh.position;
+                        targetingPlayer = false;
                     }
                 }
                 if (!this.targetEnemy) {
@@ -912,7 +918,7 @@ export class Enemy {
             this.currentAvoidance = this.currentAvoidance || new THREE.Vector3();
             this.currentAvoidance.set(0, 0, 0);
             const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 2) : [];
-            for (let i = 0, len = Math.min(nearby.length, 2); i < len; i++) {
+            for (let i = 0, len = nearby.length < 2 ? nearby.length : 2; i < len; i++) {
                 const e = nearby[i];
                 if (e === this || e.isDead) continue;
                 const dSq = myPos.distanceToSquared(e.mesh.position);
@@ -970,11 +976,10 @@ export class Enemy {
             const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, 6) : [];
             for (let i = 0, len = nearby.length; i < len; i++) {
                 const e = nearby[i];
-                if (e.isAlly && !e.isDead && e.modules.includes('OVERCLOCK')) {
-                    if (e.mesh.position.distanceToSquared(this.mesh.position) < 36) {
-                        this.isOverclocked = true;
-                        break;
-                    }
+                if (e === this || !e.isAlly || e.isDead || !e.modules.includes('OVERCLOCK')) continue;
+                if (e.mesh.position.distanceToSquared(this.mesh.position) < 36) {
+                    this.isOverclocked = true;
+                    break;
                 }
             }
         }
@@ -989,7 +994,11 @@ export class Enemy {
                 if (pathToken !== self.pathRequestToken) return;
                 self.isPathfinding = false;
                 if (newPath && !self.isDead) {
-                    self.path = newPath.map(function(p) { return new THREE.Vector3(p.x, 0.5, p.z); });
+                    for (let i = 0, len = newPath.length; i < len; i++) {
+                        const p = newPath[i];
+                        newPath[i] = new THREE.Vector3(p.x, 0.5, p.z);
+                    }
+                    self.path = newPath;
                     self.pathIndex = 0;
                 }
             });
@@ -1010,12 +1019,19 @@ export class Enemy {
                 mat.opacity = 1.0;
                 mat.color.set(this.isAlly ? 0x00ffaa : 0xff5500); 
             } else {
-                this.isInSmoke = activeSmokeScreens.some(smoke => smoke.checkCollision(myPos));
-        if (this.isInSmoke) {
-            mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0.2, deltaTime * 5);
-            if (!this.isAlly) mat.color.set(0x666666);
-            this.targetY = 4.5; 
-        } else if (!this.isCloaked) {
+                let inSmoke = false;
+                for (let i = 0, len = activeSmokeScreens.length; i < len; i++) {
+                    if (activeSmokeScreens[i].checkCollision(myPos)) {
+                        inSmoke = true;
+                        break;
+                    }
+                }
+                this.isInSmoke = inSmoke;
+                if (this.isInSmoke) {
+                    mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0.2, deltaTime * 5);
+                    if (!this.isAlly) mat.color.set(0x666666);
+                    this.targetY = 4.5; 
+                } else if (!this.isCloaked) {
                     mat.opacity = THREE.MathUtils.lerp(mat.opacity, 1.0, deltaTime * 5);
                     if (!this.isAlly) mat.color.set(0xffffff);
                     this.targetY = 1.5 + Math.sin(nowMs * 0.005) * 0.2;
@@ -1076,9 +1092,10 @@ export class Enemy {
             }
 
             let canSeeTarget = !this.isInSmoke || myPos.y > 3.5;
-            if (canSeeTarget && map && distSq < this.attackRange * this.attackRange) {
-                if (distSq < 16) this.isLoSBlocked = false;
-                else if (nowMs - (this.lastLoSCheck || 0) > 500) {
+            if (canSeeTarget && map && distSq < attackRangeSq) {
+                if (distSq < 16) {
+                    this.isLoSBlocked = false;
+                } else if (nowMs - (this.lastLoSCheck || 0) > 500) {
                     this.lastLoSCheck = nowMs;
                     const checkDir = MATH.v3.subVectors(targetPos, myPos).normalize();
                     MATH.raycaster.set(myPos, checkDir);
@@ -1086,11 +1103,13 @@ export class Enemy {
                     obstacles.length = 0;
                     if (this.myChamberIdx !== null && map.spatialGrid.has(this.myChamberIdx)) {
                         const indices = map.spatialGrid.get(this.myChamberIdx);
-                        for (let i = 0, len = Math.min(indices.length, 10); i < len; i++) obstacles.push(map.walls[indices[i]]);
+                        for (let i = 0, len = indices.length < 10 ? indices.length : 10; i < len; i++) {
+                            obstacles.push(map.walls[indices[i]]);
+                        }
                     }
                     if (obstacles.length > 0) {
                         const hits = MATH.raycaster.intersectObjects(obstacles, true);
-                        this.isLoSBlocked = (hits.length > 0 && hits[0].distance < Math.sqrt(distSq) - 0.5);
+                        this.isLoSBlocked = hits.length > 0 && hits[0].distance < Math.sqrt(distSq) - 0.5;
                     }
                 }
                 if (this.isLoSBlocked) canSeeTarget = false;
