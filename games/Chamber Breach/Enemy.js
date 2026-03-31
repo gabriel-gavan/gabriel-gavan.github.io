@@ -155,7 +155,8 @@ const MATH = {
     v8: new THREE.Vector3(),
     color: new THREE.Color(),
     sphere: new THREE.Sphere(),
-    raycaster: new THREE.Raycaster()
+    raycaster: new THREE.Raycaster(),
+    nearby: []
 };
 
 export class Enemy {
@@ -403,7 +404,7 @@ export class Enemy {
 
         if (Date.now() % 5 === 0) {
             const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, range) : [];
-            for (let i = 0; i < nearby.length; i++) {
+            for (let i = 0, len = nearby.length; i < len; i++) {
                 const e = nearby[i];
                 if (e !== this && !e.isDead && e.isAlly === this.isAlly) {
                     const dx = e.mesh.position.x - this.mesh.position.x;
@@ -812,7 +813,7 @@ export class Enemy {
                 const huntRangeSq = 225;
 
                 const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 15) : otherEnemies;
-                for (let i = 0; i < nearby.length; i++) {
+                for (let i = 0, len = nearby.length; i < len; i++) {
                     const e = nearby[i];
                     if (!e.isAlly && !e.isDead && (e.type === 'STALKER' || e.isElite || e.isTitan)) {
                         if (myPos.distanceToSquared(e.mesh.position) < huntRangeSq) {
@@ -857,7 +858,7 @@ export class Enemy {
                     const detRange = CONFIG.ENEMY.DETECTION_RANGE;
                     const detRangeSq = detRange * detRange;
                     const nearby = spatialGrid ? spatialGrid.getNearby(myPos, detRange) : otherEnemies;
-                    for (let i = 0; i < nearby.length; i++) {
+                    for (let i = 0, len = nearby.length; i < len; i++) {
                         const e = nearby[i];
                         if (e !== this && !e.isAlly && !e.isDead) {
                             const dSq = myPos.distanceToSquared(e.mesh.position);
@@ -877,7 +878,7 @@ export class Enemy {
                 let minDistSq = myPos.distanceToSquared(playerPos);
                 this.targetEnemy = null; 
                 const nearby = spatialGrid ? spatialGrid.getNearby(myPos, CONFIG.ENEMY.DETECTION_RANGE) : otherEnemies;
-                for (let i = 0; i < nearby.length; i++) {
+                for (let i = 0, len = nearby.length; i < len; i++) {
                     const e = nearby[i];
                     if (e.isAlly && !e.isDead && !e.isCloaked && !e.isPhased) {
                         const dSq = myPos.distanceToSquared(e.mesh.position);
@@ -911,7 +912,7 @@ export class Enemy {
             this.currentAvoidance = this.currentAvoidance || new THREE.Vector3();
             this.currentAvoidance.set(0, 0, 0);
             const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 2) : [];
-            for (let i = 0; i < Math.min(nearby.length, 2); i++) {
+            for (let i = 0, len = Math.min(nearby.length, 2); i < len; i++) {
                 const e = nearby[i];
                 if (e === this || e.isDead) continue;
                 const dSq = myPos.distanceToSquared(e.mesh.position);
@@ -967,7 +968,7 @@ export class Enemy {
             this.lastOverclockCheck = nowMs;
             this.isOverclocked = false;
             const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, 6) : [];
-            for (let i = 0; i < nearby.length; i++) {
+            for (let i = 0, len = nearby.length; i < len; i++) {
                 const e = nearby[i];
                 if (e.isAlly && !e.isDead && e.modules.includes('OVERCLOCK')) {
                     if (e.mesh.position.distanceToSquared(this.mesh.position) < 36) {
@@ -1081,10 +1082,11 @@ export class Enemy {
                     this.lastLoSCheck = nowMs;
                     const checkDir = MATH.v3.subVectors(targetPos, myPos).normalize();
                     MATH.raycaster.set(myPos, checkDir);
-                    const obstacles = [];
+                    const obstacles = MATH.nearby;
+                    obstacles.length = 0;
                     if (this.myChamberIdx !== null && map.spatialGrid.has(this.myChamberIdx)) {
                         const indices = map.spatialGrid.get(this.myChamberIdx);
-                        for(let i=0; i < Math.min(indices.length, 10); i++) obstacles.push(map.walls[indices[i]]);
+                        for (let i = 0, len = Math.min(indices.length, 10); i < len; i++) obstacles.push(map.walls[indices[i]]);
                     }
                     if (obstacles.length > 0) {
                         const hits = MATH.raycaster.intersectObjects(obstacles, true);
@@ -1383,12 +1385,13 @@ export class Enemy {
         while (count < max) {
             let next = null; let minDist = range;
             const nearby = spatialGrid ? spatialGrid.getNearby(src.mesh.position, range) : allEnemies;
-            nearby.forEach(e => {
+            for (let i = 0, len = nearby.length; i < len; i++) {
+                const e = nearby[i];
                 if (!e.isAlly && !e.isDead && !hit.has(e)) {
                     const d = e.mesh.position.distanceTo(src.mesh.position);
                     if (d < minDist) { minDist = d; next = e; }
                 }
-            });
+            }
             if (!next) break;
             if (this.particleSystem) this.particleSystem.createTracer(src.mesh.position, next.mesh.position, 0x00ffff);
             next.takeDamage(damage, allEnemies, 'PLAYER', spatialGrid);
