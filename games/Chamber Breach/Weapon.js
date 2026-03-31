@@ -73,8 +73,9 @@ export class Weapon {
         }
 
         // Spawn projectile via pool
-        if (game && game.projectilePool) {
-            const bullet = game.projectilePool.acquire(
+        const projectilePool = game && game.projectilePool;
+        if (projectilePool) {
+            const bullet = projectilePool.acquire(
                 muzzlePos,
                 _fireDir,
                 this.projectileSpeed,
@@ -92,11 +93,10 @@ export class Weapon {
         }
 
         // Muzzle Flash
-        if (game && game.particleSystem && game.particleSystem.createMuzzleFlash) {
-            if (now - this.lastShotFxTime > 120) {
-                this.lastShotFxTime = now;
-                game.particleSystem.createMuzzleFlash(muzzlePos, _fireDir, this.projectileColor);
-            }
+        const particleSystem = game && game.particleSystem;
+        if (particleSystem && particleSystem.createMuzzleFlash && now - this.lastShotFxTime > 120) {
+            this.lastShotFxTime = now;
+            particleSystem.createMuzzleFlash(muzzlePos, _fireDir, this.projectileColor);
         }
 
         // Feedback

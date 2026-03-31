@@ -4,40 +4,44 @@ import { AmmoCrate } from './AmmoCrate.js';
 import { CreditChip } from './CreditChip.js';
 import { DataCore } from './DataCore.js';
 
+const _tmpLootPos = new THREE.Vector3();
+const _tmpLootDir = new THREE.Vector3();
+const _legendaryTypes = ['BLACK_HOLE_CORE', 'INFINITE_AMMO', 'AUTO_DRONE_ARMY', 'TIME_SLOW_AURA', 'CHAIN_EXPLOSION'];
+const _rareTypes = ['REPAIR_BOT', 'SHIELD_REFRESH', 'AMMO_PACK_LARGE'];
+
 export class LootManager {
     constructor(game) {
         this.game = game;
         this.scene = game.scene;
         this.particleSystem = game.particleSystem;
+        this._legendaryResetTimeout = null;
     }
 
     handleEnemyDeath(enemy) {
-        const pos = enemy.mesh.position.clone();
+        _tmpLootPos.copy(enemy.mesh.position);
         const rand = Math.random();
 
         // 2% Legendary
         if (rand < 0.02) {
-            this.spawnLegendaryLoot(pos);
+            this.spawnLegendaryLoot(_tmpLootPos);
         } 
         // 10% Rare
         else if (rand < 0.12) {
-            this.spawnRareLoot(pos);
+            this.spawnRareLoot(_tmpLootPos);
         }
         // Normal drops (Ammo/Health/Credits)
         else if (rand < 0.4) {
-            this.spawnNormalLoot(pos);
+            this.spawnNormalLoot(_tmpLootPos);
         }
     }
 
     spawnLegendaryLoot(pos) {
-        const types = ['BLACK_HOLE_CORE', 'INFINITE_AMMO', 'AUTO_DRONE_ARMY', 'TIME_SLOW_AURA', 'CHAIN_EXPLOSION'];
-        const type = types[Math.floor(Math.random() * types.length)];
+        const type = _legendaryTypes[Math.floor(Math.random() * _legendaryTypes.length)];
         this.createLootPickup(pos, type, 'LEGENDARY');
     }
 
     spawnRareLoot(pos) {
-        const types = ['REPAIR_BOT', 'SHIELD_REFRESH', 'AMMO_PACK_LARGE'];
-        const type = types[Math.floor(Math.random() * types.length)];
+        const type = _rareTypes[Math.floor(Math.random() * _rareTypes.length)];
         this.createLootPickup(pos, type, 'RARE');
     }
 
@@ -92,9 +96,9 @@ export class LootManager {
                     
                     // Magnetic pull if close
                     if (dist < 6.0) {
-                        const pullSpeed = 15.0; 
-                        const dir = new THREE.Vector3().subVectors(playerPos, mesh.position).normalize();
-                        mesh.position.add(dir.multiplyScalar(dt * pullSpeed));
+                        const pullSpeed = 15.0;
+                        _tmpLootDir.subVectors(playerPos, mesh.position).normalize();
+                        mesh.position.add(_tmpLootDir.multiplyScalar(dt * pullSpeed));
                     }
 
                     if (dist < 1.8) {
@@ -114,11 +118,11 @@ export class LootManager {
         };
         this.game.pickups.push(pickup);
 
-// Legendary Glow
-if (rarity === 'LEGENDARY') {
-    const light = new THREE.PointLight(color, 10, 10);
-    mesh.add(light);
-}
+        // Legendary Glow
+        if (rarity === 'LEGENDARY') {
+            const light = new THREE.PointLight(color, 10, 10);
+            mesh.add(light);
+        }
     }
 
     applyLootEffect(type, rarity, customPos = null) {
@@ -133,7 +137,11 @@ if (rarity === 'LEGENDARY') {
         if (rarity === 'LEGENDARY' && !customPos) {
             game.shakeAmount += 2.0;
             if (game.heatVisuals) game.heatVisuals.glitchIntensity = 0.8;
-            setTimeout(() => { if (game.heatVisuals) game.heatVisuals.glitchIntensity = 0; }, 800);
+            if (this._legendaryResetTimeout) clearTimeout(this._legendaryResetTimeout);
+            this._legendaryResetTimeout = setTimeout(() => {
+                if (game.heatVisuals && !game.insaneMomentActive) game.heatVisuals.glitchIntensity = 0;
+                this._legendaryResetTimeout = null;
+            }, 800);
             
             // "Insane Moment" trigger
             if (game.triggerInsaneMoment) game.triggerInsaneMoment('LEGENDARY_PICKUP');
@@ -188,12 +196,14 @@ if (rarity === 'LEGENDARY') {
                     game.shakeAmount = Math.max(game.shakeAmount, isMini ? 0.4 : 1.2);
                     game.saturation = Math.max(game.saturation, isMini ? 1.2 : 1.8);
 
-                    game.enemies.forEach(e => {
+                    const enemies = game.enemies;
+                    for (let i = 0, len = enemies.length; i < len; i++) {
+                        const e = enemies[i];
                         if (!e.isDead && e.mesh.position.distanceTo(corePos) < range) {
-                            const dir = new THREE.Vector3().subVectors(corePos, e.mesh.position).normalize();
-                            e.mesh.position.add(dir.multiplyScalar(force));
+                            _tmpLootDir.subVectors(corePos, e.mesh.position).normalize();
+                            e.mesh.position.add(_tmpLootDir.multiplyScalar(force));
                         }
-                    });
+                    }
                 }, 50);
 
                 setTimeout(() => {

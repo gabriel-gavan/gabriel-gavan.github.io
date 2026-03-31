@@ -207,19 +207,20 @@ function addTopAd() {
   const top = document.querySelector(".top-banner");
   if (!top || top.dataset.extraAd) return;
 
-  const ins = document.createElement("ins");
-  ins.className = "adsbygoogle";
-  ins.style.display = "block";
-  ins.style.width = "100%";
-  ins.style.height = "90px";
+  if (!top.querySelector(".adsbygoogle")) {
+    const ins = document.createElement("ins");
+    ins.className = "adsbygoogle";
+    ins.style.display = "block";
+    ins.style.width = "100%";
+    ins.style.height = "90px";
 
-  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-  ins.setAttribute("data-ad-slot", "8834567127");
+    ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+    ins.setAttribute("data-ad-slot", "8834567127"); // ✅ FIXED
 
-  top.innerHTML = "";
-  top.appendChild(ins);
+    top.appendChild(ins);
 
-  setTimeout(() => pushAd(ins), 1200);
+    setTimeout(() => pushAd(ins), 1200);
+  }
 
   top.dataset.extraAd = "1";
 }
@@ -286,7 +287,16 @@ function pushAd(el) {
     try {
       if (!el || !el.classList.contains("adsbygoogle")) return;
 
+      // 🚨 already pushed by your code
+      if (el.dataset.loaded) return;
+
+      // 🚨 already filled by AdSense itself
+      if (el.getAttribute("data-adsbygoogle-status") === "done") return;
+
       (adsbygoogle = window.adsbygoogle || []).push({});
+
+      el.dataset.loaded = "true";
+
     } catch (e) {
       console.log("Ad push error", e);
     }

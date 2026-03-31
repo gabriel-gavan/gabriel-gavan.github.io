@@ -10,10 +10,10 @@ let gridSize = 1.0;
 
 // Reusable structures to avoid GC
 const openSet = [];
-const gScore = new Float32Array(0);
-const fScore = new Float32Array(0);
-const cameFrom = new Int32Array(0);
-const closedSet = new Uint8Array(0);
+let gScore = new Float32Array(0);
+let fScore = new Float32Array(0);
+let cameFrom = new Int32Array(0);
+let closedSet = new Uint8Array(0);
 
 self.onmessage = function(e) {
     const { type, data } = e.data;
@@ -27,15 +27,12 @@ self.onmessage = function(e) {
         minZ = mz;
         gridSize = size;
         
-        // Resize reusable arrays
         const totalNodes = width * height;
-        // Re-allocating if needed
         if (gScore.length < totalNodes) {
-            // We use global variables here but let's just re-declare for simplicity in this worker scope
-            self.gScore = new Float32Array(totalNodes);
-            self.fScore = new Float32Array(totalNodes);
-            self.cameFrom = new Int32Array(totalNodes);
-            self.closedSet = new Uint8Array(totalNodes);
+            gScore = new Float32Array(totalNodes);
+            fScore = new Float32Array(totalNodes);
+            cameFrom = new Int32Array(totalNodes);
+            closedSet = new Uint8Array(totalNodes);
         }
         return;
     }
@@ -84,13 +81,11 @@ function isWalkable(index, doorStates, hazards) {
     const cellType = grid[index];
     if (cellType === 0) return false; // Static wall
     
-    // Check doors
     if (cellType >= 2) {
         const doorId = cellType - 2;
         if (doorStates && !doorStates[doorId]) return false;
     }
 
-    // Check hazards
     if (hazards && hazards.length > 0) {
         const px = getXFromIndex(index);
         const pz = getZFromIndex(index);
@@ -113,20 +108,19 @@ function findPath(start, target, doorStates, hazards) {
     if (startIndex === targetIndex) return [target];
 
     const totalNodes = gridWidth * gridHeight;
-    self.gScore.fill(Infinity);
-    self.fScore.fill(Infinity);
-    self.cameFrom.fill(-1);
-    self.closedSet.fill(0);
+    gScore.fill(Infinity, 0, totalNodes);
+    fScore.fill(Infinity, 0, totalNodes);
+    cameFrom.fill(-1, 0, totalNodes);
+    closedSet.fill(0, 0, totalNodes);
     
     openSet.length = 0;
     openSet.push(startIndex);
     
-    self.gScore[startIndex] = 0;
-    self.fScore[startIndex] = heuristic(startIndex, targetIndex);
+    gScore[startIndex] = 0;
+    fScore[startIndex] = heuristic(startIndex, targetIndex);
 
     let iterations = 0;
-    // PERFORMANCE FIX: Reduced MAX_ITERATIONS for faster pathfinding
-    const MAX_ITERATIONS = 250; // Reduced from 400 to prevent stalls
+    const MAX_ITERATIONS = 250;
 
     while (openSet.length > 0 && iterations < MAX_ITERATIONS) {
         iterations++;
@@ -134,32 +128,39 @@ function findPath(start, target, doorStates, hazards) {
         let currentIndex = 0;
         let lowestF = Infinity;
         for (let i = 0; i < openSet.length; i++) {
-            const score = self.fScore[openSet[i]];
+            const nodeIndex = openSet[i];
+            const score = fScore[nodeIndex];
             if (score < lowestF) {
                 lowestF = score;
                 currentIndex = i;
             }
         }
         
-        const current = openSet.splice(currentIndex, 1)[0];
+        const current = openSet[currentIndex];
+        const lastOpen = openSet.pop();
+        if (currentIndex < openSet.length) {
+            openSet[currentIndex] = lastOpen;
+        }
+
         if (current === targetIndex) {
             return reconstructPath(current);
         }
 
-        self.closedSet[current] = 1;
+        closedSet[current] = 1;
 
+        const currentG = gScore[current];
         const neighbors = getNeighbors(current);
         for (let i = 0; i < neighbors.length; i++) {
             const neighbor = neighbors[i];
-            if (self.closedSet[neighbor]) continue;
+            if (closedSet[neighbor]) continue;
             if (!isWalkable(neighbor, doorStates, hazards)) continue;
 
-            const tentativeGScore = self.gScore[current] + distance(current, neighbor);
+            const tentativeGScore = currentG + distance(current, neighbor);
 
-            if (tentativeGScore < self.gScore[neighbor]) {
-                self.cameFrom[neighbor] = current;
-                self.gScore[neighbor] = tentativeGScore;
-                self.fScore[neighbor] = tentativeGScore + heuristic(neighbor, targetIndex);
+            if (tentativeGScore < gScore[neighbor]) {
+                cameFrom[neighbor] = current;
+                gScore[neighbor] = tentativeGScore;
+                fScore[neighbor] = tentativeGScore + heuristic(neighbor, targetIndex);
                 
                 if (openSet.indexOf(neighbor) === -1) {
                     openSet.push(neighbor);
@@ -176,7 +177,6 @@ function getNeighbors(index) {
     const gx = index % gridWidth;
     const gz = Math.floor(index / gridWidth);
 
-    // 8-way connectivity
     for (let dx = -1; dx <= 1; dx++) {
         for (let dz = -1; dz <= 1; dz++) {
             if (dx === 0 && dz === 0) continue;
@@ -197,7 +197,7 @@ function reconstructPath(current) {
             x: getXFromIndex(current),
             z: getZFromIndex(current)
         });
-        current = self.cameFrom[current];
+        current = cameFrom[current];
     }
     return path;
 }
