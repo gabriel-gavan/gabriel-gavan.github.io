@@ -15,6 +15,7 @@ export class DailyChallengeManager {
         this.isCompleted = false;
         this._saveScheduled = false;
         this._hudDirty = true;
+        this._challengeTextTemplate = '';
         
         this.hud = document.getElementById('daily-challenge-hud');
         this.textEl = document.getElementById('daily-challenge-text');
@@ -24,27 +25,36 @@ export class DailyChallengeManager {
     }
 
     init() {
-        const today = new Date().toDateString();
-        const savedDate = localStorage.getItem('meridian_daily_date');
-        const savedChallenge = localStorage.getItem('meridian_daily_challenge');
-        const savedProgress = localStorage.getItem('meridian_daily_progress');
-        const savedCompleted = localStorage.getItem('meridian_daily_completed');
+        let savedDate = null;
+        let savedChallenge = null;
+        let savedProgress = null;
+        let savedCompleted = null;
+
+        try {
+            savedDate = localStorage.getItem('meridian_daily_date');
+            savedChallenge = localStorage.getItem('meridian_daily_challenge');
+            savedProgress = localStorage.getItem('meridian_daily_progress');
+            savedCompleted = localStorage.getItem('meridian_daily_completed');
+        } catch (error) {
+            savedDate = null;
+            savedChallenge = null;
+            savedProgress = null;
+            savedCompleted = null;
+        }
         
+        const today = new Date().toDateString();
         if (savedDate !== today || !savedChallenge) {
-            // New day, new challenge
             const index = Math.floor(Math.random() * this.challenges.length);
             this.currentChallenge = { ...this.challenges[index] };
+            this._challengeTextTemplate = this.currentChallenge.text;
             this.progress = 0;
             this.isCompleted = false;
             
-            localStorage.setItem('meridian_daily_date', today);
-            localStorage.setItem('meridian_daily_challenge', JSON.stringify(this.currentChallenge));
-            localStorage.setItem('meridian_daily_progress', '0');
-            localStorage.setItem('meridian_daily_completed', 'false');
+            this.save(true);
         } else {
-            // Resume today's challenge
             this.currentChallenge = JSON.parse(savedChallenge);
-            this.progress = parseInt(savedProgress || '0');
+            this._challengeTextTemplate = this.currentChallenge.text;
+            this.progress = parseInt(savedProgress || '0', 10);
             this.isCompleted = savedCompleted === 'true';
         }
         
@@ -76,7 +86,6 @@ export class DailyChallengeManager {
         this.save();
         this._hudDirty = true;
         
-        // Reward: 500 Meta Credits
         if (this.game.metaCredits !== undefined) {
             this.game.metaCredits += 500;
             this.game.saveMetaState();
@@ -90,15 +99,28 @@ export class DailyChallengeManager {
         }
     }
 
-    save() {
-        if (this._saveScheduled) return;
-        this._saveScheduled = true;
+    save(force = false) {
+        if (this._saveScheduled && !force) return;
+        if (!force) this._saveScheduled = true;
 
-        setTimeout(() => {
-            localStorage.setItem('meridian_daily_progress', this.progress.toString());
-            localStorage.setItem('meridian_daily_completed', this.isCompleted.toString());
+        const writeState = () => {
+            try {
+                localStorage.setItem('meridian_daily_date', new Date().toDateString());
+                localStorage.setItem('meridian_daily_challenge', JSON.stringify(this.currentChallenge));
+                localStorage.setItem('meridian_daily_progress', this.progress.toString());
+                localStorage.setItem('meridian_daily_completed', this.isCompleted.toString());
+            } catch (error) {
+                // Ignore storage failures
+            }
             this._saveScheduled = false;
-        }, 50);
+        };
+
+        if (force) {
+            writeState();
+            return;
+        }
+
+        setTimeout(writeState, 50);
     }
 
     update(deltaTime) {
@@ -109,15 +131,11 @@ export class DailyChallengeManager {
     }
 
     updateHUD() {
-        if (!this.hud || !this.currentChallenge) return;
+        if (!this.hud || !this.currentChallenge || !this.textEl || !this.progressEl) return;
         
-        if (this.game.gameState === 'PLAYING') {
-            this.hud.style.display = 'block';
-        } else {
-            this.hud.style.display = 'none';
-        }
+        this.hud.style.display = this.game.gameState === 'PLAYING' ? 'block' : 'none';
 
-        const goalText = this.currentChallenge.text.replace('{goal}', this.currentChallenge.goal);
+        const goalText = this._challengeTextTemplate.replace('{goal}', this.currentChallenge.goal);
         this.textEl.innerText = goalText;
         
         if (this.isCompleted) {

@@ -9,6 +9,7 @@ const PROP_ASSETS = {
 
 const TEXTURE_CACHE = {};
 const loader = new THREE.TextureLoader();
+const DESCTRUCTIBLE_FLASH = { value: 0 };
 
 export class DestructibleProp {
     static pool = {
@@ -55,10 +56,11 @@ export class DestructibleProp {
         const mesh = this.mesh.children[0];
         if (mesh && mesh.material) {
             const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            mats.forEach(m => {
+            for (let i = 0; i < mats.length; i++) {
+                const m = mats[i];
                 if (m.emissive) m.emissive.set(this.type === 'SERVER_RACK' ? 0x00ffaa : 0xffffff);
                 m.color.set(0xffffff);
-            });
+            }
             mesh.rotation.x = 0;
         }
         
@@ -89,7 +91,6 @@ export class DestructibleProp {
             sideTex.wrapS = sideTex.wrapT = THREE.RepeatWrapping;
             sideTex.repeat.set(1, 2);
 
-            // Multi-material mapping: [pos-x, neg-x, pos-y, neg-y, pos-z, neg-z]
             const casingMat = new THREE.MeshStandardMaterial({
                 map: sideTex,
                 color: 0x222222,
@@ -103,16 +104,16 @@ export class DestructibleProp {
                 roughness: 0.2,
                 emissive: new THREE.Color(0x00ffaa),
                 emissiveIntensity: 0.4,
-                transparent: true // Some server rack textures have alpha
+                transparent: true
             });
 
             material = [
-                casingMat, // Right
-                casingMat, // Left
-                casingMat, // Top
-                casingMat, // Bottom
-                frontMat,  // Front
-                casingMat  // Back
+                casingMat,
+                casingMat,
+                casingMat,
+                casingMat,
+                frontMat,
+                casingMat
             ];
         } else {
             geometry = new THREE.BoxGeometry(1, 1.2, 0.5);
@@ -120,7 +121,7 @@ export class DestructibleProp {
                 map: this.getTexture('DATA_TERMINAL'),
                 metalness: 0.5,
                 roughness: 0.5,
-                emissive: new THREE.Color(0xffffff), // Neutral white emissive
+                emissive: new THREE.Color(0xffffff),
                 emissiveIntensity: 0.1
             });
         }
@@ -130,16 +131,14 @@ export class DestructibleProp {
         mesh.receiveShadow = true;
         group.add(mesh);
 
-        // Add a localized light for the server if it's active
         if (this.type === 'SERVER_RACK') {
             const serverLight = new THREE.PointLight(0x00ffaa, 1.5, 3);
             serverLight.position.set(0, 0, 0.5);
-            serverLight.visible = false; // Off by default for performance
+            serverLight.visible = false;
             group.add(serverLight);
             this.light = serverLight;
         }
 
-        // Hitbox for raycasting
         const hitboxGeo = geometry.clone();
         const hitboxMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, visible: false });
         const hitbox = new THREE.Mesh(hitboxGeo, hitboxMat);
@@ -162,16 +161,15 @@ export class DestructibleProp {
 
         this.health -= amount;
 
-        // Visual feedback
         if (this.particleSystem && point) {
-            this.particleSystem.createImpact(point, normal, 0x00ffff); // Electronic spark color
+            this.particleSystem.createImpact(point, normal, 0x00ffff);
         }
 
-        // Damage flash
         const mesh = this.mesh.children[0];
         if (mesh && mesh.material) {
             const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            mats.forEach(m => {
+            for (let i = 0; i < mats.length; i++) {
+                const m = mats[i];
                 if (m.emissive) {
                     const originalColor = m.emissive.clone();
                     m.emissive.set(0xffffff);
@@ -179,7 +177,7 @@ export class DestructibleProp {
                         if (m) m.emissive.copy(originalColor);
                     }, 50);
                 }
-            });
+            }
         }
 
         if (this.health <= 0) {
@@ -198,31 +196,27 @@ export class DestructibleProp {
 
         if (this.light) this.light.visible = false;
 
-        // Visual "broken" state
         const mesh = this.mesh.children[0];
         if (mesh && mesh.material) {
             const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            mats.forEach(m => {
+            for (let i = 0; i < mats.length; i++) {
+                const m = mats[i];
                 if (m.emissive) m.emissive.set(0x000000);
                 m.color.set(0x111111);
-            });
-            mesh.rotation.x += 0.2; // Slight tilt
+            }
+            mesh.rotation.x += 0.2;
         }
 
-        // Optional: Remove after a while or leave as debris
-        // For performance, we might want to disable collisions
         const hitbox = this.mesh.children.find(c => c.userData.isDestructible);
         if (hitbox) hitbox.userData.isDestructible = false;
     }
 
     update(deltaTime, playerPos = null) {
-        // Any periodic visual updates (e.g. flickering screens)
         if (!this.isDead) {
-            // Optimization: Only update visual effects if near the player
             if (playerPos) {
                 const distSq = this.mesh.position.distanceToSquared(playerPos);
                 if (distSq > 900) {
-                    return; // Skip if > 30m away
+                    return;
                 }
             }
 
@@ -231,16 +225,19 @@ export class DestructibleProp {
                 const baseIntensity = this.type === 'SERVER_RACK' ? 0.3 : 0.4;
                 const flash = Math.random() < 0.1 ? Math.random() : 0;
                 
+                DESCTRUCTIBLE_FLASH.value = baseIntensity + flash;
+                
                 if (Array.isArray(mesh.material)) {
-                    mesh.material.forEach(m => {
-                        if (m.emissive && m.map) m.emissiveIntensity = baseIntensity + flash;
-                    });
-                } else {
-                    if (mesh.material.emissive) mesh.material.emissiveIntensity = baseIntensity + flash;
+                    for (let i = 0; i < mesh.material.length; i++) {
+                        const m = mesh.material[i];
+                        if (m.emissive && m.map) m.emissiveIntensity = DESCTRUCTIBLE_FLASH.value;
+                    }
+                } else if (mesh.material.emissive) {
+                    mesh.material.emissiveIntensity = DESCTRUCTIBLE_FLASH.value;
                 }
                 
                 if (this.light) {
-                    this.light.intensity = (baseIntensity + flash) * 2;
+                    this.light.intensity = DESCTRUCTIBLE_FLASH.value * 2;
                 }
             }
         }

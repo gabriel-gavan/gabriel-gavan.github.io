@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const CREDIT_CHIP_URL = 'https://rosebud.ai/assets/credit_chip_sprite.png.webp?pwu0';
+
 export class CreditChip {
     constructor(scene, position, value) {
         this.scene = scene;
@@ -8,7 +10,7 @@ export class CreditChip {
         this.isCollected = false;
         
         const loader = new THREE.TextureLoader();
-        const map = loader.load('https://rosebud.ai/assets/credit_chip_sprite.png.webp?pwu0');
+        const map = loader.load(CREDIT_CHIP_URL);
         const material = new THREE.SpriteMaterial({ map: map, transparent: true });
         this.mesh = new THREE.Sprite(material);
         this.mesh.position.copy(position);
@@ -26,17 +28,13 @@ export class CreditChip {
     }
 
     update(deltaTime, playerPos) {
-        if (this.isCollected) return;
+        if (this.isCollected || !playerPos) return;
 
-        // Floating animation
         this.floatTime += deltaTime * 2;
         this.mesh.position.y = 0.5 + Math.sin(this.floatTime) * 0.1;
         this.light.position.y = this.mesh.position.y;
 
-        // Detection distance for collection
         const dist = this.mesh.position.distanceTo(playerPos);
-        
-        // Magnetic pull if close
         if (dist < 5.0) {
             const pullSpeed = 12.0;
             const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();

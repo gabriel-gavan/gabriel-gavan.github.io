@@ -148,7 +148,24 @@
     .fixed-side-ad.right {
       right: 10px;
     }
+	.sidebar-ad {
+	  position: fixed;
+	  top: 120px;
+	  width: 160px;
+	  height: 600px;
+	  z-index: 999;
+	}
 
+	.sidebar-ad.left {
+	  left: 10px;
+	}
+
+	.sidebar-ad.right {
+	  right: 10px;
+	}
+	.fixed-side-ad {
+	  display: block !important;
+	}
     @media (max-width: 1200px) {
       .fixed-side-ad {
         display: none;
@@ -175,8 +192,8 @@ function createAsideAd() {
   ins.style.height = "600px";    // 🔥 FORCE HEIGHT
 
   ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-  ins.setAttribute("data-ad-slot", "3456789012");
-  ins.setAttribute("data-ad-format", "vertical");
+  ins.setAttribute("data-ad-slot", "3686182226");
+  ins.setAttribute("data-ad-format", "auto");
 
   aside.appendChild(ins);
 
@@ -190,11 +207,22 @@ function addTopAd() {
   const top = document.querySelector(".top-banner");
   if (!top || top.dataset.extraAd) return;
 
+  const ins = document.createElement("ins");
+  ins.className = "adsbygoogle";
+  ins.style.display = "block";
+  ins.style.width = "100%";
+  ins.style.height = "90px";
+
+  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+  ins.setAttribute("data-ad-slot", "8834567127");
+
   top.innerHTML = "";
-  top.appendChild(createAsideAd());
+  top.appendChild(ins);
+
+  setTimeout(() => pushAd(ins), 1200);
+
   top.dataset.extraAd = "1";
 }
-
 // =============================
 // BOTTOM
 // =============================
@@ -207,8 +235,9 @@ function addBottomAd() {
   bottom.style.margin = "30px auto";
   bottom.style.textAlign = "center";
 
-  bottom.appendChild(createAsideAd());
-
+  const ad = createAsideAd();
+	bottom.appendChild(ad);
+	pushAd(ad.querySelector("ins"));
   document.querySelector(".main-column")?.appendChild(bottom);
 }
 
@@ -231,11 +260,7 @@ function addSideAds() {
 
       document.body.appendChild(left);
 
-      setTimeout(() => {
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
-      }, 500);
+      pushAd(ad.querySelector("ins"));
     }
 
     // RIGHT
@@ -249,17 +274,24 @@ function addSideAds() {
 
       document.body.appendChild(right);
 
-      setTimeout(() => {
-        try {
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {}
-      }, 500);
+      pushAd(ad.querySelector("ins"));
     }
 
   }, 1500);
 }
 
 // =============================
+function pushAd(el) {
+  setTimeout(() => {
+    try {
+      if (!el || !el.classList.contains("adsbygoogle")) return;
+
+      (adsbygoogle = window.adsbygoogle || []).push({});
+    } catch (e) {
+      console.log("Ad push error", e);
+    }
+  }, 800);
+}
 // INIT EXTRA ADS
 // =============================
 function initExtraAds() {

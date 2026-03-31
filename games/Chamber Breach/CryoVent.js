@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 
+const CRYO_VENT_URL = 'https://rosebud.ai/assets/cryo_vent_sprite.png.webp?SnKX';
+const CRYO_OFFSET = new THREE.Vector3(0, 1, 0);
+
 export class CryoVent {
     constructor(scene, position, particleSystem) {
         this.scene = scene;
@@ -11,9 +14,9 @@ export class CryoVent {
         this.isActive = false;
         this.isFrozen = false;
         this.freezeTimer = 0;
+        this._particleOffset = new THREE.Vector3();
         
-        // Vent visual - it's a floor hazard so it should be flat
-        const ventTex = new THREE.TextureLoader().load('https://rosebud.ai/assets/cryo_vent_sprite.png.webp?SnKX');
+        const ventTex = new THREE.TextureLoader().load(CRYO_VENT_URL);
         const ventMat = new THREE.MeshBasicMaterial({ 
             map: ventTex, 
             transparent: true,
@@ -23,11 +26,10 @@ export class CryoVent {
         const geo = new THREE.PlaneGeometry(2.5, 2.5);
         this.mesh = new THREE.Mesh(geo, ventMat);
         this.mesh.position.copy(this.position);
-        this.mesh.position.y = 0.05; // Slightly above floor
+        this.mesh.position.y = 0.05;
         this.mesh.rotation.x = -Math.PI / 2;
         this.scene.add(this.mesh);
 
-        // Interaction mesh for Extinguisher
         this.triggerMesh = new THREE.Mesh(
             new THREE.BoxGeometry(2.5, 3, 2.5),
             new THREE.MeshBasicMaterial({ visible: false })
@@ -38,8 +40,7 @@ export class CryoVent {
         this.triggerMesh.userData.vent = this;
         this.scene.add(this.triggerMesh);
 
-        // Warning light
-        this.light = new THREE.PointLight(0x0066ff, 0, 5); // Deeper blue for cryo
+        this.light = new THREE.PointLight(0x0066ff, 0, 5);
         this.light.position.copy(this.position);
         this.light.position.y = 1.0;
         this.scene.add(this.light);
@@ -67,39 +68,35 @@ export class CryoVent {
             this.mesh.material.color.set(0xffffff);
             const intensity = 0.5 + Math.sin(this.timer * 10) * 0.5;
             this.light.intensity = intensity * 2;
-            this.light.color.set(0x88ccff); // Soft frosted blue
+            this.light.color.set(0x88ccff);
 
-            // Damage player if standing on vent
-            const playerPos = player.mesh.position;
-            const distSq = playerPos.distanceToSquared(this.position);
-            if (distSq < 2.5 * 2.5 && canDamage) { // Radius 2.5
-                player.takeDamage(20 * deltaTime, true, 'rgba(100, 200, 255, 0.4)'); // High DOT damage with blue flash
+            if (player && player.mesh) {
+                const playerPos = player.mesh.position;
+                const distSq = playerPos.distanceToSquared(this.position);
+                if (distSq < 6.25 && canDamage) {
+                    player.takeDamage(20 * deltaTime, true, 'rgba(100, 200, 255, 0.4)');
+                }
             }
 
-            // Damage enemies if standing on vent
             if (enemies && canDamage) {
-                enemies.forEach(enemy => {
-                    if (enemy.isDead) return;
-                    const enemyPos = enemy.mesh.position;
-                    const eDistSq = enemyPos.distanceToSquared(this.position);
-                    if (eDistSq < 2.5 * 2.5) {
+                for (let i = 0; i < enemies.length; i++) {
+                    const enemy = enemies[i];
+                    if (!enemy || enemy.isDead || !enemy.mesh) continue;
+                    if (enemy.mesh.position.distanceToSquared(this.position) < 6.25) {
                         enemy.takeDamage(15 * deltaTime, enemies);
-                        // Optional: slow enemy
                     }
-                });
+                }
             }
 
-            // Particles
             if (this.particleSystem && Math.random() < 0.4) {
-                const offset = new THREE.Vector3(
+                this._particleOffset.set(
                     (Math.random() - 0.5) * 1.5,
                     Math.random() * 3,
                     (Math.random() - 0.5) * 1.5
                 );
-                this.particleSystem.createExplosion(this.position.clone().add(offset), 0x88ccff, 1, 0.4);
+                this.particleSystem.createExplosion(this.position.clone().add(this._particleOffset), 0x88ccff, 1, 0.4);
             }
         } else {
-            // Warning pulse when about to activate
             const timeToActive = cycleTotal - cyclePos;
             if (timeToActive < 1.0) {
                 const pulse = Math.sin(timeToActive * 20) * 0.5 + 0.5;
@@ -115,11 +112,11 @@ export class CryoVent {
     freeze() {
         if (this.isFrozen) return;
         this.isFrozen = true;
-        this.freezeTimer = 6.0; // Frozen for 6 seconds
+        this.freezeTimer = 6.0;
         this.isActive = false;
         
         if (this.particleSystem) {
-            this.particleSystem.createExplosion(this.position.clone().add(new THREE.Vector3(0, 1, 0)), 0xffffff, 5, 1.0);
+            this.particleSystem.createExplosion(this.position.clone().add(CRYO_OFFSET), 0xffffff, 5, 1.0);
         }
     }
 
