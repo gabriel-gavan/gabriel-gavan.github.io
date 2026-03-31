@@ -16,7 +16,7 @@ export class DataCore {
     createMesh() {
         const group = new THREE.Group();
         const loader = new THREE.TextureLoader();
-        const texture = loader.load('assets/legendary_data_core.webp');
+        const texture = loader.load('https://rosebud.ai/assets/legendary_data_core.webp?nNzu');
         const material = new THREE.SpriteMaterial({ 
             map: texture,
             transparent: true,
@@ -61,6 +61,14 @@ export class DataCore {
 
         // Collection check
         const dist = this.mesh.position.distanceTo(playerPos);
+        
+        // Magnetic pull if close
+        if (dist < 6.0) {
+            const pullSpeed = 15.0; // Legendary cores pull faster
+            const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
+            this.mesh.position.add(dir.multiplyScalar(dt * pullSpeed));
+        }
+
         if (dist < 2.0) {
             this.isCollected = true;
         }

@@ -2,24 +2,161 @@ import * as THREE from 'three';
 import { CONFIG } from './config.js';
 import { MicroDrone } from './MicroDrone.js';
 import { createShieldMaterial } from './ShieldShader.js';
+import { createBossMaterial } from './BossShader.js';
+import { Weapon } from './Weapon.js';
 
 // Texture cache to prevent reloading during spawns
 const ENEMY_TEXTURES = {};
+const ENEMY_TEXTURES_LOD = {};
+const ENEMY_TEXTURE_PROMISES = {};
+const ENEMY_TEXTURE_QUEUE = [];
+const ENEMY_TEXTURES_READY = {};
 const loader = new THREE.TextureLoader();
 
 const SPRITE_URLS = {
-    'SENTRY': 'assets/sentry_drone_new.webp',
-    'HEAVY_SEC_BOT': 'assets/heavy_sec_bot_new.webp',
-    'SHIELD_PROJECTOR': 'assets/shield_drone_sprite.webp',
-    'TANK': 'assets/tank_bot_new.webp',
-    'STALKER': 'assets/stalker_drone_new.webp',
-    'TITAN': 'assets/titan_boss_drone.webp'
+    'SENTRY': 'https://rosebud.ai/assets/sentry_drone_new.webp?X9tu',
+    'HEAVY_SEC_BOT': 'https://rosebud.ai/assets/heavy_sec_bot_new.webp.webp?2jap',
+    'SHIELD_PROJECTOR': 'https://rosebud.ai/assets/shield_drone_sprite.webp.webp?R2lh',
+    'TANK': 'https://rosebud.ai/assets/tank_bot_new.webp?Ygvw',
+    'STALKER': 'https://rosebud.ai/assets/stalker_drone_v2.webp.webp?rfgU',
+    'TITAN': 'https://rosebud.ai/assets/titan_boss_drone.webp?OFzL',
+    'CLOAK_MASTER': 'https://rosebud.ai/assets/stalker_drone_v2.webp.webp?rfgU',
+    'OBSIDIAN_JUGGERNAUT': 'https://rosebud.ai/assets/heavy_sec_bot_new.webp.webp?2jap',
+    'CRYO_COMMANDER': 'https://rosebud.ai/assets/titan_boss_drone.webp?OFzL',
+    'AETHERIS_OVERSEER': 'https://rosebud.ai/assets/titan_boss_drone.webp?OFzL',
+    'TELEPORTER': 'https://rosebud.ai/assets/teleporter_drone.webp?Uhav',
+    'SPLITTER': 'https://rosebud.ai/assets/splitter_drone.webp?8Wa1',
+    'SUPPRESSOR': 'https://rosebud.ai/assets/suppressor_drone.webp?Tnb4',
+    'EXPLODER': 'https://rosebud.ai/assets/exploder_drone.webp?Zgc6',
+    'PARASITE': 'https://rosebud.ai/assets/parasite_drone.webp?FW41'
 };
 
-// Pre-warm cache
-Object.entries(SPRITE_URLS).forEach(([key, url]) => {
-    ENEMY_TEXTURES[key] = loader.load(url);
-});
+// Material/Geometry Cache to prevent excessive allocation
+const MATERIAL_CACHE = new Map();
+const GEO_CACHE = {
+    hitbox: new THREE.BoxGeometry(1, 1, 1),
+    beam: new THREE.CylinderGeometry(0.02, 0.5, 8, 8, 1, true),
+    halo: new THREE.TorusGeometry(0.6, 0.04, 8, 24),
+    shield: new THREE.SphereGeometry(1.5, 12, 12),
+    projectorShield: new THREE.SphereGeometry(10, 16, 12)
+};
+
+const MUTATOR_COLORS = {
+    'REGENERATOR': 0x00ff00,
+    'SHIELD_BREAKER': 0x00ffff,
+    'SPEED_DEMON': 0xff00ff,
+    'TANK_PLATING': 0xffff00
+};
+
+function getFallbackTexture() {
+    if (!ENEMY_TEXTURES.FALLBACK) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 4;
+        canvas.height = 4;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 4, 4);
+        ctx.fillStyle = '#cccccc';
+        ctx.fillRect(0, 0, 2, 2);
+        ctx.fillRect(2, 2, 2, 2);
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.generateMipmaps = false;
+        ENEMY_TEXTURES.FALLBACK = texture;
+    }
+    return ENEMY_TEXTURES.FALLBACK;
+}
+
+function createPlaceholderLODTexture(originalTexture) {
+    const image = originalTexture?.image;
+    if (!image) return getFallbackTexture();
+
+    const canvas = document.createElement('canvas');
+    const size = 64;
+    canvas.width = size;
+    canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    try {
+        ctx.drawImage(image, 0, 0, size, size);
+        const lodTex = new THREE.CanvasTexture(canvas);
+        lodTex.minFilter = THREE.LinearFilter;
+        lodTex.magFilter = THREE.LinearFilter;
+        lodTex.generateMipmaps = false;
+        return lodTex;
+    } catch (err) {
+        return getFallbackTexture();
+    }
+}
+
+function scheduleLODTextureBuild(type, texture) {
+    if (ENEMY_TEXTURES_LOD[type]) return;
+    const build = () => {
+        if (!ENEMY_TEXTURES_LOD[type]) {
+            ENEMY_TEXTURES_LOD[type] = createPlaceholderLODTexture(texture);
+        }
+    };
+    if (typeof requestIdleCallback === 'function') {
+        requestIdleCallback(build, { timeout: 100 });
+    } else {
+        setTimeout(build, 0);
+    }
+}
+
+function ensureEnemyTexture(type) {
+    if (ENEMY_TEXTURES[type]) return ENEMY_TEXTURES[type];
+    if (!SPRITE_URLS[type]) return getFallbackTexture();
+    if (!ENEMY_TEXTURE_PROMISES[type]) {
+        ENEMY_TEXTURE_PROMISES[type] = new Promise((resolve) => {
+            loader.load(
+                SPRITE_URLS[type],
+                (tex) => {
+                    tex.needsUpdate = true;
+                    ENEMY_TEXTURES[type] = tex;
+                    ENEMY_TEXTURES_READY[type] = true;
+                    scheduleLODTextureBuild(type, tex);
+                    resolve(tex);
+                },
+                undefined,
+                () => {
+                    ENEMY_TEXTURES[type] = getFallbackTexture();
+                    ENEMY_TEXTURES_READY[type] = true;
+                    resolve(ENEMY_TEXTURES[type]);
+                }
+            );
+        });
+    }
+    return ENEMY_TEXTURES[type] || getFallbackTexture();
+}
+
+function getEnemyMaterial(type, isElite, isAlly) {
+    const key = `${type}_${isElite}_${isAlly}`;
+    if (!MATERIAL_CACHE.has(key)) {
+        const map = ensureEnemyTexture(type);
+        const color = isElite ? 0xff00ff : (isAlly ? 0x00ff00 : 0xffffff);
+        MATERIAL_CACHE.set(key, new THREE.SpriteMaterial({ map, color, transparent: true }));
+    }
+    return MATERIAL_CACHE.get(key);
+}
+
+function getEnemyLODTexture(type) {
+    return ENEMY_TEXTURES_LOD[type] || ENEMY_TEXTURES[type] || getFallbackTexture();
+}
+
+// Shared Math Pool to prevent GC
+const MATH = {
+    v1: new THREE.Vector3(),
+    v2: new THREE.Vector3(),
+    v3: new THREE.Vector3(),
+    v4: new THREE.Vector3(),
+    v5: new THREE.Vector3(),
+    v6: new THREE.Vector3(),
+    v7: new THREE.Vector3(),
+    v8: new THREE.Vector3(),
+    color: new THREE.Color(),
+    sphere: new THREE.Sphere(),
+    raycaster: new THREE.Raycaster()
+};
 
 export class Enemy {
     constructor(scene, player, position, type = 'SENTRY', facilityId = 'meridian', navigation = null, particleSystem = null, heatLevel = 1, isElite = false) {
@@ -31,21 +168,34 @@ export class Enemy {
         this.particleSystem = particleSystem;
         this.heatLevel = heatLevel;
         this.isElite = isElite;
+        this.mutator = null; 
         
-        // Pathfinding state
         this.path = [];
         this.pathIndex = 0;
         this.lastPathUpdate = 0;
-        this.pathUpdateInterval = 500 + Math.random() * 500; // ms between path updates
+        this.pathUpdateInterval = 800 + Math.random() * 1000; 
+        this.spawnTime = Date.now();
+        this.spawnWarmupMs = 250;
+        this.spawnBurstCooldown = 0;
+        this.isPathfinding = false;
+        this.pathRequestToken = 0;
         
         const stats = CONFIG.ENEMY.TYPES[this.type];
         let buff = 1 + (heatLevel - 1) * CONFIG.HEAT.STAT_BUFF_PER_LEVEL;
         
-        // Elite Buffs
+        if (this.scene.game && this.scene.game.difficultyMultiplier) {
+            buff *= this.scene.game.difficultyMultiplier;
+        }
+
         if (this.isElite) {
-            buff *= 1.5; // Elites are 50% stronger than their non-elite counterparts
+            buff *= 1.5; 
             this.eliteAbilityTimer = 0;
             this.eliteAbilityCooldown = this.type === 'STALKER' ? 3000 : 5000;
+            this.nextShootFxTime = 0;
+            const mutators = ['REGENERATOR', 'SHIELD_BREAKER', 'SPEED_DEMON', 'TANK_PLATING'];
+            this.mutator = mutators[Math.floor(Math.random() * mutators.length)];
+            if (this.mutator === 'TANK_PLATING') buff *= 1.5;
+            if (this.mutator === 'SPEED_DEMON') buff *= 1.2;
         }
 
         this.health = stats.HEALTH * buff;
@@ -54,46 +204,61 @@ export class Enemy {
         this.moveSpeed = stats.SPEED * buff;
         this.attackRange = stats.RANGE;
         this.scoreValue = stats.SCORE * (this.isElite ? 3 : 1);
+        this.singularityResist = stats.SINGULARITY_RESIST || 0;
+        this.phaseResist = stats.PHASE_RESIST || 0;
 
-        // Boss Phase 2 / Rage check
         this.isRaging = false;
+        this.isAlly = false;
+        this.isCloaked = false;
         
-        // Facility-specific enemy modifiers
+        this.visualLOD = null;
+        this.sprites = [];
+        this.hitboxes = [];
+
+        const titanTypes = ['TITAN', 'CLOAK_MASTER', 'OBSIDIAN_JUGGERNAUT', 'CRYO_COMMANDER', 'AETHERIS_OVERSEER'];
+        if (titanTypes.includes(this.type)) {
+            this.isTitan = true;
+        }
+
         if (this.facilityId === 'neon') {
-            // Neon-Shift enemies are built with high-tech stealth
             this.isCloaked = true;
-            this.cloakRevealRange = 8; // Reveals when player is close
-            this.cloakActionRange = 12; // Uncloaks to strike
+            this.cloakRevealRange = 8; 
+            this.cloakActionRange = 12; 
         }
 
         this.mesh = this.createMesh();
         this.mesh.position.copy(position);
-        this.mesh.position.y = this.type === 'STALKER' ? 0.5 : 1.5; 
+        
+        const groundTypes = ['STALKER', 'TANK', 'HEAVY_SEC_BOT', 'EXPLODER', 'PARASITE', 'OBSIDIAN_JUGGERNAUT'];
+        if (groundTypes.includes(this.type)) {
+            this.mesh.position.y = 0.1; 
+        } else if (this.type === 'TITAN' || this.type === 'CLOAK_MASTER' || this.type === 'CRYO_COMMANDER' || this.type === 'AETHERIS_OVERSEER') {
+            this.mesh.position.y = 8; 
+        } else {
+            this.mesh.position.y = 1.8; 
+        }
         
         this.originalColor = new THREE.Color(0xffffff);
         this.hitFlashTimer = 0;
         this.deathTimer = 0;
+        this.nextShootFxTime = 0;
         
         this.scene.add(this.mesh);
         this.isDead = false;
-        this.isAlly = false;
         this.lastAttack = 0;
         this.isDisabled = false;
         this.disableTimer = 0;
         this.targetEnemy = null;
-        this.onDeath = null; // Callback for special death effects
+        this.onDeath = null; 
         
-        // Command State
-        this.command = 'FOLLOW'; // FOLLOW, STRIKE, DEFEND
-        this.stance = 'BALANCED'; // BALANCED, AGGRESSIVE, DEFENSIVE
+        this.command = 'FOLLOW'; 
+        this.stance = 'BALANCED'; 
         this.commandPos = new THREE.Vector3();
-        this.commandTarget = null; // Specific enemy to focus fire on
+        this.commandTarget = null; 
 
-        // Module State
-        this.modules = []; // ['SHIELD', 'RAPID_FIRE', 'HEAVY_LASER', 'REPAIR', 'CLOAK', 'EMP_BURST', 'SELF_DESTRUCT', 'CHAIN_LIGHTNING', 'SWARM', 'REPAIR_FIELD', 'OVERCLOCK', 'GRAVITY_SINGULARITY', 'VOLATILE_DETONATION', 'KINETIC_CHAIN', 'MAGNETIC_SIPHON', 'SINGULARITY_ECHO', 'GRAVITY_WELL', 'CRUSHING_PRESSURE', 'SINGULARITY_COLLAPSE', 'NEUTRON_FLUX', 'GAMMA_BURST']
+        this.modules = []; 
         this.shieldHealth = 0;
         this.maxShieldHealth = 20;
-        this.isCloaked = false;
         this.empBurstTimer = 0;
         this.singularityTimer = 0;
         this.kineticChainTimer = 0;
@@ -102,20 +267,19 @@ export class Enemy {
         this.gravityWellFactor = 1.0;
         this.timeScale = 1.0; 
         this.isPhased = false; 
-        this.resonanceOwner = null; // Track which drone singularity we're in
-        this.isResonating = false; // Prevents recursive resonance
+        this.resonanceOwner = null; 
+        this.isResonating = false; 
         this.microDrones = [];
-        this.onSingularityDetonate = null; // Callback for detonation module
-        this.raycaster = new THREE.Raycaster();
+        this.onSingularityDetonate = null; 
         
-        // Elemental State
+        this.targetingLine = null;
+        
         this.burnTimer = 0;
         this.burnDamage = 0;
         this.shockTimer = 0;
         this.lastShockChain = 0;
 
-        // Adaptive Shielding for Heavy Sec-Bot
-        if (this.type === 'HEAVY_SEC_BOT' || this.type === 'TITAN') {
+        if (this.type === 'HEAVY_SEC_BOT' || this.isTitan) {
             this.adaptiveResistances = {
                 'LASER': 0,
                 'EMP': 0,
@@ -127,11 +291,10 @@ export class Enemy {
             this.mesh.add(this.shieldMesh);
             this.bossPhase = 1;
             
-            if (this.type === 'TITAN') {
-                this.isTitan = true;
+            if (this.isTitan) {
                 this.titanAttackTimer = 0;
-                this.titanAttackCooldown = 6000;
-                this.mesh.position.y = 8; // Titans are huge and float higher
+                this.titanAttackCooldown = (this.type === 'CLOAK_MASTER' || this.type === 'CRYO_COMMANDER' || this.type === 'AETHERIS_OVERSEER') ? 3000 : 6000;
+                if (this.type !== 'OBSIDIAN_JUGGERNAUT') this.mesh.position.y = 8; 
             }
         }
 
@@ -140,10 +303,80 @@ export class Enemy {
             this.mesh.add(this.projectorShieldMesh);
             this.shieldRange = 10;
         }
+
+        this.initWeapon();
+    }
+
+    initWeapon() {
+        let cooldown = this.type === 'TANK' ? 4000 : (this.modules.includes('RAPID_FIRE') ? 1000 : 2000);
+        if (this.type === 'STALKER') cooldown = 1000;
+        
+        this.weapon = new Weapon({
+            name: this.type,
+            cooldown: cooldown,
+            damage: this.damage,
+            projectileSpeed: 12,
+            projectileColor: this.isAlly ? 0x00ff00 : 0xff0000,
+            owner: this.isAlly ? 'PLAYER' : 'ENEMY',
+            muzzleOffset: new THREE.Vector3(0, 0.5, 0.8),
+            accuracy: this.isElite ? 0.95 : 0.85
+        });
+    }
+
+    createTargetingLine() {
+        const material = new THREE.LineBasicMaterial({ 
+            color: 0x00ff00, 
+            transparent: true, 
+            opacity: 0.15,
+            blending: THREE.AdditiveBlending 
+        });
+        const geometry = new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0, 0, 0),
+            new THREE.Vector3(0, 0, 1)
+        ]);
+        this.targetingLine = new THREE.Line(geometry, material);
+        this.targetingLine.name = 'targetingLine';
+        this.targetingLine.frustumCulled = false;
+        this.scene.add(this.targetingLine);
+    }
+
+    updateTargetingLine() {
+        if (!this.targetingLine) return;
+
+        if (this.isDead || this.isDisabled || !this.isAlly || !this.targetEnemy || this.targetEnemy.isDead) {
+            this.targetingLine.visible = false;
+            return;
+        }
+
+        this.targetingLine.visible = true;
+        
+        const start = MATH.v1.copy(this.mesh.position).add(MATH.v2.set(0, 0.5, 0));
+        const end = MATH.v3.copy(this.targetEnemy.mesh.position).add(MATH.v2.set(0, 0.5, 0));
+        
+        const positions = this.targetingLine.geometry.attributes.position.array;
+        positions[0] = start.x;
+        positions[1] = start.y;
+        positions[2] = start.z;
+        positions[3] = end.x;
+        positions[4] = end.y;
+        positions[5] = end.z;
+        this.targetingLine.geometry.attributes.position.needsUpdate = true;
+        
+        this.targetingLine.material.color.set(0x00ffff);
+        
+        const t = Date.now() * 0.01;
+        this.targetingLine.material.opacity = 0.15 + Math.sin(t) * 0.1;
+        
+        if (this.lastKnownTarget !== this.targetEnemy) {
+            this.lastKnownTarget = this.targetEnemy;
+            if (this.particleSystem) {
+                this.particleSystem.createExplosion(end, 0x00ffff, 5, 1);
+            }
+        }
     }
 
     createProjectorShieldMesh() {
-        const geo = new THREE.SphereGeometry(this.shieldRange || 10, 32, 16);
+        const geo = GEO_CACHE.projectorShield;
         const mat = createShieldMaterial(0x00ffff, 0.05);
         const mesh = new THREE.Mesh(geo, mat);
         mesh.visible = false;
@@ -166,32 +399,35 @@ export class Enemy {
         }
 
         const range = this.shieldRange || 10;
+        const rangeSq = range * range;
 
-        // Apply shield to allies
-        const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, range) : otherEnemies;
-        nearby.forEach(e => {
-            if (e !== this && !e.isDead && e.isAlly === this.isAlly) {
-                const dSq = e.mesh.position.distanceToSquared(this.mesh.position);
-                if (dSq < range * range) {
-                    // Apply temporary shield buff
-                    e.hasProjectedShield = true;
-                    e.projectedShieldTimer = 200; // ms to persist
+        if (Date.now() % 5 === 0) {
+            const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, range) : [];
+            for (let i = 0; i < nearby.length; i++) {
+                const e = nearby[i];
+                if (e !== this && !e.isDead && e.isAlly === this.isAlly) {
+                    const dx = e.mesh.position.x - this.mesh.position.x;
+                    const dz = e.mesh.position.z - this.mesh.position.z;
+                    if (dx*dx + dz*dz < rangeSq) {
+                        e.hasProjectedShield = true;
+                        e.projectedShieldTimer = 250; 
+                    }
                 }
             }
-        });
 
-        // Shield player if allied
-        if (this.isAlly) {
-            const d = playerPos.distanceTo(this.mesh.position);
-            if (d < range) {
-                this.player.hasProjectedShield = true;
-                this.player.projectedShieldTimer = 200;
+            if (this.isAlly) {
+                const dpx = playerPos.x - this.mesh.position.x;
+                const dpz = playerPos.z - this.mesh.position.z;
+                if (dpx*dpx + dpz*dpz < rangeSq) {
+                    this.player.hasProjectedShield = true;
+                    this.player.projectedShieldTimer = 250;
+                }
             }
         }
     }
 
     createAdaptiveShieldMesh() {
-        const geo = new THREE.SphereGeometry(1.5, 32, 32);
+        const geo = GEO_CACHE.shield;
         const mat = createShieldMaterial(0xffffff, 0);
         const mesh = new THREE.Mesh(geo, mat);
         mesh.visible = false;
@@ -228,14 +464,16 @@ export class Enemy {
     }
 
     updateModuleVisuals() {
-        // Clear old module meshes if any
-        const moduleGroup = this.mesh.getObjectByName('moduleGroup');
-        if (moduleGroup) this.mesh.remove(moduleGroup);
+        if (!this.visualLOD) return;
+        
+        const highGroup = this.visualLOD.levels[0].object;
+        const existingGroup = highGroup.getObjectByName('moduleGroup');
+        if (existingGroup) highGroup.remove(existingGroup);
 
         const newGroup = new THREE.Group();
         newGroup.name = 'moduleGroup';
 
-        this.modules.forEach((mod, index) => {
+        this.modules.forEach((mod) => {
             let modMesh;
             if (mod === 'SHIELD') {
                 const geo = new THREE.SphereGeometry(1.2, 32, 32);
@@ -243,7 +481,6 @@ export class Enemy {
                 modMesh = new THREE.Mesh(geo, mat);
                 modMesh.name = 'module_shield';
             } else if (mod === 'RAPID_FIRE') {
-
                 const geo = new THREE.BoxGeometry(0.2, 0.2, 0.6);
                 const mat = new THREE.MeshStandardMaterial({ color: 0xffff00 });
                 modMesh = new THREE.Mesh(geo, mat);
@@ -293,8 +530,6 @@ export class Enemy {
                 modMesh = new THREE.Mesh(geo, mat);
                 modMesh.position.y = 1.0;
                 modMesh.name = 'repair_emitter';
-                
-                // Pulsing field visual
                 const fieldGeo = new THREE.SphereGeometry(5, 32, 32);
                 const fieldMat = new THREE.MeshBasicMaterial({ color: 0x00ff00, transparent: true, opacity: 0.05, wireframe: true });
                 const field = new THREE.Mesh(fieldGeo, fieldMat);
@@ -307,8 +542,6 @@ export class Enemy {
                 modMesh.position.set(0, 0.6, 0.5);
                 modMesh.rotation.x = Math.PI / 2;
                 modMesh.name = 'overclock_emitter';
-
-                // Field visual
                 const fieldGeo = new THREE.SphereGeometry(6, 16, 16);
                 const fieldMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.05, wireframe: true });
                 const field = new THREE.Mesh(fieldGeo, fieldMat);
@@ -316,17 +549,11 @@ export class Enemy {
                 modMesh.add(field);
             } else if (mod === 'GRAVITY_SINGULARITY') {
                 const geo = new THREE.IcosahedronGeometry(0.3, 2);
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0x6600ff, 
-                    emissive: 0x220055,
-                    wireframe: true 
-                });
+                const mat = new THREE.MeshStandardMaterial({ color: 0x6600ff, emissive: 0x220055, wireframe: true });
                 modMesh = new THREE.Mesh(geo, mat);
                 modMesh.position.set(0, -0.6, 0);
                 modMesh.name = 'singularity_core';
-                
-                // Vortex particles
-                const particleCount = 20;
+                const particleCount = 12;
                 const particleGeo = new THREE.BoxGeometry(0.05, 0.05, 0.05);
                 const particleMat = new THREE.MeshBasicMaterial({ color: 0xaa00ff });
                 const particles = new THREE.Group();
@@ -339,228 +566,143 @@ export class Enemy {
                     particles.add(p);
                 }
                 modMesh.add(particles);
-            } else if (mod === 'VOLATILE_DETONATION') {
-                const geo = new THREE.SphereGeometry(0.2, 8, 8);
-                const mat = new THREE.MeshBasicMaterial({ color: 0xff4400, wireframe: true });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.y = -0.6;
-                modMesh.name = 'volatile_spike';
-                
-                // Add spikes
-                for (let i = 0; i < 6; i++) {
-                    const spikeGeo = new THREE.ConeGeometry(0.05, 0.3, 4);
-                    const spikeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-                    const spike = new THREE.Mesh(spikeGeo, spikeMat);
-                    const axis = new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize();
-                    spike.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axis);
-                    spike.position.copy(axis).multiplyScalar(0.2);
-                    modMesh.add(spike);
-                }
-            } else if (mod === 'KINETIC_CHAIN') {
-                const geo = new THREE.TorusGeometry(0.4, 0.02, 8, 32);
-                const mat = new THREE.MeshBasicMaterial({ color: 0x00ffff });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.y = -0.6;
-                modMesh.rotation.x = Math.PI / 2;
-                modMesh.name = 'kinetic_ring';
-            } else if (mod === 'MAGNETIC_SIPHON') {
-                const geo = new THREE.TorusGeometry(0.5, 0.01, 8, 32);
-                const mat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.y = -0.6;
-                modMesh.rotation.x = Math.PI / 2;
-                modMesh.name = 'siphon_ring';
-            } else if (mod === 'SINGULARITY_ECHO') {
-                const geo = new THREE.IcosahedronGeometry(0.15, 1);
-                const mat = new THREE.MeshBasicMaterial({ color: 0x8800ff, transparent: true, opacity: 0.6 });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(0.3, -0.4, -0.3);
-                modMesh.name = 'echo_core';
-            } else if (mod === 'GRAVITY_WELL') {
-                const geo = new THREE.CylinderGeometry(0.35, 0.45, 0.1, 6);
-                const mat = new THREE.MeshStandardMaterial({ color: 0x4444ff, emissive: 0x000033 });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.y = -0.75;
-                modMesh.name = 'gravity_well_plate';
-            } else if (mod === 'CRUSHING_PRESSURE') {
-                const geo = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-                const mat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 1.0 });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(-0.3, -0.4, -0.3);
-                modMesh.name = 'crushing_module';
-                
-                // Add tiny red "active" lights
-                const lightGeo = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-                const lightMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
-                const light = new THREE.Mesh(lightGeo, lightMat);
-                light.position.set(0, 0.15, 0.15);
-                modMesh.add(light);
-            } else if (mod === 'SINGULARITY_COLLAPSE') {
-                const geo = new THREE.CylinderGeometry(0.5, 0.5, 0.05, 32);
-                const mat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.4, wireframe: true });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.y = -0.65;
-                modMesh.name = 'collapse_stabilizer';
-            } else if (mod === 'NEUTRON_FLUX') {
-                const geo = new THREE.IcosahedronGeometry(0.2, 0);
-                const mat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0x00ffff });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(0, 0.8, 0);
-                modMesh.name = 'neutron_emitter';
-                
-                const haloGeo = new THREE.TorusGeometry(0.3, 0.02, 16, 100);
-                const haloMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.5 });
-                const halo = new THREE.Mesh(haloGeo, haloMat);
-                halo.rotation.x = Math.PI/2;
-                modMesh.add(halo);
-            } else if (mod === 'CHRONO_DILATION') {
-                const geo = new THREE.TorusKnotGeometry(0.25, 0.04, 64, 8);
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0x00ffff, 
-                    emissive: 0x004488,
-                    transparent: true,
-                    opacity: 0.8
-                });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(0.4, 0.4, 0.3);
-                modMesh.name = 'chrono_stabilizer';
-                
-                // Outer ring
-                const ringGeo = new THREE.TorusGeometry(0.4, 0.01, 16, 64);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3 });
-                const ring = new THREE.Mesh(ringGeo, ringMat);
-                modMesh.add(ring);
-            } else if (mod === 'PHASE_SHIFT_CLOAK') {
-                const geo = new THREE.TorusGeometry(0.3, 0.05, 16, 3); // Triangle ring
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0xff00ff, 
-                    emissive: 0x440044,
-                    metalness: 1.0,
-                    roughness: 0.0
-                });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(-0.4, 0.4, -0.3);
-                modMesh.name = 'phase_projector';
-                
-                // Pulsing core
-                const coreGeo = new THREE.SphereGeometry(0.1, 8, 8);
-                const coreMat = new THREE.MeshBasicMaterial({ color: 0xff00ff });
-                const core = new THREE.Mesh(coreGeo, coreMat);
-                core.name = 'phase_core';
-                modMesh.add(core);
-            } else if (mod === 'RESONANCE_OVERLOAD') {
-                const geo = new THREE.SphereGeometry(0.3, 16, 16);
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0xffaa00, 
-                    emissive: 0x442200,
-                    wireframe: true 
-                });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(0.4, -0.4, -0.3);
-                modMesh.name = 'resonance_tuning_fork';
-                
-                // Vibrating rings
-                const ringGeo = new THREE.TorusGeometry(0.2, 0.01, 8, 32);
-                const ringMat = new THREE.MeshBasicMaterial({ color: 0xffaa00, transparent: true, opacity: 0.5 });
-                for(let i=0; i<3; i++) {
-                    const ring = new THREE.Mesh(ringGeo, ringMat);
-                    ring.position.y = (i - 1) * 0.15;
-                    ring.rotation.x = Math.PI/2;
-                    ring.name = `res_ring_${i}`;
-                    modMesh.add(ring);
-                }
-            } else if (mod === 'GAMMA_BURST') {
-                const geo = new THREE.OctahedronGeometry(0.25, 0);
-                const mat = new THREE.MeshStandardMaterial({ 
-                    color: 0x00ff00, 
-                    emissive: 0x004400,
-                    metalness: 0.9,
-                    roughness: 0.1
-                });
-                modMesh = new THREE.Mesh(geo, mat);
-                modMesh.position.set(-0.4, 0.4, 0.3);
-                modMesh.name = 'gamma_core';
             }
             if (modMesh) newGroup.add(modMesh);
         });
 
-        this.mesh.add(newGroup);
+        highGroup.add(newGroup);
     }
 
     createMesh() {
         const group = new THREE.Group();
-        
-        // Use pre-warmed texture cache
-        const map = ENEMY_TEXTURES[this.type] || ENEMY_TEXTURES['SENTRY'];
-        
-        const material = new THREE.SpriteMaterial({ 
-            map: map,
-            color: this.isElite ? 0xff00ff : 0xffffff // Elite units have a purple tint
-        });
-        
-        const sprite = new THREE.Sprite(material);
-        
-        // Scale sprite based on type using config
         const scale = (CONFIG.ENEMY.TYPES[this.type].SCALE || 1.5) * (this.isElite ? 1.3 : 1.0);
-        sprite.scale.set(scale, scale, 1);
-        group.add(sprite);
+        
+        const lod = new THREE.LOD();
+        lod.name = 'visualLOD';
+        this.visualLOD = lod;
 
-        // --- Visual Polish Enhancements ---
-        // 1. Under-glow Light
+        const highResMaterial = getEnemyMaterial(this.type, this.isElite, this.isAlly).clone();
+        const lowResKey = `${this.type}_${this.isElite}_${this.isAlly}_low`;
+        if (!MATERIAL_CACHE.has(lowResKey)) {
+            const baseMat = getEnemyMaterial(this.type, this.isElite, this.isAlly);
+            const lowMat = baseMat.clone();
+            lowMat.map = getEnemyLODTexture(this.type);
+            MATERIAL_CACHE.set(lowResKey, lowMat);
+        }
+        const lowResMaterial = MATERIAL_CACHE.get(lowResKey);
+
+        const highGroup = new THREE.Group();
+        const highSprite = new THREE.Sprite(highResMaterial);
+        highSprite.scale.set(scale, scale, 1);
+        
+        const groundTypes = ['STALKER', 'TANK', 'HEAVY_SEC_BOT'];
+        if (groundTypes.includes(this.type)) {
+            highSprite.center.set(0.5, 0); 
+        }
+        highGroup.add(highSprite);
+        this.sprites[0] = highSprite;
+
         let glowColor = this.type === 'SENTRY' ? 0x00ffaa : (this.type === 'STALKER' ? 0xff3300 : 0x00ffff);
-        if (this.isElite) glowColor = 0xff00ff; // Elites always glow purple
+        if (this.isElite) glowColor = 0xff00ff;
+        const lightIntensity = this.isElite ? 2.0 : 0.2;
+        const lightDistance = this.isElite ? 4.0 : 2.0;
 
-        this.glow = new THREE.PointLight(glowColor, this.isElite ? 2.5 : 0.8, 3.5);
+        this.glow = new THREE.PointLight(glowColor, lightIntensity, lightDistance);
         this.glow.position.y = -0.5;
-        group.add(this.glow);
+        this.glow.userData.isEnemyGlow = true; 
+        highGroup.add(this.glow);
 
-        // Elite Halo
         if (this.isElite) {
-            const haloGeo = new THREE.TorusGeometry(0.6, 0.05, 8, 32);
-            const haloMat = new THREE.MeshBasicMaterial({ color: 0xff00ff, transparent: true, opacity: 0.5 });
+            const haloGeo = GEO_CACHE.halo;
+            const haloColor = MUTATOR_COLORS[this.mutator] || 0xff00ff;
+            const haloMat = new THREE.MeshBasicMaterial({ color: haloColor, transparent: true, opacity: 0.4 });
             const halo = new THREE.Mesh(haloGeo, haloMat);
             halo.rotation.x = Math.PI / 2;
             halo.position.y = scale * 0.7;
             halo.name = 'eliteHalo';
-            group.add(halo);
+            highGroup.add(halo);
         }
 
-        // 2. Scanning Beam (Sentry only)
         if (this.type === 'SENTRY') {
-            const beamGeo = new THREE.CylinderGeometry(0.02, 0.5, 8, 8, 1, true);
-            const beamMat = new THREE.MeshBasicMaterial({ 
-                color: 0x00ffaa, 
-                transparent: true, 
-                opacity: 0.1,
-                side: THREE.DoubleSide
-            });
+            const beamGeo = GEO_CACHE.beam;
+            const beamMat = new THREE.MeshBasicMaterial({ color: 0x00ffaa, transparent: true, opacity: 0.1, side: THREE.DoubleSide });
             this.scanBeam = new THREE.Mesh(beamGeo, beamMat);
             this.scanBeam.rotation.x = Math.PI / 2;
             this.scanBeam.position.z = -4;
-            group.add(this.scanBeam);
+            highGroup.add(this.scanBeam);
+        }
+
+        if (this.isTitan || this.type === 'AETHERIS_OVERSEER') {
+            const bossGeo = new THREE.SphereGeometry(scale * 1.5, 16, 16);
+            this.bossMaterial = createBossMaterial(0x00d0ff);
+            this.bossEmergenceMesh = new THREE.Mesh(bossGeo, this.bossMaterial);
+            highGroup.add(this.bossEmergenceMesh);
+            this.emergenceTimer = 5.0;
         }
         
-        // Add a proper HITBOX for raycasting (invisible)
-        const hitboxGeo = new THREE.BoxGeometry(scale * 0.8, scale * 1.2, scale * 0.8);
+        lod.addLevel(highGroup, 0);
+
+        const medGroup = new THREE.Group();
+        const medSprite = new THREE.Sprite(highResMaterial);
+        medSprite.scale.copy(highSprite.scale);
+        medSprite.center.copy(highSprite.center);
+        medGroup.add(medSprite);
+        this.sprites[1] = medSprite;
+        lod.addLevel(medGroup, CONFIG.ENEMY.LOD.MEDIUM_DIST);
+
+        const lowGroup = new THREE.Group();
+        const lowSprite = new THREE.Sprite(lowResMaterial);
+        lowSprite.scale.copy(highSprite.scale);
+        lowSprite.center.copy(highSprite.center);
+        lowGroup.add(lowSprite);
+        this.sprites[2] = lowSprite;
+        lod.addLevel(lowGroup, CONFIG.ENEMY.LOD.LOW_DIST);
+
+        group.add(lod);
+
+        const hitboxGeo = GEO_CACHE.hitbox;
         const hitboxMat = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0, visible: false });
         const hitbox = new THREE.Mesh(hitboxGeo, hitboxMat);
+        hitbox.scale.set(scale * 0.8, scale * 1.2, scale * 0.8);
         hitbox.name = 'hitbox';
         hitbox.userData.isEnemyHitbox = true; 
-        hitbox.userData.enemyRef = this; // Optimized lookup
+        hitbox.userData.enemyRef = this; 
         group.add(hitbox);
 
         return group;
     }
 
-    update(deltaTime, playerPos, activeSmokeScreens = [], isThermalActive = false, otherEnemies = [], turrets = [], map = null, spatialGrid = null) {
+    update(deltaTime, playerPos, activeSmokeScreens = [], isThermalActive = false, otherEnemies = [], turrets = [], map = null, spatialGrid = null, frameCounter = 0) {
+        const nowMs = Date.now();
+        const myPos = this.mesh.position;
+        const distToPlayerSq = playerPos ? myPos.distanceToSquared(playerPos) : 10000;
+        const performanceTier = distToPlayerSq > 3600 ? 2 : (distToPlayerSq > 900 ? 1 : 0);
+        if (this.spawnBurstCooldown > 0) this.spawnBurstCooldown -= deltaTime * 1000;
+        const isWarmingUp = nowMs - this.spawnTime < this.spawnWarmupMs;
+
+        let updateModulo = 1;
+        if (distToPlayerSq > 3600) updateModulo = 12;
+        else if (distToPlayerSq > 900) updateModulo = 6;
+        else if (distToPlayerSq > 225) updateModulo = 2;
+
+        const shouldUpdateLogic = (frameCounter + this.mesh.id) % updateModulo === 0;
+        const shouldUpdateVisuals = performanceTier === 0 || (performanceTier === 1 && (frameCounter + this.mesh.id) % 2 === 0);
+        const shouldUpdateCombat = !isWarmingUp && shouldUpdateLogic && this.spawnBurstCooldown <= 0 && (performanceTier === 0 || (frameCounter + (this.mesh.id * 7)) % (updateModulo * 2) === 0);
+
+        if (this.isAlly && this.targetingLine && shouldUpdateVisuals) {
+            this.updateTargetingLine();
+        }
+
         if (this.isDead) {
+            if (this.targetingLine) this.targetingLine.visible = false; 
             if (this.deathTimer > 0) {
                 this.deathTimer -= deltaTime;
-                const sprite = this.mesh.children[0];
-                if (sprite && sprite.material) {
-                    sprite.material.opacity = Math.max(0, this.deathTimer / 0.2);
-                    this.mesh.scale.addScalar(deltaTime * 1.5);
-                }
+                this.sprites.forEach(sprite => {
+                    if (sprite && sprite.material) {
+                        sprite.material.opacity = Math.max(0, this.deathTimer / 0.2);
+                    }
+                });
+                this.mesh.scale.addScalar(deltaTime * 1.5);
                 if (this.deathTimer <= 0) {
                     this.scene.remove(this.mesh);
                 }
@@ -568,22 +710,71 @@ export class Enemy {
             return;
         }
 
-        if (this.isTitan && !this.isDisabled) {
-            this.titanAttackTimer += deltaTime * 1000;
-            if (this.titanAttackTimer > this.titanAttackCooldown) {
+        if (!shouldUpdateLogic) {
+            if (distToPlayerSq > (CONFIG.ENEMY.LOD.CULL_DIST * CONFIG.ENEMY.LOD.CULL_DIST)) {
+                this.mesh.visible = false;
+                return;
+            } else {
+                this.mesh.visible = true;
+            }
+            if (this.path && this.path.length > 0 && this.pathIndex < this.path.length) {
+                const nextPoint = this.path[this.pathIndex];
+                if (myPos.distanceToSquared(nextPoint) < 1.0) this.pathIndex++;
+                if (this.pathIndex < this.path.length) {
+                    const targetPt = this.path[this.pathIndex];
+                    const moveDir = MATH.v1.subVectors(targetPt, myPos).normalize();
+                    const finalMoveSpeed = this.moveSpeed * this.timeScale;
+                    myPos.x += moveDir.x * finalMoveSpeed * deltaTime * updateModulo;
+                    myPos.z += moveDir.z * finalMoveSpeed * deltaTime * updateModulo;
+                }
+            }
+            return; 
+        }
+
+        if ((this.isTitan || this.type === 'HEAVY_SEC_BOT') && !this.isDisabled) {
+            this.titanAttackTimer = (this.titanAttackTimer || 0) + deltaTime * 1000 * updateModulo;
+            if (this.titanAttackTimer > (this.titanAttackCooldown || 6000)) {
                 this.executeTitanAttack(playerPos, otherEnemies);
                 this.titanAttackTimer = 0;
             }
             
-            // Titan floating motion
-            this.mesh.position.y = 7 + Math.sin(Date.now() * 0.001) * 2;
-            this.mesh.rotation.z = Math.sin(Date.now() * 0.0005) * 0.1;
+            if (this.isTitan) {
+                const t = Date.now() * 0.001;
+                this.mesh.position.y = (this.type === 'AETHERIS_OVERSEER' ? 12 : 7) + Math.sin(t) * 2;
+                this.mesh.rotation.z = Math.sin(t * 0.5) * 0.1;
+                
+                if (this.bossMaterial && this.emergenceTimer > 0) {
+                    this.emergenceTimer -= deltaTime * updateModulo;
+                    const progress = Math.max(0, this.emergenceTimer / 5.0);
+                    this.bossMaterial.uniforms.emergence.value = progress;
+                    this.bossMaterial.uniforms.time.value = t;
+                    this.bossMaterial.uniforms.distortion.value = 1.0 + progress * 5.0;
+                    this.bossMaterial.uniforms.glitch.value = progress > 0.5 ? progress : 0;
+                    
+                    if (this.scene.game && this.scene.game.setBossGlitch) {
+                        this.scene.game.setBossGlitch(this.bossMaterial.uniforms.glitch.value);
+                    }
+                    
+                    if (this.emergenceTimer <= 0) {
+                        const highGroup = this.visualLOD.levels[0].object;
+                        highGroup.remove(this.bossEmergenceMesh);
+                        this.bossMaterial.dispose();
+                        this.bossEmergenceMesh.geometry.dispose();
+                        this.bossMaterial = null;
+                        this.bossEmergenceMesh = null;
+                        this.sprites.forEach(s => s.material.opacity = 1.0);
+                        if (this.scene.game && this.scene.game.setBossGlitch) {
+                            this.scene.game.setBossGlitch(0);
+                        }
+                    } else {
+                        this.sprites.forEach(s => s.material.opacity = 1.0 - progress);
+                    }
+                }
+            }
         }
 
-        // --- Elite Logic ---
-        if (this.isElite && !this.isDisabled) {
-            if (!this.eliteAbilityTimer) this.eliteAbilityTimer = 0;
-            this.eliteAbilityTimer += deltaTime * 1000;
+        if (this.isElite && !this.isDisabled && shouldUpdateVisuals) {
+            this.eliteAbilityTimer = (this.eliteAbilityTimer || 0) + deltaTime * 1000 * updateModulo;
             if (this.eliteAbilityTimer > this.eliteAbilityCooldown) {
                 this.executeEliteAbility(playerPos, otherEnemies, spatialGrid);
                 this.eliteAbilityTimer = 0;
@@ -591,99 +782,100 @@ export class Enemy {
 
             const halo = this.mesh.getObjectByName('eliteHalo');
             if (halo) {
-                halo.rotation.z += deltaTime * 2;
+                halo.rotation.z += deltaTime * 2 * updateModulo;
                 halo.position.y += Math.sin(Date.now() * 0.005) * 0.005;
             }
         }
 
-        // --- Optimized Timers ---
         if (this.hitFlashTimer > 0) {
-            this.hitFlashTimer -= deltaTime;
+            this.hitFlashTimer -= deltaTime * updateModulo;
             if (this.hitFlashTimer <= 0) {
-                const sprite = this.mesh.children[0];
-                if (sprite && sprite.material) {
-                    sprite.material.color.copy(this.originalColor || new THREE.Color(0xffffff));
-                }
+                this.sprites.forEach(sprite => {
+                    if (sprite && sprite.material) {
+                        sprite.material.color.copy(this.originalColor);
+                    }
+                });
             }
         }
 
-        const myPos = this.mesh.position;
-
-        // Throttled Chamber Index check
-        if (!this.lastChamberCheck || Date.now() - this.lastChamberCheck > 2000) {
-            this.lastChamberCheck = Date.now();
-            this.myChamberIdx = null;
-            if (map) {
-                // Optimize chamber search by checking current first if it exists
-                const cur = this.myChamberIdx !== null ? map.chambers[this.myChamberIdx] : null;
-                if (cur && Math.abs(myPos.x - cur.x) < cur.size / 2 + 5 && Math.abs(myPos.z - cur.z) < cur.size / 2 + 5) {
-                    // Still in same chamber
-                } else {
-                    const myChamber = map.chambers.find(c => 
-                        Math.abs(myPos.x - c.x) < c.size / 2 + 5 && 
-                        Math.abs(myPos.z - c.z) < c.size / 2 + 5
-                    );
-                    this.myChamberIdx = myChamber ? myChamber.index : null;
-                }
-            }
-        }
-
-        // --- Targeting Logic ---
         let targetPos = playerPos;
         let targetingPlayer = true;
 
         if (this.isAlly) {
             targetingPlayer = false;
-            
-            // Handle Commands
-            if (this.command === 'DEFEND') {
-                targetPos = this.commandPos;
-                // If we reach defend pos, just stay around it
-            } else if (this.command === 'STRIKE' && this.commandTarget && !this.commandTarget.isDead) {
-                targetPos = this.commandTarget.mesh.position;
+            const game = this.scene.game;
+            let currentCommand = this.command;
+
+            if (game && game.isHackingTerminal && game.currentTerminal) {
+                const termPos = game.currentTerminal.group.position;
+                let highThreatTarget = null;
+                const huntRangeSq = 225;
+
+                const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 15) : otherEnemies;
+                for (let i = 0; i < nearby.length; i++) {
+                    const e = nearby[i];
+                    if (!e.isAlly && !e.isDead && (e.type === 'STALKER' || e.isElite || e.isTitan)) {
+                        if (myPos.distanceToSquared(e.mesh.position) < huntRangeSq) {
+                            highThreatTarget = e;
+                            break;
+                        }
+                    }
+                }
+
+                if (highThreatTarget) {
+                    currentCommand = 'STRIKE';
+                    this.targetEnemy = highThreatTarget;
+                    targetPos = highThreatTarget.mesh.position;
+                    if (this.glow) {
+                        this.glow.color.set(0xff0000); 
+                        this.glow.intensity = 3 + Math.sin(Date.now() * 0.02) * 2;
+                    }
+                } else if (this.command === 'FOLLOW' || this.command === 'DEFEND') {
+                    currentCommand = 'DEFEND';
+                    const offsetAngle = (this.mesh.id % 8) * (Math.PI / 4);
+                    const offsetDist = 4 + (this.mesh.id % 3) * 2;
+                    targetPos = MATH.v1.copy(termPos);
+                    targetPos.x += Math.cos(offsetAngle) * offsetDist;
+                    targetPos.z += Math.sin(offsetAngle) * offsetDist;
+                    if (this.glow) {
+                        this.glow.color.set(0x00ff00);
+                        this.glow.intensity = 1.0;
+                    }
+                }
             } else {
-                targetPos = playerPos; 
+                if (this.glow && this.isAlly && !this.isDisabled) this.glow.color.set(0x00ff00);
+                if (this.command === 'DEFEND') targetPos = this.commandPos;
+                else if (this.command === 'STRIKE' && this.commandTarget && !this.commandTarget.isDead) targetPos = this.commandTarget.mesh.position;
+                else targetPos = playerPos; 
             }
 
-            // Target nearest hostile (Throttled)
-            if (!this.lastTargetUpdate || Date.now() - this.lastTargetUpdate > 500) {
+            if (Date.now() - (this.lastTargetUpdate || 0) > 500) {
                 this.lastTargetUpdate = Date.now();
-                
-                if (this.command === 'STRIKE' && this.commandTarget && !this.commandTarget.isDead) {
-                    this.targetEnemy = this.commandTarget;
-                } else {
+                if (!(currentCommand === 'STRIKE' && this.targetEnemy && !this.targetEnemy.isDead)) {
                     let minDistSq = Infinity;
                     this.targetEnemy = null;
-                    const detectionRange = CONFIG.ENEMY.DETECTION_RANGE;
-                    const detectionRangeSq = detectionRange * detectionRange;
-                    
-                    const nearby = spatialGrid ? spatialGrid.getNearby(myPos, detectionRange) : otherEnemies;
+                    const detRange = CONFIG.ENEMY.DETECTION_RANGE;
+                    const detRangeSq = detRange * detRange;
+                    const nearby = spatialGrid ? spatialGrid.getNearby(myPos, detRange) : otherEnemies;
                     for (let i = 0; i < nearby.length; i++) {
                         const e = nearby[i];
                         if (e !== this && !e.isAlly && !e.isDead) {
                             const dSq = myPos.distanceToSquared(e.mesh.position);
-                            if (dSq < minDistSq && dSq < detectionRangeSq) {
+                            if (dSq < minDistSq && dSq < detRangeSq) {
                                 minDistSq = dSq;
                                 this.targetEnemy = e;
-                                if (dSq < 25) break; // Close enough target found
+                                if (dSq < 25) break;
                             }
                         }
                     }
                 }
             }
-
-            if (this.targetEnemy && (this.command === 'FOLLOW' || this.command === 'DEFEND')) {
-                targetPos = this.targetEnemy.mesh.position;
-            } else if (this.command === 'STRIKE' && this.targetEnemy) {
-                targetPos = this.targetEnemy.mesh.position;
-            }
+            if (this.targetEnemy) targetPos = this.targetEnemy.mesh.position;
         } else {
-            // Hostile AI: Target player OR nearest visible Ally (Throttled)
-            if (!this.lastTargetUpdate || Date.now() - this.lastTargetUpdate > 600) {
+            if (Date.now() - (this.lastTargetUpdate || 0) > 600) {
                 this.lastTargetUpdate = Date.now();
                 let minDistSq = myPos.distanceToSquared(playerPos);
                 this.targetEnemy = null; 
-                
                 const nearby = spatialGrid ? spatialGrid.getNearby(myPos, CONFIG.ENEMY.DETECTION_RANGE) : otherEnemies;
                 for (let i = 0; i < nearby.length; i++) {
                     const e = nearby[i];
@@ -705,104 +897,80 @@ export class Enemy {
             targetPos = this.hostileTargetPos || playerPos;
         }
 
-        // --- Projected Shield timer decrease ---
         if (this.projectedShieldTimer > 0) {
-            this.projectedShieldTimer -= deltaTime * 1000;
-            if (this.projectedShieldTimer <= 0) {
-                this.hasProjectedShield = false;
-            }
+            this.projectedShieldTimer -= deltaTime * 1000 * updateModulo;
+            if (this.projectedShieldTimer <= 0) this.hasProjectedShield = false;
         }
 
-        // --- Shield Projector logic ---
         if (this.type === 'SHIELD_PROJECTOR' && !this.isDisabled) {
-            this.updateShieldProjector(deltaTime, otherEnemies, playerPos, spatialGrid);
+            this.updateShieldProjector(deltaTime * updateModulo, otherEnemies, playerPos, spatialGrid);
         }
 
-        // --- Avoidance & Navigation logic ---
-        // Avoid other enemies - Throttled and limit number of neighbors
-        if (!this.lastAvoidUpdate || Date.now() - this.lastAvoidUpdate > 300) {
-            this.lastAvoidUpdate = Date.now();
-            this.currentAvoidance = new THREE.Vector3();
-            let neighborCount = 0;
-            const maxNeighbors = 2; // Reduced further for performance
-
-            const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 2) : otherEnemies;
-            for (let i = 0; i < nearby.length; i++) {
+        if (nowMs - (this.lastAvoidUpdate || 0) > 250) {
+            this.lastAvoidUpdate = nowMs;
+            this.currentAvoidance = this.currentAvoidance || new THREE.Vector3();
+            this.currentAvoidance.set(0, 0, 0);
+            const nearby = spatialGrid ? spatialGrid.getNearby(myPos, 2) : [];
+            for (let i = 0; i < Math.min(nearby.length, 2); i++) {
                 const e = nearby[i];
-                if (e === this || e.isDead || neighborCount >= maxNeighbors) continue;
-                
-                const distSq = myPos.distanceToSquared(e.mesh.position);
-                if (distSq < 4) { // dist < 2
-                    const d = Math.sqrt(distSq) || 0.001;
-                    const diff = new THREE.Vector3().subVectors(myPos, e.mesh.position).normalize();
-                    this.currentAvoidance.add(diff.multiplyScalar(0.8 / d));
-                    neighborCount++;
+                if (e === this || e.isDead) continue;
+                const dSq = myPos.distanceToSquared(e.mesh.position);
+                if (dSq < 2.25) {
+                    const d = Math.sqrt(dSq) || 0.001;
+                    MATH.v1.subVectors(myPos, e.mesh.position).normalize();
+                    this.currentAvoidance.add(MATH.v1.multiplyScalar(0.5 / d));
                 }
             }
         }
-        const combinedAvoidance = this.currentAvoidance.clone();
 
-        // Avoid walls - Proactive check using raycasters would be ideal but map check is faster
-        if (!this.lastWallAvoidUpdate || Date.now() - this.lastWallAvoidUpdate > 400) {
-            this.lastWallAvoidUpdate = Date.now();
-            this.wallAvoidance = new THREE.Vector3();
-            if (map && map.checkCollision(myPos, 1.2, this.myChamberIdx)) { // Increased check radius
-                // If colliding, push away from the nearest wall/obstacle
-                // We find the center of the chamber and push towards it
-                if (this.myChamberIdx !== null) {
-                    const chamber = map.chambers[this.myChamberIdx];
-                    if (chamber) {
-                        const toCenter = new THREE.Vector3(chamber.x, myPos.y, chamber.z).sub(myPos).normalize();
-                        this.wallAvoidance.add(toCenter.multiplyScalar(3.0));
-                    }
+        if (nowMs - (this.lastWallAvoidUpdate || 0) > 400) {
+            this.lastWallAvoidUpdate = nowMs;
+            this.wallAvoidance = this.wallAvoidance || new THREE.Vector3();
+            this.wallAvoidance.set(0, 0, 0);
+            if (map && map.checkCollision(myPos, 1.2, this.myChamberIdx)) {
+                const cur = this.myChamberIdx !== null ? map.chambers[this.myChamberIdx] : null;
+                if (cur) {
+                    MATH.v1.set(cur.x, myPos.y, cur.z).sub(myPos).normalize();
+                    this.wallAvoidance.add(MATH.v1.multiplyScalar(3.0));
                 }
             }
         }
-        combinedAvoidance.add(this.wallAvoidance);
 
-        // --- Elemental Processing ---
+        const combinedAvoidance = MATH.v2.copy(this.currentAvoidance || MATH.v1.set(0,0,0)).add(this.wallAvoidance || MATH.v1.set(0,0,0));
+
         if (this.burnTimer > 0) {
-            this.burnTimer -= deltaTime;
-            const burnTick = this.burnDamage * deltaTime;
-            this.takeDamage(burnTick, otherEnemies, 'INCENDIARY');
-            
-            // Visual for burn
-            if (Math.random() < 0.1) {
-                const p = this.mesh.position.clone();
-                p.y += Math.random();
-                this.mesh.children[0].material.color.set(0xff4400);
-            }
+            this.burnTimer -= deltaTime * updateModulo;
+            this.takeDamage(this.burnDamage * deltaTime * updateModulo, otherEnemies, 'INCENDIARY');
+        }
+
+        if (this.mutator === 'REGENERATOR' && !this.isDead && this.health < this.maxHealth) {
+            this.health = Math.min(this.maxHealth, this.health + (this.maxHealth * 0.02 * deltaTime * updateModulo));
         }
 
         if (this.shockTimer > 0) {
-            this.shockTimer -= deltaTime;
-            this.timeScale = 0.2; // Significant slow/stun during shock
-            
-            // Shock visual
-            if (Math.random() < 0.15) {
-                this.mesh.children[0].material.color.set(0x00ffff);
+            this.shockTimer -= deltaTime * updateModulo;
+            this.timeScale = 0.2; 
+            if (Math.random() < 0.1) {
+                this.sprites.forEach(s => {
+                    if (s && s.material) s.material.color.set(0x00ffff);
+                });
             }
-
-            // Occasional chain arc
-            if (Date.now() - this.lastShockChain > 1000) {
-                this.lastShockChain = Date.now();
+            if (nowMs - this.lastShockChain > 1500) {
+                this.lastShockChain = nowMs;
                 this.executeChainLightning(this, 10, otherEnemies);
             }
         } else if (this.timeScale === 0.2) {
-            this.timeScale = 1.0; // Reset after shock
+            this.timeScale = 1.0;
         }
 
-        // Check for nearby Overclockers - Throttled
-        if (this.isAlly && (!this.lastOverclockCheck || Date.now() - this.lastOverclockCheck > 400)) {
-            this.lastOverclockCheck = Date.now();
+        if (this.isAlly && (nowMs - (this.lastOverclockCheck || 0) > 800)) {
+            this.lastOverclockCheck = nowMs;
             this.isOverclocked = false;
-            const overclockRange = 6;
-            const overclockRangeSq = overclockRange * overclockRange;
-            const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, overclockRange) : otherEnemies;
+            const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, 6) : [];
             for (let i = 0; i < nearby.length; i++) {
                 const e = nearby[i];
                 if (e.isAlly && !e.isDead && e.modules.includes('OVERCLOCK')) {
-                    if (e.mesh.position.distanceToSquared(this.mesh.position) < overclockRangeSq) {
+                    if (e.mesh.position.distanceToSquared(this.mesh.position) < 36) {
                         this.isOverclocked = true;
                         break;
                     }
@@ -810,1011 +978,530 @@ export class Enemy {
             }
         }
 
-        // Apply effects to turrets if we are a support drone
-        if (this.isAlly) {
-            const hasOverclock = this.modules.includes('OVERCLOCK');
-            const hasRepair = this.modules.includes('REPAIR_FIELD');
-            
-            if (hasOverclock || hasRepair) {
-                turrets.forEach(t => {
-                    const d = t.mesh.position.distanceTo(this.mesh.position);
-                    if (d < 6) {
-                        if (hasOverclock) {
-                            // Turrets don't have a timeScale property, we should add it or handle it in Turret.js
-                            // For now let's assume we want to speed up their fireRate
-                            t.supportOverclocked = true; 
-                        }
-                        if (hasRepair) {
-                            t.health = Math.min(t.maxHealth, t.health + 5 * deltaTime);
-                        }
-                    }
-                });
-            }
+        if (this.navigation && !this.isPathfinding && nowMs - this.lastPathUpdate > this.pathUpdateInterval) {
+            this.lastPathUpdate = nowMs;
+            this.isPathfinding = true;
+            const pathToken = ++this.pathRequestToken;
+            const pathTarget = MATH.v4.copy(targetPos);
+            const self = this;
+            this.navigation.findPathAsync(this.mesh.position, pathTarget, function(newPath) {
+                if (pathToken !== self.pathRequestToken) return;
+                self.isPathfinding = false;
+                if (newPath && !self.isDead) {
+                    self.path = newPath.map(function(p) { return new THREE.Vector3(p.x, 0.5, p.z); });
+                    self.pathIndex = 0;
+                }
+            });
         }
 
-        // Chrono stabilizer logic
-        if (this.isAlly && this.modules.includes('CHRONO_DILATION')) {
-            const stabilizer = this.mesh.getObjectByName('chrono_stabilizer');
-            if (stabilizer) {
-                stabilizer.rotation.z += deltaTime * 3;
-                stabilizer.rotation.y += deltaTime * 2;
-                stabilizer.children[0].rotation.x += deltaTime; // Spin the ring
-            }
-        }
-
-        // Phase Projector logic
-        if (this.isAlly && this.modules.includes('PHASE_SHIFT_CLOAK')) {
-            const projector = this.mesh.getObjectByName('phase_projector');
-            if (projector) {
-                projector.rotation.z -= deltaTime * 4;
-                const core = projector.getObjectByName('phase_core');
-                if (core) core.scale.setScalar(1 + Math.sin(Date.now() * 0.01) * 0.3);
-            }
-        }
-
-        // Resonance Tuning logic
-        if (this.isAlly && this.modules.includes('RESONANCE_OVERLOAD')) {
-            const fork = this.mesh.getObjectByName('resonance_tuning_fork');
-            if (fork) {
-                const vib = Math.sin(Date.now() * 0.05) * 0.05;
-                fork.position.x = 0.4 + vib;
-                for(let i=0; i<3; i++) {
-                    const ring = fork.getObjectByName(`res_ring_${i}`);
-                    if (ring) {
-                        ring.scale.setScalar(1 + Math.sin(Date.now() * 0.02 + i) * 0.2);
-                    }
-                }
-            }
-        }
-
-        // Overclock field logic (visual only for the emitter)
-        if (this.isAlly && this.modules.includes('OVERCLOCK')) {
-            const emitter = this.mesh.getObjectByName('overclock_emitter');
-            if (emitter) {
-                emitter.rotation.z += deltaTime * 5;
-                const field = emitter.getObjectByName('overclock_visual_field');
-                if (field) {
-                    field.rotation.y += deltaTime * 0.5;
-                }
-            }
-        }
-
-        // Repair field logic
-        if (this.isAlly && this.modules.includes('REPAIR_FIELD')) {
-            const emitter = this.mesh.getObjectByName('repair_emitter');
-            if (emitter) {
-                emitter.rotation.y += deltaTime * 2;
-                const field = emitter.getObjectByName('repair_visual_field');
-                if (field) {
-                    field.scale.setScalar(0.95 + Math.sin(Date.now() * 0.003) * 0.05);
-                }
+        if (shouldUpdateVisuals) this.sprites.forEach(sprite => {
+            if (!sprite || !sprite.material) return;
+            const mat = sprite.material;
+            if (this.isAlly) {
+                mat.color.set(this.isCloaked ? 0x4444ff : 0x00ff00);
+                if (this.isCloaked) mat.opacity = 0.3;
+            } else if (this.isCloaked) {
+                mat.opacity = 0.05 + Math.sin(nowMs * 0.01) * 0.05;
+                mat.color.set(0x8800ff);
             }
 
-            // Throttled repair logic
-            if (!this.lastRepairTick || Date.now() - this.lastRepairTick > 500) {
-                this.lastRepairTick = Date.now();
-                const repairRadius = 5;
-                const repairRadiusSq = repairRadius * repairRadius;
-                const repairAmt = 2; // HP per tick (2 HP every 500ms = 4 HP/s)
-
-                // Heal player
-                if (this.mesh.position.distanceToSquared(playerPos) < repairRadiusSq) {
-                    this.player.heal(repairAmt);
-                }
-
-                // Heal nearby allies
-                const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, repairRadius) : otherEnemies;
-                for (let i = 0; i < nearby.length; i++) {
-                    const e = nearby[i];
-                    if (e.isAlly && !e.isDead && e !== this) {
-                        if (e.mesh.position.distanceToSquared(this.mesh.position) < repairRadiusSq) {
-                            e.health = Math.min(e.maxHealth, e.health + repairAmt);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Micro-drone swarm update
-        if (this.isAlly && this.microDrones.length > 0) {
-            this.microDrones.forEach(drone => drone.update(deltaTime, otherEnemies, this.targetEnemy));
-        }
-
-        // Self-destruct blinking logic
-        if (this.isAlly && this.modules.includes('SELF_DESTRUCT')) {
-            const core = this.mesh.getObjectByName('destruct_core');
-            if (core) {
-                const blink = Math.sin(Date.now() * 0.01) * 0.5 + 0.5;
-                core.material.color.setRGB(1, blink * 0.2, blink * 0.2);
-                core.scale.setScalar(1 + blink * 0.5);
-            }
-        }
-
-        // EMP Burst logic
-        if (this.isAlly && this.modules.includes('EMP_BURST')) {
-            this.empBurstTimer += deltaTime;
-            if (this.empBurstTimer > 8) { // Burst every 8 seconds
-                // Check for enemies nearby
-                let hasEnemiesInRange = false;
-                const radius = 8;
-                const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, radius) : otherEnemies;
-                for (let i = 0; i < nearby.length; i++) {
-                    const e = nearby[i];
-                    if (!e.isAlly && !e.isDead && e.mesh.position.distanceToSquared(this.mesh.position) < radius * radius) {
-                        hasEnemiesInRange = true;
-                        break;
-                    }
-                }
-
-                if (hasEnemiesInRange) {
-                    this.executeEMPBurst(nearby);
-                    this.empBurstTimer = 0;
-                }
-            }
-        }
-
-        // Auto-repair logic
-        if (this.isAlly && this.modules.includes('REPAIR') && this.health < this.maxHealth) {
-            this.health += deltaTime * 2; // Heal 2 HP per second
-            if (this.health > this.maxHealth) this.health = this.maxHealth;
-        }
-
-        // Gravity Singularity logic
-        if (this.isAlly && this.modules.includes('GRAVITY_SINGULARITY')) {
-            this.singularityTimer += deltaTime;
-            const core = this.mesh.getObjectByName('singularity_core');
-            const particles = this.mesh.getObjectByName('singularity_particles');
-
-            // Singularity cycle: 12s cooldown, 4s active
-            const cycleTime = 16;
-            const activeTime = 4;
-            const echoDuration = 3;
-            
-            const isSingularityActive = (this.singularityTimer % cycleTime) < activeTime;
-            const isEchoActive = this.modules.includes('SINGULARITY_ECHO') && 
-                                (this.singularityTimer % cycleTime) >= activeTime && 
-                                (this.singularityTimer % cycleTime) < (activeTime + echoDuration);
-
-            if (this.wasSingularityActive && !isSingularityActive) {
-                // Main Singularity ended!
-                if (this.modules.includes('VOLATILE_DETONATION') && this.onSingularityDetonate) {
-                    this.onSingularityDetonate(this, 'VOLATILE');
-                }
-                if (this.modules.includes('NEUTRON_FLUX') && this.onSingularityDetonate) {
-                    this.onSingularityDetonate(this, 'NEUTRON');
-                }
-            }
-            
-            // If echo just ended
-            if (this.wasEchoActive && !isEchoActive) {
-                 if (this.modules.includes('VOLATILE_DETONATION') && this.onSingularityDetonate) {
-                    this.onSingularityDetonate(this, 'VOLATILE'); // Echo also detonates!
-                }
-                if (this.modules.includes('NEUTRON_FLUX') && this.onSingularityDetonate) {
-                    this.onSingularityDetonate(this, 'NEUTRON');
-                }
-            }
-
-            this.wasSingularityActive = isSingularityActive;
-            this.wasEchoActive = isEchoActive;
-
-            if (core) {
-                const echoCore = this.mesh.getObjectByName('echo_core');
-                const hasGravityWell = this.modules.includes('GRAVITY_WELL');
-                const hasCrushingPressure = this.modules.includes('CRUSHING_PRESSURE');
-                const hasSingularityCollapse = this.modules.includes('SINGULARITY_COLLAPSE');
-                const hasChronoDilation = this.modules.includes('CHRONO_DILATION');
-                const hasPhaseShift = this.modules.includes('PHASE_SHIFT_CLOAK');
-                const hasResonance = this.modules.includes('RESONANCE_OVERLOAD');
-                
-                if (isSingularityActive || isEchoActive) {
-                    if (hasPhaseShift) {
-                        this.isPhased = true;
-                        // Check if player is within range
-                        if (this.mesh.position.distanceTo(playerPos) < (isSingularityActive ? 10 : 5)) {
-                            this.player.isPhased = true;
-                        }
-                    }
-
-                    let radius = isSingularityActive ? 10 : 5;
-                    let pullForce = isSingularityActive ? 8 : 4;
-                    const crushingDamageBase = 20; // Base DOT per second
-
-                    if (hasSingularityCollapse) {
-                        pullForce *= 2; // Double pull speed
-                    }
-                    
-                    const pulse = Math.sin(Date.now() * 0.01) * 0.5 + (isSingularityActive ? 1.5 : 0.8);
-                    
-                    if (isSingularityActive) {
-                        core.scale.setScalar(pulse);
-                        core.rotation.y += deltaTime * 10;
-                        if (hasChronoDilation) core.material.emissive.set(0x00ffff);
-                        if (hasPhaseShift) core.material.emissive.set(0xff00ff);
-                    } else if (isEchoActive) {
-                        core.scale.setScalar(pulse);
-                        core.material.opacity = 0.5; // Faded echo
-                        core.rotation.y += deltaTime * 5;
-                        if (hasChronoDilation) core.material.emissive.set(0x004488);
-                        if (hasPhaseShift) core.material.emissive.set(0x880088);
-                    }
-
-                    if (particles) {
-                        particles.rotation.z -= deltaTime * (isSingularityActive ? 15 : 7);
-                        particles.scale.setScalar(isSingularityActive ? 1.5 : 0.7);
-                        if (hasChronoDilation) particles.children.forEach(p => p.material.color.set(0x00ffff));
-                        if (hasPhaseShift) particles.children.forEach(p => p.material.color.set(0xff00ff));
-                    }
-
-                    // Pull effect - Throttled enemy collection
-                    if (!this.lastSingularitySearch || Date.now() - this.lastSingularitySearch > 100) {
-                        this.lastSingularitySearch = Date.now();
-                        this.caughtEnemies = [];
-                        const radiusSq = radius * radius;
-                        const nearby = spatialGrid ? spatialGrid.getNearby(this.mesh.position, radius) : otherEnemies;
-                        for (let i = 0; i < nearby.length; i++) {
-                            const e = nearby[i];
-                            if (!e.isAlly && !e.isDead && e.mesh.position.distanceToSquared(this.mesh.position) < radiusSq) {
-                                this.caughtEnemies.push(e);
-                            }
-                        }
-                    }
-
-                    this.caughtEnemies.forEach(e => {
-                        const pullDir = new THREE.Vector3().subVectors(this.mesh.position, e.mesh.position).normalize();
-                        e.mesh.position.x += pullDir.x * pullForce * deltaTime;
-                        e.mesh.position.z += pullDir.z * pullForce * deltaTime;
-                        e.mesh.position.y = THREE.MathUtils.lerp(e.mesh.position.y, this.mesh.position.y, deltaTime * 2);
-                        
-                        if (hasGravityWell) {
-                            e.gravityWellFactor = 1.5; // 50% extra damage
-                        }
-
-                        if (hasChronoDilation) {
-                            e.timeScale = 0.3; // 70% slow
-                        }
-
-                        if (hasResonance) {
-                            e.resonanceOwner = this;
-                        }
-
-                        if (hasCrushingPressure) {
-                            const dSq = e.mesh.position.distanceToSquared(this.mesh.position);
-                            const pressureFactor = 1 + (1 - (Math.sqrt(dSq) / radius)) * 2;
-                            e.takeDamage(crushingDamageBase * pressureFactor * deltaTime, otherEnemies);
-                            
-                            if (Math.random() < 0.05) {
-                                // Reduced particle spawn for performance
-                            }
-                        }
-                    });
-
-                    // Kinetic Chain Arc Logic
-                    if (this.modules.includes('KINETIC_CHAIN') && this.caughtEnemies.length > 1) {
-                        this.kineticChainTimer += deltaTime;
-                        const arcCooldown = isSingularityActive ? 0.4 : 0.6;
-                        if (this.kineticChainTimer > arcCooldown) {
-                            this.kineticChainTimer = 0;
-                            this.executeKineticChain(this.caughtEnemies, spatialGrid);
-                        }
-                    }
-                } else {
-                    core.scale.setScalar(1.0);
-                    core.material.opacity = 1.0;
-                    core.rotation.y += deltaTime * 2;
-                    if (particles) {
-                        particles.rotation.z -= deltaTime * 2;
-                        particles.scale.setScalar(1.0);
-                    }
-                }
-
-                if (echoCore) {
-                    echoCore.rotation.x += deltaTime;
-                    echoCore.scale.setScalar(1 + Math.sin(Date.now() * 0.005) * 0.2);
-                }
-            }
-        }
-
-        // EMP Logic
-        if (this.isDisabled) {
-            this.disableTimer -= deltaTime * 1000;
-            if (this.disableTimer <= 0) {
-                this.isDisabled = false;
-            }
-            // Fall to ground if disabled
-            this.mesh.position.y = THREE.MathUtils.lerp(this.mesh.position.y, 0.5, deltaTime * 2);
-            // Glitchy rotation
-            this.mesh.rotation.z = Math.sin(Date.now() * 0.05) * 0.2;
-            
-            // Visual glitch: random color shift
-            const body = this.mesh.children[0];
-            if (Math.random() < 0.1) {
-                body.material.color.set(0x00ffff);
+            if (isThermalActive) {
+                mat.opacity = 1.0;
+                mat.color.set(this.isAlly ? 0x00ffaa : 0xff5500); 
             } else {
-                body.material.color.set(this.isAlly ? 0x00ff00 : 0xffffff);
-            }
-            return; // Skip normal AI
-        }
-
-        // Check if inside smoke
-        this.isInSmoke = activeSmokeScreens.some(smoke => smoke.checkCollision(this.mesh.position));
-        
-        const sprite = this.mesh.children[0];
-
-        if (this.isAlly) {
-            sprite.material.color.set(this.isCloaked ? 0x4444ff : 0x00ff00);
-            if (this.isCloaked) {
-                sprite.material.opacity = 0.3;
-            }
-        } else if (this.isCloaked) {
-            // High-tech shimmering effect for Neon-Shift cloaking
-            sprite.material.opacity = 0.05 + Math.sin(Date.now() * 0.01) * 0.05;
-            sprite.material.color.set(0x8800ff); // Purple tint for experimental tech
-        }
-
-        if (isThermalActive) {
-            sprite.material.opacity = 1.0;
-            sprite.material.color.set(this.isAlly ? 0x00ffaa : 0xff5500); 
-        } else if (this.isInSmoke) {
-            sprite.material.opacity = THREE.MathUtils.lerp(sprite.material.opacity, 0.2, deltaTime * 5);
-            if (!this.isAlly) sprite.material.color.set(0xff0000);
+                this.isInSmoke = activeSmokeScreens.some(smoke => smoke.checkCollision(myPos));
+        if (this.isInSmoke) {
+            mat.opacity = THREE.MathUtils.lerp(mat.opacity, 0.2, deltaTime * 5);
+            if (!this.isAlly) mat.color.set(0x666666);
             this.targetY = 4.5; 
         } else if (!this.isCloaked) {
-            sprite.material.opacity = THREE.MathUtils.lerp(sprite.material.opacity, 1.0, deltaTime * 5);
-            if (!this.isAlly) sprite.material.color.set(0xffffff);
-            this.targetY = 1.5 + Math.sin(Date.now() * 0.005) * 0.2;
-        }
-
-        // --- Pathfinding ---
-        if (this.navigation && Date.now() - this.lastPathUpdate > this.pathUpdateInterval) {
-            this.lastPathUpdate = Date.now();
-            this.path = this.navigation.findPath(this.mesh.position, targetPos);
-            this.pathIndex = 0;
-        }
-
-        const dist = this.mesh.position.distanceTo(targetPos);
-
-        // --- Handle Cloak Logic for Neon-Shift Units ---
-        if (!this.isAlly && this.facilityId === 'neon' && this.isCloaked) {
-            // Re-cloak if player is far away
-            if (dist > this.cloakActionRange + 5) {
-                this.isCloaked = true;
+                    mat.opacity = THREE.MathUtils.lerp(mat.opacity, 1.0, deltaTime * 5);
+                    if (!this.isAlly) mat.color.set(0xffffff);
+                    this.targetY = 1.5 + Math.sin(nowMs * 0.005) * 0.2;
+                }
             }
-            // Auto-reveal if player is too close (sensor interference)
-            if (dist < this.cloakRevealRange) {
-                this.isCloaked = false;
-                // Reveal visual effect
-                this.mesh.children[0].material.emissive.set(0x00ffff);
-            }
-        }
-
-        // Throttled Height & Movement Height
-        if (!this.lastHeightUpdate || Date.now() - this.lastHeightUpdate > 100) {
-            this.lastHeightUpdate = Date.now();
-            if (this.isInSmoke) {
-                this.targetY = 4.5;
-            } else if (!this.isCloaked) {
-                this.targetY = 1.5 + Math.sin(Date.now() * 0.005) * 0.2;
-            }
-        }
+        });
 
         const distSq = myPos.distanceToSquared(targetPos);
-        const detectionRangeSq = CONFIG.ENEMY.DETECTION_RANGE * CONFIG.ENEMY.DETECTION_RANGE;
+        
+        if (this.visualLOD && this.scene.game && this.scene.game.camera) {
+            this.visualLOD.update(this.scene.game.camera);
+        }
 
-        if (distSq < detectionRangeSq) {
-            // Face target (sprite handles its own billboarding)
+        if (distSq < 2500) {
             this.mesh.lookAt(targetPos.x, myPos.y, targetPos.z);
 
-            // Update Shield Visuals (Throttled)
-            const shield = this.mesh.getObjectByName('module_shield') || this.mesh.getObjectByName('adaptive_shield') || this.mesh.getObjectByName('projector_shield');
-            if (shield && shield.material.uniforms) {
-                shield.material.uniforms.time.value += deltaTime;
-                if (shield.material.uniforms.impactStrength.value > 0) {
-                    shield.material.uniforms.impactStrength.value -= deltaTime * 3;
+            if (!this.isDisabled) {
+                if (this.type === 'EXPLODER' && distSq < 9) this.die(); 
+                if (this.type === 'PARASITE' && distSq < 4) {
+                    this.player.takeDamage(5 * deltaTime * 10 * updateModulo);
+                    if (Math.random() < 0.1) this.player.shakeAmount += 0.2;
                 }
             }
 
-            // Move towards target if not too close
             let moveDistThreshold = targetingPlayer ? this.attackRange * 0.8 : 5;
-            
-            // Stance adjustments
             let finalMoveSpeed = this.moveSpeed * this.timeScale;
             if (this.isAlly) {
-                if (this.stance === 'AGGRESSIVE') {
-                    moveDistThreshold *= 0.5;
-                    finalMoveSpeed *= 1.3;
-                } else if (this.stance === 'DEFENSIVE') {
-                    moveDistThreshold *= 1.5;
-                    finalMoveSpeed *= 0.8;
-                }
+                if (this.stance === 'AGGRESSIVE') { moveDistThreshold *= 0.5; finalMoveSpeed *= 1.3; }
+                else if (this.stance === 'DEFENSIVE') { moveDistThreshold *= 1.5; finalMoveSpeed *= 0.8; }
             }
 
-            if (distSq > Math.pow(moveDistThreshold, 2)) {
-                let moveDir;
-                if (this.path && this.path.length > 0 && this.pathIndex < this.path.length) {
-                    const nextPoint = this.path[this.pathIndex];
-                    if (myPos.distanceToSquared(nextPoint) < 1.0) {
-                        this.pathIndex++;
-                    }
-                    if (this.pathIndex < this.path.length) {
-                        const targetPt = this.path[this.pathIndex];
-                        moveDir = new THREE.Vector3().subVectors(targetPt, myPos).normalize();
-                    } else {
-                        moveDir = new THREE.Vector3().subVectors(targetPos, myPos).normalize();
-                    }
-                } else {
-                    moveDir = new THREE.Vector3().subVectors(targetPos, myPos).normalize();
-                }
-                
-                // Mix in avoidance
-                moveDir.add(combinedAvoidance.multiplyScalar(0.5)).normalize();
+            let moveDir = null;
+            if (this.isElite && !this.isAlly && this.scene.game?.insaneMomentActive) {
+                moveDir = MATH.v3.subVectors(myPos, playerPos).normalize();
+                finalMoveSpeed *= 1.5; moveDistThreshold = 0;
+            }
 
+            if (distSq > moveDistThreshold * moveDistThreshold) {
+                if (!moveDir) {
+                    if (this.path && this.path.length > 0 && this.pathIndex < this.path.length) {
+                        const nextPoint = this.path[this.pathIndex];
+                        if (myPos.distanceToSquared(nextPoint) < 1.0) this.pathIndex++;
+                        if (this.pathIndex < this.path.length) moveDir = MATH.v3.subVectors(this.path[this.pathIndex], myPos).normalize();
+                        else moveDir = MATH.v3.subVectors(targetPos, myPos).normalize();
+                    } else {
+                        moveDir = MATH.v3.subVectors(targetPos, myPos).normalize();
+                    }
+                }
+                moveDir.add(combinedAvoidance.multiplyScalar(0.5)).normalize();
                 if (this.isOverclocked) finalMoveSpeed *= 1.5;
                 
-                myPos.x += moveDir.x * finalMoveSpeed * deltaTime;
-                myPos.z += moveDir.z * finalMoveSpeed * deltaTime;
+                myPos.x += moveDir.x * finalMoveSpeed * deltaTime * updateModulo;
+                myPos.z += moveDir.z * finalMoveSpeed * deltaTime * updateModulo;
             }
 
-            // Smoothly move to target height
             if (this.type !== 'TANK' && this.type !== 'STALKER') {
-                myPos.y = THREE.MathUtils.lerp(myPos.y, this.targetY || 1.5, deltaTime * 2);
-            } else {
-                myPos.y = this.type === 'TANK' ? 0.3 : 0.5;
+                myPos.y = THREE.MathUtils.lerp(myPos.y, this.targetY || 1.5, deltaTime * 2 * updateModulo);
             }
 
-            // Attack logic (Throttled)
             let canSeeTarget = !this.isInSmoke || myPos.y > 3.5;
-            
-            // Rage pulsing light
-            if (this.isRaging && this.rageLight) {
-                this.rageLight.intensity = 2 + Math.sin(Date.now() * 0.01) * 3;
-            }
-
-            // Optimized Wall obstruction check: only check every 500ms and only relevant walls
-            if (canSeeTarget && map && distSq < Math.pow(this.attackRange, 2)) {
-                if (distSq < 16) { // If < 4m, assume LoS for performance
-                    this.isLoSBlocked = false;
-                } else if (!this.lastLoSCheck || Date.now() - this.lastLoSCheck > 500) {
-                    this.lastLoSCheck = Date.now();
-                    
-                    const checkDir = new THREE.Vector3().subVectors(targetPos, myPos).normalize();
-                    this.raycaster.set(myPos, checkDir);
-                    
-                    // Collect relevant wall meshes using spatial grid if possible
+            if (canSeeTarget && map && distSq < this.attackRange * this.attackRange) {
+                if (distSq < 16) this.isLoSBlocked = false;
+                else if (nowMs - (this.lastLoSCheck || 0) > 500) {
+                    this.lastLoSCheck = nowMs;
+                    const checkDir = MATH.v3.subVectors(targetPos, myPos).normalize();
+                    MATH.raycaster.set(myPos, checkDir);
                     const obstacles = [];
-                    const currentRoomIdx = this.myChamberIdx;
-
-                    if (currentRoomIdx !== null && map.spatialGrid.has(currentRoomIdx)) {
-                        const indices = map.spatialGrid.get(currentRoomIdx);
-                        // Limit obstacles checked to first 10 for performance
-                        for(let i=0; i < Math.min(indices.length, 10); i++) {
-                            obstacles.push(map.walls[indices[i]]);
-                        }
-                    } else {
-                        // Minimal fallback
-                        if (map.walls.length > 0) obstacles.push(map.walls[0]);
+                    if (this.myChamberIdx !== null && map.spatialGrid.has(this.myChamberIdx)) {
+                        const indices = map.spatialGrid.get(this.myChamberIdx);
+                        for(let i=0; i < Math.min(indices.length, 10); i++) obstacles.push(map.walls[indices[i]]);
                     }
-
-                    if (map.doors) {
-                        map.doors.forEach(d => {
-                            if (!d.isOpen && d.chamberIndex === currentRoomIdx) obstacles.push(d.pL, d.pR);
-                        });
-                    }
-
                     if (obstacles.length > 0) {
-                        const hits = this.raycaster.intersectObjects(obstacles, true);
-                        const distToTarget = Math.sqrt(distSq);
-                        if (hits.length > 0 && hits[0].distance < distToTarget - 0.5) {
-                            this.isLoSBlocked = true;
-                        } else {
-                            this.isLoSBlocked = false;
-                        }
+                        const hits = MATH.raycaster.intersectObjects(obstacles, true);
+                        this.isLoSBlocked = (hits.length > 0 && hits[0].distance < Math.sqrt(distSq) - 0.5);
                     }
                 }
                 if (this.isLoSBlocked) canSeeTarget = false;
             }
 
-            let cooldown = this.type === 'TANK' ? 4000 : (this.modules.includes('RAPID_FIRE') ? 1000 : 2000);
-            if (this.type === 'STALKER') cooldown = 1000;
-            if (this.isRaging) cooldown *= 0.5; // Double fire rate in rage mode
-            
-            if (this.isAlly) {
-                if (this.stance === 'AGGRESSIVE') cooldown *= 0.7;
-                else if (this.stance === 'DEFENSIVE') cooldown *= 1.2;
-            }
+            let cooldownMult = 1.0;
+            if (this.isRaging) cooldownMult *= 0.5;
+            if (this.isAlly) cooldownMult *= (this.stance === 'AGGRESSIVE' ? 0.7 : (this.stance === 'DEFENSIVE' ? 1.2 : 1.0));
+            cooldownMult /= this.timeScale; 
+            if (this.isOverclocked) cooldownMult *= 0.6; 
 
-            cooldown /= this.timeScale; 
-            if (this.isOverclocked) cooldown *= 0.6; 
+            let baseCooldown = (this.type === 'TANK' ? 4000 : (this.modules.includes('RAPID_FIRE') ? 1000 : 2000));
+            if (this.type === 'STALKER') baseCooldown = 1000;
+            this.weapon.cooldown = baseCooldown * cooldownMult;
 
-            if (canSeeTarget && distSq < Math.pow(this.attackRange, 2) && Date.now() - this.lastAttack > cooldown) {
-                this.lastAttack = Date.now();
+            if (canSeeTarget && distSq < this.attackRange * this.attackRange && shouldUpdateCombat) {
                 this.shoot(targetingPlayer, otherEnemies, spatialGrid);
             }
         }
     }
 
     shoot(targetingPlayer = true, otherEnemies = [], spatialGrid = null) {
-        // Visual feedback
-        const flashColor = this.isAlly ? (this.modules.includes('HEAVY_LASER') ? 0xff00ff : 0x00ff00) : 0xff0000;
+        const now = Date.now();
+        if (now < (this.nextShootFxTime || 0)) return;
+
+        const muzzlePos = MATH.v1.copy(this.mesh.position).add(MATH.v2.set(0, 0.5, 0));
         
-        if (!this.muzzlePos) this.muzzlePos = new THREE.Vector3();
-        this.muzzlePos.copy(this.mesh.position);
-        this.muzzlePos.y += 0.5;
-        
-        if (this.particleSystem) {
-            let targetPos;
-            if (this.isAlly && this.targetEnemy) {
-                targetPos = this.targetEnemy.mesh.position;
-            } else if (targetingPlayer) {
-                targetPos = this.player.camera.position;
-            }
+        let targetPos;
+        if (this.isAlly && this.targetEnemy) targetPos = this.targetEnemy.mesh.position;
+        else if (targetingPlayer) targetPos = this.player.camera.position;
 
-            if (targetPos) {
-                const shootDir = new THREE.Vector3().subVectors(targetPos, this.muzzlePos).normalize();
-                this.muzzlePos.add(shootDir.clone().multiplyScalar(0.8));
-                
-                // Telegraphing: Pulse the enemy and play a warning sound
-                const sprite = this.mesh.children[0];
-                if (sprite && sprite.material && !this.isAlly) {
-                    sprite.material.color.set(0xffffff);
-                    this.hitFlashTimer = 0.4; // Longer flash for telegraphing
-                    
-                    // Trigger a warning beep via Tone.js if available
-                    if (this.scene.game) {
-						this.scene.game.playArbiterSound("enemy_shoot");
-					}
-                }
+        if (targetPos && this.weapon) {
+            const shootDir = MATH.v3.subVectors(targetPos, muzzlePos).normalize();
+            muzzlePos.add(shootDir.clone().multiplyScalar(0.8));
 
-                this.particleSystem.createMuzzleFlash(this.muzzlePos, shootDir, flashColor, true);
-                
-                if (!this.isAlly) {
-                    // Physical Projectiles only - no automatic damage timers!
-                    this.particleSystem.createEnemyProjectile(this.muzzlePos, targetPos, flashColor);
-                    this.particleSystem.createPersistentTracer(this.muzzlePos, targetPos, flashColor);
-                } else {
-                    this.particleSystem.createTracer(this.muzzlePos, targetPos, flashColor);
-                }
-            }
-        }
-
-        let damage = this.damage;
-        if (this.isAlly && this.modules.includes('HEAVY_LASER')) {
-            damage *= 1.5;
-        }
-
-        if (this.isAlly && this.targetEnemy) {
-            this.targetEnemy.takeDamage(damage, otherEnemies, 'PLAYER', spatialGrid);
-            if (this.modules.includes('CHAIN_LIGHTNING')) {
-                this.executeChainLightning(this.targetEnemy, damage * 0.5, otherEnemies, spatialGrid);
-            }
-        }
-        // Removed targetingPlayer automatic damage branch!
-    }
-
-    executeChainLightning(primaryTarget, damage, allEnemies, spatialGrid = null) {
-        const chainRange = 6;
-        const maxTargets = 3;
-        let chainCount = 0;
-        let currentSource = primaryTarget;
-        const hitTargets = new Set([primaryTarget]);
-
-        const findNextTarget = (source) => {
-            let nearest = null;
-            let minDist = chainRange;
-            const nearby = spatialGrid ? spatialGrid.getNearby(source.mesh.position, chainRange) : allEnemies;
-
-            nearby.forEach(e => {
-                if (!e.isAlly && !e.isDead && !hitTargets.has(e)) {
-                    const d = e.mesh.position.distanceTo(source.mesh.position);
-                    if (d < minDist) {
-                        minDist = d;
-                        nearest = e;
-                    }
-                }
+            const fired = this.weapon.fire(muzzlePos, shootDir, this.scene.game, {
+                damageType: this.mutator
             });
-            return nearest;
-        };
-
-        const createArc = (start, end) => {
-            if (this.particleSystem) {
-                this.particleSystem.createTracer(start, end, 0x00ffff);
-            }
-        };
-
-        while (chainCount < maxTargets) {
-            const next = findNextTarget(currentSource);
-            if (!next) break;
-
-            createArc(currentSource.mesh.position, next.mesh.position);
-            next.takeDamage(damage, allEnemies, 'PLAYER', spatialGrid);
-            hitTargets.add(next);
-            currentSource = next;
-            chainCount++;
-        }
-    }
-
-    executeKineticChain(enemies, spatialGrid = null) {
-        // Create arcs between random pairs of enemies in the singularity
-        const arcCount = Math.min(enemies.length, 5);
-        const damagePerArc = 15;
-        let totalDamageDealt = 0;
-
-        for (let i = 0; i < arcCount; i++) {
-            const e1 = enemies[Math.floor(Math.random() * enemies.length)];
-            const e2 = enemies[Math.floor(Math.random() * enemies.length)];
             
-            if (e1 !== e2) {
-                if (this.particleSystem) {
-                    this.particleSystem.createTracer(e1.mesh.position, e2.mesh.position, 0x00ffff);
+            if (fired) {
+                // Add a small randomized recovery window so groups of enemies don't fire in sync
+                this.nextShootFxTime = now + (this.isElite ? 140 : 180) + Math.floor(Math.random() * 60);
+                this.hitFlashTimer = 0;
+                this.spawnBurstCooldown = Math.max(this.spawnBurstCooldown, this.isElite ? 80 : 140);
+
+                if (!this.isAlly) {
+                    this.sprites.forEach(s => {
+                        if (s && s.material) s.material.color.set(0xffffff);
+                    });
                 }
-                
-                e1.takeDamage(damagePerArc, enemies, 'PLAYER', spatialGrid);
-                e2.takeDamage(damagePerArc, enemies, 'PLAYER', spatialGrid);
-                totalDamageDealt += damagePerArc * 2;
-            }
-        }
 
-        // Siphon logic: Restore health based on damage dealt
-        if (this.modules.includes('MAGNETIC_SIPHON') && totalDamageDealt > 0) {
-            const siphonRatio = 0.25; // 25% lifesteal
-            const healAmount = totalDamageDealt * siphonRatio;
-            this.health = Math.min(this.maxHealth, this.health + healAmount);
-            
-            // Visual feedback for siphon
-            const siphonRing = this.mesh.getObjectByName('siphon_ring');
-            if (siphonRing) {
-                siphonRing.scale.setScalar(2.0);
-                setTimeout(() => {
-                    if (siphonRing) siphonRing.scale.setScalar(1.0);
-                }, 100);
+                if (this.isAlly && this.targetEnemy) {
+                    let damage = this.damage * (this.player.perks?.droneBuild ? 1.5 : 1.0);
+                    if (this.modules.includes('HEAVY_LASER')) damage *= 1.5;
+                    let dtype = 'PLAYER';
+                    if (this.player.perks?.fireBuild) dtype = 'INCENDIARY';
+                    else if (this.player.perks?.shockBuild) dtype = 'SHOCK';
+                    this.targetEnemy.takeDamage(damage, otherEnemies, dtype, spatialGrid);
+                }
             }
         }
     }
 
     takeDamage(amount, sourceEnemies = [], damageType = 'PLAYER', spatialGrid = null) {
-        let finalAmount = amount * (this.gravityWellFactor || 1.0);
         if (this.isDead || this.isPhased) return; 
+        let final = amount * (this.gravityWellFactor || 1.0);
+        if (this.isFragile) final *= 1.5;
+        if (this.isFrozen && damageType === 'PLAYER') final *= 2.0;
 
-        // Handle Elemental Status Application
         if (damageType === 'INCENDIARY' && this.burnTimer <= 0) {
-            this.burnTimer = 3.0; // 3 seconds of burning
-            this.burnDamage = amount * 0.4; // DOT is 40% of trigger hit
+            this.burnTimer = 3.0; this.burnDamage = amount * 0.4;
         } else if (damageType === 'SHOCK' && this.shockTimer <= 0) {
-            this.shockTimer = 1.2; // 1.2s stun
-            this.lastShockChain = Date.now();
+            this.shockTimer = 1.2; this.lastShockChain = Date.now();
             this.executeChainLightning(this, amount * 0.5, sourceEnemies, spatialGrid);
         }
 
-        if (this.hasProjectedShield) {
-            finalAmount *= 0.25; 
-            
-            // Shield Impact Ripple
-            const shield = this.mesh.getObjectByName('module_shield') || this.mesh.getObjectByName('adaptive_shield') || this.mesh.getObjectByName('projector_shield');
-            if (shield && shield.material.uniforms) {
-                shield.material.uniforms.impactStrength.value = 1.0;
-                // Randomize impact position on the sphere for visual variety
-                shield.material.uniforms.impactPos.value.set(
-                    (Math.random() - 0.5) * 2,
-                    (Math.random() - 0.5) * 2,
-                    (Math.random() - 0.5) * 2
-                ).normalize().multiplyScalar(1.2);
-            }
-
-            if (Math.random() < 0.2 && this.particleSystem) {
-                this.particleSystem.flashLight(this.mesh.position, 0x00ffff, 5, 3, 100);
-            }
-        }
-
-        // Heavy Sec-Bot Adaptation
-        if (this.type === 'HEAVY_SEC_BOT' && damageType !== 'INCENDIARY' && damageType !== 'SHOCK') {
-            this.adaptiveResistances[damageType] = (this.adaptiveResistances[damageType] || 0) + finalAmount;
-            if (this.adaptiveResistances[damageType] > 100 && this.currentShieldType !== damageType) {
-                this.adaptShield(damageType);
-            }
-            if (this.currentShieldType === damageType) {
-                finalAmount *= 0.2; // 80% resistance to adapted type
-            }
-        }
-
-        const sprite = this.mesh.children[0];
-        if (sprite && sprite.material) {
-            if (!this.hitFlashTimer || this.hitFlashTimer <= 0) this.originalColor = sprite.material.color.clone();
-            sprite.material.color.set(0xffffff);
-            this.hitFlashTimer = 0.08;
-        }
+        if (this.hasProjectedShield) final *= 0.25; 
 
         if (this.isAlly && this.shieldHealth > 0) {
-            this.shieldHealth -= finalAmount;
+            this.shieldHealth -= final;
             if (this.shieldHealth < 0) { this.health -= Math.abs(this.shieldHealth); this.shieldHealth = 0; }
-        } else this.health -= finalAmount;
+        } else this.health -= final;
 
-        if (this.type === 'HEAVY_SEC_BOT' && this.bossPhase === 1 && this.health < this.maxHealth * 0.5) this.transitionToPhase2();
-        if (this.type === 'HEAVY_SEC_BOT' && !this.isRaging && this.health < this.maxHealth * 0.3) this.transitionToRage();
+        this.sprites.forEach(sprite => {
+            if (sprite && sprite.material) {
+                if (this.hitFlashTimer <= 0) this.originalColor.copy(sprite.material.color);
+                sprite.material.color.set(0xffffff);
+            }
+        });
+        this.hitFlashTimer = 0;
+        if (this.scene.game) this.scene.game.hitFeedback(damageType === 'SHOCK' ? 0.5 : 1.0);
+
         if (this.health <= 0) this.die();
     }
 
-    transitionToPhase2() {
-        this.bossPhase = 2;
-        this.moveSpeed *= 1.4; // 40% speed boost
-        
-        // Visual feedback for phase shift
-        const body = this.mesh.children[0];
-        body.material.color.set(0xff5555); // Reddish tint
-        
-        // Particle burst / flash
-        const flash = new THREE.PointLight(0xff0000, 20, 15);
-        flash.position.copy(this.mesh.position);
-        this.scene.add(flash);
-        setTimeout(() => this.scene.remove(flash), 500);
-
-        console.log("HEAVY SEC-BOT: ARMOR PLATES EJECTED - ENTERING OVERCLOCK MODE");
+    die() {
+        if (this.isDead) return;
+        this.isDead = true;
+        this.deathTimer = 0.2;
+        if (this.glow) this.glow.visible = false;
+        if (this.onDeath) this.onDeath(this);
     }
 
-    transitionToRage() {
-        this.isRaging = true;
-        this.moveSpeed *= 1.5; // Additional speed
-        this.damage *= 1.2;    // More damage
-        
-        // Massive visual feedback
-        const body = this.mesh.children[0];
-        body.material.color.set(0xff0000); // Deep red
-        
-        if (this.particleSystem) {
-            this.particleSystem.createExplosion(this.mesh.position, 0xff0000, 40, 5);
+    reset(scene, player, position, type, facilityId, navigation, particleSystem, heatLevel, isElite) {
+        this.scene = scene;
+        this.player = player;
+        this.type = type;
+        this.facilityId = facilityId;
+        this.navigation = navigation;
+        this.particleSystem = particleSystem;
+        this.heatLevel = heatLevel;
+        this.isElite = isElite;
+        this.mutator = null;
+
+        this.path = [];
+        this.pathIndex = 0;
+        this.lastPathUpdate = 0;
+        this.pathUpdateInterval = 800 + Math.random() * 1000;
+        this.isPathfinding = false;
+        this.pathRequestToken++;
+
+        const stats = CONFIG.ENEMY.TYPES[this.type];
+        let buff = 1 + (heatLevel - 1) * CONFIG.HEAT.STAT_BUFF_PER_LEVEL;
+        if (this.scene.game && this.scene.game.difficultyMultiplier) {
+            buff *= this.scene.game.difficultyMultiplier;
+        }
+        if (this.isElite) {
+            buff *= 1.5;
+            this.eliteAbilityTimer = 0;
+            this.eliteAbilityCooldown = this.type === 'STALKER' ? 3000 : 5000;
+            const mutators = ['REGENERATOR', 'SHIELD_BREAKER', 'SPEED_DEMON', 'TANK_PLATING'];
+            this.mutator = mutators[Math.floor(Math.random() * mutators.length)];
+            if (this.mutator === 'TANK_PLATING') buff *= 1.5;
+            if (this.mutator === 'SPEED_DEMON') buff *= 1.2;
         }
 
-        // Dedicated rage pulse light
-        this.rageLight = new THREE.PointLight(0xff0000, 5, 10);
-        this.mesh.add(this.rageLight);
+        this.health = stats.HEALTH * buff;
+        this.maxHealth = stats.HEALTH * buff;
+        this.damage = stats.DAMAGE * buff;
+        this.moveSpeed = stats.SPEED * buff;
+        this.attackRange = stats.RANGE;
+        this.scoreValue = stats.SCORE * (this.isElite ? 3 : 1);
+        this.singularityResist = stats.SINGULARITY_RESIST || 0;
+        this.phaseResist = stats.PHASE_RESIST || 0;
 
-        if (this.scene.game) {
-            this.scene.game.shakeAmount = Math.max(this.scene.game.shakeAmount, 1.0);
-            this.scene.game.showProgressionMessage("CRITICAL DANGER: TITAN UNIT ENTERING RAGE MODE");
-        }
-        
-        console.log("HEAVY SEC-BOT: RAGE CORE ACTIVATED");
-    }
+        this.isRaging = false;
+        this.isAlly = facilityId === 'ally';
+        this.isCloaked = false;
+        this.isDead = false;
+        this.isDisabled = false;
+        this.disableTimer = 0;
+        this.isDecoy = false;
+        this.isHunter = false;
+        this.isPhased = false;
+        this.isResonating = false;
+        this.isFragile = false;
+        this.isFrozen = false;
+        this.hasProjectedShield = false;
+        this.projectedShieldTimer = 0;
 
-    adaptShield(type) {
-        this.currentShieldType = type;
-        
-        // Visual feedback
-        let color = 0xffffff;
-        if (type === 'LASER') color = 0x00ffaa;
-        if (type === 'EMP') color = 0x00ffff;
-        if (type === 'SLOW') color = 0xaa00ff;
-        if (type === 'PLAYER') color = 0xffff00;
+        const titanTypes = ['TITAN', 'CLOAK_MASTER', 'OBSIDIAN_JUGGERNAUT', 'CRYO_COMMANDER', 'AETHERIS_OVERSEER'];
+        this.isTitan = titanTypes.includes(this.type);
 
-        if (this.shieldMesh) {
-            this.shieldMesh.visible = true;
-            this.shieldMesh.material.color.set(color);
-            this.shieldMesh.material.opacity = 0.4;
-            
-            // Temporary pulse to show adaptation
-            this.shieldMesh.scale.setScalar(1.2);
-            setTimeout(() => {
-                if (this.shieldMesh) this.shieldMesh.scale.setScalar(1);
-            }, 300);
-        }
-
-        // Reset all tracking after adapting
-        for (const t in this.adaptiveResistances) {
-            this.adaptiveResistances[t] = 0;
+        if (this.facilityId === 'neon') {
+            this.isCloaked = true;
+            this.cloakRevealRange = 8;
+            this.cloakActionRange = 12;
         }
 
-        console.log(`HEAVY SEC-BOT adapted shield to: ${type}`);
-    }
+        this.mesh.position.copy(position);
+        const groundTypes = ['STALKER', 'TANK', 'HEAVY_SEC_BOT', 'EXPLODER', 'PARASITE', 'OBSIDIAN_JUGGERNAUT'];
+        if (groundTypes.includes(this.type)) {
+            this.mesh.position.y = 0.1;
+        } else if (this.type === 'TITAN' || this.type === 'CLOAK_MASTER' || this.type === 'CRYO_COMMANDER' || this.type === 'AETHERIS_OVERSEER') {
+            this.mesh.position.y = 8;
+        } else {
+            this.mesh.position.y = 1.8;
+        }
 
-    executeEMPBurst(enemies) {
-        const radius = 8;
-        const duration = 4000;
+        this.mesh.scale.set(1, 1, 1);
+        this.mesh.visible = true;
+        this.originalColor = new THREE.Color(0xffffff);
+        this.hitFlashTimer = 0;
+        this.deathTimer = 0;
+        this.nextShootFxTime = 0;
 
-        // Visual
-        const flash = new THREE.Mesh(
-            new THREE.SphereGeometry(radius, 32, 32),
-            new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.3, wireframe: true })
-        );
-        flash.position.copy(this.mesh.position);
-        this.scene.add(flash);
-
-        // Animate expand
-        let scale = 0.1;
-        const interval = setInterval(() => {
-            scale += 0.2;
-            flash.scale.set(scale, scale, scale);
-            flash.material.opacity -= 0.015;
-            if (flash.material.opacity <= 0) {
-                this.scene.remove(flash);
-                clearInterval(interval);
-            }
-        }, 16);
-
-        // Reveal if cloaked
-        if (this.isCloaked) this.isCloaked = false;
-
-        // Apply EMP to enemies and clear their shields
-        enemies.forEach(enemy => {
-            if (!enemy.isAlly && !enemy.isDead && enemy.mesh.position.distanceTo(this.mesh.position) < radius) {
-                enemy.applyEMP(duration);
-                // If the enemy had a shield (future proofing if hostiles get shields)
-                if (enemy.shieldHealth > 0) enemy.shieldHealth = 0;
+        this.sprites.forEach(sprite => {
+            if (sprite && sprite.material) {
+                sprite.material.opacity = 1.0;
+                sprite.material.color.set(this.isAlly ? 0x00ff00 : (this.isElite ? 0xff00ff : 0xffffff));
             }
         });
+
+        if (this.glow) {
+            this.glow.visible = true;
+            let glowColor = this.type === 'SENTRY' ? 0x00ffaa : (this.type === 'STALKER' ? 0xff3300 : 0x00ffff);
+            if (this.isElite) {
+                glowColor = MUTATOR_COLORS[this.mutator] || 0xff00ff;
+                const halo = this.mesh.getObjectByName('eliteHalo');
+                if (halo && halo.material) {
+                    halo.material.color.set(glowColor);
+                }
+            }
+            this.glow.color.set(glowColor);
+            this.glow.intensity = this.isElite ? 2.0 : 0.2;
+            this.glow.distance = this.isElite ? 4.0 : 2.0;
+        }
+
+        if (this.visualLOD) {
+            this.visualLOD.visible = true;
+        }
+
+        this.lastAttack = 0;
+        this.targetEnemy = null;
+        this.onDeath = null;
+        this.onSingularityDetonate = null;
+
+        this.command = 'FOLLOW';
+        this.stance = 'BALANCED';
+        this.commandPos.set(0, 0, 0);
+        this.commandTarget = null;
+
+        this.modules = [];
+        this.shieldHealth = 0;
+        this.maxShieldHealth = 20;
+        this.empBurstTimer = 0;
+        this.singularityTimer = 0;
+        this.kineticChainTimer = 0;
+        this.wasSingularityActive = false;
+        this.wasEchoActive = false;
+        this.gravityWellFactor = 1.0;
+        this.timeScale = 1.0;
+        this.resonanceOwner = null;
+
+        this.microDrones = [];
+
+        if (this.targetingLine) {
+            this.targetingLine.visible = false;
+        }
+        this.lastKnownTarget = null;
+
+        this.burnTimer = 0;
+        this.burnDamage = 0;
+        this.shockTimer = 0;
+        this.lastShockChain = 0;
+
+        if (this.type === 'HEAVY_SEC_BOT' || this.isTitan) {
+            this.adaptiveResistances = { 'LASER': 0, 'EMP': 0, 'SLOW': 0, 'PLAYER': 0 };
+            this.currentShieldType = null;
+            this.bossPhase = 1;
+
+            if (this.shieldMesh) {
+                this.shieldMesh.visible = false;
+                if (this.shieldMesh.material?.uniforms) {
+                    this.shieldMesh.material.uniforms.impactStrength.value = 0;
+                }
+            }
+
+            if (this.isTitan) {
+                this.titanAttackTimer = 0;
+                this.titanAttackCooldown = (this.type === 'CLOAK_MASTER' || this.type === 'CRYO_COMMANDER' || this.type === 'AETHERIS_OVERSEER') ? 3000 : 6000;
+                if (this.type !== 'OBSIDIAN_JUGGERNAUT') this.mesh.position.y = 8;
+            }
+        }
+
+        if (this.type === 'SHIELD_PROJECTOR' && this.projectorShieldMesh) {
+            this.projectorShieldMesh.visible = false;
+            this.shieldRange = 10;
+        }
+
+        if ((this.isTitan || this.type === 'AETHERIS_OVERSEER') && this.bossEmergenceMesh) {
+            this.emergenceTimer = 0;
+        }
+
+        if (this.scanBeam) {
+            this.scanBeam.visible = this.type === 'SENTRY';
+        }
+
+        if (this.visualLOD?.levels?.[0]?.object) {
+            const highGroup = this.visualLOD.levels[0].object;
+            const existingModGroup = highGroup.getObjectByName('moduleGroup');
+            if (existingModGroup) highGroup.remove(existingModGroup);
+        }
+
+        this.scene.add(this.mesh);
+    }
+
+    executeChainLightning(primaryTarget, damage, allEnemies, spatialGrid = null) {
+        const range = 6; const max = 3;
+        let count = 0; let src = primaryTarget;
+        const hit = new Set([primaryTarget]);
+        while (count < max) {
+            let next = null; let minDist = range;
+            const nearby = spatialGrid ? spatialGrid.getNearby(src.mesh.position, range) : allEnemies;
+            nearby.forEach(e => {
+                if (!e.isAlly && !e.isDead && !hit.has(e)) {
+                    const d = e.mesh.position.distanceTo(src.mesh.position);
+                    if (d < minDist) { minDist = d; next = e; }
+                }
+            });
+            if (!next) break;
+            if (this.particleSystem) this.particleSystem.createTracer(src.mesh.position, next.mesh.position, 0x00ffff);
+            next.takeDamage(damage, allEnemies, 'PLAYER', spatialGrid);
+            hit.add(next); src = next; count++;
+        }
+    }
+
+    executeTitanAttack(playerPos, otherEnemies) {
+        if (this.isDead || this.isDisabled) return;
+        
+        const distToPlayer = this.mesh.position.distanceTo(playerPos);
+        const game = this.scene.game;
+        
+        if (this.particleSystem && !this.isAlly) {
+        }
+
+        switch(this.type) {
+            case 'AETHERIS_OVERSEER':
+                if (distToPlayer < 40) {
+                    game?.triggerShockwave(this.mesh.position, 1.0, 3.0);
+                    if (this.particleSystem) this.particleSystem.createThermalPulse(this.mesh.position, 40, 0x00aaff);
+                    if (game?.playerController) {
+                        const originalGravity = game.playerController.gravity;
+                        game.playerController.gravity *= 3.0;
+                        setTimeout(() => {
+                            if (game?.playerController) game.playerController.gravity = originalGravity;
+                        }, 3000);
+                    }
+                    game?.showProgressionMessage("OVERSEER: GRAVITY WELL ACTIVATED", 2000);
+                }
+                break;
+
+            case 'OBSIDIAN_JUGGERNAUT':
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const burstPos = this.mesh.position.clone();
+                    burstPos.x += Math.cos(angle) * 12;
+                    burstPos.z += Math.sin(angle) * 12;
+                    game?.handleAreaDamage(burstPos, 8, 50);
+                }
+                game?.showProgressionMessage("JUGGERNAUT: MAGMA BURST", 2000);
+                break;
+
+            case 'CRYO_COMMANDER':
+                if (distToPlayer < 30) {
+                    game?.triggerShockwave(this.mesh.position, 0.5, 1.0);
+                    if (this.particleSystem) this.particleSystem.createThermalPulse(this.mesh.position, 30, 0x00ffff);
+                    this.player.takeDamage(25);
+                    this.player.buffs.push({ type: 'SLOW', multiplier: 0.3, duration: 4 });
+                    game?.showProgressionMessage("COMMANDER: FLASH FREEZE PROTOCOL", 2000);
+                }
+                break;
+
+            case 'CLOAK_MASTER':
+                for (let i = 0; i < 2; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const spawnPos = this.mesh.position.clone();
+                    spawnPos.x += Math.cos(angle) * 10;
+                    spawnPos.z += Math.sin(angle) * 10;
+                    
+                    if (game && game.enemies.length < CONFIG.ENEMY.MAX_ACTIVE + 5) {
+                        const decoy = game.enemyPool
+                            ? game.enemyPool.acquire(this.scene, this.player, spawnPos, 'STALKER', this.facilityId, this.navigation, this.particleSystem, this.heatLevel, false)
+                            : new Enemy(this.scene, this.player, spawnPos, 'STALKER', this.facilityId, this.navigation, this.particleSystem, this.heatLevel, false);
+                        decoy.maxHealth = 100;
+                        decoy.health = 100;
+                        decoy.isDecoy = true;
+                        game.enemies.push(decoy);
+                    }
+                }
+                this.isCloaked = true;
+                setTimeout(() => { if (!this.isDead) this.isCloaked = false; }, 5000);
+                game?.showProgressionMessage("CLOAK MASTER: MIRROR IMAGES DEPLOYED", 2000);
+                break;
+
+            case 'TITAN':
+            case 'HEAVY_SEC_BOT':
+                for (let i = 0; i < 3; i++) {
+                    setTimeout(() => {
+                        if (!this.isDead && !this.isDisabled) this.shoot(true, otherEnemies);
+                    }, i * 250);
+                }
+                break;
+        }
     }
 
     executeEliteAbility(playerPos, otherEnemies, spatialGrid) {
         if (this.isDead || this.isDisabled) return;
-
-        // Trigger unique elite audio handshake
-        if (this.scene.game) {
-            this.scene.game.triggerEliteSound(this.type);
-        }
-
+        if (this.scene.game) this.scene.game.triggerEliteSound(this.type);
         switch (this.type) {
             case 'SENTRY':
-                // Sentry Elite: Multi-shot burst
-                for (let i = 0; i < 3; i++) {
-                    setTimeout(() => {
-                        if (!this.isDead && !this.isDisabled) this.shoot(true, otherEnemies, spatialGrid);
-                    }, i * 200);
-                }
+                for (let i = 0; i < 3; i++) setTimeout(() => { if (!this.isDead && !this.isDisabled) this.shoot(true, otherEnemies, spatialGrid); }, i * 200);
                 break;
             case 'STALKER':
-                // Stalker Elite: Sudden Dash
-                const dashDir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
-                this.mesh.position.add(dashDir.multiplyScalar(5));
-                if (this.particleSystem) {
-                    this.particleSystem.createExplosion(this.mesh.position, 0xff00ff, 10, 2);
-                }
+                MATH.v1.subVectors(playerPos, this.mesh.position).normalize();
+                this.mesh.position.add(MATH.v1.multiplyScalar(5));
+                if (this.particleSystem) this.particleSystem.createExplosion(this.mesh.position, 0xff00ff, 4, 0.8);
                 break;
             case 'TANK':
-                // Tank Elite: Shockwave Stomp
-                if (this.particleSystem) {
-                    this.particleSystem.createExplosion(this.mesh.position, 0xff00ff, 30, 8);
-                }
-                // Check if player is near
-                if (this.mesh.position.distanceTo(playerPos) < 10) {
-                    this.player.takeDamage(40);
-                    // Push player? 
-                }
-                break;
-            case 'SHIELD_PROJECTOR':
-                // Shield Projector Elite: Massive Burst
-                this.executeEMPBurst(otherEnemies);
-                break;
-            case 'HEAVY_SEC_BOT':
-                // Already a boss, but if it's "Elite", maybe it fires faster
-                this.lastAttack -= 2000; // Instant shoot
+                if (this.particleSystem) this.particleSystem.createExplosion(this.mesh.position, 0xff00ff, 8, 2);
+                if (this.mesh.position.distanceTo(playerPos) < 10) this.player.takeDamage(40);
                 break;
         }
     }
 
     applyEMP(duration) {
         if (this.isDead) return;
-        this.isDisabled = true;
-        this.disableTimer = duration;
-        
-        // Visual indicator: constant blue tint while disabled
-        this.mesh.children[0].material.emissive.set(0x004466);
-    }
-
-    executeTitanAttack(playerPos, otherEnemies) {
-        if (this.isDead || this.isDisabled) return;
-
-        const attacks = ['BARRAGE', 'LASER', 'SHOCKWAVE'];
-        const choice = attacks[Math.floor(Math.random() * attacks.length)];
-        
-        // Final phase (rage) increases attack frequency
-        this.titanAttackCooldown = this.isRaging ? 3000 : 6000;
-
-        if (this.scene.game) {
-            this.scene.game.showProgressionMessage(`TITAN: PREPARING ${choice} PROTOCOL`, 2000);
-            this.scene.game.triggerEliteSound('TITAN');
-        }
-
-        switch (choice) {
-            case 'BARRAGE': this.executeTitanMissileBarrage(playerPos); break;
-            case 'LASER': this.executeTitanLaserSweep(playerPos); break;
-            case 'SHOCKWAVE': this.executeTitanShockwave(); break;
-        }
-    }
-
-    executeTitanMissileBarrage(playerPos) {
-        const missileCount = this.isRaging ? 12 : 6;
-        for (let i = 0; i < missileCount; i++) {
-            setTimeout(() => {
-                if (this.isDead || this.isDisabled) return;
-                
-                const startPos = this.mesh.position.clone();
-                startPos.y += (Math.random() - 0.5) * 5;
-                startPos.x += (Math.random() - 0.5) * 10;
-                startPos.z += (Math.random() - 0.5) * 10;
-                
-                // Target is player's position with some randomization
-                const target = playerPos.clone().add(new THREE.Vector3(
-                    (Math.random() - 0.5) * 5,
-                    0,
-                    (Math.random() - 0.5) * 5
-                ));
-
-                if (this.particleSystem) {
-                    this.particleSystem.createEnemyProjectile(startPos, target, 0xff0000);
-                    this.particleSystem.createMuzzleFlash(startPos, new THREE.Vector3().subVectors(target, startPos).normalize(), 0xff0000, true);
-                }
-            }, i * 300);
-        }
-    }
-
-    executeTitanLaserSweep(playerPos) {
-        const sweepDuration = 2000;
-        const startTime = Date.now();
-        const startDir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
-        
-        const updateSweep = () => {
-            if (this.isDead || this.isDisabled) return;
-            const elapsed = Date.now() - startTime;
-            if (elapsed > sweepDuration) return;
-
-            const angle = (elapsed / sweepDuration) * Math.PI * 0.5 - Math.PI * 0.25;
-            const sweepDir = startDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), angle);
-            
-            const beamEnd = this.mesh.position.clone().add(sweepDir.multiplyScalar(50));
-            if (this.particleSystem) {
-                this.particleSystem.createTracer(this.mesh.position, beamEnd, 0xff0000);
+        this.isDisabled = true; this.disableTimer = duration;
+        this.sprites.forEach(sprite => {
+            if (sprite && sprite.material) {
+                sprite.material.emissive.set(0x004466);
+                sprite.material.emissiveIntensity = 2.0;
             }
-
-            // Check if player is hit
-            const playerToTitan = new THREE.Vector3().subVectors(this.player.camera.position, this.mesh.position);
-            const dot = playerToTitan.normalize().dot(sweepDir.normalize());
-            if (dot > 0.995 && playerToTitan.length() < 50) {
-                this.player.takeDamage(15);
-            }
-
-            requestAnimationFrame(updateSweep);
-        };
-        updateSweep();
-    }
-
-    executeTitanShockwave() {
-        const radius = 25;
-        const duration = 2000;
-
-        if (this.particleSystem) {
-            this.particleSystem.createExplosion(this.mesh.position, 0xff0000, 100, 15);
-        }
-
-        // Check if player is hit
-        const dist = this.mesh.position.distanceTo(this.player.camera.position);
-        if (dist < radius) {
-            this.player.takeDamage(40);
-            // Shake effect
-            if (this.scene.game) this.scene.game.shakeAmount += 1.5;
-        }
-    }
-
-    die() {
-        if (this.isDead) return;
-        this.isDead = true;
-        this.deathTimer = 0.3;
-        
-        const body = this.mesh.children[0];
-        if (body && body.material) {
-            body.material.transparent = true;
-            body.material.opacity = 0.5;
-            body.material.color.set(0xffaa00);
-        }
-
-        if (this.onDeath) this.onDeath(this);
-        this.microDrones.forEach(drone => drone.destroy());
-        this.microDrones = [];
-
-        if (this.scene.particleSystem) {
-            this.scene.particleSystem.createExplosion(this.mesh.position, 0xffaa00, 15, 3);
-            if (this.isTitan) {
-                // Massive explosion for Titan
-                this.scene.particleSystem.createExplosion(this.mesh.position, 0xffaa00, 100, 20);
-                this.scene.particleSystem.createExplosion(this.mesh.position, 0xff5500, 200, 10);
-            }
-        }
+        });
     }
 }

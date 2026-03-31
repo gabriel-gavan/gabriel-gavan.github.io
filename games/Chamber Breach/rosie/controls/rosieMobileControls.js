@@ -9,90 +9,6 @@
 const MobileUtils = {
   isMobile() {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-  },
-
-  createMobileUI() {
-    // Create container for all mobile controls
-    const container = document.createElement('div');
-    container.id = 'mobile-game-controls';
-    container.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1000;
-      font-family: Arial, sans-serif;
-    `;
-
-    // Virtual Joystick
-    const joystickContainer = document.createElement('div');
-    joystickContainer.id = 'virtual-joystick';
-    joystickContainer.style.cssText = `
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      width: 120px;
-      height: 120px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      pointer-events: auto;
-      touch-action: none;
-    `;
-
-    const joystickKnob = document.createElement('div');
-    joystickKnob.id = 'virtual-joystick-knob';
-    joystickKnob.style.cssText = `
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 40px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-      transition: all 0.1s ease;
-    `;
-
-    joystickContainer.appendChild(joystickKnob);
-
-    // Jump Button
-    const jumpButton = document.createElement('div');
-    jumpButton.id = 'jump-button';
-    jumpButton.style.cssText = `
-      position: absolute;
-      bottom: 20px;
-      right: 20px;
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 2px solid rgba(255, 255, 255, 0.5);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 14px;
-      font-weight: bold;
-      pointer-events: auto;
-      touch-action: none;
-      user-select: none;
-    `;
-    jumpButton.textContent = 'JUMP';
-
-    container.appendChild(joystickContainer);
-    container.appendChild(jumpButton);
-
-    return { container, joystickContainer, joystickKnob, jumpButton };
-  },
-
-  removeMobileUI() {
-    const existing = document.getElementById('mobile-game-controls');
-    if (existing) {
-      existing.remove();
-    }
   }
 };
 
@@ -105,8 +21,8 @@ class VirtualJoystick {
     this.knob = knob;
     this.onInputChange = onInputChange;
     this.isActive = false;
-    this.center = { x: 60, y: 60 }; // Center of joystick
-    this.maxDistance = 40; // Maximum distance from center
+    this.center = { x: 70, y: 70 }; // Center of joystick (half of 140)
+    this.maxDistance = 50; // Maximum distance from center
     this.currentPos = { x: 0, y: 0 }; // Current position (-1 to 1)
 
     this.setupEvents();
@@ -116,7 +32,7 @@ class VirtualJoystick {
     const handleStart = (e) => {
       e.preventDefault();
       this.isActive = true;
-      this.container.style.background = 'rgba(255, 255, 255, 0.3)';
+      this.container.style.background = 'rgba(0, 208, 255, 0.15)';
     };
 
     const handleMove = (e) => {
@@ -133,7 +49,7 @@ class VirtualJoystick {
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
       if (distance <= this.maxDistance) {
-        this.knob.style.transform = `translate(${deltaX - 20}px, ${deltaY - 20}px)`;
+        this.knob.style.transform = `translate(calc(-50% + ${deltaX}px), calc(-50% + ${deltaY}px))`;
         this.currentPos.x = deltaX / this.maxDistance;
         this.currentPos.y = deltaY / this.maxDistance;
       } else {
@@ -141,7 +57,7 @@ class VirtualJoystick {
         const limitedX = Math.cos(angle) * this.maxDistance;
         const limitedY = Math.sin(angle) * this.maxDistance;
 
-        this.knob.style.transform = `translate(${limitedX - 20}px, ${limitedY - 20}px)`;
+        this.knob.style.transform = `translate(calc(-50% + ${limitedX}px), calc(-50% + ${limitedY}px))`;
         this.currentPos.x = limitedX / this.maxDistance;
         this.currentPos.y = limitedY / this.maxDistance;
       }
@@ -156,9 +72,9 @@ class VirtualJoystick {
     const handleEnd = (e) => {
       e.preventDefault();
       this.isActive = false;
-      this.knob.style.transform = 'translate(-20px, -20px)';
+      this.knob.style.transform = 'translate(-50%, -50%)';
       this.currentPos = { x: 0, y: 0 };
-      this.container.style.background = 'rgba(255, 255, 255, 0.2)';
+      this.container.style.background = 'rgba(0, 208, 255, 0.05)';
 
       // Notify of input change
       this.onInputChange({ x: 0, y: 0 });
@@ -189,7 +105,6 @@ class MobileControls {
       return;
     }
 
-    this.mobileUI = null;
     this.virtualJoystick = null;
     this.currentInput = { x: 0, y: 0 };
 
@@ -197,38 +112,89 @@ class MobileControls {
   }
 
   setupPlayerControls() {
-    // Create mobile UI
-    this.mobileUI = MobileUtils.createMobileUI();
-    document.body.appendChild(this.mobileUI.container);
+    const mobileUI = document.getElementById('mobile-game-controls');
+    if (mobileUI) mobileUI.style.display = 'block';
 
     // Setup virtual joystick
-    this.virtualJoystick = new VirtualJoystick(
-      this.mobileUI.joystickContainer,
-      this.mobileUI.joystickKnob,
-      (input) => this.handleJoystickInput(input)
-    );
+    const joystickContainer = document.getElementById('mobile-joystick-container');
+    const joystickKnob = document.getElementById('mobile-joystick-knob');
+    
+    if (joystickContainer && joystickKnob) {
+        this.virtualJoystick = new VirtualJoystick(
+          joystickContainer,
+          joystickKnob,
+          (input) => this.handleJoystickInput(input)
+        );
+    }
 
-    // Setup jump button
-    this.setupJumpButton();
+    // Setup utility buttons
+    this.bindButton('mobile-jump-btn', 'Space');
+    this.bindButton('mobile-reload-btn', 'KeyR');
+    this.bindButton('mobile-swap-btn', 'KeyQ');
+    this.bindButton('mobile-interact-btn', 'KeyE');
+    this.bindButton('mobile-melee-btn', 'KeyV');
+    this.bindButton('mobile-util-btn', 'KeyG');
+    this.bindButton('mobile-command-btn', 'KeyX');
+    this.bindButton('mobile-cycle-btn', 'CapsLock');
+    this.bindButton('mobile-ability-btn', 'KeyC');
+
+    // Fire button is special - it needs to trigger mouse events
+    this.setupFireButton();
   }
 
-  setupJumpButton() {
-    const handleJumpStart = (e) => {
-      e.preventDefault();
-      this.controller.keys['Space'] = true;
-      this.mobileUI.jumpButton.style.background = 'rgba(255, 255, 255, 0.4)';
+  bindButton(id, keyCode) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+
+    const start = (e) => {
+        e.preventDefault();
+        this.controller.keys[keyCode] = true;
     };
 
-    const handleJumpEnd = (e) => {
-      e.preventDefault();
-      this.controller.keys['Space'] = false;
-      this.mobileUI.jumpButton.style.background = 'rgba(255, 255, 255, 0.2)';
+    const end = (e) => {
+        e.preventDefault();
+        this.controller.keys[keyCode] = false;
     };
 
-    this.mobileUI.jumpButton.addEventListener('touchstart', handleJumpStart);
-    this.mobileUI.jumpButton.addEventListener('touchend', handleJumpEnd);
-    this.mobileUI.jumpButton.addEventListener('mousedown', handleJumpStart);
-    this.mobileUI.jumpButton.addEventListener('mouseup', handleJumpEnd);
+    btn.addEventListener('touchstart', start);
+    btn.addEventListener('touchend', end);
+    btn.addEventListener('mousedown', start);
+    btn.addEventListener('mouseup', end);
+  }
+
+  setupFireButton() {
+    const fireBtn = document.getElementById('mobile-fire-btn');
+    if (!fireBtn) return;
+
+    const start = (e) => {
+        e.preventDefault();
+        // Trigger a mousedown on the window element
+        const event = new MouseEvent('mousedown', {
+            bubbles: true,
+            cancelable: true,
+            clientX: window.innerWidth / 2,
+            clientY: window.innerHeight / 2,
+            button: 0
+        });
+        window.dispatchEvent(event);
+    };
+
+    const end = (e) => {
+        e.preventDefault();
+        const event = new MouseEvent('mouseup', {
+            bubbles: true,
+            cancelable: true,
+            clientX: window.innerWidth / 2,
+            clientY: window.innerHeight / 2,
+            button: 0
+        });
+        window.dispatchEvent(event);
+    };
+
+    fireBtn.addEventListener('touchstart', start);
+    fireBtn.addEventListener('touchend', end);
+    fireBtn.addEventListener('mousedown', start);
+    fireBtn.addEventListener('mouseup', end);
   }
 
   handleJoystickInput(input) {
@@ -241,7 +207,7 @@ class MobileControls {
     this.controller.keys['KeyD'] = false;
 
     // Set keys based on joystick input (with deadzone)
-    const deadzone = 0.1;
+    const deadzone = 0.05;
 
     if (Math.abs(input.y) > deadzone) {
       if (input.y > 0) {
@@ -262,9 +228,8 @@ class MobileControls {
 
   destroy() {
     if (!this.isMobile) return;
-
-    // Remove the mobile UI
-    MobileUtils.removeMobileUI();
+    const mobileUI = document.getElementById('mobile-game-controls');
+    if (mobileUI) mobileUI.style.display = 'none';
   }
 }
 

@@ -13,7 +13,7 @@ export class CryoVent {
         this.freezeTimer = 0;
         
         // Vent visual - it's a floor hazard so it should be flat
-        const ventTex = new THREE.TextureLoader().load('assets/cryo_vent_sprite.webp');
+        const ventTex = new THREE.TextureLoader().load('https://rosebud.ai/assets/cryo_vent_sprite.png.webp?SnKX');
         const ventMat = new THREE.MeshBasicMaterial({ 
             map: ventTex, 
             transparent: true,
@@ -39,7 +39,7 @@ export class CryoVent {
         this.scene.add(this.triggerMesh);
 
         // Warning light
-        this.light = new THREE.PointLight(0x00aaff, 0, 5);
+        this.light = new THREE.PointLight(0x0066ff, 0, 5); // Deeper blue for cryo
         this.light.position.copy(this.position);
         this.light.position.y = 1.0;
         this.scene.add(this.light);
@@ -67,13 +67,13 @@ export class CryoVent {
             this.mesh.material.color.set(0xffffff);
             const intensity = 0.5 + Math.sin(this.timer * 10) * 0.5;
             this.light.intensity = intensity * 2;
-            this.light.color.set(0x00ffff);
+            this.light.color.set(0x88ccff); // Soft frosted blue
 
             // Damage player if standing on vent
             const playerPos = player.mesh.position;
             const distSq = playerPos.distanceToSquared(this.position);
             if (distSq < 2.5 * 2.5 && canDamage) { // Radius 2.5
-                player.takeDamage(20 * deltaTime, true, 'rgba(0, 150, 255, 0.4)'); // High DOT damage with blue flash
+                player.takeDamage(20 * deltaTime, true, 'rgba(100, 200, 255, 0.4)'); // High DOT damage with blue flash
             }
 
             // Damage enemies if standing on vent
@@ -90,7 +90,7 @@ export class CryoVent {
             }
 
             // Particles
-            if (this.particleSystem && Math.random() < 0.4 && typeof this.particleSystem.createExplosion === "function") {
+            if (this.particleSystem && Math.random() < 0.4) {
                 const offset = new THREE.Vector3(
                     (Math.random() - 0.5) * 1.5,
                     Math.random() * 3,
@@ -118,7 +118,7 @@ export class CryoVent {
         this.freezeTimer = 6.0; // Frozen for 6 seconds
         this.isActive = false;
         
-        if (this.particleSystem && typeof this.particleSystem.createExplosion === "function") {
+        if (this.particleSystem) {
             this.particleSystem.createExplosion(this.position.clone().add(new THREE.Vector3(0, 1, 0)), 0xffffff, 5, 1.0);
         }
     }

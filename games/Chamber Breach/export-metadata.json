@@ -1,7 +1,12 @@
 {
   "name": "Chamber Breach",
-  "revisionLabel": "Restore sniper mechanics and HUD visibility",
+  "revisionLabel": "Optimize enemy spawning and weapon firing performance",
   "description": "",
   "mode": "Universal",
-  "exportDate": "2026-02-19T11:03:16.079Z"
+  "exportDate": "2026-03-29T13:58:35.399Z",
+  "assetCount": 60,
+  "assetTypes": [
+    "png",
+    "webp"
+  ]
 }

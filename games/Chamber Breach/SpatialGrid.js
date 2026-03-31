@@ -23,7 +23,7 @@ export class SpatialGrid {
     _getKey(x, z) {
         const cx = Math.floor(x / this.cellSize);
         const cz = Math.floor(z / this.cellSize);
-        return `${cx},${cz}`;
+        return (cx << 16) | (cz & 0xFFFF);
     }
 
     /**
@@ -39,21 +39,21 @@ export class SpatialGrid {
         if (entity._lastGridKey === key) return;
 
         // Remove from old cell
-        if (entity._lastGridKey) {
+        if (entity._lastGridKey !== undefined) {
             const oldCell = this.grid.get(entity._lastGridKey);
             if (oldCell) {
                 oldCell.delete(entity);
-                // Clean up empty cells to keep Map size small
                 if (oldCell.size === 0) this.grid.delete(entity._lastGridKey);
             }
         }
         
         // Add to new cell
-        if (!this.grid.has(key)) {
-            this.grid.set(key, new Set());
+        let cell = this.grid.get(key);
+        if (!cell) {
+            cell = new Set();
+            this.grid.set(key, cell);
         }
         
-        const cell = this.grid.get(key);
         cell.add(entity);
         entity._lastGridKey = key;
     }
@@ -62,7 +62,7 @@ export class SpatialGrid {
      * Remove entity from grid
      */
     removeEntity(entity) {
-        if (entity._lastGridKey) {
+        if (entity._lastGridKey !== undefined) {
             const cell = this.grid.get(entity._lastGridKey);
             if (cell) {
                 cell.delete(entity);
@@ -72,11 +72,21 @@ export class SpatialGrid {
         }
     }
 
+    static _reusableResults = [];
+    static _reusableResultsIndex = 0;
+    static _MAX_REUSABLE_ARRAYS = 20; // Pool of arrays to handle nested calls
+    static _resultsPool = Array.from({ length: 20 }, () => []);
+
     /**
      * Get all entities in a radius around a position
+     * Uses a rotating pool of arrays to minimize GC while supporting a few nested calls.
      */
     getNearby(position, radius) {
-        const results = [];
+        const poolIndex = SpatialGrid._reusableResultsIndex;
+        SpatialGrid._reusableResultsIndex = (SpatialGrid._reusableResultsIndex + 1) % SpatialGrid._MAX_REUSABLE_ARRAYS;
+        
+        const results = SpatialGrid._resultsPool[poolIndex];
+        results.length = 0;
         const radiusSq = radius * radius;
         
         const minX = Math.floor((position.x - radius) / this.cellSize);
@@ -86,19 +96,22 @@ export class SpatialGrid {
         
         for (let x = minX; x <= maxX; x++) {
             for (let z = minZ; z <= maxZ; z++) {
-                const key = `${x},${z}`;
+                const key = (x << 16) | (z & 0xFFFF);
                 const cell = this.grid.get(key);
                 if (cell) {
                     for (const entity of cell) {
-                        // distanceToSquared is fast, but we should ensure entity and entity.mesh exist
-                        if (entity.mesh && entity.mesh.position.distanceToSquared(position) <= radiusSq) {
-                            results.push(entity);
+                        if (entity.mesh) {
+                            const ePos = entity.mesh.position;
+                            const dx = ePos.x - position.x;
+                            const dz = ePos.z - position.z;
+                            if (dx*dx + dz*dz <= radiusSq) {
+                                results.push(entity);
+                            }
                         }
                     }
                 }
             }
         }
-        
         return results;
     }
 }

@@ -8,7 +8,8 @@ export const ShieldShader = {
         impactPos: { value: new THREE.Vector3(0, 0, 0) },
         impactStrength: { value: 0.0 },
         rippleSpeed: { value: 2.0 },
-        rippleDensity: { value: 10.0 }
+        rippleDensity: { value: 10.0 },
+        isHighFrequency: { value: 0.0 }
     },
     vertexShader: `
         varying vec2 vUv;
@@ -36,25 +37,25 @@ export const ShieldShader = {
         varying vec3 vNormal;
         
         void main() {
-            // Base hex grid-like wireframe effect using UVs
-            float grid = sin(vUv.x * 50.0) * sin(vUv.y * 50.0);
-            grid = step(0.9, grid);
+            // Simplified shader for GPU performance
+            float t = time;
             
-            // Fresnel effect
-            float fresnel = pow(1.0 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 3.0);
+            // Fresnel effect - keep this as it looks good
+            float fresnel = pow(1.0 - abs(vNormal.z), 3.0);
             
-            // Pulsing scanline
-            float scanline = sin(vPosition.y * 10.0 + time * 5.0) * 0.5 + 0.5;
-            scanline = pow(scanline, 10.0) * 0.2;
+            // Simplified grid
+            float grid = step(0.98, fract(vUv.x * 40.0)) + step(0.98, fract(vUv.y * 40.0));
             
-            // Impact ripple
+            // Simplified impact ripple
             float dist = distance(vPosition, impactPos);
-            float ripple = sin(dist * rippleDensity - time * rippleSpeed) * 0.5 + 0.5;
-            ripple *= exp(-dist * 2.0) * impactStrength;
+            float ripple = 0.0;
+            if (impactStrength > 0.01) {
+                ripple = sin(dist * rippleDensity - t * rippleSpeed) * 0.5 + 0.5;
+                ripple *= exp(-dist * 2.0) * impactStrength;
+            }
             
-            float finalAlpha = opacity + fresnel * 0.5 + scanline + ripple + grid * 0.1;
-            
-            vec3 finalColor = color + vec3(ripple * 0.5);
+            float finalAlpha = opacity + fresnel * 0.4 + ripple + grid * 0.15;
+            vec3 finalColor = color + vec3(ripple * 0.4);
             
             gl_FragColor = vec4(finalColor, finalAlpha);
         }
