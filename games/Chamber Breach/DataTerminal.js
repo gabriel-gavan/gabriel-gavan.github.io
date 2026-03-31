@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 
+const TERMINAL_RED = new THREE.Color(0xff0000);
+const TERMINAL_WHITE = new THREE.Color(0xffffff);
+
 export class DataTerminal {
     constructor(scene, position, loreEntry, onInteract, isTrapped = false) {
         this.scene = scene;
@@ -21,7 +24,6 @@ export class DataTerminal {
         
         this.scene.add(this.group);
         
-        // Light source for the terminal
         this.light = new THREE.PointLight(this.isTrapped ? 0xff3300 : 0x00d0ff, 1.5, 3);
         this.light.position.set(0, 1.2, 0.3);
         this.group.add(this.light);
@@ -33,7 +35,6 @@ export class DataTerminal {
         const base = new THREE.Mesh(baseGeo, baseMat);
         base.position.y = 0.6;
         
-        // Use a small emissive "screen" that is part of the physical mesh rather than a floating plane
         const screenGeo = new THREE.BoxGeometry(0.6, 0.4, 0.05);
         const screenMat = new THREE.MeshStandardMaterial({ 
             color: 0x111111,
@@ -50,31 +51,33 @@ export class DataTerminal {
     }
 
     update(dt, playerPos) {
+        if (!playerPos) return;
+
         const dist = this.group.position.distanceTo(playerPos);
         this.isPlayerNear = dist < 2.5;
 
         const playerPerks = window.game?.player?.perks || {};
+        const screen = this.mesh.children[0];
+        const screenMat = screen && screen.material ? screen.material : null;
 
-        // Visual feedback for proximity via light intensity
         if (this.isPlayerNear) {
-            this.light.intensity = 2.5 + Math.sin(Date.now() * 0.01) * 0.5;
-            this.mesh.children[0].material.emissiveIntensity = 1.0 + Math.sin(Date.now() * 0.01) * 0.2;
+            const pulseTime = Date.now() * 0.01;
+            this.light.intensity = 2.5 + Math.sin(pulseTime) * 0.5;
+            if (screenMat) screenMat.emissiveIntensity = 1.0 + Math.sin(pulseTime) * 0.2;
         } else {
             this.light.intensity = 1.0;
-            this.mesh.children[0].material.emissiveIntensity = 0.5;
+            if (screenMat) screenMat.emissiveIntensity = 0.5;
         }
 
-        // Sniffer effect: distinct red pulse for traps if near
         if (this.isTrapped && !this.isDisarmed && playerPerks.trapSniffer) {
             const snifferPulse = 0.5 + Math.sin(Date.now() * 0.005) * 0.5;
-            this.light.color.lerp(new THREE.Color(0xff0000), 0.05);
+            this.light.color.lerp(TERMINAL_RED, 0.05);
             this.light.intensity += snifferPulse * 2.0;
         }
 
-        // Corrupted flicker for trapped terminals
         if (this.isTrapped && !this.isDisarmed && Math.random() < 0.05) {
             this.light.intensity = 0.5 + Math.random() * 2;
-            this.mesh.children[0].material.emissiveIntensity = 0.2 + Math.random() * 0.8;
+            if (screenMat) screenMat.emissiveIntensity = 0.2 + Math.random() * 0.8;
         }
     }
 
@@ -82,10 +85,13 @@ export class DataTerminal {
         if (!this.isTrapped || this.isDisarmed) return;
         this.isDisarmed = true;
         const successColor = 0x00ffaa;
-        this.light.color.set(successColor); // Green for disarmed
-        this.mesh.children[0].material.color.set(0x111111);
-        this.mesh.children[0].material.emissive.set(successColor);
-        console.log("TERMINAL TRAP NEUTRALIZED");
+        const screen = this.mesh.children[0];
+        const screenMat = screen && screen.material ? screen.material : null;
+        this.light.color.set(successColor);
+        if (screenMat) {
+            screenMat.color.set(0x111111);
+            screenMat.emissive.set(successColor);
+        }
     }
 
     interact() {
@@ -94,7 +100,6 @@ export class DataTerminal {
         const playerPerks = window.game?.player?.perks || {};
 
         if (this.isTrapped && !this.isDisarmed && !this.trapTriggered) {
-            // Neural Sniffer auto-disarm chance (50%)
             if (playerPerks.trapSniffer && Math.random() < 0.5) {
                 this.disarm();
                 if (window.game && window.game.playArbiterSound) {
@@ -107,9 +112,8 @@ export class DataTerminal {
             this.trapTriggered = true;
             this.light.color.set(0xff0000);
             this.light.intensity = 10;
-            // The GameScene should handle the actual trap effect (spawning enemies etc)
             if (this.onInteract) {
-                this.onInteract(this.loreEntry, true); // True means trap triggered
+                this.onInteract(this.loreEntry, true);
             }
             return;
         }
@@ -118,9 +122,8 @@ export class DataTerminal {
             this.onInteract(this.loreEntry, false);
         }
         
-        // Visual feedback for interaction
         const originalColor = this.light.color.clone();
-        this.light.color.set(0xffffff);
+        this.light.color.copy(TERMINAL_WHITE);
         setTimeout(() => this.light.color.copy(originalColor), 200);
     }
 

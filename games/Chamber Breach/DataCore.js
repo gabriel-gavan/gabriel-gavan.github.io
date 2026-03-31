@@ -1,6 +1,16 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const DATA_CORE_URL = 'https://rosebud.ai/assets/legendary_data_core.webp?nNzu';
+const DATA_CORE_BASE = 1.0;
+const DATA_CORE_FLOAT_AMP = 0.2;
+const DATA_CORE_RING_SCALE = 0.1;
+const DATA_CORE_PULL_RADIUS = 6.0;
+const DATA_CORE_COLLECT_RADIUS = 2.0;
+const DATA_CORE_PULL_SPEED = 15.0;
+const DATA_CORE_CYCLE = { t: 0 };
+const DATA_CORE_OFFSET = new THREE.Vector3();
+
 export class DataCore {
     constructor(scene, position, value = 1) {
         this.scene = scene;
@@ -9,14 +19,14 @@ export class DataCore {
 
         this.mesh = this.createMesh();
         this.mesh.position.copy(position);
-        this.mesh.position.y = 1.0;
+        this.mesh.position.y = DATA_CORE_BASE;
         this.scene.add(this.mesh);
     }
 
     createMesh() {
         const group = new THREE.Group();
         const loader = new THREE.TextureLoader();
-        const texture = loader.load('https://rosebud.ai/assets/legendary_data_core.webp?nNzu');
+        const texture = loader.load(DATA_CORE_URL);
         const material = new THREE.SpriteMaterial({ 
             map: texture,
             transparent: true,
@@ -26,13 +36,11 @@ export class DataCore {
         sprite.scale.set(2, 2, 1);
         group.add(sprite);
 
-        // Add a pulsing gold light
         const light = new THREE.PointLight(0xffff00, 5, 5);
         light.position.y = 0;
         group.add(light);
         this.light = light;
 
-        // Add a floating ring
         const ringGeo = new THREE.TorusGeometry(0.8, 0.05, 16, 100);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0xffff00, transparent: true, opacity: 0.5 });
         const ring = new THREE.Mesh(ringGeo, ringMat);
@@ -44,32 +52,31 @@ export class DataCore {
     }
 
     update(dt, playerPos) {
-        if (this.isCollected) return;
+        if (this.isCollected || !playerPos) return;
 
-        // Floating animation
-        this.mesh.position.y = 1.0 + Math.sin(Date.now() * 0.003) * 0.2;
+        DATA_CORE_CYCLE.t += dt;
+        const time = DATA_CORE_CYCLE.t;
+
+        this.mesh.position.y = DATA_CORE_BASE + Math.sin(time * 3) * DATA_CORE_FLOAT_AMP;
         this.mesh.rotation.y += dt;
         
         if (this.ring) {
             this.ring.rotation.z += dt * 2;
-            this.ring.scale.setScalar(1 + Math.sin(Date.now() * 0.005) * 0.1);
+            this.ring.scale.setScalar(1 + Math.sin(time * 5) * DATA_CORE_RING_SCALE);
         }
 
         if (this.light) {
-            this.light.intensity = 5 + Math.sin(Date.now() * 0.01) * 2;
+            this.light.intensity = 5 + Math.sin(time * 10) * 2;
         }
 
-        // Collection check
         const dist = this.mesh.position.distanceTo(playerPos);
-        
-        // Magnetic pull if close
-        if (dist < 6.0) {
-            const pullSpeed = 15.0; // Legendary cores pull faster
-            const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
-            this.mesh.position.add(dir.multiplyScalar(dt * pullSpeed));
+        if (dist < DATA_CORE_PULL_RADIUS) {
+            this._pullVector = this._pullVector || new THREE.Vector3();
+            this._pullVector.subVectors(playerPos, this.mesh.position).normalize();
+            this.mesh.position.add(this._pullVector.multiplyScalar(dt * DATA_CORE_PULL_SPEED));
         }
 
-        if (dist < 2.0) {
+        if (dist < DATA_CORE_COLLECT_RADIUS) {
             this.isCollected = true;
         }
     }
