@@ -19,7 +19,41 @@ export class Player {
         this.onObjectDestroyed = onObjectDestroyed;
         this.maxHealth = CONFIG.PLAYER.MAX_HEALTH;
         this.health = this.maxHealth;
-        
+
+        // Reusable scratch vectors/quaternion to avoid hot-path allocations
+        this._scratchVecA = new THREE.Vector3();
+        this._scratchVecB = new THREE.Vector3();
+        this._scratchVecC = new THREE.Vector3();
+        this._scratchVecD = new THREE.Vector3();
+        this._scratchVecE = new THREE.Vector3();
+        this._scratchQuat = new THREE.Quaternion();
+
+        // Cached DOM references for frequently touched HUD elements
+        this.ui = {
+            thermalOverlay: null,
+            crosshair: null,
+            scopeOverlay: null,
+            sniperAmmo: null,
+            ammo: null,
+            healthVal: null,
+            scoreVal: null,
+            grenadeCount: null,
+            extAmmo: null,
+            turretAmmo: null,
+            slotRifle: null,
+            slotSniper: null,
+            slotExt: null,
+            slotTurret: null,
+            thermalSlot: null,
+            thermalVal: null,
+            thermalBar: null,
+            coresVal: null,
+            scrapVal: null,
+            hitmarker: null,
+            rifleAmmoIcon: null,
+            sniperAmmoIcon: null
+        };
+
         // Tracking for optimized UI updates
         this.lastUIValues = {
             health: -1,
@@ -60,7 +94,7 @@ export class Player {
                     name: 'RIFLE',
                     cooldown: CONFIG.PLAYER.WEAPONS.RIFLE.COOLDOWN,
                     damage: CONFIG.PLAYER.WEAPONS.RIFLE.DAMAGE,
-                    projectileSpeed: 150, // High speed for responsive feel
+                    projectileSpeed: 150,
                     projectileColor: 0x00d0ff,
                     owner: 'PLAYER',
                     shake: CONFIG.PLAYER.WEAPONS.RIFLE.SHAKE,
@@ -82,7 +116,7 @@ export class Player {
                     name: 'SNIPER',
                     cooldown: CONFIG.PLAYER.WEAPONS.SNIPER.COOLDOWN,
                     damage: CONFIG.PLAYER.WEAPONS.SNIPER.DAMAGE,
-                    projectileSpeed: 300, // Instant-like for sniper
+                    projectileSpeed: 300,
                     projectileColor: 0x00ffff,
                     owner: 'PLAYER',
                     shake: CONFIG.PLAYER.WEAPONS.SNIPER.SHAKE,
@@ -112,20 +146,18 @@ export class Player {
         };
 
         this.perkManager = new PerkManager(this);
-        
+
         this.currentWeaponKey = 'RIFLE';
         this.currentWeapon = this.weapons[this.currentWeaponKey];
         this.currentTurretType = 'LASER';
         this.turretTypes = ['LASER', 'EMP', 'SLOW'];
-        
+
         Object.values(this.weapons).forEach(w => {
             this.camera.add(w.mesh);
             w.mesh.visible = false;
         });
 
-        // Flip Sniper Sprite: Orient kjuL to point right, matching the rifle's layout
         this.weapons.SNIPER.mesh.scale.x = -1.25;
-
         this.currentWeapon.mesh.visible = true;
 
         this.score = 0;
@@ -151,11 +183,9 @@ export class Player {
         this.hasProjectedShield = false;
         this.projectedShieldTimer = 0;
 
-        // Mastery Unlocks
         this.omegaTurretUnlocked = false;
         this.flashFreezeUnlocked = false;
 
-        // Visual Projected Shield for Player
         const shieldGeo = new THREE.SphereGeometry(1.5, 32, 32);
         this.projectedShieldMesh = new THREE.Mesh(shieldGeo, createShieldMaterial(0x00ffff, 0.15));
         this.projectedShieldMesh.visible = false;
@@ -173,8 +203,7 @@ export class Player {
 
         this.raycaster = new THREE.Raycaster();
         this.bobTime = 0;
-        
-        // Optimization: Pooled muzzle flash light
+
         this.muzzleFlashLight = new THREE.PointLight(0x00d0ff, 0, 6);
         this.muzzleFlashLight.position.set(0.4, -0.3, -1.2);
         this.camera.add(this.muzzleFlashLight);
@@ -185,7 +214,8 @@ export class Player {
             reload: () => {}
         };
 
-        
+        this.cacheUIElements();
+
         this.lastDamageTime = 0;
         this.lastSecondaryShot = 0;
         this.damageMultiplier = 1.0;
@@ -199,9 +229,34 @@ export class Player {
         this.audio = { ...this.audio, ...callbacks };
     }
 
+    cacheUIElements() {
+        this.ui.thermalOverlay = document.getElementById('thermal-overlay');
+        this.ui.crosshair = document.getElementById('crosshair');
+        this.ui.scopeOverlay = document.getElementById('scope-overlay');
+        this.ui.sniperAmmo = document.getElementById('sniper-ammo');
+        this.ui.ammo = document.getElementById('ammo');
+        this.ui.healthVal = document.getElementById('health-val');
+        this.ui.scoreVal = document.getElementById('score-val');
+        this.ui.grenadeCount = document.getElementById('grenade-count');
+        this.ui.extAmmo = document.getElementById('ext-ammo');
+        this.ui.turretAmmo = document.getElementById('turret-ammo');
+        this.ui.slotRifle = document.getElementById('slot-rifle');
+        this.ui.slotSniper = document.getElementById('slot-sniper');
+        this.ui.slotExt = document.getElementById('slot-ext');
+        this.ui.slotTurret = document.getElementById('slot-turret');
+        this.ui.thermalSlot = document.getElementById('thermal-slot');
+        this.ui.thermalVal = document.getElementById('thermal-val');
+        this.ui.thermalBar = document.getElementById('thermal-bar');
+        this.ui.coresVal = document.getElementById('cores-val');
+        this.ui.scrapVal = document.getElementById('scrap-val');
+        this.ui.hitmarker = document.getElementById('hitmarker');
+        this.ui.rifleAmmoIcon = document.getElementById('rifle-ammo-icon');
+        this.ui.sniperAmmoIcon = document.getElementById('sniper-ammo-icon');
+    }
+
     createWeaponSprite(url, scale) {
         const texture = new THREE.TextureLoader().load(url);
-        const material = new THREE.SpriteMaterial({ 
+        const material = new THREE.SpriteMaterial({
             map: texture,
             transparent: true,
             depthTest: false,
@@ -214,8 +269,7 @@ export class Player {
 
     switchWeapon(key) {
         if (this.isReloading || this.isDead) return;
-        
-        // If already on Turret, cycle type
+
         if (key === 'TURRET' && this.currentWeaponKey === 'TURRET') {
             const idx = this.turretTypes.indexOf(this.currentTurretType);
             this.currentTurretType = this.turretTypes[(idx + 1) % this.turretTypes.length];
@@ -227,12 +281,11 @@ export class Player {
         if (key === this.currentWeaponKey) return;
         if (!this.weapons[key]) return;
 
-        this.isAiming = false; // Cancel ADS on switch
+        this.isAiming = false;
         this.currentWeapon.mesh.visible = false;
         this.currentWeaponKey = key;
         this.currentWeapon = this.weapons[key];
-        
-        // Don't show weapon mesh if sniping and aiming
+
         if (!(this.currentWeaponKey === 'SNIPER' && this.isAiming)) {
             this.currentWeapon.mesh.visible = true;
         }
@@ -244,7 +297,7 @@ export class Player {
         let color = new THREE.Color(1, 1, 1);
         if (this.currentTurretType === 'EMP') color.set(0x00ffff);
         if (this.currentTurretType === 'SLOW') color.set(0xaa00ff);
-        
+
         if (mesh.material) {
             mesh.material.color.copy(color);
         }
@@ -252,14 +305,13 @@ export class Player {
 
     toggleThermal() {
         if (this.isDead) return;
-        if (!this.isThermalActive && this.thermalEnergy < 10) return; // Need some energy to start
+        if (!this.isThermalActive && this.thermalEnergy < 10) return;
 
         this.isThermalActive = !this.isThermalActive;
-        const overlay = document.getElementById('thermal-overlay');
+        const overlay = this.ui.thermalOverlay || document.getElementById('thermal-overlay');
         if (overlay) overlay.style.display = this.isThermalActive ? 'block' : 'none';
         this.updateUI();
     }
-
 
     cycleSniperZoom() {
         if (this.currentWeaponKey !== 'SNIPER' || !this.isAiming) return;
@@ -281,23 +333,22 @@ export class Player {
         }
 
         this.trajectoryLine.visible = true;
-        
-        // Color based on type
+
         if (this.isAimingEMP) {
             this.trajectoryLine.material.color.set(0x00ffff);
         } else {
             this.trajectoryLine.material.color.set(0x00ff00);
         }
 
-        const startPos = new THREE.Vector3();
+        const startPos = this._scratchVecA;
         this.camera.getWorldPosition(startPos);
-        const startVel = new THREE.Vector3(0, 0, -1)
+        const startVel = this._scratchVecB.set(0, 0, -1)
             .applyQuaternion(this.camera.quaternion)
             .multiplyScalar(CONFIG.PLAYER.GRENADE.THROW_FORCE);
 
         const points = [];
-        const tempPos = new THREE.Vector3();
-        const tempVel = new THREE.Vector3().copy(startVel);
+        const tempPos = this._scratchVecC;
+        const tempVel = this._scratchVecD.copy(startVel);
         const dt = 0.1;
 
         for (let i = 0; i < 30; i++) {
@@ -317,9 +368,9 @@ export class Player {
         this.lastGrenade = Date.now();
         this.updateUI();
 
-        const spawnPos = new THREE.Vector3();
+        const spawnPos = this._scratchVecA;
         this.camera.getWorldPosition(spawnPos);
-        const velocity = new THREE.Vector3(0, 0, -1)
+        const velocity = this._scratchVecB.set(0, 0, -1)
             .applyQuaternion(this.camera.quaternion)
             .multiplyScalar(CONFIG.PLAYER.GRENADE.THROW_FORCE);
 
@@ -333,9 +384,9 @@ export class Player {
         this.lastEMP = Date.now();
         this.updateUI();
 
-        const spawnPos = new THREE.Vector3();
+        const spawnPos = this._scratchVecA;
         this.camera.getWorldPosition(spawnPos);
-        const velocity = new THREE.Vector3(0, 0, -1)
+        const velocity = this._scratchVecB.set(0, 0, -1)
             .applyQuaternion(this.camera.quaternion)
             .multiplyScalar(CONFIG.PLAYER.GRENADE.THROW_FORCE);
 
@@ -350,33 +401,29 @@ export class Player {
     upgradeWeapon(weaponKey, modType) {
         const weapon = this.weapons[weaponKey];
         if (!weapon || !weapon.mods) return false;
-        
+
         if (weapon.mods[modType] === undefined) {
             weapon.mods[modType] = 0;
         }
 
-        if (weapon.mods[modType] >= 5) return false; // Max level 5
-        
+        if (weapon.mods[modType] >= 5) return false;
+
         weapon.mods[modType]++;
-        
+
         if (modType === 'fireRate') {
-            // Reduce cooldown by 10% per level
             weapon.COOLDOWN *= 0.9;
             if (weapon.system) weapon.system.cooldown = weapon.COOLDOWN;
         } else if (modType === 'reload') {
-            // Reduce reload time by 10% per level
             weapon.RELOAD_TIME *= 0.9;
         } else if (modType === 'magazine') {
-            // Increase magazine size by 20% per level
             const increase = Math.ceil(weapon.MAGAZINE_SIZE * 0.2);
             weapon.MAGAZINE_SIZE += increase;
-            weapon.magazine += increase; // Add to current mag too
+            weapon.magazine += increase;
         } else if (modType === 'damage') {
-            // Increase damage by 15% per level
             weapon.DAMAGE = Math.ceil(weapon.DAMAGE * 1.15);
             if (weapon.system) weapon.system.damage = weapon.DAMAGE;
         }
-        
+
         this.updateUI();
         return true;
     }
@@ -385,12 +432,10 @@ export class Player {
         if (this.isDead) return;
         this.raycastTargets = raycastTargets;
 
-        // --- Timers and Throttling ---
         if (!this.lastCrosshairUpdate) this.lastCrosshairUpdate = 0;
         if (!this.lastUIUpdate) this.lastUIUpdate = 0;
         const now = Date.now();
 
-        // --- Invincibility timer decrease ---
         if (this.invincibilityTimer > 0) {
             this.invincibilityTimer -= deltaTime;
             if (this.invincibilityTimer <= 0) {
@@ -399,29 +444,26 @@ export class Player {
             }
         }
 
-        // --- Projected Shield timer decrease ---
         if (this.projectedShieldTimer > 0) {
             this.projectedShieldTimer -= deltaTime * 1000;
             if (this.projectedShieldTimer <= 0) {
                 this.hasProjectedShield = false;
             }
         }
-        
-        // Update Shield Visuals
+
         if (this.projectedShieldMesh) {
             this.projectedShieldMesh.visible = this.hasProjectedShield || this.isInvincible;
             if (this.projectedShieldMesh.visible) {
                 this.projectedShieldMesh.position.copy(this.mesh.position);
                 this.projectedShieldMesh.material.uniforms.time.value += deltaTime;
                 this.projectedShieldMesh.material.uniforms.isHighFrequency.value = this.isInvincible ? 1.0 : 0.0;
-                
+
                 if (this.projectedShieldMesh.material.uniforms.impactStrength.value > 0) {
                     this.projectedShieldMesh.material.uniforms.impactStrength.value -= deltaTime * 3;
                 }
             }
         }
 
-        // --- Phase Shift Logic ---
         if (this.isPhased) {
             document.body.style.backgroundColor = 'rgba(255, 0, 255, 0.1)';
             if (this.currentWeapon.mesh.material) {
@@ -433,9 +475,8 @@ export class Player {
             }
         }
 
-        // --- Damage Buff Update ---
         this.damageMultiplier = 1.0;
-        
+
         for (let i = this.buffs.length - 1; i >= 0; i--) {
             const buff = this.buffs[i];
             buff.duration -= deltaTime;
@@ -450,8 +491,6 @@ export class Player {
             this.perkManager.update(deltaTime);
         }
 
-
-        // --- Thermal Vision Logic ---
         if (this.isThermalActive) {
             this.thermalEnergy -= CONFIG.THERMAL.CONSUMPTION_RATE * deltaTime;
             if (this.thermalEnergy <= 0) {
@@ -462,33 +501,30 @@ export class Player {
             this.thermalEnergy = Math.min(CONFIG.THERMAL.MAX_ENERGY, this.thermalEnergy + CONFIG.THERMAL.REGEN_RATE * deltaTime);
         }
 
-        // --- Extinguisher Regen ---
         if (this.currentWeaponKey !== 'EXTINGUISHER' || !this.isSpraying) {
             const ext = this.weapons.EXTINGUISHER;
             ext.magazine = Math.min(CONFIG.PLAYER.EXTINGUISHER.CAPACITY, ext.magazine + CONFIG.PLAYER.EXTINGUISHER.REGEN_RATE * deltaTime);
         }
 
-        // --- Throttled Crosshair Raycast (10fps) ---
         if (now - this.lastCrosshairUpdate > 100) {
             this.lastCrosshairUpdate = now;
-            const crosshair = document.getElementById('crosshair');
+            const crosshair = this.ui.crosshair || document.getElementById('crosshair');
             if (crosshair && this.raycastTargets) {
                 this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
                 const intersects = this.raycaster.intersectObjects(this.raycastTargets, true);
-                let color = 'rgba(0, 255, 170, 0.8)'; // Default Cyan
+                let color = 'rgba(0, 255, 170, 0.8)';
                 if (intersects.length > 0) {
                     const hit = intersects[0];
                     if (hit.object.userData.enemyRef) {
-                        color = 'rgba(255, 68, 0, 0.9)'; // Target Red
+                        color = 'rgba(255, 68, 0, 0.9)';
                     } else if (hit.object.userData.isBarrel || hit.object.userData.isPipe) {
-                        color = 'rgba(255, 255, 0, 0.9)'; // Hazard Yellow
+                        color = 'rgba(255, 255, 0, 0.9)';
                     }
                 }
                 document.documentElement.style.setProperty('--crosshair-color', color);
             }
         }
 
-        // --- Throttled UI update (15fps) ---
         if (now - this.lastUIUpdate > 66) {
             this.lastUIUpdate = now;
             this.updateUI();
@@ -496,9 +532,8 @@ export class Player {
 
         this.updateTrajectory();
 
-        // --- ADS Logic ---
         const targetPos = this.isAiming ? this.currentWeapon.aimPos : this.currentWeapon.defaultPos;
-        
+
         let targetFOV = CONFIG.PLAYER.DEFAULT_FOV;
         if (this.isAiming) {
             if (Array.isArray(this.currentWeapon.ADS_FOV)) {
@@ -507,10 +542,9 @@ export class Player {
                 targetFOV = this.currentWeapon.ADS_FOV;
             }
         }
-        
-        // Handle Sniper scope overlay
-        const scopeOverlay = document.getElementById('scope-overlay');
-        const crosshairEl = document.getElementById('crosshair');
+
+        const scopeOverlay = this.ui.scopeOverlay || document.getElementById('scope-overlay');
+        const crosshairEl = this.ui.crosshair || document.getElementById('crosshair');
         if (this.currentWeaponKey === 'SNIPER' && this.isAiming) {
             if (scopeOverlay) scopeOverlay.style.display = 'block';
             if (crosshairEl) crosshairEl.style.display = 'none';
@@ -521,16 +555,13 @@ export class Player {
             this.currentWeapon.mesh.visible = true;
         }
 
-        // Smoothly move weapon to target position
         this.currentWeapon.mesh.position.lerp(targetPos, deltaTime * 15);
-        
-        // Smoothly zoom camera FOV
+
         if (Math.abs(this.camera.fov - targetFOV) > 0.1) {
             this.camera.fov = THREE.MathUtils.lerp(this.camera.fov, targetFOV, deltaTime * 15);
             this.camera.updateProjectionMatrix();
         }
 
-        // --- Weapon Bobbing ---
         const bobMultiplier = this.isAiming ? 0.2 : 1.0;
         if (isMoving && !this.isReloading) {
             this.bobTime += deltaTime * CONFIG.PLAYER.BOB.SPEED;
@@ -540,7 +571,6 @@ export class Player {
             this.currentWeapon.mesh.position.y += bobY;
         }
 
-        // --- Weapon Sway ---
         const swayMultiplier = this.isAiming ? 0.3 : 1.0;
         if (mouseDelta && !this.isReloading) {
             const swayX = -mouseDelta.x * CONFIG.PLAYER.SWAY.INTENSITY * swayMultiplier;
@@ -553,50 +583,48 @@ export class Player {
     }
 
     getWeaponTint() {
-        let tint = 0x00d0ff; // Default Neural Sync Cyan
-        
-        // Priority for tints
+        let tint = 0x00d0ff;
+
         if (this.currentWeapon.elementalAmmo && this.currentWeapon.elementalAmmo.count > 0) {
             const type = this.currentWeapon.elementalAmmo.type;
-            if (type === 'INCENDIARY') return 0xff4400; // Fire Red
-            if (type === 'SHOCK') return 0x00ffff; // Shock Cyan
+            if (type === 'INCENDIARY') return 0xff4400;
+            if (type === 'SHOCK') return 0x00ffff;
         }
-        
-        // Archetype based on perks
+
         if (this.currentWeapon.perks) {
-            if (this.currentWeapon.perks.explosiveKills) return 0xff5500; // Explosive Orange
-            if (this.currentWeapon.perks.penetration > 0) return 0x00ffaa; // Penetrating Teal
-            if (this.currentWeapon.perks.ricochet) return 0xaaaaff; // Vector Blue
+            if (this.currentWeapon.perks.explosiveKills) return 0xff5500;
+            if (this.currentWeapon.perks.penetration > 0) return 0x00ffaa;
+            if (this.currentWeapon.perks.ricochet) return 0xaaaaff;
         }
-        
+
         if (this.perks) {
-            if (this.perks.vampiric > 0) return 0xff0044; // Vampiric Crimson
-            if (this.perks.regen > 0) return 0x00ff00; // Regen Green
-            if (this.perks.critChance > 0) return 0x00ffff; // Crit Cyan
+            if (this.perks.vampiric > 0) return 0xff0044;
+            if (this.perks.regen > 0) return 0x00ff00;
+            if (this.perks.critChance > 0) return 0x00ffff;
         }
-        
+
         return tint;
     }
 
     shoot(targetObjects, onDeployTurret) {
         if (this.isDead || this.isReloading || this.isMeleeing || this.currentWeapon.magazine <= 0) return;
-        
-        if (this.currentWeaponKey === 'EXTINGUISHER') return; // Handled separately via spray
+
+        if (this.currentWeaponKey === 'EXTINGUISHER') return;
 
         if (this.currentWeaponKey === 'TURRET') {
             if (Date.now() - this.lastShot < this.currentWeapon.COOLDOWN) return;
-            
+
             this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
             const floor = this.scene.getObjectByName('FLOOR');
             if (!floor) return;
 
-            const intersects = this.raycaster.intersectObject(floor, true); 
+            const intersects = this.raycaster.intersectObject(floor, true);
             if (intersects.length > 0) {
                 const hit = intersects[0];
                 if (hit.distance < 5) {
                     this.currentWeapon.magazine--;
                     this.lastShot = Date.now();
-                    const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+                    const dir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
                     if (onDeployTurret) onDeployTurret(hit.point, dir, this.currentTurretType);
                     this.updateUI();
                 }
@@ -606,21 +634,20 @@ export class Player {
 
         const currentCooldown = this.perkManager ? this.perkManager.getModifiedFireRate(this.currentWeapon) : this.currentWeapon.COOLDOWN;
         if (Date.now() - this.lastShot < currentCooldown) return;
-        
+
         this.currentWeapon.magazine--;
         this.lastShot = Date.now();
         this.updateUI();
-        
-        // Trigger crosshair pulse
-        const crosshair = document.getElementById('crosshair');
+
+        const crosshair = this.ui.crosshair || document.getElementById('crosshair');
         if (crosshair) {
             crosshair.style.transform = 'translate(-50%, -50%) scale(1.4)';
             setTimeout(() => {
                 crosshair.style.transform = 'translate(-50%, -50%) scale(1)';
             }, 50);
         }
-        
-        this.audio.shoot(); // Trigger audio
+
+        this.audio.shoot();
 
         let activeDamageType = 'PLAYER';
         if (this.currentWeapon.elementalAmmo && this.currentWeapon.elementalAmmo.count > 0) {
@@ -631,11 +658,10 @@ export class Player {
         const baseDamage = this.currentWeapon.DAMAGE;
         let critMultiplier = 1.0;
         let shakeMultiplier = 1.0;
-        
-        // Lucky Shot Crit Logic
+
         if (this.perks && this.perks.critChance > 0) {
             if (Math.random() < this.perks.critChance) {
-                critMultiplier = 10.0; // Critical Overload perk
+                critMultiplier = 10.0;
                 shakeMultiplier = 3.0;
                 if (window.game && window.game.dailyChallengeManager) {
                     window.game.dailyChallengeManager.track('headshots');
@@ -644,42 +670,39 @@ export class Player {
         }
 
         const finalDamage = baseDamage * this.damageMultiplier * critMultiplier;
-        
+
         if (this.onShake) this.onShake(this.currentWeapon.SHAKE * shakeMultiplier);
 
-        let muzzleFlashColor = this.getWeaponTint();
+        const muzzleFlashColor = this.getWeaponTint();
 
-        // Optimized muzzle flash light
         this.muzzleFlashLight.color.set(muzzleFlashColor);
-        this.muzzleFlashLight.intensity = 2 * shakeMultiplier; 
+        this.muzzleFlashLight.intensity = 2 * shakeMultiplier;
         setTimeout(() => {
             this.muzzleFlashLight.intensity = 0;
         }, 40);
 
-        const muzzlePos = new THREE.Vector3();
+        const muzzlePos = this._scratchVecA;
         if (this.currentWeapon.muzzleOffset) {
             muzzlePos.copy(this.currentWeapon.muzzleOffset);
             this.currentWeapon.mesh.localToWorld(muzzlePos);
         } else {
             this.currentWeapon.mesh.getWorldPosition(muzzlePos);
         }
-        
-        // Update muzzle flash light position
+
         this.muzzleFlashLight.position.copy(muzzlePos);
         this.camera.worldToLocal(this.muzzleFlashLight.position);
 
-        const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const shootDir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
 
         if (this.particleSystem) {
             this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, muzzleFlashColor);
         }
 
         this.currentWeapon.mesh.position.z += 0.2;
-        setTimeout(() => { if(this.currentWeapon) this.currentWeapon.mesh.position.z -= 0.2 }, 50);
+        setTimeout(() => { if (this.currentWeapon) this.currentWeapon.mesh.position.z -= 0.2; }, 50);
 
         this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
-        
-        // --- Bullet Logic with Perks ---
+
         const maxPenetration = (this.currentWeapon.perks && this.currentWeapon.perks.penetration) || 0;
         let hitsRemaining = 1 + maxPenetration;
         let lastHitPoint = muzzlePos.clone();
@@ -689,10 +712,9 @@ export class Player {
             const hitObject = hit.object;
             const enemy = hitObject.userData.enemyRef;
 
-            this.audio.hit(!!enemy); 
-            
-            // Show hitmarker
-            const hm = document.getElementById('hitmarker');
+            this.audio.hit(!!enemy);
+
+            const hm = this.ui.hitmarker || document.getElementById('hitmarker');
             if (hm && enemy) {
                 hm.style.display = 'block';
                 const lines = hm.querySelectorAll('.hm-line');
@@ -700,7 +722,7 @@ export class Player {
                     if (enemy.isDead) l.classList.add('kill');
                     else l.classList.remove('kill');
                 });
-                
+
                 setTimeout(() => {
                     hm.style.display = 'none';
                 }, 100);
@@ -711,26 +733,24 @@ export class Player {
                 const isPipe = hitObject.userData.isPipe;
                 const isGas = hitObject.userData.isGas;
                 const isExt = hitObject.userData.isExtinguisherProp;
-                
+
                 let impactColor = 0xcccccc;
                 if (enemy) {
                     if (activeDamageType === 'INCENDIARY' || this.perks.fireBuild) impactColor = 0xff4400;
                     else if (activeDamageType === 'SHOCK' || this.perks.shockBuild) impactColor = 0x00ffff;
                     else if (this.perks.gravityBuild) impactColor = 0x5500ff;
                     else impactColor = 0xff0000;
-                }
-                else if (isBarrel) impactColor = 0xffaa00;
+                } else if (isBarrel) impactColor = 0xffaa00;
                 else if (isPipe) impactColor = 0x00ff00;
                 else if (isGas) impactColor = 0x88ffaa;
                 else if (isExt) impactColor = 0xffffff;
 
-                const normal = hit.face ? hit.face.normal : new THREE.Vector3(0, 1, 0);
+                const normal = hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0);
                 this.particleSystem.createImpact(hit.point, normal, impactColor);
             }
 
             if (enemy) {
                 let dmg = finalDamage;
-                // Weapon Mastery: Shield Breaker Perk (Applies to any weapon with this perk)
                 if (this.currentWeapon.perks.shieldBreaker) {
                     if (enemy.type === 'TANK' || enemy.type === 'HEAVY_SEC_BOT' || enemy.type === 'SHIELD_PROJECTOR') {
                         dmg *= 3.0;
@@ -739,9 +759,6 @@ export class Player {
 
                 enemy.takeDamage(dmg, [], activeDamageType);
 
-                // --- Build Effects (Chaos) ---
-
-                // Shock Build: Chain Lightning
                 if (this.perks.shockBuild || (this.perks.chainBullets && Math.random() < (this.perks.chainChance || 0.5))) {
                     const chainTargets = this.perks.chainTargets || 5;
                     const chainRange = 15;
@@ -752,7 +769,7 @@ export class Player {
                                 e.takeDamage(dmg * 0.5, [], 'SHOCK');
                                 if (this.particleSystem) {
                                     this.particleSystem.createTracer(enemy.mesh.position, e.mesh.position, 0x00ffff, 1.0);
-                                    this.particleSystem.createImpact(e.mesh.position, new THREE.Vector3(0, 1, 0), 0x00ffff);
+                                    this.particleSystem.createImpact(e.mesh.position, this._scratchVecC.set(0, 1, 0), 0x00ffff);
                                 }
                                 hits++;
                             }
@@ -760,25 +777,22 @@ export class Player {
                     }
                 }
 
-                // Gravity Build: Pull Enemies Together
                 if (this.perks.gravityBuild || this.perks.pullOnHit) {
                     const pullRange = 12;
                     if (window.game && window.game.enemies) {
-                        if (this.onShake) this.onShake(0.05); // Subtle shake on hit pull
+                        if (this.onShake) this.onShake(0.05);
                         window.game.enemies.forEach(e => {
                             if (!e.isDead && e !== enemy && e.mesh.position.distanceTo(enemy.mesh.position) < pullRange) {
-                                const dir = new THREE.Vector3().subVectors(enemy.mesh.position, e.mesh.position).normalize();
+                                const dir = this._scratchVecC.subVectors(enemy.mesh.position, e.mesh.position).normalize();
                                 e.mesh.position.add(dir.multiplyScalar(0.5));
                             }
                         });
                     }
                 }
-                
-                // Sniper Ammo Recall Perk
+
                 if (this.currentWeaponKey === 'SNIPER' && this.currentWeapon.perks.ammoRecall && Math.random() < 0.5) {
                     this.currentWeapon.magazine = Math.min(this.currentWeapon.MAGAZINE_SIZE, this.currentWeapon.magazine + 1);
-                    // Visual feedback for Ammo Recall
-                    const ammoEl = document.getElementById('sniper-ammo');
+                    const ammoEl = this.ui.sniperAmmo || document.getElementById('sniper-ammo');
                     if (ammoEl) {
                         ammoEl.style.color = '#00ffff';
                         ammoEl.style.textShadow = '0 0 10px #00ffff';
@@ -797,12 +811,11 @@ export class Player {
                     if (this.onEnemyKilled) this.onEnemyKilled(enemy);
                     this.updateUI();
                 }
-                
+
                 hitsRemaining--;
                 lastHitPoint.copy(hit.point);
-                return hitsRemaining > 0; // Continue if we have more penetration
+                return hitsRemaining > 0;
             } else {
-                // Hit a static object
                 if (hitObject.userData.isBarrel) {
                     hitObject.userData.health -= finalDamage;
                     if (hitObject.userData.health <= 0 && this.onBarrelExplode) this.onBarrelExplode(hitObject);
@@ -815,7 +828,7 @@ export class Player {
                     if (hitObject.userData.health <= 0 && this.onExtHit) this.onExtHit(hitObject);
                 } else if (hitObject.userData.isDestructible) {
                     if (hitObject.userData.parentProp) {
-                        const normal = hit.face ? hit.face.normal : new THREE.Vector3(0, 1, 0);
+                        const normal = hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0);
                         hitObject.userData.parentProp.takeDamage(finalDamage, hit.point, normal);
                         if (hitObject.userData.parentProp.isDead) {
                             this.score += hitObject.userData.parentProp.scoreValue || 0;
@@ -827,17 +840,15 @@ export class Player {
                     }
                 }
 
-                // Ricochet Perk (Rifle only, once per shot)
                 if (this.currentWeaponKey === 'RIFLE' && this.currentWeapon.perks.ricochet && !isRicochet) {
-                    const normal = hit.face ? hit.face.normal.clone().applyQuaternion(hitObject.quaternion || new THREE.Quaternion()) : new THREE.Vector3(0,1,0);
+                    const normal = hit.face ? hit.face.normal.clone().applyQuaternion(hitObject.quaternion || this._scratchQuat.identity()) : this._scratchVecC.set(0, 1, 0);
                     currentDir.reflect(normal);
                     lastHitPoint.copy(hit.point);
-                    
-                    // Visual feedback for ricochet bounce
+
                     if (this.particleSystem) {
                         this.particleSystem.createExplosion(hit.point, 0xffaa00, 5, 0.5);
                     }
-                    
+
                     this.raycaster.set(lastHitPoint, currentDir);
                     const ricochetIntersects = this.raycaster.intersectObjects(targetObjects, true);
                     if (ricochetIntersects.length > 0) {
@@ -845,13 +856,12 @@ export class Player {
                     }
                 }
 
-                return false; // Stop bullet
+                return false;
             }
         };
 
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
         if (intersects.length > 0) {
-            // If penetrating, we need to process all hits along the ray
             if (maxPenetration > 0) {
                 for (const hit of intersects) {
                     if (!processHit(hit)) break;
@@ -859,8 +869,6 @@ export class Player {
             } else {
                 processHit(intersects[0]);
             }
-        } else {
-            // Bullet Tracer to max distance removed
         }
 
         if (this.currentWeapon.magazine === 0 && this.currentWeapon.reserve > 0) {
@@ -870,24 +878,21 @@ export class Player {
 
     secondaryShoot(targetObjects, onDeployTurret, enemies, fireFields, barrels, hazards) {
         if (this.isDead || this.isReloading || this.isMeleeing) return;
-        
+
         if (this.currentWeaponKey === 'SNIPER') {
             const railConfig = this.currentWeapon.RAIL_SHOT;
             if (!railConfig) return;
 
             if (Date.now() - this.lastSecondaryShot < railConfig.COOLDOWN) return;
-            
-            // Interaction with Thermal Energy Pool (Neural Sync)
+
             if (this.isThermalActive) {
-                // Rail-Siphon: Lower cost, but restores energy on multi-kills
-                const siphonCost = 25; 
+                const siphonCost = 25;
                 if (this.thermalEnergy < siphonCost) return;
-                
+
                 this.executeRailSiphonShot(targetObjects, railConfig, siphonCost);
             } else {
-                // Standard Rail Shot
                 if (this.thermalEnergy < railConfig.ENERGY_COST) return;
-                
+
                 this.lastSecondaryShot = Date.now();
                 this.thermalEnergy -= railConfig.ENERGY_COST;
                 this.updateUI();
@@ -895,21 +900,18 @@ export class Player {
                 this.executeStandardRailShot(targetObjects, railConfig);
             }
         } else if (this.currentWeaponKey === 'RIFLE') {
-            // Weapon Mastery: Shield-Siphon Rounds
             if (!this.isInvincible && !this.hasProjectedShield) return;
-            
+
             const siphonCooldown = 400;
             if (Date.now() - this.lastSecondaryShot < siphonCooldown) return;
-            
+
             this.lastSecondaryShot = Date.now();
-            
-            // Consume shield
+
             if (this.isInvincible) this.invincibilityTimer -= 0.4;
             else if (this.hasProjectedShield) this.projectedShieldTimer -= 400;
-            
+
             this.executeShieldSiphonShot(targetObjects);
         } else if (this.currentWeaponKey === 'TURRET') {
-            // Gadget Mastery: Omega Overdrive
             if (!this.omegaTurretUnlocked) return;
             const omegaCost = 40;
             if (this.thermalEnergy < omegaCost || this.currentWeapon.magazine <= 0) return;
@@ -919,24 +921,23 @@ export class Player {
             const floor = this.scene.getObjectByName('FLOOR');
             if (!floor) return;
 
-            const intersects = this.raycaster.intersectObject(floor, true); 
+            const intersects = this.raycaster.intersectObject(floor, true);
             if (intersects.length > 0 && intersects[0].distance < 5) {
                 this.lastSecondaryShot = Date.now();
                 this.thermalEnergy -= omegaCost;
                 this.currentWeapon.magazine--;
-                
+
                 const hit = intersects[0];
-                const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+                const dir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
                 if (onDeployTurret) onDeployTurret(hit.point, dir, this.currentTurretType, true);
-                
+
                 const turretName = this.currentTurretType === 'LASER' ? 'OMEGA SENTRY' : `OMEGA ${this.currentTurretType}`;
                 this.game.showProgressionMessage(`OMEGA PROTOCOL: ${turretName} DEPLOYED`, 2000);
                 this.updateUI();
             }
         } else if (this.currentWeaponKey === 'EXTINGUISHER') {
-            // Gadget Mastery: Flash Freeze
             if (!this.flashFreezeUnlocked) return;
-            const freezeCost = 50; // 50% fuel
+            const freezeCost = 50;
             if (this.currentWeapon.magazine < freezeCost) return;
             if (Date.now() - this.lastSecondaryShot < 5000) return;
 
@@ -950,11 +951,10 @@ export class Player {
     executeFlashFreeze(enemies, fireFields, barrels, hazards) {
         const range = 15;
         const playerPos = this.camera.position;
-        const playerForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
-        
+        const playerForward = this._scratchVecA.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
+
         if (this.onShake) this.onShake(1.0);
-        
-        // Massive nitrogen cloud particles - using optimized large cloud
+
         if (this.particleSystem) {
             const burstPos = playerPos.clone().add(playerForward.clone().multiplyScalar(5));
             this.particleSystem.createLargeCloud(burstPos, 0x00ffff, 15, 6);
@@ -963,11 +963,11 @@ export class Player {
 
         enemies.forEach(e => {
             if (!e.isDead && !e.isAlly) {
-                const toEnemy = e.mesh.position.clone().sub(playerPos);
+                const toEnemy = this._scratchVecB.subVectors(e.mesh.position, playerPos);
                 if (toEnemy.length() < range) {
                     toEnemy.normalize();
                     if (playerForward.dot(toEnemy) > 0.3) {
-                        e.applyFreeze(6000); // 6 second hard freeze
+                        e.applyFreeze(6000);
                         if (this.particleSystem) {
                             this.particleSystem.createExplosion(e.mesh.position, 0x00ffff, 10, 2);
                         }
@@ -976,8 +976,7 @@ export class Player {
             }
         });
 
-        // Also clear hazards in a wider area
-        this.spray(0.1, fireFields, barrels, hazards); 
+        this.spray(0.1, fireFields, barrels, hazards);
         this.game.showProgressionMessage("FLASH FREEZE PROTOCOL INITIATED", 2000);
     }
 
@@ -989,18 +988,18 @@ export class Player {
         this.muzzleFlashLight.intensity = 5;
         setTimeout(() => this.muzzleFlashLight.intensity = 0, 100);
 
-        const muzzlePos = new THREE.Vector3();
+        const muzzlePos = this._scratchVecA;
         if (this.currentWeapon.muzzleOffset) {
             muzzlePos.copy(this.currentWeapon.muzzleOffset);
             this.currentWeapon.mesh.localToWorld(muzzlePos);
         } else {
             this.currentWeapon.mesh.getWorldPosition(muzzlePos);
         }
-        
+
         this.muzzleFlashLight.position.copy(muzzlePos);
         this.camera.worldToLocal(this.muzzleFlashLight.position);
 
-        const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const shootDir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
 
         if (this.particleSystem) {
             this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, railColor);
@@ -1010,7 +1009,7 @@ export class Player {
 
         this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
-        
+
         let hitCount = 0;
         for (const hit of intersects) {
             const hitObject = hit.object;
@@ -1019,7 +1018,7 @@ export class Player {
             if (enemy) {
                 enemy.takeDamage(railConfig.DAMAGE * this.damageMultiplier, [], 'SHOCK');
                 if (this.particleSystem) {
-                    this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : new THREE.Vector3(0,1,0), railColor);
+                    this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0), railColor);
                 }
                 if (enemy.isDead) {
                     this.score += 200;
@@ -1031,7 +1030,7 @@ export class Player {
                 if (hitObject.userData.isBarrel) {
                     if (this.onBarrelExplode) this.onBarrelExplode(hitObject);
                 } else if (hitObject.userData.isDestructible) {
-                    const normal = hit.face ? hit.face.normal : new THREE.Vector3(0, 1, 0);
+                    const normal = hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0);
                     if (hitObject.userData.parentProp) {
                         hitObject.userData.parentProp.takeDamage(railConfig.DAMAGE * this.damageMultiplier, hit.point, normal);
                         if (hitObject.userData.parentProp.isDead) {
@@ -1049,14 +1048,14 @@ export class Player {
     }
 
     executeRailSiphonShot(targetObjects, railConfig, cost) {
-        const siphonColor = 0xff00ff; // Neon Purple for Siphon
+        const siphonColor = 0xff00ff;
         this.lastSecondaryShot = Date.now();
         this.thermalEnergy -= cost;
         this.updateUI();
 
         if (this.onShake) this.onShake(railConfig.SHAKE * 0.7);
 
-        const muzzlePos = new THREE.Vector3();
+        const muzzlePos = this._scratchVecA;
         if (this.currentWeapon.muzzleOffset) {
             muzzlePos.copy(this.currentWeapon.muzzleOffset);
             this.currentWeapon.mesh.localToWorld(muzzlePos);
@@ -1064,7 +1063,7 @@ export class Player {
             this.currentWeapon.mesh.getWorldPosition(muzzlePos);
         }
 
-        const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const shootDir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
 
         if (this.particleSystem) {
             this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, siphonColor);
@@ -1074,7 +1073,7 @@ export class Player {
 
         this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
-        
+
         let hitCount = 0;
         let killCount = 0;
         for (const hit of intersects) {
@@ -1091,7 +1090,6 @@ export class Player {
             } else break;
         }
 
-        // Energy Siphon Logic: Restore 15 energy per kill
         if (killCount > 0) {
             this.thermalEnergy = Math.min(CONFIG.THERMAL.MAX_ENERGY, this.thermalEnergy + killCount * 15);
             if (this.particleSystem) {
@@ -1103,57 +1101,55 @@ export class Player {
     }
 
     executeShieldSiphonShot(targetObjects) {
-        const siphonColor = 0xff0044; // Crimson Siphon
+        const siphonColor = 0xff0044;
         this.audio.shoot();
-        
+
         if (this.onShake) this.onShake(0.1);
-        
-        const muzzlePos = new THREE.Vector3();
+
+        const muzzlePos = this._scratchVecA;
         if (this.currentWeapon.muzzleOffset) {
             muzzlePos.copy(this.currentWeapon.muzzleOffset);
             this.currentWeapon.mesh.localToWorld(muzzlePos);
         } else {
             this.currentWeapon.mesh.getWorldPosition(muzzlePos);
         }
-        
-        const shootDir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
-        
+
+        const shootDir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
+
         if (this.particleSystem) {
             this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, siphonColor);
             const tracerEnd = muzzlePos.clone().add(shootDir.clone().multiplyScalar(50));
             this.particleSystem.createTracer(muzzlePos, tracerEnd, siphonColor, 2.0);
         }
-        
+
         this.raycaster.setFromCamera({ x: 0, y: 0 }, this.camera);
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
-        
+
         if (intersects.length > 0) {
             const hit = intersects[0];
             const enemy = hit.object.userData.enemyRef;
-            
+
             if (enemy) {
-                const damage = this.currentWeapon.DAMAGE * 2.0; // Double damage for siphon rounds
+                const damage = this.currentWeapon.DAMAGE * 2.0;
                 enemy.takeDamage(damage, [], 'PLAYER');
-                
-                // Heal player on hit (Siphon)
-                const healAmt = damage * 0.3; // 30% lifesteal
+
+                const healAmt = damage * 0.3;
                 this.heal(healAmt);
-                
+
                 if (this.particleSystem) {
-                    this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : new THREE.Vector3(0,1,0), siphonColor);
-                    // Visual "drain" effect back to player
+                    this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0), siphonColor);
                     this.particleSystem.createTracer(hit.point, this.mesh.position, siphonColor, 0.5);
                 }
-                
+
                 if (enemy.isDead) {
                     this.score += 150;
                     if (this.onEnemyKilled) this.onEnemyKilled(enemy);
                 }
             } else if (this.particleSystem) {
-                this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : new THREE.Vector3(0,1,0), 0xcccccc);
+                this.particleSystem.createImpact(hit.point, hit.face ? hit.face.normal : this._scratchVecC.set(0, 1, 0), 0xcccccc);
             }
         }
-        
+
         this.updateUI();
     }
 
@@ -1161,15 +1157,12 @@ export class Player {
         if (this.isDead || this.isMeleeing || Date.now() - this.lastMelee < CONFIG.PLAYER.MELEE.COOLDOWN) return;
 
         this.isMeleeing = true;
-        this.isAiming = false; // Cancel ADS
+        this.isAiming = false;
         this.lastMelee = Date.now();
 
-        // Melee animation: Swing weapon
         const originalRot = this.currentWeapon.mesh.rotation.clone();
         const originalPos = this.currentWeapon.mesh.position.clone();
 
-        // Simple swing animation using a timeout for simplicity in this structure
-        // Moves the gun forward and rotates it
         this.currentWeapon.mesh.position.z -= 0.5;
         this.currentWeapon.mesh.position.x -= 0.2;
         this.currentWeapon.mesh.rotation.y += 0.5;
@@ -1181,29 +1174,25 @@ export class Player {
             this.isMeleeing = false;
         }, 200);
 
-        // Damage Logic
-        // Check for enemies within a cone or close range in front of the player
-        const playerForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
-        
+        const playerForward = this._scratchVecA.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
+
         enemies.forEach(enemy => {
-            const toEnemy = new THREE.Vector3().subVectors(enemy.mesh.position, this.camera.position);
+            const toEnemy = this._scratchVecB.subVectors(enemy.mesh.position, this.camera.position);
             const distance = toEnemy.length();
-            
+
             if (distance < CONFIG.PLAYER.MELEE.RANGE) {
-                // Check if enemy is in front (dot product)
                 toEnemy.normalize();
                 const dot = playerForward.dot(toEnemy);
-                
-                if (dot > 0.5) { // Roughly 60 degree cone
+
+                if (dot > 0.5) {
                     enemy.takeDamage(CONFIG.PLAYER.MELEE.DAMAGE);
-                    
-                    // Blood effect for melee
+
                     if (this.particleSystem) {
-                        this.particleSystem.createImpact(enemy.mesh.position, new THREE.Vector3(0, 1, 0), 0xff0000);
+                        this.particleSystem.createImpact(enemy.mesh.position, this._scratchVecC.set(0, 1, 0), 0xff0000);
                     }
 
                     if (enemy.isDead) {
-                        this.score += 150; // Bonus score for melee
+                        this.score += 150;
                         if (this.onEnemyKilled) this.onEnemyKilled(enemy);
                         this.updateUI();
                     }
@@ -1222,39 +1211,33 @@ export class Player {
         this.currentWeapon.magazine -= CONFIG.PLAYER.EXTINGUISHER.EXTINGUISH_RATE * deltaTime;
         this.updateUI();
 
-        // Particles
         if (this.particleSystem && Math.random() < 0.5) {
-            const nozzlePos = new THREE.Vector3();
+            const nozzlePos = this._scratchVecA;
             this.currentWeapon.mesh.getWorldPosition(nozzlePos);
-            const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+            const dir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
             this.particleSystem.createExplosion(nozzlePos.add(dir.multiplyScalar(0.5)), 0xffffff, 2, 5);
         }
 
-        // Extinguish Logic
         const playerPos = this.camera.position;
-        const playerForward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
+        const playerForward = this._scratchVecA.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
         const range = CONFIG.PLAYER.EXTINGUISHER.RANGE;
         const cone = CONFIG.PLAYER.EXTINGUISHER.CONE;
 
-        // Clear FireFields
         fireFields.forEach(fire => {
-            const toFire = new THREE.Vector3().subVectors(fire.position, playerPos);
+            const toFire = this._scratchVecB.subVectors(fire.position, playerPos);
             if (toFire.length() < range) {
                 toFire.normalize();
                 if (playerForward.dot(toFire) > cone) {
-                    // Reduce duration or just clear
-                    fire.duration -= deltaTime * 1000 * 5; // Extinguish 5x faster
+                    fire.duration -= deltaTime * 1000 * 5;
                 }
             }
         });
 
-        // Disable Barrels
         barrels.forEach(barrel => {
-            const toBarrel = new THREE.Vector3().subVectors(barrel.position, playerPos);
+            const toBarrel = this._scratchVecB.subVectors(barrel.position, playerPos);
             if (toBarrel.length() < range) {
                 toBarrel.normalize();
                 if (playerForward.dot(toBarrel) > cone) {
-                    // Turn barrel green/disabled
                     barrel.userData.isBarrel = false;
                     barrel.material.color.set(0x00ff00);
                     barrel.material.emissive.set(0x002200);
@@ -1262,10 +1245,9 @@ export class Player {
             }
         });
 
-        // Freeze CryoVents
         hazards.forEach(hazard => {
             if (hazard.triggerMesh && hazard.triggerMesh.userData.isCryoVent) {
-                const toVent = new THREE.Vector3().subVectors(hazard.position, playerPos);
+                const toVent = this._scratchVecB.subVectors(hazard.position, playerPos);
                 if (toVent.length() < range) {
                     toVent.normalize();
                     if (playerForward.dot(toVent) > cone) {
@@ -1278,14 +1260,11 @@ export class Player {
 
     takeDamage(amount, isDOT = false, type = 'PLAYER') {
         if (this.isDead || this.isPhased) return;
-        
+
         if (this.isInvincible) {
-            // --- Synergy Lab Expansion ---
-            
-            // 1. Nova Shield (Explosive Payload)
             if (this.perks && this.perks.explosiveBullets && !isDOT) {
                 if (window.game && window.game.handleAreaDamage) {
-                    const pos = this.mesh.position.clone();
+                    const pos = this._scratchVecA.copy(this.mesh.position);
                     window.game.handleAreaDamage(pos, 8, 150);
                     if (this.particleSystem) {
                         this.particleSystem.createExplosion(pos, 0xffaa00, 50, 8);
@@ -1294,28 +1273,24 @@ export class Player {
                 }
             }
 
-            // 2. Vampiric Shield (Vampiric Link)
-            // Gain health on hit while invincible
             if (this.perks && this.perks.vampiric > 0 && !isDOT) {
-                const healAmount = amount * 0.5; // Gain back 50% of the damage blocked
+                const healAmount = amount * 0.5;
                 this.heal(healAmount);
                 if (this.particleSystem) {
                     this.particleSystem.createExplosion(this.mesh.position, 0xff0044, 10, 2);
                 }
             }
 
-            // 3. Static Discharge (Static Rounds / Lightning Rounds)
-            // Release a chain lightning zap on hit
             if (this.perks && this.perks.chainBullets && !isDOT) {
                 if (window.game && window.game.enemies) {
-                    const pos = this.mesh.position.clone();
+                    const pos = this._scratchVecA.copy(this.mesh.position);
                     let hits = 0;
                     window.game.enemies.forEach(enemy => {
                         if (!enemy.isDead && enemy.mesh.position.distanceTo(pos) < 12 && hits < 5) {
                             enemy.takeDamage(80, [], 'SHOCK');
                             if (this.particleSystem) {
                                 this.particleSystem.createTracer(pos, enemy.mesh.position, 0x00ffff, 2.0);
-                                this.particleSystem.createImpact(enemy.mesh.position, new THREE.Vector3(0, 1, 0), 0x00ffff);
+                                this.particleSystem.createImpact(enemy.mesh.position, this._scratchVecC.set(0, 1, 0), 0x00ffff);
                             }
                             hits++;
                         }
@@ -1323,7 +1298,6 @@ export class Player {
                 }
             }
 
-            // Shield Impact Ripple for Emergency Shield
             if (this.projectedShieldMesh && this.projectedShieldMesh.material.uniforms) {
                 this.projectedShieldMesh.material.uniforms.impactStrength.value = 1.0;
                 this.projectedShieldMesh.material.uniforms.impactPos.value.set(
@@ -1334,12 +1308,11 @@ export class Player {
             }
             return;
         }
-        
+
         let finalAmount = amount;
         if (this.hasProjectedShield && !isDOT) {
-            finalAmount *= 0.25; // 75% reduction
-            
-            // Shield Impact Ripple
+            finalAmount *= 0.25;
+
             if (this.projectedShieldMesh && this.projectedShieldMesh.material.uniforms) {
                 this.projectedShieldMesh.material.uniforms.impactStrength.value = 1.0;
                 this.projectedShieldMesh.material.uniforms.impactPos.value.set(
@@ -1349,26 +1322,23 @@ export class Player {
                 ).normalize().multiplyScalar(1.5);
             }
 
-            // Feedback
             document.body.style.backgroundColor = 'rgba(0, 255, 255, 0.2)';
         }
 
         const now = Date.now();
         if (!isDOT && now - this.lastDamageTime < CONFIG.PLAYER.INVULNERABILITY_DURATION) return;
-        
+
         if (!isDOT) this.lastDamageTime = now;
-        
+
         this.health -= finalAmount;
         this.updateUI();
 
-        // Determine damage flash color
         let flashColor = 'rgba(255, 0, 0, 0.3)';
         if (typeof type === 'string') {
             if (type.startsWith('rgb')) flashColor = type;
             else if (type === 'SHOCK') flashColor = 'rgba(0, 255, 255, 0.3)';
         }
 
-        // Don't shake/flash for tiny DOT damage unless it's substantial
         if (!isDOT || amount > 5) {
             if (this.onShake) this.onShake(CONFIG.PLAYER.DAMAGE_SHAKE);
             document.body.style.backgroundColor = flashColor;
@@ -1376,12 +1346,10 @@ export class Player {
                 if (!this.isDead) document.body.style.backgroundColor = 'black';
             }, 100);
         } else {
-            // Subtle hint for DOT (use the color provided but at lower opacity)
-            // If the color already has an alpha, we try to tone it down further
-            const dotColor = flashColor.includes('rgba') 
-                ? flashColor.replace(/[^,]+\)$/, ' 0.05)') 
+            const dotColor = flashColor.includes('rgba')
+                ? flashColor.replace(/[^,]+\)$/, ' 0.05)')
                 : flashColor.replace('rgb', 'rgba').replace(')', ', 0.05)');
-                
+
             document.body.style.backgroundColor = dotColor;
             setTimeout(() => {
                 if (!this.isDead && document.body.style.backgroundColor.includes('0.05')) {
@@ -1393,12 +1361,10 @@ export class Player {
         if (this.health <= 0) {
             this.die();
         } else if (amount > 30 && Math.random() < 0.2) {
-            // Chance to trigger neural malfunction on heavy hit
             if (this.scene.game && this.scene.game.triggerNeuralLinkMalfunction) {
                 this.scene.game.triggerNeuralLinkMalfunction();
             }
-        }
-        else if (this.perkManager) this.perkManager.handleDamageTaken();
+        } else if (this.perkManager) this.perkManager.handleDamageTaken();
     }
 
     heal(amount) {
@@ -1411,7 +1377,7 @@ export class Player {
 
     replenishAmmo(type) {
         if (this.isDead) return;
-        
+
         const weapon = this.weapons[type];
         if (!weapon) return;
 
@@ -1419,7 +1385,6 @@ export class Player {
         weapon.reserve = Math.min(weapon.MAX_RESERVE_AMMO, weapon.reserve + amount);
         this.updateUI();
 
-        // Color flash based on weapon type
         const flashColor = type === 'RIFLE' ? 'rgba(255, 170, 0, 0.2)' : 'rgba(0, 170, 255, 0.2)';
         document.body.style.backgroundColor = flashColor;
         setTimeout(() => document.body.style.backgroundColor = 'black', 100);
@@ -1431,9 +1396,8 @@ export class Player {
         this.isReloading = true;
         this.isAiming = false;
         this.updateUI();
-        this.audio.reload(); // Trigger reload audio
+        this.audio.reload();
 
-        // Reload animation
         const startRotation = this.currentWeapon.mesh.rotation.x;
         this.currentWeapon.mesh.rotation.x = 0.5;
 
@@ -1464,20 +1428,20 @@ export class Player {
         const cores = window.game ? window.game.techCores : 0;
         const thermal = Math.floor(this.thermalEnergy);
 
-        const healthEl = document.getElementById('health-val');
+        const healthEl = this.ui.healthVal || document.getElementById('health-val');
         if (healthEl && this.lastUIValues.health !== healthVal) {
             healthEl.innerText = healthVal;
             this.lastUIValues.health = healthVal;
         }
-        
-        const grenadeEl = document.getElementById('grenade-count');
+
+        const grenadeEl = this.ui.grenadeCount || document.getElementById('grenade-count');
         if (grenadeEl && (this.lastUIValues.grenades !== this.grenadeCount || this.lastUIValues.emps !== this.empCount)) {
             grenadeEl.innerText = `F:${this.grenadeCount} E:${this.empCount}`;
             this.lastUIValues.grenades = this.grenadeCount;
             this.lastUIValues.emps = this.empCount;
         }
 
-        const rifleAmmoEl = document.getElementById('rifle-ammo');
+        const rifleAmmoEl = this.ui.ammo || document.getElementById('rifle-ammo');
         if (rifleAmmoEl && (this.lastUIValues.rifleMag !== rifleMag || this.lastUIValues.rifleRes !== rifleRes)) {
             rifleAmmoEl.innerText = `${rifleMag} / ${rifleRes}${this.weapons.RIFLE.elementalAmmo.count > 0 ? ' [' + this.weapons.RIFLE.elementalAmmo.count + ']' : ''}`;
             this.lastUIValues.rifleMag = rifleMag;
@@ -1486,7 +1450,7 @@ export class Player {
             this.updateModHUD('RIFLE');
         }
 
-        const sniperAmmoEl = document.getElementById('sniper-ammo');
+        const sniperAmmoEl = this.ui.sniperAmmo || document.getElementById('sniper-ammo');
         if (sniperAmmoEl && (this.lastUIValues.sniperMag !== sniperMag || this.lastUIValues.sniperRes !== sniperRes)) {
             sniperAmmoEl.innerText = `${sniperMag} / ${sniperRes}${this.weapons.SNIPER.elementalAmmo.count > 0 ? ' [' + this.weapons.SNIPER.elementalAmmo.count + ']' : ''}`;
             this.lastUIValues.sniperMag = sniperMag;
@@ -1494,27 +1458,26 @@ export class Player {
             this.updateAmmoIcon('SNIPER');
             this.updateModHUD('SNIPER');
         }
-        
-        const extAmmoEl = document.getElementById('ext-ammo');
+
+        const extAmmoEl = this.ui.extAmmo || document.getElementById('ext-ammo');
         if (extAmmoEl) extAmmoEl.innerText = `${Math.floor(this.weapons.EXTINGUISHER.magazine)}%`;
-        
-        const turretAmmoEl = document.getElementById('turret-ammo');
+
+        const turretAmmoEl = this.ui.turretAmmo || document.getElementById('turret-ammo');
         if (turretAmmoEl) turretAmmoEl.innerText = `${this.weapons.TURRET.magazine} [${this.currentTurretType}]`;
-        
-        const rifleSlot = document.getElementById('slot-rifle');
-        const sniperSlot = document.getElementById('slot-sniper');
-        const extSlot = document.getElementById('slot-ext');
-        const turretSlot = document.getElementById('slot-turret');
-        const thermalSlot = document.getElementById('thermal-slot');
+
+        const rifleSlot = this.ui.slotRifle || document.getElementById('slot-rifle');
+        const sniperSlot = this.ui.slotSniper || document.getElementById('slot-sniper');
+        const extSlot = this.ui.slotExt || document.getElementById('slot-ext');
+        const turretSlot = this.ui.slotTurret || document.getElementById('slot-turret');
+        const thermalSlot = this.ui.thermalSlot || document.getElementById('thermal-slot');
 
         if (rifleSlot) rifleSlot.classList.toggle('active', this.currentWeaponKey === 'RIFLE');
         if (sniperSlot) sniperSlot.classList.toggle('active', this.currentWeaponKey === 'SNIPER');
         if (extSlot) extSlot.classList.toggle('active', this.currentWeaponKey === 'EXTINGUISHER');
         if (turretSlot) turretSlot.classList.toggle('active', this.currentWeaponKey === 'TURRET');
 
-        // Thermal UI
-        const thermalValEl = document.getElementById('thermal-val');
-        const thermalBarEl = document.getElementById('thermal-bar');
+        const thermalValEl = this.ui.thermalVal || document.getElementById('thermal-val');
+        const thermalBarEl = this.ui.thermalBar || document.getElementById('thermal-bar');
         if (thermalValEl && this.lastUIValues.thermal !== thermal) {
             thermalValEl.innerText = `${thermal}%`;
             if (thermalBarEl) thermalBarEl.style.width = `${thermal}%`;
@@ -1522,20 +1485,19 @@ export class Player {
         }
         if (thermalSlot) thermalSlot.classList.toggle('active', this.isThermalActive);
 
-
-        const scoreEl = document.getElementById('score-val');
+        const scoreEl = this.ui.scoreVal || document.getElementById('score-val');
         if (scoreEl && this.lastUIValues.score !== score) {
             scoreEl.innerText = score;
             this.lastUIValues.score = score;
         }
 
-        const coresEl = document.getElementById('cores-val');
+        const coresEl = this.ui.coresVal || document.getElementById('cores-val');
         if (coresEl && this.lastUIValues.cores !== cores) {
             coresEl.innerText = cores;
             this.lastUIValues.cores = cores;
         }
 
-        const scrapHUD = document.getElementById('scrap-val');
+        const scrapHUD = this.ui.scrapVal || document.getElementById('scrap-val');
         if (scrapHUD && this.lastUIValues.scrap !== scrap) {
             scrapHUD.innerText = scrap;
             this.lastUIValues.scrap = scrap;
@@ -1544,14 +1506,16 @@ export class Player {
 
     updateAmmoIcon(weaponKey) {
         const weapon = this.weapons[weaponKey];
-        const iconEl = document.getElementById(`${weaponKey.toLowerCase()}-ammo-icon`);
+        const iconEl = weaponKey === 'RIFLE'
+            ? (this.ui.rifleAmmoIcon || document.getElementById('rifle-ammo-icon'))
+            : (this.ui.sniperAmmoIcon || document.getElementById('sniper-ammo-icon'));
         if (!iconEl) return;
 
         if (weapon.elementalAmmo && weapon.elementalAmmo.count > 0) {
             const type = weapon.elementalAmmo.type;
             let src = '';
             let color = '';
-            
+
             if (type === 'INCENDIARY') {
                 src = 'https://rosebud.ai/assets/incendiary_ammo_icon.png.webp?F1cz';
                 color = '#ff4400';
@@ -1577,7 +1541,6 @@ export class Player {
         const container = document.getElementById(`${weaponKey.toLowerCase()}-mods`);
         if (!container || !weapon.mods) return;
 
-        // Optimized check: only update if total mods changed
         const modHash = (weapon.mods.damage || 0) + (weapon.mods.fireRate || 0) + (weapon.mods.magazine || 0) + (weapon.mods.reload || 0);
         const lastHash = this.lastUIValues[`${weaponKey.toLowerCase()}ModHash`] || 0;
         if (modHash === lastHash) return;
@@ -1608,8 +1571,8 @@ export class Player {
         });
         container.innerHTML = html;
     }
+
     die() {
         this.isDead = true;
-        // The GameScene will handle the death screen transition
     }
 }
