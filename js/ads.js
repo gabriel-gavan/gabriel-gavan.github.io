@@ -175,13 +175,7 @@ function createAsideAd() {
 
   aside.appendChild(ins);
 
-  // push ad
-  setTimeout(() => {
-    try {
-      (adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (e) {}
-  }, 300);
-
+ 
   return aside;
 }
 
@@ -220,29 +214,41 @@ function addBottomAd() {
 function addSideAds() {
   if (window.innerWidth < 1200) return;
 
-  // LEFT
-  if (!document.getElementById("extra-left-ad")) {
-    const left = document.createElement("aside");
-    left.id = "extra-left-ad";
-    left.className = "fixed-side-ad left";
-    left.appendChild(createAsideAd());
+  setTimeout(() => {
 
-    document.body.appendChild(left);
+    // LEFT
+    if (!document.getElementById("extra-left-ad")) {
+      const left = document.createElement("aside");
+      left.id = "extra-left-ad";
+      left.className = "fixed-side-ad left";
 
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  }
+      const ad = createAsideAd();
+      left.appendChild(ad);
 
-  // RIGHT
-  if (!document.getElementById("extra-right-ad")) {
-    const right = document.createElement("aside");
-    right.id = "extra-right-ad";
-    right.className = "fixed-side-ad right";
-    right.appendChild(createAsideAd());
+      document.body.appendChild(left);
 
-    document.body.appendChild(right);
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {}
+    }
 
-    (adsbygoogle = window.adsbygoogle || []).push({});
-  }
+    // RIGHT
+    if (!document.getElementById("extra-right-ad")) {
+      const right = document.createElement("aside");
+      right.id = "extra-right-ad";
+      right.className = "fixed-side-ad right";
+
+      const ad = createAsideAd();
+      right.appendChild(ad);
+
+      document.body.appendChild(right);
+
+      try {
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (e) {}
+    }
+
+  }, 1500); // 🔥 IMPORTANT delay
 }
 
 // =============================
