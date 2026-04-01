@@ -20,7 +20,6 @@ export class Player {
         this.maxHealth = CONFIG.PLAYER.MAX_HEALTH;
         this.health = this.maxHealth;
 
-        // Reusable scratch vectors/quaternion to avoid hot-path allocations
         this._scratchVecA = new THREE.Vector3();
         this._scratchVecB = new THREE.Vector3();
         this._scratchVecC = new THREE.Vector3();
@@ -28,7 +27,6 @@ export class Player {
         this._scratchVecE = new THREE.Vector3();
         this._scratchQuat = new THREE.Quaternion();
 
-        // Cached DOM references for frequently touched HUD elements
         this.ui = {
             thermalOverlay: null,
             crosshair: null,
@@ -51,10 +49,11 @@ export class Player {
             scrapVal: null,
             hitmarker: null,
             rifleAmmoIcon: null,
-            sniperAmmoIcon: null
+            sniperAmmoIcon: null,
+            rifleMods: null,
+            sniperMods: null
         };
 
-        // Tracking for optimized UI updates
         this.lastUIValues = {
             health: -1,
             score: -1,
@@ -66,10 +65,11 @@ export class Player {
             emps: -1,
             thermal: -1,
             scrap: -1,
-            cores: -1
+            cores: -1,
+            rifleModHash: -1,
+            sniperModHash: -1
         };
 
-        // Asset URLs
         const ASSETS = {
             RIFLE: 'https://rosebud.ai/assets/fps_rifle_sprite.webp?cgUE',
             SNIPER: 'https://rosebud.ai/assets/fps_sniper_perfect_match.png.webp?kjuL',
@@ -78,6 +78,7 @@ export class Player {
             AMMO_INCENDIARY: 'https://rosebud.ai/assets/incendiary_ammo_icon.png.webp?F1cz',
             AMMO_SHOCK: 'https://rosebud.ai/assets/shock_ammo_icon.png.webp?jXE1'
         };
+        this.assetUrls = ASSETS;
 
         this.weapons = {
             RIFLE: {
@@ -252,6 +253,8 @@ export class Player {
         this.ui.hitmarker = document.getElementById('hitmarker');
         this.ui.rifleAmmoIcon = document.getElementById('rifle-ammo-icon');
         this.ui.sniperAmmoIcon = document.getElementById('sniper-ammo-icon');
+        this.ui.rifleMods = document.getElementById('rifle-mods');
+        this.ui.sniperMods = document.getElementById('sniper-mods');
     }
 
     createWeaponSprite(url, scale) {
@@ -294,7 +297,7 @@ export class Player {
 
     updateTurretPreview() {
         const mesh = this.weapons.TURRET.mesh;
-        let color = new THREE.Color(1, 1, 1);
+        const color = new THREE.Color(1, 1, 1);
         if (this.currentTurretType === 'EMP') color.set(0x00ffff);
         if (this.currentTurretType === 'SLOW') color.set(0xaa00ff);
 
@@ -333,12 +336,7 @@ export class Player {
         }
 
         this.trajectoryLine.visible = true;
-
-        if (this.isAimingEMP) {
-            this.trajectoryLine.material.color.set(0x00ffff);
-        } else {
-            this.trajectoryLine.material.color.set(0x00ff00);
-        }
+        this.trajectoryLine.material.color.set(this.isAimingEMP ? 0x00ffff : 0x00ff00);
 
         const startPos = this._scratchVecA;
         this.camera.getWorldPosition(startPos);
@@ -350,12 +348,15 @@ export class Player {
         const tempPos = this._scratchVecC;
         const tempVel = this._scratchVecD.copy(startVel);
         const dt = 0.1;
+        const gravityHalfDtSq = 0.5 * CONFIG.PLAYER.GRENADE.GRAVITY;
+        let t = 0;
 
         for (let i = 0; i < 30; i++) {
-            tempPos.copy(startPos).add(tempVel.clone().multiplyScalar(i * dt));
-            tempPos.y -= 0.5 * CONFIG.PLAYER.GRENADE.GRAVITY * Math.pow(i * dt, 2);
+            tempPos.copy(startPos).addScaledVector(tempVel, t);
+            tempPos.y -= gravityHalfDtSq * t * t;
             points.push(tempPos.clone());
             if (tempPos.y < 0) break;
+            t += dt;
         }
 
         this.trajectoryLine.geometry.setFromPoints(points);
@@ -533,7 +534,6 @@ export class Player {
         this.updateTrajectory();
 
         const targetPos = this.isAiming ? this.currentWeapon.aimPos : this.currentWeapon.defaultPos;
-
         let targetFOV = CONFIG.PLAYER.DEFAULT_FOV;
         if (this.isAiming) {
             if (Array.isArray(this.currentWeapon.ADS_FOV)) {
@@ -764,8 +764,9 @@ export class Player {
                     const chainRange = 15;
                     let hits = 0;
                     if (window.game && window.game.enemies) {
-                        window.game.enemies.forEach(e => {
-                            if (!e.isDead && e !== enemy && hits < chainTargets && e.mesh.position.distanceTo(enemy.mesh.position) < chainRange) {
+                        for (let i = 0; i < window.game.enemies.length && hits < chainTargets; i++) {
+                            const e = window.game.enemies[i];
+                            if (!e.isDead && e !== enemy && e.mesh.position.distanceTo(enemy.mesh.position) < chainRange) {
                                 e.takeDamage(dmg * 0.5, [], 'SHOCK');
                                 if (this.particleSystem) {
                                     this.particleSystem.createTracer(enemy.mesh.position, e.mesh.position, 0x00ffff, 1.0);
@@ -773,7 +774,7 @@ export class Player {
                                 }
                                 hits++;
                             }
-                        });
+                        }
                     }
                 }
 
@@ -781,12 +782,13 @@ export class Player {
                     const pullRange = 12;
                     if (window.game && window.game.enemies) {
                         if (this.onShake) this.onShake(0.05);
-                        window.game.enemies.forEach(e => {
+                        for (let i = 0; i < window.game.enemies.length; i++) {
+                            const e = window.game.enemies[i];
                             if (!e.isDead && e !== enemy && e.mesh.position.distanceTo(enemy.mesh.position) < pullRange) {
                                 const dir = this._scratchVecC.subVectors(enemy.mesh.position, e.mesh.position).normalize();
                                 e.mesh.position.add(dir.multiplyScalar(0.5));
                             }
-                        });
+                        }
                     }
                 }
 
@@ -863,8 +865,8 @@ export class Player {
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
         if (intersects.length > 0) {
             if (maxPenetration > 0) {
-                for (const hit of intersects) {
-                    if (!processHit(hit)) break;
+                for (let i = 0; i < intersects.length; i++) {
+                    if (!processHit(intersects[i])) break;
                 }
             } else {
                 processHit(intersects[0]);
@@ -1011,7 +1013,8 @@ export class Player {
         const intersects = this.raycaster.intersectObjects(targetObjects, true);
 
         let hitCount = 0;
-        for (const hit of intersects) {
+        for (let i = 0; i < intersects.length; i++) {
+            const hit = intersects[i];
             const hitObject = hit.object;
             const enemy = hitObject.userData.enemyRef;
 
@@ -1076,7 +1079,8 @@ export class Player {
 
         let hitCount = 0;
         let killCount = 0;
-        for (const hit of intersects) {
+        for (let i = 0; i < intersects.length; i++) {
+            const hit = intersects[i];
             const enemy = hit.object.userData.enemyRef;
             if (enemy) {
                 enemy.takeDamage(railConfig.DAMAGE * 1.2 * this.damageMultiplier, [], 'SHOCK');
@@ -1285,8 +1289,9 @@ export class Player {
                 if (window.game && window.game.enemies) {
                     const pos = this._scratchVecA.copy(this.mesh.position);
                     let hits = 0;
-                    window.game.enemies.forEach(enemy => {
-                        if (!enemy.isDead && enemy.mesh.position.distanceTo(pos) < 12 && hits < 5) {
+                    for (let i = 0; i < window.game.enemies.length && hits < 5; i++) {
+                        const enemy = window.game.enemies[i];
+                        if (!enemy.isDead && enemy.mesh.position.distanceTo(pos) < 12) {
                             enemy.takeDamage(80, [], 'SHOCK');
                             if (this.particleSystem) {
                                 this.particleSystem.createTracer(pos, enemy.mesh.position, 0x00ffff, 2.0);
@@ -1294,7 +1299,7 @@ export class Player {
                             }
                             hits++;
                         }
-                    });
+                    }
                 }
             }
 
@@ -1427,6 +1432,8 @@ export class Player {
         const scrap = window.game ? window.game.scrap : 0;
         const cores = window.game ? window.game.techCores : 0;
         const thermal = Math.floor(this.thermalEnergy);
+        const rifleModHash = (this.weapons.RIFLE.mods.damage || 0) + (this.weapons.RIFLE.mods.fireRate || 0) + (this.weapons.RIFLE.mods.magazine || 0) + (this.weapons.RIFLE.mods.reload || 0);
+        const sniperModHash = (this.weapons.SNIPER.mods.damage || 0) + (this.weapons.SNIPER.mods.fireRate || 0) + (this.weapons.SNIPER.mods.magazine || 0) + (this.weapons.SNIPER.mods.reload || 0);
 
         const healthEl = this.ui.healthVal || document.getElementById('health-val');
         if (healthEl && this.lastUIValues.health !== healthVal) {
@@ -1447,7 +1454,7 @@ export class Player {
             this.lastUIValues.rifleMag = rifleMag;
             this.lastUIValues.rifleRes = rifleRes;
             this.updateAmmoIcon('RIFLE');
-            this.updateModHUD('RIFLE');
+            this.updateModHUD('RIFLE', rifleModHash);
         }
 
         const sniperAmmoEl = this.ui.sniperAmmo || document.getElementById('sniper-ammo');
@@ -1456,7 +1463,7 @@ export class Player {
             this.lastUIValues.sniperMag = sniperMag;
             this.lastUIValues.sniperRes = sniperRes;
             this.updateAmmoIcon('SNIPER');
-            this.updateModHUD('SNIPER');
+            this.updateModHUD('SNIPER', sniperModHash);
         }
 
         const extAmmoEl = this.ui.extAmmo || document.getElementById('ext-ammo');
@@ -1517,10 +1524,10 @@ export class Player {
             let color = '';
 
             if (type === 'INCENDIARY') {
-                src = 'https://rosebud.ai/assets/incendiary_ammo_icon.png.webp?F1cz';
+                src = this.assetUrls.AMMO_INCENDIARY;
                 color = '#ff4400';
             } else if (type === 'SHOCK') {
-                src = 'https://rosebud.ai/assets/shock_ammo_icon.png.webp?jXE1';
+                src = this.assetUrls.AMMO_SHOCK;
                 color = '#00ffff';
             }
 
@@ -1536,15 +1543,15 @@ export class Player {
         }
     }
 
-    updateModHUD(weaponKey) {
+    updateModHUD(weaponKey, modHash) {
         const weapon = this.weapons[weaponKey];
-        const container = document.getElementById(`${weaponKey.toLowerCase()}-mods`);
+        const container = weaponKey === 'RIFLE' ? (this.ui.rifleMods || document.getElementById('rifle-mods')) : (this.ui.sniperMods || document.getElementById('sniper-mods'));
         if (!container || !weapon.mods) return;
 
-        const modHash = (weapon.mods.damage || 0) + (weapon.mods.fireRate || 0) + (weapon.mods.magazine || 0) + (weapon.mods.reload || 0);
-        const lastHash = this.lastUIValues[`${weaponKey.toLowerCase()}ModHash`] || 0;
+        const lastHashKey = `${weaponKey.toLowerCase()}ModHash`;
+        const lastHash = this.lastUIValues[lastHashKey] || 0;
         if (modHash === lastHash) return;
-        this.lastUIValues[`${weaponKey.toLowerCase()}ModHash`] = modHash;
+        this.lastUIValues[lastHashKey] = modHash;
 
         const modTypes = [
             { key: 'damage', label: 'DMG', class: 'dmg' },

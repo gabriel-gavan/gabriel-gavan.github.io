@@ -60,10 +60,15 @@ export class LaserGrid {
             this.mesh.position.x = this.chamber.x + offset;
         }
 
+        const beamOpacity = 0.4 + Math.sin(this.time * 10) * 0.2;
+
         // Pulse opacity
-        this.mesh.children.forEach(beam => {
-            beam.material.opacity = 0.4 + Math.sin(this.time * 10) * 0.2;
-        });
+        for (let i = 0; i < this.mesh.children.length; i++) {
+            const beam = this.mesh.children[i];
+            if (beam.material && beam.material.opacity !== beamOpacity) {
+                beam.material.opacity = beamOpacity;
+            }
+        }
 
         // Collision Check
         if (canDamage) {
@@ -99,9 +104,10 @@ export class LaserGrid {
             }
         }
 
-        // Collision with enemies
-        enemies.forEach(enemy => {
-            if (enemy.isDead) return;
+        const enemyCount = enemies ? enemies.length : 0;
+        for (let i = 0; i < enemyCount; i++) {
+            const enemy = enemies[i];
+            if (enemy.isDead) continue;
             const ePos = enemy.mesh.position;
             let hitEnemy = false;
             if (this.horizontal) {
@@ -120,7 +126,7 @@ export class LaserGrid {
             if (hitEnemy) {
                 enemy.takeDamage(this.damage * 0.1, enemies);
             }
-        });
+        }
     }
 
     destroy() {

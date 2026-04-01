@@ -31,6 +31,9 @@ export class GameMap {
         // Fast Chamber Lookup Grid
         this.chamberLookupGrid = new Map();
         this.chamberLookupCellSize = 20;
+        this._gridKeyParts = ['', ''];
+        this._tempVec3 = new THREE.Vector3();
+        this._tempVec3B = new THREE.Vector3();
 
         // Instancing
         this.pillarInstances = null;
@@ -57,6 +60,12 @@ export class GameMap {
         this.init();
     }
 
+    _getGridKey(x, z) {
+        this._gridKeyParts[0] = x;
+        this._gridKeyParts[1] = z;
+        return this._gridKeyParts.join(',');
+    }
+
     _registerChamber(chamber) {
         const half = chamber.size / 2 + 5; 
         const minX = Math.floor((chamber.x - half) / this.chamberLookupCellSize);
@@ -66,7 +75,7 @@ export class GameMap {
 
         for (let x = minX; x <= maxX; x++) {
             for (let z = minZ; z <= maxZ; z++) {
-                const key = `${x},${z}`;
+                const key = this._getGridKey(x, z);
                 if (!this.chamberLookupGrid.has(key)) this.chamberLookupGrid.set(key, []);
                 this.chamberLookupGrid.get(key).push({ type: 'CHAMBER', data: chamber });
             }
@@ -246,8 +255,8 @@ export class GameMap {
         
         const box = new THREE.Box3();
         const p = this.pillarGeo.parameters;
-        const size = new THREE.Vector3(p.width, p.height, p.depth);
-        box.setFromCenterAndSize(new THREE.Vector3(x, y, z), size);
+        const size = this._tempVec3.set(p.width, p.height, p.depth);
+        box.setFromCenterAndSize(this._tempVec3B.set(x, y, z), size);
         
         this.wallBoxes.push(box);
         this.walls.push({ position: new THREE.Vector3(x, y, z), isInstanced: true });
@@ -274,12 +283,12 @@ export class GameMap {
         const box = new THREE.Box3();
         if (wall.geometry && wall.geometry.parameters) {
             const p = wall.geometry.parameters;
-            const size = new THREE.Vector3(p.width || 1, p.height || 1, p.depth || 1);
+            const size = this._tempVec3.set(p.width || 1, p.height || 1, p.depth || 1);
             box.setFromCenterAndSize(wall.position, size);
         } else if (wall.userData && wall.userData.isDestructible) {
             const type = wall.userData.parentProp.type;
-            const size = type === 'SERVER_RACK' ? new THREE.Vector3(1.2, 3.2, 0.8) : new THREE.Vector3(1, 1.2, 0.5);
-            box.setFromCenterAndSize(wall.getWorldPosition(new THREE.Vector3()), size);
+            const size = type === 'SERVER_RACK' ? this._tempVec3.set(1.2, 3.2, 0.8) : this._tempVec3.set(1, 1.2, 0.5);
+            box.setFromCenterAndSize(wall.getWorldPosition(this._tempVec3B), size);
         } else {
             box.setFromObject(wall);
         }
@@ -750,7 +759,7 @@ export class GameMap {
         if (curIdx === null || curIdx === undefined) {
             const gx = Math.floor(pos.x / this.chamberLookupCellSize);
             const gz = Math.floor(pos.z / this.chamberLookupCellSize);
-            const key = `${gx},${gz}`;
+            const key = this._getGridKey(gx, gz);
             const potentials = this.chamberLookupGrid.get(key);
             
             if (potentials) {
@@ -1129,48 +1138,95 @@ export class GameMap {
             if (p.deactivate) p.deactivate();
         });
 
-        const disposeList = [
-            ...this.walls,
-            ...this.ceilingGroups,
-            ...this.pipes,
-            ...this.barrels,
-            ...this.extinguishers
-        ];
-
-        disposeList.forEach(obj => {
-            if (!obj) return;
-            if (obj.userData && obj.userData.parentProp) return;
-
+        for (let i = 0; i < this.walls.length; i++) {
+            const obj = this.walls[i];
+            if (!obj || (obj.userData && obj.userData.parentProp)) continue;
             if (obj.isLight) {
                 this.scene.remove(obj);
             } else {
                 this.disposeObject(obj);
                 if (obj.parent) obj.parent.remove(obj);
             }
-        });
+        }
 
-        const complexGroups = [
-            ...this.doors.map(d => d.mesh),
-            ...this.terminals.map(t => t.mesh),
-            ...this.shopTerminals.map(t => t.mesh),
-            ...(this.extractionPortal ? [this.extractionPortal.mesh] : [])
-        ];
+        for (let i = 0; i < this.ceilingGroups.length; i++) {
+            const obj = this.ceilingGroups[i];
+            if (!obj) continue;
+            this.disposeObject(obj);
+            if (obj.parent) obj.parent.remove(obj);
+        }
 
-        complexGroups.forEach(group => {
-            if (!group || typeof group.traverse !== 'function') return;
-            
+        for (let i = 0; i < this.pipes.length; i++) {
+            const obj = this.pipes[i];
+            if (!obj) continue;
+            this.disposeObject(obj);
+            if (obj.parent) obj.parent.remove(obj);
+        }
+
+        for (let i = 0; i < this.barrels.length; i++) {
+            const obj = this.barrels[i];
+            if (!obj) continue;
+            this.disposeObject(obj);
+            if (obj.parent) obj.parent.remove(obj);
+        }
+
+        for (let i = 0; i < this.extinguishers.length; i++) {
+            const obj = this.extinguishers[i];
+            if (!obj) continue;
+            this.disposeObject(obj);
+            if (obj.parent) obj.parent.remove(obj);
+        }
+
+        for (let i = 0; i < this.doors.length; i++) {
+            const group = this.doors[i]?.mesh;
+            if (!group || typeof group.traverse !== 'function') continue;
             const toDispose = [];
             group.traverse(child => {
                 if (child.isMesh || child.isSprite) toDispose.push(child);
             });
-            
             toDispose.forEach(child => this.disposeObject(child));
             if (group.parent) group.parent.remove(group);
             else this.scene.remove(group);
-        });
+        }
 
-        this.hazards.forEach(h => {
-            if (!h) return;
+        for (let i = 0; i < this.terminals.length; i++) {
+            const group = this.terminals[i]?.mesh;
+            if (!group || typeof group.traverse !== 'function') continue;
+            const toDispose = [];
+            group.traverse(child => {
+                if (child.isMesh || child.isSprite) toDispose.push(child);
+            });
+            toDispose.forEach(child => this.disposeObject(child));
+            if (group.parent) group.parent.remove(group);
+            else this.scene.remove(group);
+        }
+
+        for (let i = 0; i < this.shopTerminals.length; i++) {
+            const group = this.shopTerminals[i]?.mesh;
+            if (!group || typeof group.traverse !== 'function') continue;
+            const toDispose = [];
+            group.traverse(child => {
+                if (child.isMesh || child.isSprite) toDispose.push(child);
+            });
+            toDispose.forEach(child => this.disposeObject(child));
+            if (group.parent) group.parent.remove(group);
+            else this.scene.remove(group);
+        }
+
+        if (this.extractionPortal && this.extractionPortal.mesh) {
+            const group = this.extractionPortal.mesh;
+            const toDispose = [];
+            group.traverse(child => {
+                if (child.isMesh || child.isSprite) toDispose.push(child);
+            });
+            toDispose.forEach(child => this.disposeObject(child));
+            if (group.parent) group.parent.remove(group);
+            else this.scene.remove(group);
+        }
+
+        for (let i = 0; i < this.hazards.length; i++) {
+            const h = this.hazards[i];
+            if (!h) continue;
             if (h.instance && typeof h.instance.destroy === 'function') {
                 h.instance.destroy();
             } else if (h.group) {
@@ -1186,7 +1242,7 @@ export class GameMap {
                 if (h.mesh.parent) h.mesh.parent.remove(h.mesh);
                 else this.scene.remove(h.mesh);
             }
-        });
+        }
 
         this.walls = []; 
         this.wallBoxes = []; 

@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const FIRE_OFFSET = new THREE.Vector3();
+
 export class FireField {
     constructor(scene, position, radius, particleSystem) {
         this.scene = scene;
@@ -50,12 +52,12 @@ export class FireField {
         if (this.particleSystem && Math.random() < 0.2) {
             const angle = Math.random() * Math.PI * 2;
             const r = Math.random() * this.radius * 0.7;
-            const p = new THREE.Vector3(
-                this.position.x + Math.cos(angle) * r,
+            FIRE_OFFSET.set(
+                Math.cos(angle) * r,
                 0.2,
-                this.position.z + Math.sin(angle) * r
+                Math.sin(angle) * r
             );
-            this.particleSystem.createExplosion(p, 0xffaa00, 1, 1);
+            this.particleSystem.createExplosion(FIRE_OFFSET.add(this.position), 0xffaa00, 1, 1);
         }
     }
 
