@@ -319,4 +319,33 @@ if (document.readyState === "loading") {
 } else {
   initExtraAds();
 }
+// =============================
+// 🚀 LOAD ADS ONLY AFTER CONSENT (FIX 400 ERRORS)
+// =============================
+function waitForConsentAndLoadAds() {
+  const check = setInterval(() => {
+    try {
+      if (window.googlefc && window.googlefc.getConsentStatus) {
+        const status = window.googlefc.getConsentStatus();
+
+        // 1 = consented, 2 = non-personalized
+        if (status === 1 || status === 2) {
+          console.log("✅ Consent granted → loading ads");
+
+          document.querySelectorAll(".adsbygoogle").forEach(ad => {
+            try {
+              (window.adsbygoogle = window.adsbygoogle || []).push({});
+            } catch (e) {
+              console.log("Ad push skipped", e);
+            }
+          });
+
+          clearInterval(check);
+        }
+      }
+    } catch (e) {}
+  }, 500);
+}
+
+waitForConsentAndLoadAds();
 })();

@@ -163,7 +163,6 @@ export class GameScene {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(0.75); // Performance: keep default render resolution lower to avoid GPU saturation
         this.renderer.toneMappingExposure = 1.25;
-        this.renderer.toneMappingExposure = 1.25;
         this.renderer.shadowMap.enabled = false; 
         this.renderer.outputColorSpace = THREE.LinearSRGBColorSpace;
         this.renderer.toneMapping = THREE.NoToneMapping;
@@ -387,7 +386,7 @@ export class GameScene {
         this.introCharIndex = 0;
         this.introTextElement = null;
         this.introTypeSpeed = 15; // ms per char
-        this.introLineDelay = 400; // ms between lines
+        this.introLineDelay = 400; // ms between lines;
 
         // Inventory & Upgrades
         this.isInventoryOpen = false;
