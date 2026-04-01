@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const SMOKE_OFFSET = new THREE.Vector3();
+
 export class SmokeScreen {
     constructor(scene, position, particleSystem) {
         this.scene = scene;
@@ -42,12 +44,12 @@ export class SmokeScreen {
 
         // Lingering particles
         if (this.particleSystem && Math.random() < 0.4) {
-            const offset = new THREE.Vector3(
+            SMOKE_OFFSET.set(
                 (Math.random() - 0.5) * this.radius * 1.5,
                 (Math.random() - 0.5) * this.radius * 1.5,
                 (Math.random() - 0.5) * this.radius * 1.5
             );
-            this.particleSystem.createExplosion(this.position.clone().add(offset), 0xeeeeee, 1, 0.2);
+            this.particleSystem.createExplosion(this.position.clone().add(SMOKE_OFFSET), 0xeeeeee, 1, 0.2);
         }
     }
 

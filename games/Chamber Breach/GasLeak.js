@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const GAS_OFFSET = new THREE.Vector3();
+const GAS_TIME_SCALE = 0.002;
+const GAS_SCALE_TIME = 0.001;
+
 export class GasLeak {
     constructor(scene, position, particleSystem) {
         this.scene = scene;
@@ -38,18 +42,19 @@ export class GasLeak {
         }
 
         // Pulse the gas cloud
-        const pulse = Math.sin(Date.now() * 0.002) * 0.05 + 0.15;
+        const now = Date.now();
+        const pulse = Math.sin(now * GAS_TIME_SCALE) * 0.05 + 0.15;
         this.mesh.material.opacity = pulse * (1 - elapsed / this.duration);
-        this.mesh.scale.setScalar(1 + Math.sin(Date.now() * 0.001) * 0.1);
+        this.mesh.scale.setScalar(1 + Math.sin(now * GAS_SCALE_TIME) * 0.1);
 
         // Occasional gas particles
         if (this.particleSystem && Math.random() < 0.3) {
-            const offset = new THREE.Vector3(
+            GAS_OFFSET.set(
                 (Math.random() - 0.5) * this.radius,
                 (Math.random() - 0.5) * this.radius,
                 (Math.random() - 0.5) * this.radius
             );
-            this.particleSystem.createExplosion(this.position.clone().add(offset), 0x00ff33, 1, 0.5);
+            this.particleSystem.createExplosion(this.position.clone().add(GAS_OFFSET), 0x00ff33, 1, 0.5);
         }
     }
 

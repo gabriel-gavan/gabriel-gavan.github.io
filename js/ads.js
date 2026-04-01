@@ -135,7 +135,7 @@
   style.innerHTML = `
     .fixed-side-ad {
       position: fixed;
-      top: 50%;
+      top: 20%;
       transform: translateY(-50%);
       width: 160px;
       z-index: 999;
@@ -193,7 +193,7 @@ function createAsideAd() {
 
   ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
   ins.setAttribute("data-ad-slot", "3686182226");
-  ins.setAttribute("data-ad-format", "auto");
+  ins.setAttribute("data-ad-format", "vertical");
 
   aside.appendChild(ins);
 
@@ -238,7 +238,7 @@ function addBottomAd() {
 
   const ad = createAsideAd();
 	bottom.appendChild(ad);
-	pushAd(ad.querySelector("ins"));
+	setTimeout(() => pushAd(ad.querySelector("ins")), 800);
   document.querySelector(".main-column")?.appendChild(bottom);
 }
 
@@ -261,7 +261,7 @@ function addSideAds() {
 
       document.body.appendChild(left);
 
-      pushAd(ad.querySelector("ins"));
+      setTimeout(() => pushAd(ad.querySelector("ins")), 800);
     }
 
     // RIGHT
@@ -275,32 +275,36 @@ function addSideAds() {
 
       document.body.appendChild(right);
 
-      pushAd(ad.querySelector("ins"));
+      setTimeout(() => pushAd(ad.querySelector("ins")), 800);
     }
 
   }, 1500);
 }
 
-// =============================
+function isAdInitialized(el) {
+  if (!el) return true;
+  if (el.dataset.adPushAttempted === "true") return true;
+  if (el.hasAttribute("data-adsbygoogle-status")) return true;
+
+  // 🔥 ADD THIS
+  if (el.querySelector("iframe")) return true;
+
+  if (el.innerHTML.trim() !== "") return true;
+  return false;
+}
+
 function pushAd(el) {
-  setTimeout(() => {
-    try {
-      if (!el || !el.classList.contains("adsbygoogle")) return;
+  if (!el || !el.classList.contains("adsbygoogle")) return;
+  if (!document.contains(el)) return;
+  if (isAdInitialized(el)) return;
 
-      // 🚨 already pushed by your code
-      if (el.dataset.loaded) return;
+  el.dataset.adPushAttempted = "true";
 
-      // 🚨 already filled by AdSense itself
-      if (el.getAttribute("data-adsbygoogle-status") === "done") return;
-
-      (adsbygoogle = window.adsbygoogle || []).push({});
-
-      el.dataset.loaded = "true";
-
-    } catch (e) {
-      console.log("Ad push error", e);
-    }
-  }, 800);
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (e) {
+    console.log("Ad push error", e);
+  }
 }
 // INIT EXTRA ADS
 // =============================

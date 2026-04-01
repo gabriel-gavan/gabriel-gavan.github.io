@@ -9,7 +9,6 @@ const DATA_CORE_PULL_RADIUS = 6.0;
 const DATA_CORE_COLLECT_RADIUS = 2.0;
 const DATA_CORE_PULL_SPEED = 15.0;
 const DATA_CORE_CYCLE = { t: 0 };
-const DATA_CORE_OFFSET = new THREE.Vector3();
 
 export class DataCore {
     constructor(scene, position, value = 1) {

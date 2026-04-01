@@ -62,7 +62,7 @@ export const PERKS = {
             apply: (player) => { 
                 player.perks.fireBuild = true;
                 player.perks.explosiveBullets = true;
-                player.perks.burnChance = 1.0; // 100% burn chance
+                player.perks.burnChance = 1.0;
             }
         },
         {
@@ -75,7 +75,7 @@ export const PERKS = {
             apply: (player) => { 
                 player.perks.shockBuild = true;
                 player.perks.chainBullets = true; 
-                player.perks.chainChance = 1.0; // 100% chain chance
+                player.perks.chainChance = 1.0;
                 player.perks.chainTargets = 10;
             }
         },
@@ -102,7 +102,7 @@ export const PERKS = {
             apply: (player) => { 
                 player.perks.droneBuild = true;
                 if (window.game) {
-                    for(let i=0; i<8; i++) window.game.spawnAllyDrone();
+                    for (let i = 0; i < 8; i++) window.game.spawnAllyDrone();
                 }
             }
         },
@@ -136,12 +136,17 @@ export const PERKS = {
     ]
 };
 
+const ALL_PERKS = [
+    ...PERKS.RIFLE,
+    ...PERKS.SNIPER,
+    ...PERKS.CORE
+];
+
 export class PerkManager {
     constructor(player) {
         this.player = player;
         this.activePerks = new Set();
         
-        // Initialize perk flags on player/weapons if not already present
         if (!this.player.perks) {
             this.player.perks = {
                 regen: 0,
@@ -172,22 +177,13 @@ export class PerkManager {
     }
 
     getRandomPerks(count = 3) {
-        const allAvailable = [
-            ...PERKS.RIFLE,
-            ...PERKS.SNIPER,
-            ...PERKS.CORE
-        ].filter(p => !this.activePerks.has(p.id));
-
+        const allAvailable = ALL_PERKS.filter(p => !this.activePerks.has(p.id));
         const shuffled = allAvailable.sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }
 
     applyPerk(perkId) {
-        const perk = [
-            ...PERKS.RIFLE,
-            ...PERKS.SNIPER,
-            ...PERKS.CORE
-        ].find(p => p.id === perkId);
+        const perk = ALL_PERKS.find(p => p.id === perkId);
 
         if (perk && !this.activePerks.has(perkId)) {
             perk.apply(this.player);
@@ -198,13 +194,10 @@ export class PerkManager {
     }
 
     update(deltaTime) {
-        // Handle time-based perks
         if (!this.player.isDead) {
-            // Regeneration
             if (this.player.perks.regen > 0) {
                 this.player.health = Math.min(this.player.maxHealth, this.player.health + this.player.perks.regen * deltaTime);
             }
-            // Damage drain (Glass Cannon)
             if (this.player.perks.drainHP > 0) {
                 this.player.takeDamage(this.player.perks.drainHP * deltaTime);
             }
@@ -214,7 +207,6 @@ export class PerkManager {
             this.player.perks.adrenalineTimer -= deltaTime;
         }
 
-        // Weapon timers
         Object.values(this.player.weapons).forEach(w => {
             if (w.perks && w.perks.overclockTimer > 0) {
                 w.perks.overclockTimer -= deltaTime;
@@ -231,7 +223,6 @@ export class PerkManager {
         }
 
         if (weapon.perks.explosiveKills || this.player.perks.explosiveBullets) {
-            // Trigger explosion at enemy position
             if (window.game && window.game.triggerExplosion) {
                 const radius = this.player.perks.fireBuild ? 12 : 6;
                 const damage = this.player.perks.fireBuild ? 250 : 100;
@@ -240,7 +231,6 @@ export class PerkManager {
         }
 
         if (this.player.perks.gravityBuild) {
-            // Spawn a mini-black hole on kill
             if (window.game && window.game.lootManager) {
                 window.game.lootManager.applyLootEffect('BLACK_HOLE_CORE', 'LEGENDARY', enemy.mesh.position.clone());
             }

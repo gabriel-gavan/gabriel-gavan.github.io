@@ -18,6 +18,8 @@ export class MicroDrone {
         this.attackCooldown = 1500;
         this.damage = 10;
         this.isDead = false;
+        this._lastUpdateTime = 0;
+        this._nextLightCheck = 0;
     }
 
     createMesh() {
@@ -40,6 +42,8 @@ export class MicroDrone {
     update(deltaTime, enemies, forcedTarget = null) {
         if (this.isDead) return;
 
+        const now = Date.now();
+
         // Shared Target Sync: If player has a target, we focus it
         let target = forcedTarget;
         
@@ -48,13 +52,18 @@ export class MicroDrone {
         if (target && !target.isDead) {
             let dronesFocusing = 0;
             // Count all micro-drones across all allied units focusing this target
-            window.game?.enemies.forEach(e => {
-                if (e.isAlly && e.microDrones) {
-                    e.microDrones.forEach(d => {
-                        if (d !== this && d.currentTarget === target) dronesFocusing++;
-                    });
+            const gameEnemies = window.game?.enemies;
+            if (gameEnemies) {
+                for (let i = 0; i < gameEnemies.length; i++) {
+                    const e = gameEnemies[i];
+                    if (e.isAlly && e.microDrones) {
+                        for (let j = 0; j < e.microDrones.length; j++) {
+                            const d = e.microDrones[j];
+                            if (d !== this && d.currentTarget === target) dronesFocusing++;
+                        }
+                    }
                 }
-            });
+            }
             if (dronesFocusing > 0) swarmBonus = 1 + (dronesFocusing * 0.15); // Scale fire rate
         }
         this.currentTarget = target;
@@ -63,7 +72,7 @@ export class MicroDrone {
         this.angle += this.orbitSpeed * deltaTime;
         const playerPos = this.player.mesh.position;
         
-        const targetRadius = this.orbitRadius + (Math.sin(Date.now() * 0.001 + this.orbitIndex) * 0.5);
+        const targetRadius = this.orbitRadius + (Math.sin(now * 0.001 + this.orbitIndex) * 0.5);
         this.mesh.position.set(
             playerPos.x + Math.cos(this.angle) * targetRadius,
             playerPos.y + this.yOffset + Math.sin(this.angle * 0.5) * 0.3,
@@ -78,13 +87,14 @@ export class MicroDrone {
         }
 
         // Throttled light visibility
-        if (Date.now() % 30 === 0) {
+        if (now >= this._nextLightCheck) {
+            this._nextLightCheck = now + 30;
             this.light.visible = this.player.mesh.position.distanceToSquared(this.mesh.position) < 400;
         }
 
         // Attack logic
         const currentCooldown = this.attackCooldown / swarmBonus;
-        if (Date.now() - this.lastAttack > currentCooldown) {
+        if (now - this.lastAttack > currentCooldown) {
             if (!target || target.isDead) {
                 let nearest = null;
                 let minDistSq = 225; // 15m range (increased from 12)
@@ -105,7 +115,7 @@ export class MicroDrone {
 
             if (target) {
                 this.shoot(target);
-                this.lastAttack = Date.now();
+                this.lastAttack = now;
             }
         }
     }

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 
 const TERMINAL_RED = new THREE.Color(0xff0000);
 const TERMINAL_WHITE = new THREE.Color(0xffffff);
+const TERMINAL_CYCLE = { t: 0 };
 
 export class DataTerminal {
     constructor(scene, position, loreEntry, onInteract, isTrapped = false) {
