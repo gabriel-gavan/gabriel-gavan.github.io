@@ -8,12 +8,17 @@ let minX = 0;
 let minZ = 0;
 let gridSize = 1.0;
 
-// Reusable structures to avoid GC
+ // Reusable structures to avoid GC
 const openSet = [];
 let gScore = new Float32Array(0);
 let fScore = new Float32Array(0);
 let cameFrom = new Int32Array(0);
 let closedSet = new Uint8Array(0);
+const neighborOffsets = [
+    [-1, -1], [0, -1], [1, -1],
+    [-1, 0],             [1, 0],
+    [-1, 1],  [0, 1],    [1, 1]
+];
 
 self.onmessage = function(e) {
     const { type, data } = e.data;
@@ -177,14 +182,13 @@ function getNeighbors(index) {
     const gx = index % gridWidth;
     const gz = Math.floor(index / gridWidth);
 
-    for (let dx = -1; dx <= 1; dx++) {
-        for (let dz = -1; dz <= 1; dz++) {
-            if (dx === 0 && dz === 0) continue;
-            const nx = gx + dx;
-            const nz = gz + dz;
-            if (nx >= 0 && nx < gridWidth && nz >= 0 && nz < gridHeight) {
-                neighbors.push(nz * gridWidth + nx);
-            }
+    for (let i = 0; i < neighborOffsets.length; i++) {
+        const dx = neighborOffsets[i][0];
+        const dz = neighborOffsets[i][1];
+        const nx = gx + dx;
+        const nz = gz + dz;
+        if (nx >= 0 && nx < gridWidth && nz >= 0 && nz < gridHeight) {
+            neighbors.push(nz * gridWidth + nx);
         }
     }
     return neighbors;

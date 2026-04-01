@@ -51,13 +51,12 @@ export class MicroDrone {
         let swarmBonus = 1;
         if (target && !target.isDead) {
             let dronesFocusing = 0;
-            // Count all micro-drones across all allied units focusing this target
             const gameEnemies = window.game?.enemies;
             if (gameEnemies) {
                 for (let i = 0; i < gameEnemies.length; i++) {
                     const e = gameEnemies[i];
                     if (e.isAlly && e.microDrones) {
-                        for (let j = 0; j < e.microDrones.length; j++) {
+                        for (let j = 0, len = e.microDrones.length; j < len; j++) {
                             const d = e.microDrones[j];
                             if (d !== this && d.currentTarget === target) dronesFocusing++;
                         }

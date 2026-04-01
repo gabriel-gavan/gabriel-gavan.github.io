@@ -135,7 +135,7 @@
   style.innerHTML = `
     .fixed-side-ad {
       position: fixed;
-      top: 5%;
+      top: 50%;
       transform: translateY(-50%);
       width: 160px;
       z-index: 999;
@@ -239,14 +239,14 @@ function addBottomAd() {
   const ad = createAsideAd();
 	bottom.appendChild(ad);
 	setTimeout(() => pushAd(ad.querySelector("ins")), 800);
-  document.querySelector(".main-column")?.appendChild(bottom);
+  document.querySelector(".main-content")?.appendChild(bottom);
 }
 
 // =============================
 // LEFT + RIGHT (DESKTOP ONLY)
 // =============================
 function addSideAds() {
-  if (window.innerWidth < 1200) return;
+  //if (window.innerWidth < 1200) return;
 
   setTimeout(() => {
 

@@ -8,6 +8,7 @@ export class SpatialGrid {
     constructor(cellSize = 10) {
         this.cellSize = cellSize;
         this.grid = new Map();
+        this._cellScale = 1 / cellSize;
     }
 
     /**
@@ -21,8 +22,8 @@ export class SpatialGrid {
      * Get cell key for a position
      */
     _getKey(x, z) {
-        const cx = Math.floor(x / this.cellSize);
-        const cz = Math.floor(z / this.cellSize);
+        const cx = Math.floor(x * this._cellScale);
+        const cz = Math.floor(z * this._cellScale);
         return (cx << 16) | (cz & 0xFFFF);
     }
 
@@ -90,10 +91,10 @@ export class SpatialGrid {
         const radiusSq = radius * radius;
         const cellSize = this.cellSize;
         
-        const minX = Math.floor((position.x - radius) / cellSize);
-        const maxX = Math.floor((position.x + radius) / cellSize);
-        const minZ = Math.floor((position.z - radius) / cellSize);
-        const maxZ = Math.floor((position.z + radius) / cellSize);
+        const minX = Math.floor((position.x - radius) * this._cellScale);
+        const maxX = Math.floor((position.x + radius) * this._cellScale);
+        const minZ = Math.floor((position.z - radius) * this._cellScale);
+        const maxZ = Math.floor((position.z + radius) * this._cellScale);
         
         for (let x = minX; x <= maxX; x++) {
             for (let z = minZ; z <= maxZ; z++) {

@@ -62,15 +62,27 @@ export class LootManager {
     createLootPickup(pos, type, rarity) {
         // Simple visual for special loot since we don't have dedicated classes for all yet
         const color = rarity === 'LEGENDARY' ? 0xffd700 : 0x00ffff;
-        const geo = new THREE.IcosahedronGeometry(0.5, 1);
-        const mat = new THREE.MeshStandardMaterial({ 
-            color: color, 
-            emissive: color, 
-            emissiveIntensity: 2,
-            transparent: true,
-            opacity: 0.8
-        });
-        const mesh = new THREE.Mesh(geo, mat);
+        if (!this._lootGeo) this._lootGeo = new THREE.IcosahedronGeometry(0.5, 1);
+        if (!this._lootMatLegendary) {
+            this._lootMatLegendary = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                emissive: 0xffd700,
+                emissiveIntensity: 2,
+                transparent: true,
+                opacity: 0.8
+            });
+        }
+        if (!this._lootMatRare) {
+            this._lootMatRare = new THREE.MeshStandardMaterial({
+                color: 0x00ffff,
+                emissive: 0x00ffff,
+                emissiveIntensity: 2,
+                transparent: true,
+                opacity: 0.8
+            });
+        }
+        const mesh = new THREE.Mesh(this._lootGeo, rarity === 'LEGENDARY' ? this._lootMatLegendary : this._lootMatRare);
+>>>>>>> REPLACE
         mesh.position.copy(pos);
         mesh.position.y = 1;
         mesh.userData.isLoot = true;
