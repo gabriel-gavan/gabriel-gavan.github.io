@@ -1,6 +1,6 @@
 (function () {
 
-  if (location.hostname !== "neonminigamehub.com") {
+  if (!location.hostname.includes("neonminigamehub.com")) {
     console.log("Ads disabled (not live domain)");
     return;
   }
