@@ -24,9 +24,10 @@ export class ProjectilePool {
      * Acquire a bullet and spawn it.
      */
     acquire(position, direction, speed, damage, owner, color = 0xffffff) {
+        const available = this.available;
         let bullet;
-        if (this.available.length > 0) {
-            bullet = this.available.pop();
+        if (available.length > 0) {
+            bullet = available.pop();
             this.stats.hits++;
         } else {
             bullet = new Bullet(this.scene);
@@ -42,14 +43,15 @@ export class ProjectilePool {
      * Release a bullet back to the pool.
      */
     release(bullet) {
-        const index = this.active.indexOf(bullet);
+        const active = this.active;
+        const index = active.indexOf(bullet);
         if (index !== -1) {
             // Fast splice
-            const last = this.active.pop();
-            if (index < this.active.length) {
-                this.active[index] = last;
+            const last = active.pop();
+            if (index < active.length) {
+                active[index] = last;
             }
-            
+
             bullet.recycle();
             this.available.push(bullet);
         }
@@ -59,15 +61,16 @@ export class ProjectilePool {
      * Bulk update for all active projectiles.
      */
     update(deltaTime, map, player, enemies, spatialGrid) {
-        for (let i = this.active.length - 1; i >= 0; i--) {
-            const b = this.active[i];
+        const active = this.active;
+        for (let i = active.length - 1; i >= 0; i--) {
+            const b = active[i];
             b.update(deltaTime, map, player, enemies, spatialGrid);
-            
+
             if (b.isDead) {
                 // Remove from active and move to available
-                const last = this.active.pop();
-                if (i < this.active.length) {
-                    this.active[i] = last;
+                const last = active.pop();
+                if (i < active.length) {
+                    active[i] = last;
                 }
                 this.available.push(b);
             }
@@ -78,13 +81,15 @@ export class ProjectilePool {
      * Cleanup everything for mission transition.
      */
     releaseAll() {
-        for (let i = 0; i < this.active.length; i++) {
-            this.active[i].recycle();
-            this.available.push(this.active[i]);
+        const active = this.active;
+        const available = this.available;
+        for (let i = 0; i < active.length; i++) {
+            active[i].recycle();
+            available.push(active[i]);
         }
-        this.active.length = 0;
+        active.length = 0;
     }
-    
+
     /**
      * Hard cleanup - truly dispose of meshes.
      */

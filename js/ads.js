@@ -135,7 +135,7 @@
   style.innerHTML = `
     .fixed-side-ad {
       position: fixed;
-      top: 20%;
+      top: 5%;
       transform: translateY(-50%);
       width: 160px;
       z-index: 999;
@@ -150,7 +150,7 @@
     }
 	.sidebar-ad {
 	  position: fixed;
-	  top: 40px;
+	  top: 20px;
 	  width: 160px;
 	  height: 600px;
 	  z-index: 999;

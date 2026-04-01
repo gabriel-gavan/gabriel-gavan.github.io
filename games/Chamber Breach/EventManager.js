@@ -8,6 +8,7 @@ export class EventManager {
         this.eventTimer = 0;
         this.heartbeatInterval = null;
         this.jammerInterval = null;
+        this._uiElement = null;
     }
 
     update(deltaTime) {
@@ -35,6 +36,13 @@ export class EventManager {
             clearInterval(this.jammerInterval);
             this.jammerInterval = null;
         }
+    }
+
+    _getUiElement() {
+        if (!this._uiElement) {
+            this._uiElement = document.getElementById('ui');
+        }
+        return this._uiElement;
     }
 
     triggerRandomEvent() {
@@ -69,8 +77,8 @@ export class EventManager {
                     }
                 }, 1200);
                 break;
-            case 'JAMMER':
-                const ui = document.getElementById('ui');
+            case 'JAMMER': {
+                const ui = this._getUiElement();
                 if (ui) ui.classList.add('malfunction');
                 this.game.heatVisuals.glitchIntensity = 0.8;
                 // Periodic glitch sound
@@ -78,6 +86,7 @@ export class EventManager {
                     if (this.game.hazardHiss) this.game.hazardHiss.triggerAttackRelease("G2", "16n");
                 }, 1000);
                 break;
+            }
             case 'SWARM':
                 this.spawnCluster('SENTRY', 12);
                 this.game.shakeAmount += 0.5;
@@ -88,7 +97,8 @@ export class EventManager {
                 this.game.shakeAmount += 1.5;
                 break;
             case 'BERSERK':
-                this.game.enemies.forEach(e => {
+                for (let i = 0; i < this.game.enemies.length; i++) {
+                    const e = this.game.enemies[i];
                     if (!e.isDead) {
                         e.moveSpeed *= 2.5;
                         e.damage *= 2.0;
@@ -98,7 +108,7 @@ export class EventManager {
                            e.mesh.children[0].material.emissiveIntensity = 5;
                         }
                     }
-                });
+                }
                 break;
             case 'GRAVITY_SURGE':
                 if (this.game.playerController) {
@@ -119,11 +129,12 @@ export class EventManager {
                 this.scene.fog.density = 0.02;
                 if (this.game.ambientLight) this.game.ambientLight.intensity = 0.6;
                 break;
-            case 'JAMMER':
-                const ui = document.getElementById('ui');
+            case 'JAMMER': {
+                const ui = this._getUiElement();
                 if (ui) ui.classList.remove('malfunction');
                 this.game.heatVisuals.glitchIntensity = 0;
                 break;
+            }
             case 'GRAVITY_SURGE':
                 if (this.game.playerController) {
                     this.game.playerController.gravity = 30.0; // Reset to standard
