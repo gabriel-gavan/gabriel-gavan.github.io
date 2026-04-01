@@ -116,7 +116,10 @@ export class EnemyPool {
 
         // Clean up micro drones (these are small enough to not pool)
         if (enemy.microDrones && enemy.microDrones.length > 0) {
-            enemy.microDrones.forEach(d => { if (d.destroy) d.destroy(); });
+            for (let i = 0; i < enemy.microDrones.length; i++) {
+                const d = enemy.microDrones[i];
+                if (d.destroy) d.destroy();
+            }
             enemy.microDrones = [];
         }
 

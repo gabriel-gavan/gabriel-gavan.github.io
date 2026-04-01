@@ -25,52 +25,62 @@ export class AdService {
     }
 
     showInterstitial(options = {}) {
-        if (!this.adBreak) {
+        const adBreak = this.adBreak;
+        if (!adBreak) {
             if (options.adBreakDone) options.adBreakDone();
             return;
         }
 
         const game = window.game;
+        const beforeAd = options.beforeAd;
+        const afterAd = options.afterAd;
+        const adBreakDone = options.adBreakDone;
         const adOptions = {
             type: 'next',
             name: options.name || 'interstitial',
             beforeAd: () => {
                 this.adInProgress = true;
-                if (options.beforeAd) options.beforeAd();
+                if (beforeAd) beforeAd();
                 if (game && game.pauseForAd) game.pauseForAd();
             },
             afterAd: () => {
                 this.adInProgress = false;
-                if (options.afterAd) options.afterAd();
+                if (afterAd) afterAd();
                 if (game && game.resumeAfterAd) game.resumeAfterAd();
             },
             adBreakDone: (placementInfo) => {
                 this.adInProgress = false;
-                if (options.adBreakDone) options.adBreakDone(placementInfo);
+                if (adBreakDone) adBreakDone(placementInfo);
             }
         };
 
-        this.adBreak(adOptions);
+        adBreak(adOptions);
     }
 
     showRewarded(options = {}) {
-        if (!this.adBreak) {
+        const adBreak = this.adBreak;
+        if (!adBreak) {
             if (options.adBreakDone) options.adBreakDone();
             return;
         }
 
         const game = window.game;
+        const beforeAd = options.beforeAd;
+        const afterAd = options.afterAd;
+        const adDismissed = options.adDismissed;
+        const adViewed = options.adViewed;
+        const adBreakDone = options.adBreakDone;
         const adOptions = {
             type: 'reward',
             name: options.name || 'rewarded_ad',
             beforeAd: () => {
                 this.adInProgress = true;
-                if (options.beforeAd) options.beforeAd();
+                if (beforeAd) beforeAd();
                 if (game && game.pauseForAd) game.pauseForAd();
             },
             afterAd: () => {
                 this.adInProgress = false;
-                if (options.afterAd) options.afterAd();
+                if (afterAd) afterAd();
                 if (game && game.resumeAfterAd) game.resumeAfterAd();
             },
             beforeReward: (showAdFn) => {
@@ -78,24 +88,24 @@ export class AdService {
                     showAdFn();
                 } else {
                     this.adInProgress = false;
-                    if (options.adDismissed) options.adDismissed();
+                    if (adDismissed) adDismissed();
                 }
             },
             adDismissed: () => {
                 this.adInProgress = false;
-                if (options.adDismissed) options.adDismissed();
+                if (adDismissed) adDismissed();
             },
             adViewed: () => {
                 this.adInProgress = false;
-                if (options.adViewed) options.adViewed();
+                if (adViewed) adViewed();
             },
             adBreakDone: (placementInfo) => {
                 this.adInProgress = false;
-                if (options.adBreakDone) options.adBreakDone(placementInfo);
+                if (adBreakDone) adBreakDone(placementInfo);
             }
         };
 
-        this.adBreak(adOptions);
+        adBreak(adOptions);
     }
 }
 
