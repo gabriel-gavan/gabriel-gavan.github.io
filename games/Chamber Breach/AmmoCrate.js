@@ -11,6 +11,9 @@ const AMMO_HOVER_AMPLITUDE = 0.15;
 const AMMO_BOUNCE_AMPLITUDE = 0.05;
 const AMMO_SCALE = 1.2;
 const AMMO_MESH_Y = 1;
+const AMMO_COLLECTION_RADIUS_SQ = AMMO_COLLECTION_RADIUS * AMMO_COLLECTION_RADIUS;
+const AMMO_MAGNET_RADIUS_SQ = AMMO_MAGNET_RADIUS * AMMO_MAGNET_RADIUS;
+const AMMO_PULSE_OFFSET = 1;
 
 export class AmmoCrate {
     constructor(scene, position, type = 'RIFLE') {
@@ -38,30 +41,26 @@ export class AmmoCrate {
 
         const now = Date.now();
 
-        // Rotation and hover
         this.mesh.rotation.y += CONFIG.PICKUPS.ROTATION_SPEED * deltaTime;
-        this.mesh.position.y = AMMO_HOVER_HEIGHT + Math.sin(now * AMMO_HOVER_SPEED + 1) * AMMO_HOVER_AMPLITUDE;
+        this.mesh.position.y = AMMO_HOVER_HEIGHT + Math.sin(now * AMMO_HOVER_SPEED + AMMO_PULSE_OFFSET) * AMMO_HOVER_AMPLITUDE;
 
-        // Visual "Item" bounce
         const scalePulse = 1.0 + Math.sin(now * AMMO_BOUNCE_SPEED) * AMMO_BOUNCE_AMPLITUDE;
         const scale = AMMO_SCALE * scalePulse;
         this.mesh.scale.set(scale, scale, 1);
 
-        // Simple distance check for collection
-        const dist = this.mesh.position.distanceTo(playerPos);
+        const dx = playerPos.x - this.mesh.position.x;
+        const dy = playerPos.y - this.mesh.position.y;
+        const dz = playerPos.z - this.mesh.position.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
 
-        // Magnetic pull if close
-        if (dist < AMMO_MAGNET_RADIUS) {
-            const dx = playerPos.x - this.mesh.position.x;
-            const dy = playerPos.y - this.mesh.position.y;
-            const dz = playerPos.z - this.mesh.position.z;
-            const invLen = 1 / Math.sqrt(dx * dx + dy * dy + dz * dz || 1);
+        if (distSq < AMMO_MAGNET_RADIUS_SQ) {
+            const invLen = 1 / Math.sqrt(distSq || 1);
             this.mesh.position.x += dx * invLen * deltaTime * AMMO_MAGNET_SPEED;
             this.mesh.position.y += dy * invLen * deltaTime * AMMO_MAGNET_SPEED;
             this.mesh.position.z += dz * invLen * deltaTime * AMMO_MAGNET_SPEED;
         }
 
-        if (dist < AMMO_COLLECTION_RADIUS) {
+        if (distSq < AMMO_COLLECTION_RADIUS_SQ) {
             this.isCollected = true;
         }
     }
