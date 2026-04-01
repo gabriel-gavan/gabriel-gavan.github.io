@@ -1,5 +1,27 @@
 import * as THREE from 'three';
 
+const NEURAL_RADIUS = 6.0;
+const NEURAL_RADIUS_SQ = NEURAL_RADIUS * NEURAL_RADIUS;
+const NEURAL_DAMAGE = 60;
+const NEURAL_MAX_HEALTH = 500;
+const NEURAL_PULSE_RATE = 8.0;
+const NEURAL_ROT_Y = 2.0;
+const NEURAL_ROT_Z = 1.5;
+const NEURAL_EMISSIVE_RATE = 15.0;
+const NEURAL_EMISSIVE_BASE = 2.0;
+const NEURAL_EMISSIVE_VARIATION = 1.5;
+const NEURAL_GROUND_OPACITY_BASE = 0.1;
+const NEURAL_GROUND_OPACITY_VARIATION = 0.05;
+const NEURAL_LIGHT_MULTIPLIER = 2;
+const NEURAL_PLAYER_GLITCH = 0.3;
+const NEURAL_ENEMY_HEAL = 50;
+const NEURAL_ENEMY_DAMAGE = 0.5;
+const NEURAL_ENEMY_SCALE = 1.2;
+const NEURAL_PARTICLE_CHANCE = 0.3;
+const NEURAL_TRACER_CHANCE = 0.2;
+const NEURAL_PARTICLE_COLOR = 0xff00ff;
+const NEURAL_PLAYER_DAMAGE_COLOR = 'rgba(255, 0, 255, 0.4)';
+
 export class NeuralDisruptor {
     constructor(scene, particleSystem) {
         this.scene = scene;
@@ -7,16 +29,14 @@ export class NeuralDisruptor {
         this.isActive = false;
         this.isDead = true;
         this.timer = 0;
-        this.radius = 6.0;
-        this.damage = 60;
-        this.health = 500;
+        this.radius = NEURAL_RADIUS;
+        this.damage = NEURAL_DAMAGE;
+        this.health = NEURAL_MAX_HEALTH;
         this.position = new THREE.Vector3();
         
-        // --- Geometries (Static) ---
         const geo = new THREE.IcosahedronGeometry(1.5, 1);
         const groundGeo = new THREE.CircleGeometry(this.radius, 32);
 
-        // --- Materials ---
         this.mat = new THREE.MeshStandardMaterial({ 
             color: 0x000000, 
             emissive: 0xff00ff,
@@ -33,7 +53,6 @@ export class NeuralDisruptor {
             side: THREE.DoubleSide
         });
 
-        // --- Meshes ---
         this.mesh = new THREE.Mesh(geo, this.mat);
         this.mesh.visible = false;
         this.scene.add(this.mesh);
@@ -43,11 +62,9 @@ export class NeuralDisruptor {
         this.groundIndicator.visible = false;
         this.scene.add(this.groundIndicator);
 
-        // --- Light ---
         this.light = new THREE.PointLight(0xff00ff, 0, 12);
         this.scene.add(this.light);
 
-        // Logic
         this.mesh.userData.isDestructible = true;
         this.mesh.userData.health = this.health;
         this.mesh.userData.isNeuralDisruptor = true;
@@ -62,7 +79,7 @@ export class NeuralDisruptor {
         this.groundIndicator.position.y = 0.1;
         this.light.position.copy(this.mesh.position);
         
-        this.health = 500;
+        this.health = NEURAL_MAX_HEALTH;
         this.mesh.userData.health = this.health;
         this.timer = 0;
         this.isActive = true;
@@ -79,32 +96,27 @@ export class NeuralDisruptor {
 
         this.timer += deltaTime;
         
-        // Visual pulses
-        const pulse = 1.0 + Math.sin(this.timer * 8.0) * 0.2;
+        const pulse = 1.0 + Math.sin(this.timer * NEURAL_PULSE_RATE) * 0.2;
         this.mesh.scale.set(pulse, pulse, pulse);
-        this.mesh.rotation.y += deltaTime * 2.0;
-        this.mesh.rotation.z += deltaTime * 1.5;
-        this.mat.emissiveIntensity = 2.0 + Math.sin(this.timer * 15.0) * 1.5;
-        this.light.intensity = this.mat.emissiveIntensity * 2;
-        this.groundMat.opacity = 0.1 + Math.sin(this.timer * 4.0) * 0.05;
+        this.mesh.rotation.y += deltaTime * NEURAL_ROT_Y;
+        this.mesh.rotation.z += deltaTime * NEURAL_ROT_Z;
+        this.mat.emissiveIntensity = NEURAL_EMISSIVE_BASE + Math.sin(this.timer * NEURAL_EMISSIVE_RATE) * NEURAL_EMISSIVE_VARIATION;
+        this.light.intensity = this.mat.emissiveIntensity * NEURAL_LIGHT_MULTIPLIER;
+        this.groundMat.opacity = NEURAL_GROUND_OPACITY_BASE + Math.sin(this.timer * 4.0) * NEURAL_GROUND_OPACITY_VARIATION;
 
-        // Damage logic
         const playerPos = player.mesh.position;
         const dx = playerPos.x - this.position.x;
         const dz = playerPos.z - this.position.z;
-        const distSq = dx*dx + dz*dz;
+        const distSq = dx * dx + dz * dz;
         
-        if (distSq < this.radius * this.radius) {
-            // Apply heavy DOT damage
-            player.takeDamage(this.damage * deltaTime, true, 'rgba(255, 0, 255, 0.4)');
+        if (distSq < NEURAL_RADIUS_SQ) {
+            player.takeDamage(this.damage * deltaTime, true, NEURAL_PLAYER_DAMAGE_COLOR);
             
-            // Visual glitch feedback when in range
             if (window.game && window.game.heatVisuals) {
-                window.game.heatVisuals.glitchIntensity = Math.max(window.game.heatVisuals.glitchIntensity, 0.3);
+                window.game.heatVisuals.glitchIntensity = Math.max(window.game.heatVisuals.glitchIntensity, NEURAL_PLAYER_GLITCH);
             }
         }
 
-        // Damage enemies
         if (enemies) {
             for (let i = 0; i < enemies.length; i++) {
                 const enemy = enemies[i];
@@ -112,27 +124,27 @@ export class NeuralDisruptor {
                 
                 const edx = enemy.mesh.position.x - this.position.x;
                 const edz = enemy.mesh.position.z - this.position.z;
-                const eDistSq = edx*edx + edz*edz;
+                const eDistSq = edx * edx + edz * edz;
                 
-                if (eDistSq < this.radius * this.radius) {
+                if (eDistSq < NEURAL_RADIUS_SQ) {
                     if (enemy.isElite || enemy.isBoss) {
                         enemy.damageMultiplier = 2.0;
                         if (!enemy._neuralOverloadVisual) {
                             enemy._neuralOverloadVisual = true;
-                            enemy.mesh.scale.multiplyScalar(1.2);
+                            enemy.mesh.scale.multiplyScalar(NEURAL_ENEMY_SCALE);
                             if (enemy.mesh.material) {
-                                enemy.mesh.material.emissive.set(0xff00ff);
+                                enemy.mesh.material.emissive.set(NEURAL_PARTICLE_COLOR);
                                 enemy.mesh.material.emissiveIntensity = 2.0;
                             }
                         }
-                        enemy.health = Math.min(enemy.maxHealth, enemy.health + 50 * deltaTime);
+                        enemy.health = Math.min(enemy.maxHealth, enemy.health + NEURAL_ENEMY_HEAL * deltaTime);
                     } else {
-                        enemy.takeDamage(this.damage * 0.5 * deltaTime, enemies, 'PLAYER');
+                        enemy.takeDamage(this.damage * NEURAL_ENEMY_DAMAGE * deltaTime, enemies, 'PLAYER');
                     }
                 } else if (enemy._neuralOverloadVisual) {
                     enemy._neuralOverloadVisual = false;
                     enemy.damageMultiplier = 1.0;
-                    enemy.mesh.scale.divideScalar(1.2);
+                    enemy.mesh.scale.divideScalar(NEURAL_ENEMY_SCALE);
                     if (enemy.mesh.material && enemy.typeData) {
                         enemy.mesh.material.emissive.set(enemy.typeData.emissive);
                         enemy.mesh.material.emissiveIntensity = 1.0;
@@ -141,18 +153,16 @@ export class NeuralDisruptor {
             }
         }
 
-        // Particles
-        if (this.particleSystem && Math.random() < 0.3) {
+        if (this.particleSystem && Math.random() < NEURAL_PARTICLE_CHANCE) {
             const angle = Math.random() * Math.PI * 2;
             const r = Math.random() * this.radius;
             const px = this.position.x + Math.cos(angle) * r;
             const pz = this.position.z + Math.sin(angle) * r;
             
-            // Re-use a vector if possible, but for simple explosion we pass a point
-            this.particleSystem.createExplosion({ x: px, y: 0.1, z: pz }, 0xff00ff, 1, 0.5);
+            this.particleSystem.createExplosion({ x: px, y: 0.1, z: pz }, NEURAL_PARTICLE_COLOR, 1, 0.5);
             
-            if (distSq < this.radius * this.radius && Math.random() < 0.2) {
-                this.particleSystem.createTracer(this.mesh.position, player.camera.position, 0xff00ff, 0.5);
+            if (distSq < NEURAL_RADIUS_SQ && Math.random() < NEURAL_TRACER_CHANCE) {
+                this.particleSystem.createTracer(this.mesh.position, player.camera.position, NEURAL_PARTICLE_COLOR, 0.5);
             }
         }
     }
@@ -171,7 +181,7 @@ export class NeuralDisruptor {
         this.isActive = false;
         
         if (this.particleSystem) {
-            this.particleSystem.createExplosion(this.mesh.position, 0xff00ff, 100, 10);
+            this.particleSystem.createExplosion(this.mesh.position, NEURAL_PARTICLE_COLOR, 100, 10);
         }
         
         this.mesh.visible = false;

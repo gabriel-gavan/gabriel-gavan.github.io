@@ -2,13 +2,20 @@ import * as THREE from 'three';
 
 const CRYO_VENT_URL = 'https://rosebud.ai/assets/cryo_vent_sprite.png.webp?SnKX';
 const CRYO_OFFSET = new THREE.Vector3(0, 1, 0);
+const CRYO_ACTIVE_RADIUS_SQ = 6.25;
+const CRYO_ACTIVE_COLOR = 0xffffff;
+const CRYO_IDLE_COLOR = 0x444444;
+const CRYO_WARNING_COLOR = 0x00aaff;
+const CRYO_FROZEN_COLOR = 0xaaaaaa;
+const CRYO_LIGHT_COLOR = 0x88ccff;
+const CRYO_PULSE_COLOR = 0x00aaff;
 
 export class CryoVent {
     constructor(scene, position, particleSystem) {
         this.scene = scene;
         this.position = position.clone();
         this.particleSystem = particleSystem;
-        this.timer = Math.random() * 6; // Random offset for timing
+        this.timer = Math.random() * 6;
         this.activeDuration = 3.5;
         this.cooldownDuration = 2.5;
         this.isActive = false;
@@ -52,7 +59,7 @@ export class CryoVent {
             if (this.freezeTimer <= 0) {
                 this.isFrozen = false;
             }
-            this.mesh.material.color.set(0xaaaaaa);
+            this.mesh.material.color.set(CRYO_FROZEN_COLOR);
             this.light.intensity = 0;
             this.isActive = false;
             return;
@@ -65,15 +72,15 @@ export class CryoVent {
         this.isActive = cyclePos < this.activeDuration;
 
         if (this.isActive) {
-            this.mesh.material.color.set(0xffffff);
+            this.mesh.material.color.set(CRYO_ACTIVE_COLOR);
             const intensity = 0.5 + Math.sin(this.timer * 10) * 0.5;
             this.light.intensity = intensity * 2;
-            this.light.color.set(0x88ccff);
+            this.light.color.set(CRYO_LIGHT_COLOR);
 
             if (player && player.mesh) {
                 const playerPos = player.mesh.position;
                 const distSq = playerPos.distanceToSquared(this.position);
-                if (distSq < 6.25 && canDamage) {
+                if (distSq < CRYO_ACTIVE_RADIUS_SQ && canDamage) {
                     player.takeDamage(20 * deltaTime, true, 'rgba(100, 200, 255, 0.4)');
                 }
             }
@@ -82,7 +89,7 @@ export class CryoVent {
                 for (let i = 0; i < enemies.length; i++) {
                     const enemy = enemies[i];
                     if (!enemy || enemy.isDead || !enemy.mesh) continue;
-                    if (enemy.mesh.position.distanceToSquared(this.position) < 6.25) {
+                    if (enemy.mesh.position.distanceToSquared(this.position) < CRYO_ACTIVE_RADIUS_SQ) {
                         enemy.takeDamage(15 * deltaTime, enemies);
                     }
                 }
@@ -94,18 +101,18 @@ export class CryoVent {
                     Math.random() * 3,
                     (Math.random() - 0.5) * 1.5
                 );
-                this.particleSystem.createExplosion(this.position.clone().add(this._particleOffset), 0x88ccff, 1, 0.4);
+                this.particleSystem.createExplosion(this.position.clone().add(this._particleOffset), CRYO_LIGHT_COLOR, 1, 0.4);
             }
         } else {
             const timeToActive = cycleTotal - cyclePos;
             if (timeToActive < 1.0) {
                 const pulse = Math.sin(timeToActive * 20) * 0.5 + 0.5;
                 this.light.intensity = pulse;
-                this.light.color.set(0x00aaff);
+                this.light.color.set(CRYO_PULSE_COLOR);
             } else {
                 this.light.intensity = 0;
             }
-            this.mesh.material.color.set(0x444444);
+            this.mesh.material.color.set(CRYO_IDLE_COLOR);
         }
     }
 

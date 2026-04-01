@@ -1,6 +1,22 @@
 import * as THREE from 'three';
 import { CONFIG } from './config.js';
 
+const HEALTH_HOVER_HEIGHT = 1.1;
+const HEALTH_MAGNET_RADIUS = 5.0;
+const HEALTH_COLLECTION_RADIUS = 1.8;
+const HEALTH_PULL_SPEED = 12.0;
+const HEALTH_HOVER_SPEED = 0.005;
+const HEALTH_BOUNCE_SPEED = 0.01;
+const HEALTH_HOVER_AMPLITUDE = 0.15;
+const HEALTH_BOUNCE_AMPLITUDE = 0.05;
+const HEALTH_SCALE = 1.2;
+const HEALTH_LIGHT_Y = 0.5;
+const HEALTH_MAGNET_RADIUS_SQ = HEALTH_MAGNET_RADIUS * HEALTH_MAGNET_RADIUS;
+const HEALTH_COLLECTION_RADIUS_SQ = HEALTH_COLLECTION_RADIUS * HEALTH_COLLECTION_RADIUS;
+const HEALTH_HOVER_OFFSET = 1.1;
+const HEALTH_SCALE_BASE = 1.0;
+const HEALTH_SCALE_AXIS = 1;
+
 export class HealthPack {
     constructor(scene, position) {
         this.scene = scene;
@@ -16,34 +32,35 @@ export class HealthPack {
         const map = loader.load('https://rosebud.ai/assets/medkit_sprite.webp?KHNa');
         const material = new THREE.SpriteMaterial({ map: map });
         const sprite = new THREE.Sprite(material);
-        sprite.scale.set(1.2, 1.2, 1);
+        sprite.scale.set(HEALTH_SCALE, HEALTH_SCALE, 1);
         return sprite;
     }
 
     update(deltaTime, playerPos) {
-        if (this.isCollected) return;
+        if (this.isCollected || !playerPos) return;
 
-        // Rotation and hover
+        const now = Date.now();
+
         this.mesh.rotation.y += CONFIG.PICKUPS.ROTATION_SPEED * deltaTime;
-        const hover = Math.sin(Date.now() * 0.005) * 0.15;
-        this.mesh.position.y = 1.1 + hover;
+        this.mesh.position.y = HEALTH_HOVER_HEIGHT + Math.sin(now * HEALTH_HOVER_SPEED) * HEALTH_HOVER_AMPLITUDE;
 
-        // Visual "Item" bounce
-        const scaleBase = 1.0;
-        const scalePulse = 1.0 + Math.sin(Date.now() * 0.01) * 0.05;
-        this.mesh.scale.set(scaleBase * scalePulse, scaleBase * scalePulse, 1);
+        const scalePulse = HEALTH_SCALE_BASE + Math.sin(now * HEALTH_BOUNCE_SPEED) * HEALTH_BOUNCE_AMPLITUDE;
+        const scale = HEALTH_SCALE_BASE * scalePulse;
+        this.mesh.scale.set(scale, scale, HEALTH_SCALE_AXIS);
 
-        // Simple distance check for collection
-        const dist = this.mesh.position.distanceTo(playerPos);
+        const dx = playerPos.x - this.mesh.position.x;
+        const dy = playerPos.y - this.mesh.position.y;
+        const dz = playerPos.z - this.mesh.position.z;
+        const distSq = dx * dx + dy * dy + dz * dz;
         
-        // Magnetic pull if close
-        if (dist < 5.0) {
-            const pullSpeed = 12.0;
-            const dir = new THREE.Vector3().subVectors(playerPos, this.mesh.position).normalize();
-            this.mesh.position.add(dir.multiplyScalar(deltaTime * pullSpeed));
+        if (distSq < HEALTH_MAGNET_RADIUS_SQ) {
+            const invLen = 1 / Math.sqrt(distSq || 1);
+            this.mesh.position.x += dx * invLen * deltaTime * HEALTH_PULL_SPEED;
+            this.mesh.position.y += dy * invLen * deltaTime * HEALTH_PULL_SPEED;
+            this.mesh.position.z += dz * invLen * deltaTime * HEALTH_PULL_SPEED;
         }
 
-        if (dist < 1.8) {
+        if (distSq < HEALTH_COLLECTION_RADIUS_SQ) {
             this.isCollected = true;
         }
     }

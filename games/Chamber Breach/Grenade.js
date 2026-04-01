@@ -9,6 +9,13 @@ const MATH = {
 // --- Reusable Math Objects for Zero Allocation ---
 const REUSABLE_SPHERE = new THREE.Sphere();
 const REUSABLE_BOX = new THREE.Box3();
+const GRENADE_COLLISION_RADIUS = 0.3;
+const GRENADE_FLOOR_HEIGHT = 0.2;
+const GRENADE_FLOOR_BOUNCE = -0.4;
+const GRENADE_FLOOR_FRICTION = 0.7;
+const GRENADE_COLLISION_MULTIPLIER = -0.5;
+const GRENADE_ROT_X = 5;
+const GRENADE_ROT_Z = 3;
 
 export class Grenade {
     constructor(scene, particleSystem) {
@@ -53,35 +60,31 @@ export class Grenade {
 
         this.timer -= deltaTime * 1000;
 
-        // Physics - zero allocation
         this.velocity.y -= this.gravity * deltaTime;
         MATH.v1.copy(this.velocity).multiplyScalar(deltaTime);
         this.mesh.position.add(MATH.v1);
 
         const currentPos = this.mesh.position;
 
-        // Basic collision with floor
-        if (currentPos.y < 0.2) {
-            currentPos.y = 0.2;
-            this.velocity.y *= -0.4; // Bounce
-            this.velocity.x *= 0.7; // Friction
-            this.velocity.z *= 0.7;
+        if (currentPos.y < GRENADE_FLOOR_HEIGHT) {
+            currentPos.y = GRENADE_FLOOR_HEIGHT;
+            this.velocity.y *= GRENADE_FLOOR_BOUNCE;
+            this.velocity.x *= GRENADE_FLOOR_FRICTION;
+            this.velocity.z *= GRENADE_FLOOR_FRICTION;
         }
 
-        // Basic collision with walls/obstacles using reusable objects
-        REUSABLE_SPHERE.set(currentPos, 0.3);
+        REUSABLE_SPHERE.set(currentPos, GRENADE_COLLISION_RADIUS);
         for (let i = 0; i < walls.length; i++) {
             const wall = walls[i];
-            // Only update box if visible or within a certain range
-            REUSABLE_BOX.setFromObject(wall); // Still slightly expensive but better than new Box3()
+            REUSABLE_BOX.setFromObject(wall);
             if (REUSABLE_BOX.intersectsSphere(REUSABLE_SPHERE)) {
-                this.velocity.multiplyScalar(-0.5);
+                this.velocity.multiplyScalar(GRENADE_COLLISION_MULTIPLIER);
                 break;
             }
         }
 
-        this.mesh.rotation.x += deltaTime * 5;
-        this.mesh.rotation.z += deltaTime * 3;
+        this.mesh.rotation.x += deltaTime * GRENADE_ROT_X;
+        this.mesh.rotation.z += deltaTime * GRENADE_ROT_Z;
 
         if (this.timer <= 0) {
             this.explode();
@@ -92,7 +95,6 @@ export class Grenade {
         this.isExploded = true;
         this.mesh.visible = false;
 
-        // Visual Explosion
         if (this.particleSystem) {
             this.particleSystem.createExplosion(this.mesh.position, 0xff6600, 30, 10);
             this.particleSystem.createExplosion(this.mesh.position, 0xffff00, 20, 5);
@@ -104,4 +106,3 @@ export class Grenade {
         }
     }
 }
-
