@@ -150,7 +150,7 @@
     }
 	.sidebar-ad {
 	  position: fixed;
-	  top: 120px;
+	  top: 40px;
 	  width: 160px;
 	  height: 600px;
 	  z-index: 999;
