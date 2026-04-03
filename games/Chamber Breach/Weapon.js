@@ -92,12 +92,7 @@ export class Weapon {
             }
         }
 
-        // Muzzle Flash
-        const particleSystem = game && game.particleSystem;
-        if (particleSystem && particleSystem.createMuzzleFlash && now - this.lastShotFxTime > 120) {
-            this.lastShotFxTime = now;
-            particleSystem.createMuzzleFlash(muzzlePos, _fireDir, this.projectileColor);
-        }
+        // Muzzle flash disabled
 
         // Feedback
         if (this.owner === 'PLAYER' && game.shakeAmount !== undefined) {

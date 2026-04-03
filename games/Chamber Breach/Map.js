@@ -112,10 +112,10 @@ export class GameMap {
         if (onProgress) onProgress(0.05);
         
         const [floorTex, wallTex, ceilingTex, terminalTex] = await Promise.all([
-            loadTextureAsync('https://rosebud.ai/assets/floor_metal_tiles.webp?M8T3'),
-            loadTextureAsync(theme.wallTexture || 'https://rosebud.ai/assets/scifi_wall_paneled_metal.webp.webp?bMd0'),
-            loadTextureAsync('https://rosebud.ai/assets/ceiling_conduit.webp?WX9c'),
-            loadTextureAsync('https://rosebud.ai/assets/terminal_screen_ui.webp?bzBE')
+            loadTextureAsync('assets/floor_metal_tiles.webp'),
+            loadTextureAsync(theme.wallTexture || 'assets/scifi_wall_paneled_metal.webp.webp'),
+            loadTextureAsync('assets/ceiling_conduit.webp'),
+            loadTextureAsync('assets/terminal_screen_ui.webp')
         ]);
         
         this.floorTex = floorTex;
@@ -970,7 +970,7 @@ export class GameMap {
     createEnvironmentalHazards(x, z, size, idx) {
         if (!this.facility) return;
         
-        const hazardChance = CONFIG.MAP.FAST_MODE ? Math.min(0.2, CONFIG.MAP.HAZARD_CHANCE) : CONFIG.MAP.HAZARD_CHANCE;
+        const hazardChance = CONFIG.MAP.FAST_MODE ? Math.min(0.12, CONFIG.MAP.HAZARD_CHANCE) : Math.min(0.35, CONFIG.MAP.HAZARD_CHANCE);
 
         if ((this.facility.id === 'meridian' || this.facility.id === 'neon') && Math.random() < hazardChance) {
             const grid = new LaserGrid(this.scene, { x, z, size }, Math.random() > 0.5);

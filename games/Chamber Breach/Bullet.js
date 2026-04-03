@@ -11,7 +11,7 @@ SHARED_GEO.rotateX(Math.PI / 2);
 
 const MATERIAL_CACHE = {
     'PLAYER': new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 1.0, depthWrite: false }),
-    'ENEMY': new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 1.0, depthWrite: false }),
+    'ENEMY': new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 1.0, depthWrite: false }),
     'NEUTRAL': new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 1.0, depthWrite: false })
 };
 
@@ -106,11 +106,10 @@ export class Bullet {
                     enemy.takeDamage(this.damage, enemies, this.damageType, spatialGrid);
                     this.hitObjects.add(enemy);
                     
-                    this.handleImpact(currentPos, new THREE.Vector3(0, 1, 0), true);
-                    
                     if (this.penetration > 0) {
                         this.penetration--;
                     } else {
+                        this.recycle();
                         return;
                     }
                 }
@@ -135,7 +134,7 @@ export class Bullet {
 
     handleImpact(pos, normal, isEnemyHit = false) {
         if (window.game?.particleSystem) {
-            window.game.particleSystem.createImpact(pos, normal, isEnemyHit ? 0xff0000 : this.color);
+            window.game.particleSystem.createImpact(pos, normal, isEnemyHit ? 0x00d0ff : this.color);
         }
         
         if (!isEnemyHit || this.penetration <= 0) {

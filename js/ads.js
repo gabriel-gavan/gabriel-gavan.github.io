@@ -181,7 +181,7 @@
 // Create AdSense <aside> block
 function createAsideAd() {
   const aside = document.createElement("aside");
-  aside.className = "sidebar-ad";
+  aside.className = "sidebar-ad left";
   aside.style.width = "160px";   // 🔥 IMPORTANT
   aside.style.minHeight = "600px"; // 🔥 IMPORTANT
 

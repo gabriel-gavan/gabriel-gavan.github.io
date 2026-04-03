@@ -680,7 +680,6 @@ export class Enemy {
         const performanceTier = distToPlayerSq > 3600 ? 2 : (distToPlayerSq > 900 ? 1 : 0);
         const meshId = this.mesh.id;
         const frameId = frameCounter + meshId;
-        const closeRangeSq = 225;
         const attackRangeSq = this.attackRange * this.attackRange;
         const cullDistSq = CONFIG.ENEMY.LOD.CULL_DIST * CONFIG.ENEMY.LOD.CULL_DIST;
         if (this.spawnBurstCooldown > 0) this.spawnBurstCooldown -= deltaTime * 1000;
@@ -909,7 +908,7 @@ export class Enemy {
             if (this.projectedShieldTimer <= 0) this.hasProjectedShield = false;
         }
 
-        if (this.type === 'SHIELD_PROJECTOR' && !this.isDisabled) {
+        if (this.type === 'SHIELD_PROJECTOR' && !this.isDisabled && (performanceTier === 0 || frameId % 4 === 0)) {
             this.updateShieldProjector(deltaTime * updateModulo, otherEnemies, playerPos, spatialGrid);
         }
 

@@ -23,7 +23,7 @@ export class Navigation {
             }
         };
 
-        this.init();
+        
     }
 
     init() {
