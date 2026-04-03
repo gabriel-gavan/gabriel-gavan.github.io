@@ -134,7 +134,6 @@ class MuzzleEffect {
             const mesh = this.particlePool.get();
             if (!mesh) continue;
 
-            mesh.material.color.set(color);
             mesh.material.opacity = 1.0;
             mesh.scale.setScalar(0.03 + Math.random() * 0.03);
             mesh.position.copy(position);
@@ -213,7 +212,7 @@ class ImpactEffect {
                 this.particleSystem.releaseParticle(p, -1);
                 continue;
             }
-            mesh.material.color.set(0x333333);
+            mesh.material.color.set(color);
             mesh.material.opacity = 1.0;
             mesh.scale.setScalar(0.02 + Math.random() * 0.06);
             mesh.position.copy(position);
@@ -289,14 +288,15 @@ export class ParticleSystem {
         this.textureLoader = new THREE.TextureLoader();
         
         // Pre-load textures
-        this.muzzleTexture = this.textureLoader.load('https://rosebud.ai/assets/muzzle_flash_sprite.png.webp?cmmK');
-        this.dustTexture = this.textureLoader.load('https://rosebud.ai/assets/data_dust_particle.png.webp?K9IH');
+        this.muzzleTexture = this.textureLoader.load('assets/muzzle_flash_sprite.png.webp');
+        this.dustTexture = this.textureLoader.load('assets/data_dust_particle.png.webp');
 
         // Shared geometries
         this.boxGeo = new THREE.BoxGeometry(1, 1, 1);
         this.tracerGeo = new THREE.BoxGeometry(0.02, 0.02, 1);
         
         this.materialPool = new Map(); // Color -> Material
+        this._singularityScratch = { pos: null, rangeSq: 0, force: 0 };
         
         // --- Pools ---
         
@@ -401,7 +401,7 @@ export class ParticleSystem {
         // Debris Pool - Use MeshBasicMaterial instead of expensive MeshStandardMaterial
         this.debrisPool = new ObjectPool(() => {
             const geo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
-            const mat = new THREE.MeshBasicMaterial({ color: 0x333333 });
+            const mat = new THREE.MeshBasicMaterial({ color: 0x888888 });
             const mesh = new THREE.Mesh(geo, mat);
             mesh.visible = false;
             this.scene.add(mesh);
@@ -506,7 +506,7 @@ export class ParticleSystem {
                 this.releaseParticle(p, this.activeParticles.length - 1);
                 continue;
             }
-            mesh.material.color.set(color);
+            mesh.material.color.set(0x666666);
             mesh.material.opacity = 0.6;
             mesh.scale.setScalar(0.5 + Math.random() * 1.5);
             
@@ -541,7 +541,7 @@ export class ParticleSystem {
                 this.releaseParticle(p, this.activeParticles.length - 1);
                 continue;
             }
-            mesh.material.color.set(color);
+            mesh.material.color.set(0x666666);
             mesh.material.opacity = 0.4;
             mesh.scale.setScalar(size * (0.5 + Math.random()));
             
@@ -631,8 +631,8 @@ export class ParticleSystem {
             return;
         }
 
-        mesh.material.color.set(color);
-        mesh.material.opacity = 0.8;
+            mesh.material.color.set(color);
+            mesh.material.opacity = 0.8;
         mesh.scale.setScalar(size);
         
         MATH.v1.copy(normal).multiplyScalar(0.01);
@@ -698,7 +698,7 @@ export class ParticleSystem {
             this.releaseParticle(p, this.activeParticles.length - 1);
             return;
         }
-        mesh.material.color.set(color); 
+        mesh.material.color.set(0x00ffff); 
         mesh.material.opacity = 1.0;
         mesh.scale.setScalar(1.0);
         mesh.position.copy(start);
@@ -746,19 +746,12 @@ export class ParticleSystem {
     }
 
     createMuzzleFlash(position, direction, color = 0x00ffff) {
-        const distSq = window.game && window.game.player ? position.distanceToSquared(window.game.player.mesh.position) : 0;
-        if (distSq > 400) return; // Tightened range (20m)
-
         const effect = this.muzzleEffectPool.get();
         if (effect) {
             effect.spawn(position, direction, color);
             if (!this.activeEffects.includes(effect)) {
                 this.activeEffects.push(effect);
             }
-        }
-
-        if (this.player && this.player.camera.position.distanceToSquared(position) < 400) {
-            this.flashLight(position, color, 4, 6, 40);
         }
     }
 
@@ -779,7 +772,7 @@ export class ParticleSystem {
 
             const pSize = 0.05 + Math.random() * 0.15;
             mesh.scale.setScalar(pSize);
-            mesh.material.color.set(0x00d0ff);
+            mesh.material.color.set(0x000000);
             mesh.material.opacity = 0.1 + Math.random() * 0.2;
             mesh.material.map = this.dustTexture;
             
@@ -830,8 +823,8 @@ export class ParticleSystem {
         if (!this.frameCounter) this.frameCounter = 0;
         this.frameCounter++;
 
-        const now = Date.now();
-        const timeScale = now * 0.001;
+        const frameTick = this.frameCounter;
+        const timeScale = frameTick * 0.016;
         const playerPos = this.player && this.player.camera ? this.player.camera.position : null;
 
         // ... rest of effect updates ...
@@ -874,16 +867,18 @@ export class ParticleSystem {
         let singularityRange = 0;
         let singularityForce = 0;
         
-        if (window.game && window.game.activeSingularities) {
-            window.game.activeSingularities.forEach(s => {
-                singularityPos = s.pos;
-                singularityRange = s.range;
-                singularityForce = s.force;
-            });
+        if (window.game && window.game.activeSingularities && window.game.activeSingularities.length > 0) {
+            const singularities = window.game.activeSingularities;
+            const s = singularities[singularities.length - 1];
+            singularityPos = s.pos;
+            singularityRange = s.range;
+            singularityForce = s.force;
         }
 
         for (let i = this.activeParticles.length - 1; i >= 0; i--) {
             const p = this.activeParticles[i];
+            const mesh = p.mesh;
+            const material = mesh ? mesh.material : null;
             
             if (!p.isPersistent) {
                 p.life -= p.decay;
@@ -893,23 +888,23 @@ export class ParticleSystem {
                     continue;
                 }
 
-                if (singularityPos && !p.isProjectile) {
-                    const distToSingSq = p.mesh.position.distanceToSquared(singularityPos);
+                if (singularityPos && mesh && !p.isProjectile) {
+                    const distToSingSq = mesh.position.distanceToSquared(singularityPos);
                     if (distToSingSq < singularityRange * singularityRange) {
-                        MATH.v1.subVectors(singularityPos, p.mesh.position).normalize();
+                        MATH.v1.subVectors(singularityPos, mesh.position).normalize();
                         const pullFactor = 1.0 - (Math.sqrt(distToSingSq) / singularityRange);
                         p.velocity.add(MATH.v1.multiplyScalar(singularityForce * pullFactor * deltaTime * 100));
                     }
                 }
 
                 MATH.v1.copy(p.velocity).multiplyScalar(deltaTime);
-                MATH.v2.copy(p.mesh.position).add(MATH.v1);
+                MATH.v2.copy(mesh.position).add(MATH.v1);
                 
                 if (p.isProjectile && this.map) {
                     if ((i + this.frameCounter) % 2 === 0) {
                         if (this.map.checkCollision(MATH.v2, 0.5)) {
                             if (playerPos && MATH.v2.distanceToSquared(playerPos) < 400) {
-                                this.createImpact(p.mesh.position, MATH.vUp, p.mesh.material.color);
+                                this.createImpact(mesh.position, MATH.vUp, material ? material.color : 0xffffff);
                             }
                             this.releaseParticle(p, i);
                             continue;
@@ -918,35 +913,35 @@ export class ParticleSystem {
                 }
 
                 if (p.velocity.x !== 0 || p.velocity.y !== 0 || p.velocity.z !== 0) {
-                    p.mesh.position.copy(MATH.v2);
-                    p.mesh.updateMatrix();
+                    mesh.position.copy(MATH.v2);
+                    mesh.updateMatrix();
                 } else if (p.growSpeed !== 0) {
                      // Still update matrix if growing
-                     p.mesh.updateMatrix();
+                     mesh.updateMatrix();
                 }
 
                 if (p.isDebris) {
-                    const distSq = playerPos ? p.mesh.position.distanceToSquared(playerPos) : 0;
+                    const distSq = playerPos ? mesh.position.distanceToSquared(playerPos) : 0;
                     if (distSq > 900) {
                         continue; 
                     }
 
-                    if (p.mesh.position.y <= 0.201 && Math.abs(p.velocity.y) < 0.1 && p.velocity.lengthSq() < 0.01) {
+                    if (mesh.position.y <= 0.201 && Math.abs(p.velocity.y) < 0.1 && p.velocity.lengthSq() < 0.01) {
                         // Sleep
                     } else {
                         p.velocity.y -= 25 * deltaTime;
-                        if (p.mesh.position.y < 0.2) {
-                            p.mesh.position.y = 0.2;
+                        if (mesh.position.y < 0.2) {
+                            mesh.position.y = 0.2;
                             p.velocity.y *= -p.bounce;
                             p.velocity.x *= 0.8;
                             p.velocity.z *= 0.8;
                         }
                         
                         if (distSq < 225) {
-                            p.mesh.rotation.x += p.velocity.y * deltaTime;
-                            p.mesh.rotation.z += p.velocity.x * deltaTime;
-                            if (p.mesh.material && p.mesh.material.emissiveIntensity > 0) {
-                                p.mesh.material.emissiveIntensity = 0.5 + Math.random() * 2.0;
+                            mesh.rotation.x += p.velocity.y * deltaTime;
+                            mesh.rotation.z += p.velocity.x * deltaTime;
+                            if (material && material.emissiveIntensity > 0) {
+                                material.emissiveIntensity = 0.5 + Math.random() * 2.0;
                             }
                         }
                     }
@@ -954,14 +949,14 @@ export class ParticleSystem {
 
                 if (p.isProjectile) {
                     if (playerPos && !this.player.isDead) {
-                        const dx = p.mesh.position.x - playerPos.x;
-                        const dy = p.mesh.position.y - playerPos.y;
-                        const dz = p.mesh.position.z - playerPos.z;
+                        const dx = mesh.position.x - playerPos.x;
+                        const dy = mesh.position.y - playerPos.y;
+                        const dz = mesh.position.z - playerPos.z;
                         const distSq = dx*dx + dy*dy + dz*dz;
                         
                         if (distSq < 2.5) { 
                             this.player.takeDamage(p.damage || 10);
-                            this.createImpact(p.mesh.position, MATH.vUp, p.mesh.material.color);
+                            this.createImpact(mesh.position, MATH.vUp, material ? material.color : 0xffffff);
                             this.releaseParticle(p, i);
                             continue;
                         }
@@ -969,31 +964,31 @@ export class ParticleSystem {
                 }
 
                 if (p.growSpeed) {
-                    p.mesh.scale.addScalar(p.growSpeed * deltaTime);
+                    mesh.scale.addScalar(p.growSpeed * deltaTime);
                 } else if (!p.isTracer && !p.isProjectile) { 
-                    p.mesh.scale.multiplyScalar(0.98); 
+                    mesh.scale.multiplyScalar(0.98); 
                 }
                 
-                if (p.mesh.material) {
-                    p.mesh.material.opacity = Math.min(1.0, p.life);
+                if (material) {
+                    material.opacity = Math.min(1.0, p.life);
                 }
             } else {
-                if ((i + Math.floor(now/16)) % 2 === 0) { 
+                if ((i + frameTick) % 2 === 0) { 
                     MATH.v1.copy(p.velocity).multiplyScalar(deltaTime * 2);
-                    p.mesh.position.add(MATH.v1);
+                    mesh.position.add(MATH.v1);
                     
                     const b = p.bounds;
-                    if (p.mesh.position.x < b.minX) p.mesh.position.x = b.maxX;
-                    if (p.mesh.position.x > b.maxX) p.mesh.position.x = b.minX;
-                    if (p.mesh.position.y < b.minY) p.mesh.position.y = b.maxY;
-                    if (p.mesh.position.y > b.maxY) p.mesh.position.y = b.minY;
-                    if (p.mesh.position.z < b.minZ) p.mesh.position.z = b.maxZ;
-                    if (p.mesh.position.z > b.maxZ) p.mesh.position.z = b.minZ;
+                    if (mesh.position.x < b.minX) mesh.position.x = b.maxX;
+                    if (mesh.position.x > b.maxX) mesh.position.x = b.minX;
+                    if (mesh.position.y < b.minY) mesh.position.y = b.maxY;
+                    if (mesh.position.y > b.maxY) mesh.position.y = b.minY;
+                    if (mesh.position.z < b.minZ) mesh.position.z = b.maxZ;
+                    if (mesh.position.z > b.maxZ) mesh.position.z = b.minZ;
                     
-                    if (p.mesh.material) {
-                        p.mesh.material.opacity = 0.15 + Math.sin(timeScale + i) * 0.1;
+                    if (material) {
+                        material.opacity = 0.15 + Math.sin(timeScale + i) * 0.1;
                     }
-                    p.mesh.updateMatrix();
+                    mesh.updateMatrix();
                 }
             }
         }

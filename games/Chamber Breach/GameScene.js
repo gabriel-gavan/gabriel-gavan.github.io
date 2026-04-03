@@ -614,7 +614,7 @@ export class GameScene {
         this._storageDirty = false;
         this._storageUpdateTimer = 0;
         this.frameCounter = 0; // Added for throttling
-        this.startupGraceFrames = 180;
+        this.startupGraceFrames = 60;
         this.startupWarmupActive = false;
         this.debugPerformanceLogging = false;
         
@@ -1494,8 +1494,10 @@ export class GameScene {
 
         // Create new map instance but DON'T generate yet
         this.map = new GameMap(this.scene, facility, this.particleSystem);
-        this.navigation = new Navigation(this.map);
         this.particleSystem.map = this.map;
+
+        // Navigation must be initialized only after map generation completes
+        this.navigation = new Navigation(this.map);
 
         // Reset player for new run
         this.player.mesh.position.set(0, 1, 0);
@@ -2743,7 +2745,6 @@ export class GameScene {
 			}
 
 			case 'enemy_shoot': {
-				const freq = 200 + Math.random() * 50;
 				this.enqueueAudio(() => {
 					try {
 						this.impactSynth.triggerAttackRelease(freq, "32n", this.Tone.now());
@@ -5738,8 +5739,8 @@ export class GameScene {
         console.log('Starting Breach Mission...');
         this.hideAllScreens();
         
-        this.startupGraceFrames = 180;
-        this.startupWarmupActive = true;
+        this.startupGraceFrames = 30;
+        this.startupWarmupActive = false;
         this.cullingRadius = 1;
         this.consecutiveSpikes = 0;
         this.panicModeActive = false;
@@ -5785,10 +5786,7 @@ export class GameScene {
         
         this.playArbiterSound('ui', { type: 'success', note: "C5", duration: "4n" });
         
-        setTimeout(() => {
-            this.startupWarmupActive = false;
-            this.cullingRadius = 2;
-        }, 3000);
+        this.cullingRadius = 2;
         
         // Ensure ambient audio starts
         if (this.ambientHum) this.ambientHum.volume.rampTo(-45, 1);

@@ -82,7 +82,6 @@ export class LootManager {
             });
         }
         const mesh = new THREE.Mesh(this._lootGeo, rarity === 'LEGENDARY' ? this._lootMatLegendary : this._lootMatRare);
->>>>>>> REPLACE
         mesh.position.copy(pos);
         mesh.position.y = 1;
         mesh.userData.isLoot = true;
@@ -201,46 +200,46 @@ export class LootManager {
                     bhMesh.scale.set(scale, scale, scale);
                     outerMesh.scale.setScalar(1.2 + Math.sin(Date.now() * 0.01) * 0.2);
                     
-                    // Visual Chaos: Continuous shake and aberration while pulling
-                    if (game.heatVisuals) {
-                        game.heatVisuals.glitchIntensity = Math.max(game.heatVisuals.glitchIntensity, isMini ? 0.3 : 0.8);
-                    }
-                    game.shakeAmount = Math.max(game.shakeAmount, isMini ? 0.4 : 1.2);
-                    game.saturation = Math.max(game.saturation, isMini ? 1.2 : 1.8);
+                // Visual Chaos: Continuous shake and aberration while pulling
+                if (game.heatVisuals) {
+                    game.heatVisuals.glitchIntensity = Math.max(game.heatVisuals.glitchIntensity, isMini ? 0.3 : 0.8);
+                }
+                game.shakeAmount = Math.max(game.shakeAmount, isMini ? 0.4 : 1.2);
+                game.saturation = Math.max(game.saturation, isMini ? 1.2 : 1.8);
 
-                    const enemies = game.enemies;
-                    for (let i = 0, len = enemies.length; i < len; i++) {
-                        const e = enemies[i];
-                        if (!e.isDead && e.mesh.position.distanceTo(corePos) < range) {
-                            _tmpLootDir.subVectors(corePos, e.mesh.position).normalize();
-                            e.mesh.position.add(_tmpLootDir.multiplyScalar(force));
-                        }
+                const enemies = game.enemies;
+                for (let i = 0, len = enemies.length; i < len; i++) {
+                    const e = enemies[i];
+                    if (!e.isDead && e.mesh.position.distanceTo(corePos) < range) {
+                        _tmpLootDir.subVectors(corePos, e.mesh.position).normalize();
+                        e.mesh.position.add(_tmpLootDir.multiplyScalar(force));
                     }
-                }, 50);
+                }
+            }, 50);
 
-                setTimeout(() => {
-                    clearInterval(blackHoleInterval);
-                    game.activeSingularities.delete(singularityId);
-                    game.scene.remove(bhMesh);
-                    
-                    // Reset glitch after hole collapses
-                    if (game.heatVisuals && !game.insaneMomentActive) {
-                        game.heatVisuals.glitchIntensity = 0;
-                    }
+            setTimeout(() => {
+                clearInterval(blackHoleInterval);
+                game.activeSingularities.delete(singularityId);
+                game.scene.remove(bhMesh);
+                
+                // Reset glitch after hole collapses
+                if (game.heatVisuals && !game.insaneMomentActive) {
+                    game.heatVisuals.glitchIntensity = 0;
+                }
 
-                    // Massive explosion at the end
-                    game.handleAreaDamage(corePos, range * 0.8, isMini ? 200 : 1000);
-                    if (game.particleSystem) {
-                        game.particleSystem.createExplosion(corePos, 0x5500ff, isMini ? 50 : 200, isMini ? 4 : 12);
-                        game.particleSystem.createThermalPulse(corePos, range, 0x5500ff);
-                    }
-                    game.shakeAmount += isMini ? 1.5 : 5.0;
-                    
-                    if (game.detonateSynth) {
-                        game.detonateSynth.triggerAttackRelease(isMini ? "G1" : "C0", "1n");
-                    }
-                }, duration);
-                break;
+                // Massive explosion at the end
+                game.handleAreaDamage(corePos, range * 0.8, isMini ? 200 : 1000);
+                if (game.particleSystem) {
+                    game.particleSystem.createExplosion(corePos, 0x5500ff, isMini ? 50 : 200, isMini ? 4 : 12);
+                    game.particleSystem.createThermalPulse(corePos, range, 0x5500ff);
+                }
+                game.shakeAmount += isMini ? 1.5 : 5.0;
+                
+                if (game.detonateSynth) {
+                    game.detonateSynth.triggerAttackRelease(isMini ? "G1" : "C0", "1n");
+                }
+            }, duration);
+            break;
             case 'INFINITE_AMMO':
                 player.perks.infiniteAmmo = true;
                 const currentWeapon = player.weapons[player.currentWeaponKey];

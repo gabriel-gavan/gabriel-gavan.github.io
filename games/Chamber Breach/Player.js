@@ -694,9 +694,7 @@ export class Player {
 
         const shootDir = this._scratchVecB.set(0, 0, -1).applyQuaternion(this.camera.quaternion);
 
-        if (this.particleSystem) {
-            this.particleSystem.createMuzzleFlash(muzzlePos, shootDir, muzzleFlashColor);
-        }
+        // Muzzle flash disabled per request
 
         this.currentWeapon.mesh.position.z += 0.2;
         setTimeout(() => { if (this.currentWeapon) this.currentWeapon.mesh.position.z -= 0.2; }, 50);
