@@ -1,0 +1,41 @@
+<h2>Operators and Control Flow</h2>
+<p>Write clear branches and loops; avoid deep nesting. Prefer early returns and modern C++ features.</p>
+
+<h3>Conditionals and switch</h3>
+<div class="code-block"><pre>int score = 60;
+if (score >= 50) {
+  std::cout << "Passed";
+} else {
+  std::cout << "Try again";
+}
+
+enum class Day { Mon, Tue, Sat, Sun };
+Day day = Day::Mon;
+switch (day) {
+  case Day::Mon: case Day::Tue: std::cout << "Work"; break;
+  case Day::Sat: case Day::Sun: std::cout << "Rest"; break;
+}</pre></div>
+
+<h3>Loops and range‑for</h3>
+<div class="code-block"><pre>for (int i = 0; i < 3; ++i) { std::cout << i; }
+std::vector<int> v{1,2,3};
+for (int n : v) { std::cout << n; } // range-based for</pre></div>
+
+<h3>if with initializer (C++17)</h3>
+<div class="code-block"><pre>std::map<std::string,int> m{{"a",1}};
+if (auto it = m.find("a"); it != m.end()) {
+  std::cout << it->second;
+}</pre></div>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Implement FizzBuzz with <code>for</code> and conditionals.</li>
+  <li>Read integers until EOF and compute sum/average.</li>
+  <li>Refactor a nested lookup using <code>if</code> initializer to keep scope tight.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>cppreference: Statements, range-based for</li>
+  <li>Guidelines: prefer early returns to flatten nesting</li>
+</ul>

@@ -1,0 +1,37 @@
+<h2>Async/await and Tasks</h2>
+<p>Asynchronous code in C# is built on <code>Task</code> and the <code>async</code>/<code>await</code> keywords. They help you orchestrate I/O without blocking threads.</p>
+
+<h3>HttpClient reuse and cancellation</h3>
+<div class="code-block"><pre>static readonly HttpClient http = new HttpClient();
+
+static async Task<string> LoadAsync(string url, CancellationToken ct = default)
+{
+  using var resp = await http.GetAsync(url, ct);
+  resp.EnsureSuccessStatusCode();
+  return await resp.Content.ReadAsStringAsync(ct);
+}</pre></div>
+
+<h3>Parallel requests</h3>
+<div class="code-block"><pre>var a = LoadAsync("https://a.example");
+var b = LoadAsync("https://b.example");
+var results = await Task.WhenAll(a, b);</pre></div>
+
+<h3>Timeouts</h3>
+<div class="code-block"><pre>using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+var text = await LoadAsync("https://example.com", cts.Token);</pre></div>
+
+<h3>IAsyncEnumerable</h3>
+<div class="code-block"><pre>static async IAsyncEnumerable<int> StreamAsync()
+{
+  for (int i=0; i<3; i++) { await Task.Delay(100); yield return i; }
+}
+await foreach (var n in StreamAsync()) Console.WriteLine(n);</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Run two HTTP calls in parallel and await both with <code>Task.WhenAll</code>.</li>
+  <li>Add a cancellation token to stop work after a timeout.</li>
+  <li>Stream a sequence with <code>IAsyncEnumerable</code> and verify ordering.</li>
+</ol>
+
+<div class="warn-box"><strong>Avoid:</strong> Blocking on async (e.g., <code>.Result</code>) can deadlock UI contexts. In libraries, consider <code>ConfigureAwait(false)</code>.</div>

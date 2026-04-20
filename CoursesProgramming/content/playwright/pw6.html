@@ -1,0 +1,44 @@
+<h2>Locator Chaining and Filtering</h2>
+<p>Chaining narrows a search progressively; filters match nested text or elements. This avoids brittle long selectors and keeps intent clear.</p>
+
+<h3>Chaining to the actionable element</h3>
+<div class="code-block"><pre>await page
+  .locator('.card')
+  .filter({ hasText: 'Pro Plan' })
+  .getByRole('button', { name: 'Choose' })
+  .click();</pre></div>
+
+<h3>Filter by nested elements</h3>
+<div class="code-block"><pre>const rows = page.getByRole('row');
+const activeRows = rows.filter({ has: page.getByRole('cell', { name: /Active/ }) });
+await expect(activeRows).toHaveCount(5);
+
+// Filter by text in any descendant
+const cheapRows = rows.filter({ hasText: /\$?([0-4]?\d(\.\d{2})?|50\.00)/ });
+await expect(cheapRows.first()).toBeVisible();</pre></div>
+
+<h3>nth, first, last, and count</h3>
+<div class="code-block"><pre>// Pick a specific card
+await page.locator('.card').nth(2).getByRole('button', { name: 'Choose' }).click();
+
+// Assert exactly 3 notifications are visible
+await expect(page.getByRole('alert')).toHaveCount(3);
+
+// Interact with the last row's menu
+await page.getByRole('row').last().getByRole('button', { name: 'Menu' }).click();</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Write helpers that return a locator (not a resolved element) to preserve auto‑waiting.</li>
+  <li>Keep chains short; combine semantic locators with minimal CSS when needed.</li>
+  <li>Co‑locate intent‑revealing helpers near tests or in small page objects/components.</li>
+</ul>
+
+<h3>Practice</h3>
+<ol>
+  <li>Write <code>planCard(name)</code> that returns the locator for a pricing card; use it to click <code>Choose</code>.</li>
+  <li>Filter a table to rows with a price under $50 using <code>has</code>/<code>hasText</code> and a regex.</li>
+  <li>Add an assertion that the chosen plan name appears in the checkout summary.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Returning locators from helpers keeps Playwright’s retries and auto‑waiting intact. Avoid <code>await locator.elementHandle()</code> unless absolutely necessary.</div>

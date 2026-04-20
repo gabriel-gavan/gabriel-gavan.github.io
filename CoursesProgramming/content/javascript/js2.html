@@ -1,0 +1,54 @@
+<h2>Variables: var, let, and const</h2>
+<p><code>let</code> and <code>const</code> are block‑scoped; <code>var</code> is function‑scoped and hoisted differently. Prefer <code>const</code> by default and <code>let</code> when reassignment is intentional.</p>
+
+<h3>Scoping and hoisting</h3>
+<div class="code-block"><pre>// var is function-scoped and hoisted with undefined initialization
+console.log(a); // undefined
+var a = 1;
+
+// let/const are block-scoped and in the Temporal Dead Zone until declared
+// console.log(b); // ReferenceError
+let b = 2;
+
+if (true) {
+  let x = 1; // not visible outside
+}
+// console.log(x); // ReferenceError</pre></div>
+
+<h3>const binds the reference, not the value</h3>
+<div class="code-block"><pre>const user = { name: 'Ava' };
+user.name = 'Mia'; // OK (mutation)
+// user = {} // Error (reassignment)
+
+Object.freeze(user); // Shallow freeze; nested objects still mutable</pre></div>
+
+<h3>Primitive vs reference</h3>
+<ul>
+  <li>Primitives (number, string, boolean, null, undefined, symbol, bigint) copy by value.</li>
+  <li>Objects/arrays/functions copy references; mutations affect all references.</li>
+</ul>
+
+<h3>Strict mode and globals</h3>
+<div class="code-block"><pre>'use strict';
+// Accidental globals throw instead of silently creating window.foo
+// foo = 1; // ReferenceError</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Default to <code>const</code>; use <code>let</code> for variables that change.</li>
+  <li>Avoid <code>var</code> to prevent hoisting and scoping pitfalls.</li>
+  <li>Initialize variables close to first use; limit scope width.</li>
+</ul>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Refactor a script that uses <code>var</code> to use <code>let</code>/<code>const</code>, and add <code>'use strict'</code>.</li>
+  <li>Identify immutable vs. mutable values and use <code>const</code> for the former.</li>
+  <li>Explain why <code>Object.freeze</code> is shallow and how to deep‑freeze nested objects.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>MDN: var, let, const</li>
+  <li>MDN: Strict mode</li>
+</ul>

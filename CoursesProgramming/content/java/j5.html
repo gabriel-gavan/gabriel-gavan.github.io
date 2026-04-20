@@ -1,0 +1,38 @@
+<h2>Methods and Overloading</h2>
+<p>Use overloading to offer convenient APIs with the same method name but different parameter lists. Don’t confuse overloading (compile‑time) with overriding (runtime dispatch).</p>
+
+<h3>Overloading</h3>
+<div class="code-block"><pre>class MathOps {
+  int add(int a, int b){ return a + b; }
+  double add(double a, double b){ return a + b; }
+  int add(int a, int b, int c){ return a + b + c; }
+}</pre></div>
+
+<h3>Varargs and defaults</h3>
+<div class="code-block"><pre>class Strings {
+  static String join(String sep, String... parts){
+    return String.join(sep, parts);
+  }
+}
+
+Strings.join(", ", "a", "b", "c");</pre></div>
+
+<h3>Overriding vs overloading</h3>
+<ul>
+  <li>Overloading: same name, different parameters; chosen at compile time.</li>
+  <li>Overriding: subclass provides a new implementation; resolved at runtime via dynamic dispatch.</li>
+</ul>
+
+<h3>Optional results</h3>
+<div class="code-block"><pre>import java.util.Optional;
+Optional<Integer> findScore(String user) {
+  // return Optional.empty() if not found
+  return Optional.of(42);
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Overload <code>add</code> for three parameters.</li>
+  <li>Refactor a <code>null</code>-returning method to return <code>Optional</code>.</li>
+  <li>Identify where overloading harms clarity and propose distinct method names.</li>
+</ol>

@@ -1,0 +1,32 @@
+
+<h2>Pointers and Addresses</h2>
+<p>Manipulate memory addresses directly for powerful low‑level control. Prefer RAII and containers to manual new/delete.</p>
+
+<h3>Basics</h3>
+<div class="code-block"><pre>int v = 42;
+int* p = &v;   // address of v
+*p = 43;       // changes v
+p = nullptr;   // null pointer</pre></div>
+
+<h3>Arrays and pointer arithmetic</h3>
+<div class="code-block"><pre>int a[3] = {1,2,3};
+int* q = a;           // points to first element
+*(q + 1) = 42;        // writes to a[1]
+// Prefer std::vector for dynamic arrays
+std::vector<int> vec = {1,2,3}; vec.push_back(4);</pre></div>
+
+<h3>Common pitfalls</h3>
+<ul>
+  <li>Dangling pointers after <code>delete</code> or leaving scope.</li>
+  <li>Double delete, mismatched <code>new[]</code>/<code>delete[]</code>.</li>
+  <li>Leaking memory on early returns/exceptions (use RAII).</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Allocate an array with <code>new</code>/<code>delete[]</code>, then refactor to <code>std::vector</code>.</li>
+  <li>Identify places where a pointer should be <code>nullptr</code>-checked or replaced by a reference.</li>
+  <li>Explain how smart pointers eliminate common ownership bugs.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer containers (<code>std::vector</code>) and smart pointers over raw owning pointers in modern C++.</div>

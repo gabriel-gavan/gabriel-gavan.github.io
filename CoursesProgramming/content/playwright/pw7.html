@@ -1,0 +1,44 @@
+<h2>Assertions Deep Dive</h2>
+<p>Choose the right assertions to avoid flakiness. Prefer user‑visible outcomes and leverage auto‑waiting built into <code>expect</code>.</p>
+
+<h3>Common assertions</h3>
+<div class="code-block"><pre>await expect(page).toHaveURL(/\/dashboard/);
+await expect(page).toHaveTitle(/Acme/);
+await expect(page.getByRole('button', { name: 'Submit' })).toBeEnabled();
+await expect(page.getByTestId('total')).toHaveText('$19.00');
+await expect(page.getByRole('img', { name: 'Avatar' })).toBeVisible();</pre></div>
+
+<h3>Soft vs. hard assertions</h3>
+<div class="code-block"><pre>// Hard: fails the test immediately on error
+await expect(page.getByRole('heading')).toBeVisible();
+
+// Soft: collects failures and continues (report all at the end)
+await expect.soft(page.getByText('Promo')).toBeVisible();</pre></div>
+
+<h3>Timeouts, polling, and stability</h3>
+<div class="code-block"><pre>// Override timeout for slow operations
+await expect(locator).toHaveText('Done', { timeout: 10_000 });
+
+// Use toHaveScreenshot() for visual checks (stabilize fonts/animations first)
+await expect(page).toHaveScreenshot('dashboard.png');</pre></div>
+
+<h3>Advanced: toHaveJSProperty, toContainText, regex</h3>
+<div class="code-block"><pre>await expect(page.locator('#price')).toContainText(/\$\d+\.\d{2}/);
+await expect(page.locator('video')).toHaveJSProperty('paused', true);
+await expect(page.getByRole('alert')).toHaveText(/(Saved|Updated) successfully/);</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Assert on outcomes users see (text, URL, aria states) rather than implementation details (classes).</li>
+  <li>Place assertions soon after the action they validate to shorten traces.</li>
+  <li>Use <code>soft</code> assertions to validate multiple UI elements in a final state view.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Replace a <code>textContent()</code> poll with <code>expect(...).toHaveText</code>.</li>
+  <li>Add three soft assertions that validate a dashboard loaded state (balance, plan tier, avatar visible).</li>
+  <li>Write a regex assertion for a price format in <code>$12.34</code>.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer locating by role + name, then asserting <em>state</em> (visible, enabled, checked) or <em>content</em> (text). This reads like a user story and resists markup churn.</div>

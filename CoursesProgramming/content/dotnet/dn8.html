@@ -1,0 +1,30 @@
+<h2>LINQ Basics</h2>
+<p>Query collections fluently with LINQ. Operations are deferred until you enumerate or call a terminal method.</p>
+
+<h3>Method syntax</h3>
+<div class="code-block"><pre>var nums = new[]{1,2,3,4,5,6};
+var query = nums.Where(n => n % 2 == 0).Select(n => n * n);
+var squares = query.ToArray(); // execution happens here</pre></div>
+
+<h3>Group, join, distinct</h3>
+<div class="code-block"><pre>var byCity = users.GroupBy(u => u.City).Select(g => new { City = g.Key, Avg = g.Average(u => u.Points) });
+var joined = orders.Join(customers, o => o.CustomerId, c => c.Id, (o, c) => new { o.Id, c.Name });
+var distinctNames = users.Select(u => u.Name).Distinct().ToList();</pre></div>
+
+<h3>Order and paging</h3>
+<div class="code-block"><pre>var page = users.OrderBy(u => u.Name).Skip(20).Take(10).ToList();</pre></div>
+
+<h3>Gotchas</h3>
+<ul>
+  <li>Multiple enumeration: materialize once with <code>ToList()</code> if you iterate repeatedly.</li>
+  <li>Side effects in <code>Select</code>/<code>Where</code> lead to confusion; keep operators pure.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Group users by city and compute average points per group.</li>
+  <li>Project items into DTOs using <code>Select</code>.</li>
+  <li>Implement paging with <code>Skip</code>/<code>Take</code> and verify counts.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> When composing complex queries, extract parts into named methods to keep pipelines readable.</div>

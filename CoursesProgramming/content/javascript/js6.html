@@ -1,0 +1,55 @@
+<h2>DOM Events and Patterns</h2>
+<p>Events notify your code when the user interacts. Organize handlers for performance and maintainability.</p>
+
+<h3>Event basics</h3>
+<div class="code-block"><pre>document.querySelector('#btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  console.log('Clicked');
+}, { once: false, passive: false, capture: false });</pre></div>
+
+<h3>Delegation</h3>
+<div class="code-block"><pre>const list = document.querySelector('#todo-list');
+list.addEventListener('click', (e) => {
+  const item = e.target.closest('li');
+  if (!item || !list.contains(item)) return;
+  item.classList.toggle('done');
+});</pre></div>
+
+<h3>Throttle and debounce</h3>
+<div class="code-block"><pre>function throttle(fn, wait){
+  let last = 0;
+  return (...args) => {
+    const now = Date.now();
+    if(now - last >= wait){ last = now; fn(...args); }
+  };
+}
+
+function debounce(fn, wait){
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
+
+window.addEventListener('scroll', throttle(() => {
+  // expensive work here
+}, 100), { passive: true });</pre></div>
+
+<h3>Abort and teardown</h3>
+<div class="code-block"><pre>const ctrl = new AbortController();
+const { signal } = ctrl;
+
+window.addEventListener('resize', debounce(() => {/*...*/}, 200), { signal });
+// Later
+ctrl.abort(); // removes listeners registered with this signal</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Implement a todo list with add/remove and a delegated click to toggle completion.</li>
+  <li>Throttle a scroll handler to run at most once every 100 ms.</li>
+  <li>Use <code>AbortController</code> to remove listeners on teardown.</li>
+  <li>Mark wheel/scroll listeners as <code>passive</code> unless you call <code>preventDefault</code>.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer delegation for dynamic lists to avoid attaching thousands of listeners. Use passive listeners to improve scroll performance.</div>

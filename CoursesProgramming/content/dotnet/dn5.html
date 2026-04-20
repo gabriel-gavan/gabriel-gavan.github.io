@@ -1,0 +1,36 @@
+<h2>Encapsulation with Properties</h2>
+<p>Back properties with private fields to protect invariants. Prefer exposing behavior over setters.</p>
+
+<h3>Example</h3>
+<div class="code-block"><pre>public class Account {
+  private decimal _balance;
+  public void Deposit(decimal amount){ if(amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount)); _balance += amount; }
+  public void Withdraw(decimal amount){
+    if(amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+    if(amount > _balance) throw new InvalidOperationException("Insufficient funds");
+    _balance -= amount;
+  }
+  public decimal Balance => _balance;
+}</pre></div>
+
+<h3>Validation and invariants</h3>
+<ul>
+  <li>Guard clauses at the beginning of methods.</li>
+  <li>Throw the most specific exception type.</li>
+  <li>Keep objects in a valid state after every public call.</li>
+</ul>
+
+<h3>Init and required members</h3>
+<div class="code-block"><pre>public class Customer {
+  public required string Id { get; init; }
+  public string? Email { get; init; }
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add validation for withdrawals and throw suitable exceptions.</li>
+  <li>Explain when to use <code>init</code> accessors for immutability.</li>
+  <li>Make a type with required members and show object initializers.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep setters private unless external mutation is necessary. Prefer methods that express intent, like <code>Withdraw</code> or <code>Deactivate</code>.</div>

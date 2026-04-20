@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="220" viewBox="0 0 520 220">
+  <rect width="520" height="220" fill="#0d0d14"/>
+  <text x="20" y="28" fill="#c9d1d9" font-family="monospace" font-size="16">C++ STL Overview</text>
+  <rect x="20" y="50" width="140" height="140" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="30" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Containers</text>
+  <text x="30" y="95" fill="#c9d1d9" font-family="monospace" font-size="12">vector</text>
+  <text x="30" y="112" fill="#c9d1d9" font-family="monospace" font-size="12">map</text>
+  <text x="30" y="129" fill="#c9d1d9" font-family="monospace" font-size="12">set</text>
+  <rect x="200" y="50" width="140" height="140" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="210" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Algorithms</text>
+  <text x="210" y="95" fill="#c9d1d9" font-family="monospace" font-size="12">sort</text>
+  <text x="210" y="112" fill="#c9d1d9" font-family="monospace" font-size="12">accumulate</text>
+  <text x="210" y="129" fill="#c9d1d9" font-family="monospace" font-size="12">transform</text>
+  <rect x="380" y="50" width="120" height="140" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="390" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Iterators</text>
+  <line x1="160" y1="120" x2="200" y2="120" stroke="#7c5cfc" stroke-width="2"/>
+  <line x1="340" y1="120" x2="380" y2="120" stroke="#7c5cfc" stroke-width="2"/>
+</svg>

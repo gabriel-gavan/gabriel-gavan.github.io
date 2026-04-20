@@ -1,0 +1,28 @@
+<h2>Inheritance and Polymorphism in C#</h2>
+<p>Polymorphism lets you write code against abstractions and plug in different behaviors at runtime. Prefer composition over deep inheritance.</p>
+
+<h3>Base and derived types</h3>
+<div class="code-block"><pre>public abstract class Shape { public abstract double Area(); }
+public class Circle : Shape { public double R; public Circle(double r) => R = r; public override double Area() => Math.PI * R * R; }
+public class Rect : Shape { public double W, H; public Rect(double w, double h){ W=w; H=h; } public override double Area() => W*H; }</pre></div>
+<img src="../assets/diagrams/cs-polymorphism.svg" alt="C# Polymorphism" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>Interfaces and default members</h3>
+<div class="code-block"><pre>public interface IShape { double Area(); }
+public class Square : IShape { public double S; public Square(double s)=>S=s; public double Area() => S*S; }</pre></div>
+
+<h3>Pattern matching on types</h3>
+<div class="code-block"><pre>double Perimeter(object s) => s switch {
+  Circle c => 2 * Math.PI * c.R,
+  Rect r => 2 * (r.W + r.H),
+  _ => throw new NotSupportedException()
+};</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add a <code>Triangle</code> with base/height and wire it into the total.</li>
+  <li>Introduce <code>IShape</code> and refactor classes to implement it.</li>
+  <li>Refactor a case to composition (strategy pattern) and explain trade‑offs.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Favor interfaces and small, flat hierarchies. Deep inheritance chains are fragile and hard to change.</div>

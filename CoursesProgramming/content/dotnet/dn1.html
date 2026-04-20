@@ -1,0 +1,63 @@
+<h2>.NET and C#: A Quick Tour</h2>
+<p>.NET is a cross‑platform runtime and base class library. C# is the flagship language, featuring strong typing, LINQ, async/await, pattern matching, and records.</p>
+
+<h3>Setup</h3>
+<div class="code-block"><pre># Windows
+winget install Microsoft.DotNet.SDK.8
+
+# macOS (Homebrew)
+brew install --cask dotnet-sdk
+
+# Linux (Debian/Ubuntu)
+wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh
+bash dotnet-install.sh --channel 8.0
+
+# Verify
+dotnet --info</pre></div>
+
+<h3>Create your first app</h3>
+<div class="code-block"><pre>dotnet new console -n HelloDotnet
+cd HelloDotnet
+
+// Program.cs (top-level statements)
+Console.WriteLine("Hello, .NET!");
+
+dotnet run</pre></div>
+
+<h3>Project layout and CLI</h3>
+<div class="code-block"><pre>// Create solution and projects
+dotnet new sln -n MyApp
+cd MyApp
+dotnet new console -n App
+ dotnet sln add App/App.csproj
+
+// Build / Run / Test
+dotnet build
+cd App && dotnet run
+# Add tests
+dotnet new xunit -n App.Tests
+ dotnet sln add App.Tests/App.Tests.csproj
+ dotnet test</pre></div>
+
+<h3>NuGet packages</h3>
+<div class="code-block"><pre># Add a package to a project
+dotnet add App/App.csproj package Newtonsoft.Json --version 13.*
+
+# Restore and build
+dotnet restore && dotnet build</pre></div>
+
+<h3>Publish</h3>
+<div class="code-block"><pre># Framework-dependent (portable)
+dotnet publish -c Release -o out
+
+# Self-contained single-file (example: win-x64)
+dotnet publish -c Release -r win-x64 /p:PublishSingleFile=true /p:PublishTrimmed=true</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create a console app that reads a name and prints a greeting.</li>
+  <li>Add a method to compute the average of a list of numbers. Unit test it with xUnit.</li>
+  <li>Add a NuGet dependency and use it from Program.cs (e.g., JSON serialization).</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep SDKs pinned with a <code>global.json</code> for reproducible builds in CI.</div>

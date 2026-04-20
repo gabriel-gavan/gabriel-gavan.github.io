@@ -1,0 +1,41 @@
+<h2>Trace Viewer and Screenshots</h2>
+<p>Capture traces, screenshots, and videos to investigate failures quickly. Traces include DOM snapshots, network, console logs, and action timings.</p>
+
+<h3>Enable tracing, screenshots, videos</h3>
+<div class="code-block"><pre>// playwright.config.ts
+export default defineConfig({
+  use: {
+    trace: 'on-first-retry',       // or 'retain-on-failure' | 'on'
+    screenshot: 'only-on-failure', // or 'on'
+    video: 'retain-on-failure',
+  }
+});</pre></div>
+
+<h3>View a trace</h3>
+<div class="code-block"><pre># After a run with tracing enabled
+npx playwright show-trace test-results/&lt;run-id&gt;/trace.zip</pre></div>
+
+<h3>Stable screenshots</h3>
+<ul>
+  <li>Disable animations/transitions during capture (set <code>prefers-reduced-motion: reduce</code> or CSS overrides).</li>
+  <li>Fix viewport size and device scale factor; ensure deterministic fonts in CI.</li>
+  <li>Mask dynamic regions (timestamps, random avatars) when using <code>toHaveScreenshot</code>.</li>
+</ul>
+
+<h3>Examples</h3>
+<div class="code-block"><pre>// Page-level snapshot
+await expect(page).toHaveScreenshot('dashboard.png');
+
+// Element-level snapshot with masks
+await expect(page.locator('#chart')).toHaveScreenshot('chart.png', {
+  mask: [page.locator('.ticker'), page.locator('.dynamic-ad')],
+});</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Enable video capture and compare a failing vs. passing run.</li>
+  <li>Capture a masked screenshot for a widget with dynamic timestamps.</li>
+  <li>Open a trace and identify the first failing assertion and its preceding action.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Traces are most useful when tests are short and assertions are placed right after the action they validate.</div>

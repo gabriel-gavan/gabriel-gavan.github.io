@@ -135,7 +135,7 @@
   style.innerHTML = `
     .fixed-side-ad {
       position: fixed;
-      top: 50%;
+      top: 20%;
       transform: translateY(-50%);
       width: 160px;
       z-index: 999;

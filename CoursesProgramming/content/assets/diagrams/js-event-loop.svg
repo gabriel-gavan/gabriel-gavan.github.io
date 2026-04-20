@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="200" viewBox="0 0 480 200">
+  <rect x="0" y="0" width="480" height="200" fill="#0d0d14"/>
+  <text x="20" y="30" fill="#c9d1d9" font-family="monospace" font-size="16">JS Event Loop (simplified)</text>
+  <rect x="20" y="50" width="180" height="40" fill="#1a1a24" stroke="#2a2a38"/>
+  <text x="30" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Call Stack</text>
+  <rect x="210" y="50" width="120" height="40" fill="#1a1a24" stroke="#2a2a38"/>
+  <text x="220" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Web APIs</text>
+  <rect x="340" y="50" width="120" height="40" fill="#1a1a24" stroke="#2a2a38"/>
+  <text x="350" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Task Queue</text>
+  <line x1="140" y1="90" x2="270" y2="130" stroke="#7c5cfc" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="270" y1="130" x2="400" y2="130" stroke="#7c5cfc" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="400" y1="130" x2="140" y2="90" stroke="#00e5a0" stroke-width="2" marker-end="url(#arrow)"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#7c5cfc"/>
+    </marker>
+  </defs>
+</svg>

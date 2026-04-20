@@ -1,0 +1,63 @@
+<h2>How JavaScript Runs</h2>
+<p>JavaScript is single‑threaded with an event loop. The engine parses, compiles, and executes your code, delegating async tasks (timers, fetch) to the browser or Node environment, which later queues callbacks for the main thread.</p>
+
+<h3>Call stack, tasks, and microtasks</h3>
+<div class="code-block"><pre>console.log('A');
+queueMicrotask(() => console.log('microtask'));
+setTimeout(() => console.log('timeout'), 0);
+console.log('B');
+// Order: A, B, microtask, timeout</pre></div>
+<ul>
+  <li>Macrotasks: setTimeout, setInterval, I/O callbacks</li>
+  <li>Microtasks: Promise.then, queueMicrotask, MutationObserver</li>
+  <li>Microtasks run after the current call stack, before the next macrotask</li>
+</ul>
+
+<h3>Rendering pipeline</h3>
+<ul>
+  <li>DOM: the structured representation of HTML</li>
+  <li>CSSOM: computed styles</li>
+  <li>Layout → Paint → Composite: visual rendering pipeline</li>
+  <li>Animating with CSS transforms often avoids layout (smoother)</li>
+</ul>
+<img src="../assets/diagrams/js-event-loop.svg" alt="JS Event Loop" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>DevTools essentials</h3>
+<div class="code-block"><pre>console.group('Fetch user');
+console.time('user');
+try {
+  const res = await fetch('/api/user');
+  console.assert(res.ok, 'Response not OK');
+  const data = await res.json();
+  console.table(data);
+} finally {
+  console.timeEnd('user');
+  console.groupEnd();
+}</pre></div>
+<ul>
+  <li>Use the Sources panel to set breakpoints and watch expressions.</li>
+  <li>Performance panel: record, find long tasks (>50ms), and analyze flame charts.</li>
+  <li>Network panel: view waterfalls, headers, and caching.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Open DevTools and inspect the call stack as you step through a function chain.</li>
+  <li>Build a microtask/macrotask ordering demo and explain why the order occurs.</li>
+  <li>Measure a layout‑heavy operation with <code>console.time</code> and optimize it by batching DOM writes.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Learn to read stack traces; they are your fastest route to a fix. Keep logs grouped and timed for quick triage.</div>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>Jake Archibald: In The Loop</li>
+  <li>MDN: Concurrency model and Event Loop</li>
+  <li>MDN: Performance API</li>
+</ul>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Schedule <code>Promise.then</code>, <code>queueMicrotask</code>, and <code>setTimeout</code> in different orders and log their execution.</li>
+  <li>Profile a long task and break it into chunks using <code>requestIdleCallback</code> or <code>queueMicrotask</code>.</li>
+</ol>

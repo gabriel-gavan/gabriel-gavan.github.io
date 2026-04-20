@@ -1,0 +1,26 @@
+<h2>Constructors and Methods</h2>
+<p>Use initializer lists, delegating constructors, and <code>explicit</code> to avoid unintended conversions.</p>
+
+<h3>Examples</h3>
+<div class="code-block"><pre>class Point {
+  int x, y;
+public:
+  Point(): x(0), y(0) {}
+  Point(int x, int y): x(x), y(y) {}
+  explicit Point(int v): x(v), y(v) {} // avoid implicit one-arg conversions
+  // Delegating constructor
+  Point(double angle, double r, bool polar): Point(static_cast<int>(r*std::cos(angle)), static_cast<int>(r*std::sin(angle))) {}
+  int X() const { return x; }
+  int Y() const { return y; }
+};
+
+std::ostream& operator<<(std::ostream& os, const Point& p){ return os << '(' << p.X() << ',' << p.Y() << ')'; }</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Mark methods <code>const</code> when they don’t change state.</li>
+  <li>Add a factory/static helper to construct from polar coordinates.</li>
+  <li>Overload <code>operator&lt;&lt;</code> for a small type and print it.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer <code>explicit</code> for single‑argument constructors to prevent surprising implicit conversions.</div>

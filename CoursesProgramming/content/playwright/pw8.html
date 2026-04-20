@@ -1,0 +1,61 @@
+<h2>Fixtures and Test Hooks</h2>
+<p>Fixtures share setup/teardown across tests; hooks manage per‑test lifecycle. Typed fixtures yield faster, cleaner, and more consistent suites.</p>
+
+<h3>Hooks: beforeEach/afterEach</h3>
+<div class="code-block"><pre>import { test } from '@playwright/test';
+
+test.beforeEach(async ({ page }) => {
+  await page.goto('/');
+});
+
+test.afterEach(async ({}, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    // e.g., emit extra debug logs
+  }
+});</pre></div>
+
+<h3>Per‑test fixture (page already provided)</h3>
+<div class="code-block"><pre>import { test as base } from '@playwright/test';
+
+type Fixtures = { authedPage: import('@playwright/test').Page };
+
+export const test = base.extend<Fixtures>({
+  authedPage: async ({ browser }, use) => {
+    const ctx = await browser.newContext({ storageState: 'state.json' });
+    const page = await ctx.newPage();
+    await use(page);
+    await ctx.close();
+  },
+});
+
+export const expect = test.expect;</pre></div>
+
+<h3>Worker‑scoped fixture (expensive setup once per worker)</h3>
+<div class="code-block"><pre>type WFixtures = { seed: { userId: string } };
+
+export const testW = base.extend<WFixtures>({
+  seed: [async ({ request }, use) => {
+    const res = await request.post('/api/seed');
+    const body = await res.json();
+    await use(body); // available to all tests in this worker
+  }, { scope: 'worker' }]
+});</pre></div>
+
+<h3>Global setup for login (create storageState)</h3>
+<div class="code-block"><pre>// global-setup.ts (see previous lesson for full example)
+// Run once before the test suite; saves state.json that fixtures reuse</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Prefer fixtures that return locators/pages/clients over raw data to keep auto‑waiting.</li>
+  <li>Keep fixtures small and focused; compose them in tests instead of a giant "kitchen sink" fixture.</li>
+  <li>Use worker‑scoped fixtures for costly seeding; clean per‑test artifacts in <code>afterEach</code>.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create an <code>api</code> fixture that seeds a user and returns its ID and a cleanup function.</li>
+  <li>Create an <code>authedPage</code> fixture that reuses <code>state.json</code> and opens the dashboard.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer reading environment variables inside fixture code, not scattered in tests. Centralizing config reduces surprises.</div>

@@ -1,0 +1,47 @@
+<h2>Fetch API and Error Handling</h2>
+<p>Fetch provides a promise‑based interface for HTTP requests. Always handle non‑200s and timeouts.</p>
+
+<h3>GET/POST with headers</h3>
+<div class="code-block"><pre>async function getUser(id, { signal } = {}){
+  const res = await fetch(`/users/${id}`, { signal, headers: { 'accept': 'application/json' } });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+async function createUser(data, { signal } = {}){
+  const res = await fetch('/users', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(data),
+    signal,
+  });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}</pre></div>
+
+<h3>Timeout with AbortController</h3>
+<div class="code-block"><pre>function fetchWithTimeout(input, init = {}, ms = 5000){
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), ms);
+  return fetch(input, { ...init, signal: ctrl.signal })
+    .finally(() => clearTimeout(t));
+}</pre></div>
+
+<h3>Retry with backoff</h3>
+<div class="code-block"><pre>async function retry(fn, tries = 3, base = 200){
+  let lastErr;
+  for(let i=0;i<tries;i++){
+    try { return await fn(); }
+    catch(e){ lastErr = e; await new Promise(r => setTimeout(r, base * 2**i)); }
+  }
+  throw lastErr;
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Implement a timeout wrapper using <code>AbortController</code>.</li>
+  <li>Show a fallback UI when requests fail and log details to the console.</li>
+  <li>Add a retry with exponential backoff for GET requests only.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Normalize API errors into a consistent shape to keep UI code simple.</div>

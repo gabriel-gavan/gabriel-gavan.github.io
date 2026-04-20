@@ -1,0 +1,36 @@
+<h2>Control Structures in C#</h2>
+<p>Branch and loop to express program logic clearly. Prefer early returns and modern pattern matching.</p>
+
+<h3>if / else</h3>
+<div class="code-block"><pre>if (age >= 18) Console.WriteLine("Adult");
+else Console.WriteLine("Minor");</pre></div>
+
+<h3>Switch expressions with patterns</h3>
+<div class="code-block"><pre>string Describe(object o) => o switch
+{
+  null => "null",
+  int n when n < 0 => "negative int",
+  int n => $"int {n}",
+  string s => $"string of length {s.Length}",
+  _ => "unknown"
+};</pre></div>
+
+<h3>Loops</h3>
+<div class="code-block"><pre>for(int i=0;i<3;i++) Console.WriteLine(i);
+
+foreach (var s in new[]{"a","b","c"}) Console.WriteLine(s);
+
+int n = 3; while (n-- > 0) { /* ... */ }</pre></div>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Implement a menu loop that performs commands until "exit".</li>
+  <li>Refactor nested if/else into a <code>switch</code> expression using type/relational patterns.</li>
+  <li>Replace an index loop with a <code>foreach</code> when iteration order doesn’t matter.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>C# switch expressions & pattern matching</li>
+  <li>Enumerable loops with LINQ</li>
+</ul>

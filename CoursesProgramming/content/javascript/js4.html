@@ -1,0 +1,57 @@
+<h2>Arrays and Objects</h2>
+<p>Arrays store ordered data; objects store named properties. Master destructuring, spread/rest, and immutable updates for maintainable code.</p>
+<img src="../assets/diagrams/js-objects-arrays.svg" alt="JS Arrays vs Objects" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>Destructuring</h3>
+<div class="code-block"><pre>const user = { name: 'Ava', age: 21, address: { city: 'Lisbon' } };
+const { name, age, address: { city } } = user;
+const [first, second, ...rest] = [1,2,3,4];</pre></div>
+
+<h3>Spread and rest</h3>
+<div class="code-block"><pre>const next = { ...user, premium: true };
+const clone = { ...user, address: { ...user.address } }; // shallow clone + nested clone
+
+function sum(...nums){ return nums.reduce((a,b) => a+b, 0); }</pre></div>
+
+<h3>Immutable updates</h3>
+<div class="code-block"><pre>const state = { cart: [{ id: 1, qty: 1 }] };
+// Update qty without mutation
+const updated = {
+  ...state,
+  cart: state.cart.map(it => it.id === 1 ? { ...it, qty: it.qty + 1 } : it)
+};</pre></div>
+
+<h3>Array utilities</h3>
+<div class="code-block"><pre>const items = [1,2,3,4];
+items.map(x => x*2);
+items.filter(x => x%2===0);
+items.find(x => x>2);
+items.some(x => x===3);
+items.every(x => x>0);
+items.reduce((sum,x) => sum+x, 0);</pre></div>
+
+<h3>Object utilities</h3>
+<div class="code-block"><pre>const entries = Object.entries({ a:1, b:2 });
+const back = Object.fromEntries(entries);
+const keys = Object.keys(back);
+const values = Object.values(back);</pre></div>
+
+<h3>Deep cloning caveats</h3>
+<ul>
+  <li><code>JSON.parse(JSON.stringify(obj)</code>) loses functions, Dates, undefined.</li>
+  <li>Consider <code>structuredClone</code> for supported environments.</li>
+</ul>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Implement immutable updates to a nested object (no mutation).</li>
+  <li>Write a function that normalizes a list of records into a map by id.</li>
+  <li>Paginate an array into chunks of size N.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>MDN: Destructuring assignment</li>
+  <li>MDN: Spread syntax</li>
+  <li>MDN: Array methods</li>
+</ul>

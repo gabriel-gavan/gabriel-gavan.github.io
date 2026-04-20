@@ -1,0 +1,32 @@
+<h2>Testing with Jest (Intro)</h2>
+<p>Write unit tests for pure functions to get fast feedback. Aim for small, isolated tests with clear Arrange‑Act‑Assert steps.</p>
+
+<h3>Basics</h3>
+<div class="code-block"><pre>describe('math', () => {
+  test('adds', () => { expect(2 + 2).toBe(4); });
+  test('throws', () => {
+    const willThrow = () => { throw new Error('boom'); };
+    expect(willThrow).toThrow('boom');
+  });
+});</pre></div>
+
+<h3>Async tests</h3>
+<div class="code-block"><pre>test('loads data', async () => {
+  const api = { get: jest.fn().mockResolvedValue({ id: 1 }) };
+  const data = await api.get('/users/1');
+  expect(api.get).toHaveBeenCalledWith('/users/1');
+  expect(data).toEqual({ id: 1 });
+});</pre></div>
+
+<h3>Coverage</h3>
+<div class="code-block"><pre># package.json
+{ "scripts": { "test:cov": "jest --coverage" } }</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Test edge cases and error conditions.</li>
+  <li>Measure coverage and identify gaps.</li>
+  <li>Mock a module and assert how it was called.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer testing public behavior over internal implementation details. Tests should enable refactoring, not block it.</div>

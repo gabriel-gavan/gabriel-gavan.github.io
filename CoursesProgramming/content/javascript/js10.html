@@ -1,0 +1,48 @@
+<h2>ES Modules: import/export</h2>
+<p>Split code into modules with clear interfaces. Prefer ESM in modern browsers and Node (with <code>"type": "module"</code>).</p>
+
+<h3>Named vs default exports</h3>
+<div class="code-block"><pre>// math.js
+export function add(a,b){ return a+b; }
+export const PI = 3.14159;
+export default function sub(a,b){ return a-b; }
+
+// main.js
+import sub, { add, PI } from './math.js';
+console.log(add(2,2), sub(4,1), PI);</pre></div>
+
+<h3>Re-exports and index files</h3>
+<div class="code-block"><pre>// utils/index.js
+export * from './dates.js';
+export * as http from './http.js';</pre></div>
+
+<h3>Dynamic import and top-level await</h3>
+<div class="code-block"><pre>// Lazy-load a heavy module
+const { heavyFn } = await import('./heavy.js');
+const result = await heavyFn();</pre></div>
+
+<h3>Browser and Node setup</h3>
+<div class="code-block"><pre>// index.html
+// &lt;script type="module" src="./main.js"&gt;&lt;/script&gt;
+
+// package.json (Node)
+{
+  "type": "module",
+  "scripts": { "start": "node main.js" }
+}</pre></div>
+
+<h3>Common pitfalls</h3>
+<ul>
+  <li>Use file extensions in browser imports (<code>./module.js</code>).</li>
+  <li>Don’t mix require() and import in the same file; convert to ESM fully.</li>
+  <li>For Node, configure <code>type: module</code> or use .mjs.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Refactor a script into ESM modules with named and default exports.</li>
+  <li>Set <code>type="module"</code> in HTML and test in the browser.</li>
+  <li>Add a dynamic import for a rarely used feature.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep modules small and cohesive; group re-exports in an <code>index.js</code> to simplify imports.</div>

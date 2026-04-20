@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="200" viewBox="0 0 520 200">
+  <rect width="520" height="200" fill="#0d0d14"/>
+  <text x="20" y="28" fill="#c9d1d9" font-family="monospace" font-size="16">Playwright API + UI Flow</text>
+  <rect x="20" y="60" width="150" height="40" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="30" y="85" fill="#9cdcfe" font-family="monospace" font-size="14">request.post()</text>
+  <line x1="170" y1="80" x2="250" y2="80" stroke="#7c5cfc" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="260" y="60" width="150" height="40" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="270" y="85" fill="#9cdcfe" font-family="monospace" font-size="14">/api/users</text>
+  <line x1="335" y1="100" x2="335" y2="150" stroke="#7c5cfc" stroke-width="2"/>
+  <rect x="200" y="150" width="150" height="30" fill="#1a1a24" stroke="#2a2a38" rx="6"/>
+  <text x="210" y="170" fill="#9cdcfe" font-family="monospace" font-size="12">UI verifies</text>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#7c5cfc"/>
+    </marker>
+  </defs>
+</svg>

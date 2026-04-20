@@ -1,0 +1,52 @@
+<h2>C++: Compilation and the Toolchain</h2>
+<p>C++ compiles to native machine code, giving you performance and control. Understanding the build pipeline (preprocess → compile → link) helps diagnose errors quickly.</p>
+
+<h3>Minimal program</h3>
+<div class="code-block"><pre>#include <iostream>
+
+int main() {
+  std::cout << "Hello, C++";
+  return 0;
+}</pre></div>
+
+<h3>Compile and run (with warnings)</h3>
+<div class="code-block"><pre>// Linux/macOS (Clang or GCC)
+clang++ -std=c++20 -O0 -g -Wall -Wextra -Wpedantic main.cpp -o app && ./app
+# or
+g++     -std=c++20 -O0 -g -Wall -Wextra -Wpedantic main.cpp -o app && ./app
+
+// Windows (MSVC)
+cl /EHsc /std:c++20 /W4 main.cpp && main.exe</pre></div>
+
+<h3>Sanitizers (debugging memory/UB)</h3>
+<div class="code-block"><pre># Address/UB sanitizers (Clang/GCC)
+clang++ -std=c++20 -fsanitize=address,undefined -fno-omit-frame-pointer -g main.cpp -o app && ./app</pre></div>
+
+<h3>CMake (portable builds)</h3>
+<div class="code-block"><pre># CMakeLists.txt
+cmake_minimum_required(VERSION 3.20)
+project(hello LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 20)
+add_executable(app main.cpp)
+
+# Build
+cmake -S . -B build
+cmake --build build --config Debug
+./build/app</pre></div>
+
+<h3>Linking basics</h3>
+<ul>
+  <li>Static linking bundles libraries into the binary.</li>
+  <li>Dynamic linking uses shared libraries at runtime.</li>
+  <li>On Windows, prefer MSVC; on Linux/macOS, Clang/GCC are common.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Write a function that doubles a number and call it from <code>main</code>.</li>
+  <li>Build with warnings enabled (<code>-Wall -Wextra</code> or <code>/W4</code>) and fix them.</li>
+  <li>Enable AddressSanitizer and find a deliberate out‑of‑bounds bug.</li>
+  <li>Create a minimal CMake project and build it out‑of‑source.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Treat warnings as errors (<code>-Werror</code> / <code>/WX</code>) in CI to keep code quality high.</div>

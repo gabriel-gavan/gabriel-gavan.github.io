@@ -1,0 +1,56 @@
+<h2>Java OOP: Classes and Objects</h2>
+<p>Classes define the shape of your data and the operations that act on it. Objects are instances of classes at runtime.</p>
+
+<h3>Defining a class</h3>
+<div class="code-block"><pre>package app.model;
+
+import java.util.Objects;
+
+public class User {
+  private final String name;
+  private int points = 0;
+
+  public User(String name) {
+    this.name = Objects.requireNonNull(name, "name");
+  }
+  public String getName() { return name; }
+  public int getPoints() { return points; }
+  public void addPoints(int delta) { if (delta > 0) points += delta; }
+
+  @Override public String toString(){ return name + "(" + points + ")"; }
+  @Override public boolean equals(Object o){
+    if (this == o) return true;
+    if (!(o instanceof User u)) return false;
+    return name.equals(u.name);
+  }
+  @Override public int hashCode(){ return name.hashCode(); }
+}</pre></div>
+
+<h3>Using the class</h3>
+<div class="code-block"><pre>public class Main {
+  public static void main(String[] args) {
+    User u = new User("Ava");
+    u.addPoints(5);
+    System.out.println(u);
+  }
+}</pre></div>
+
+<img src="../assets/diagrams/java-oop.svg" alt="Java OOP" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>Records (Java 16+)</h3>
+<div class="code-block"><pre>public record Point(int x, int y) { }
+var p = new Point(1, 2); // immutable data carrier</pre></div>
+
+<h3>Design notes</h3>
+<ul>
+  <li>Prefer immutability for identity (e.g., <code>name</code>), mutability for counters.</li>
+  <li>Validate inputs in constructors and methods.</li>
+  <li>Override <code>equals</code>/<code>hashCode</code> for value semantics (map keys, set membership).</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add a <code>level</code> field derived from <code>points</code> (e.g., every 10 points raises a level).</li>
+  <li>Create a <code>record</code> for an immutable <code>Money</code> with <code>amount</code> and <code>currency</code>.</li>
+  <li>Write unit tests that confirm <code>equals</code>/<code>hashCode</code> behavior.</li>
+</ol>

@@ -1,0 +1,54 @@
+<h2>Running and Debugging Tests</h2>
+<p>Efficient debugging saves hours. Learn the CLI filters, headed mode, inspector, and trace viewer to understand failures quickly.</p>
+
+<h3>CLI basics</h3>
+<div class="code-block"><pre># Run all
+npx playwright test
+# Filter by title or file
+npx playwright test login           # spec name contains "login"
+npx playwright test tests/login.spec.ts
+# By project (browser)
+npx playwright test --project=chromium
+# Headed mode and slowmo for visibility
+npx playwright test --headed --slow-mo=300
+# Reporters
+npx playwright test --reporter=line,html
+# Only run tests matching a grep
+npx playwright test --grep "@smoke"</pre></div>
+
+<h3>Debugging tools</h3>
+<div class="code-block"><pre># Start inspector with UI controls
+npx playwright test --debug
+
+# Pause at a specific line
+await page.pause();
+
+# See console logs and network in the terminal
+DEBUG=pw:api npx playwright test</pre></div>
+
+<h3>Open Trace Viewer</h3>
+<p>Traces show a timeline with DOM snapshots, network, console, and source.</p>
+<div class="code-block"><pre># After a run with tracing enabled
+npx playwright show-trace test-results/&lt;run-id&gt;/trace.zip</pre></div>
+
+<h3>Record videos and screenshots</h3>
+<div class="code-block"><pre>// playwright.config.ts
+export default defineConfig({
+  use: { video: 'retain-on-failure', screenshot: 'only-on-failure', trace: 'on-first-retry' }
+});</pre></div>
+
+<h3>Useful patterns</h3>
+<ul>
+  <li>Add <code>@smoke</code>, <code>@regression</code>, <code>@wip</code> tags in test titles and filter with <code>--grep</code>.</li>
+  <li>Prefer <code>expect(...)</code> assertions to wait for states, instead of manual <code>waitForTimeout</code>.</li>
+  <li>Use <code>--project</code> to repro browser‑specific issues locally.</li>
+</ul>
+
+<h3>Practice</h3>
+<ol>
+  <li>Make a test fail, run with <code>--debug</code>, step through actions, and inspect locators.</li>
+  <li>Enable <code>trace: 'on-first-retry'</code>, reproduce a failure, and open the trace to find the cause.</li>
+  <li>Tag two tests as <code>@smoke</code> and run only those.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Check the Console tab in Trace Viewer for unexpected errors before focusing on selectors.</div>
