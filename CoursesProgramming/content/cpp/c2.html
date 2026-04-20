@@ -1,0 +1,47 @@
+<h2>Variables, Types, and I/O</h2>
+<p>C++ has value semantics by default. Understand primitive types, references, const, and stream I/O.</p>
+
+<h3>Examples</h3>
+<div class="code-block"><pre>#include <iostream>
+#include <iomanip>
+int age = 20;
+double price = 19.99;
+bool ok = true;
+std::cout << age << "\n" << std::fixed << std::setprecision(2) << price << "\n";
+</pre></div>
+
+<h3>References and const</h3>
+<div class="code-block"><pre>int x = 1; int& ref = x; ref++; // x becomes 2
+const std::string s = "hello"; // cannot modify binding
+const std::string& view = s;    // bind to existing object without copying</pre></div>
+
+<h3>auto and type deduction</h3>
+<ul>
+  <li>Use <code>auto</code> when the type is obvious from the initializer or long to spell.</li>
+  <li>Avoid <code>auto</code> when it hides important semantics (e.g., signed/unsigned).</li>
+</ul>
+
+<h3>Reading input</h3>
+<div class="code-block"><pre>#include <sstream>
+std::string line; std::getline(std::cin, line);
+std::istringstream iss(line);
+int a; double b; iss >> a >> b;</pre></div>
+
+<h3>string vs string_view</h3>
+<div class="code-block"><pre>#include <string_view>
+void greet(std::string_view name){ std::cout << "Hi " << name; }</pre></div>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Read a full line with <code>std::getline</code> and parse tokens into numbers.</li>
+  <li>Print a table using <code><iomanip></code> width/alignment manipulators.</li>
+  <li>Refactor function parameters to take <code>std::string_view</code> where copying isn’t needed.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>cppreference: Fundamental types, iostream, iomanip</li>
+  <li>cppreference: string and string_view</li>
+</ul>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer <code>const</code> for variables that shouldn’t change; pass large objects by <code>const&</code> to avoid copies.</div>

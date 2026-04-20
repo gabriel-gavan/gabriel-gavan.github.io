@@ -1,0 +1,54 @@
+<h2>Playwright Locators: getByRole, getByLabel, getByText</h2>
+<p>Semantic locators describe elements by their purpose (role, name, label), mirroring how users experience the UI. They are more durable than CSS/XPath because they track accessible names, not DOM structure.</p>
+
+<h3>getByRole (preferred for buttons, links, headings)</h3>
+<div class="code-block"><pre>// Click the primary submit button by its accessible name
+await page.getByRole('button', { name: 'Submit' }).click();
+
+// Find a link by its text label
+await page.getByRole('link', { name: 'Pricing' }).click();
+
+// Narrow by level for headings
+await expect(page.getByRole('heading', { level: 1 })).toBeVisible();</pre></div>
+
+<img src="../assets/diagrams/playwright-locators.svg" alt="Playwright Locators" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>getByLabel / getByPlaceholder (for form controls)</h3>
+<div class="code-block"><pre>// Use visible label
+await page.getByLabel('Email').fill('user@example.com');
+await page.getByLabel('Password').fill('secret');
+
+// Fallback if label is missing
+await page.getByPlaceholder('Search products').fill('Laptop');</pre></div>
+
+<h3>getByText and getByTestId</h3>
+<div class="code-block"><pre>// Assert a welcome message
+await expect(page.getByText('Welcome back')).toBeVisible();
+
+// For custom widgets lacking semantics, add data-testid
+await page.getByTestId('cart-icon').click();</pre></div>
+
+<h3>Chaining and filtering</h3>
+<div class="code-block"><pre>// Limit search to a specific card
+const card = page.getByRole('article').filter({ hasText: 'Pro Plan' });
+await card.getByRole('button', { name: 'Choose' }).click();
+
+// Locate a row containing a specific cell
+const row = page.getByRole('row').filter({ has: page.getByRole('cell', { name: /Active/ }) });
+await expect(row).toHaveCount(1);</pre></div>
+
+<h3>Anti‑patterns to avoid</h3>
+<ul>
+  <li>Brittle CSS like <code>#root &gt; div:nth-child(2) &gt; button</code>; prefer roles/labels.</li>
+  <li>Hardcoding text when a better role+name exists (e.g., button name).</li>
+  <li>Using <code>textContent()</code> polling instead of <code>expect(locator).toHaveText(...)</code>.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Sign in using <code>getByLabel</code> for inputs and <code>getByRole</code> for submit. Assert URL is <code>/dashboard</code>.</li>
+  <li>Replace two CSS selectors in your suite with role/label equivalents. Document why the new ones are more stable.</li>
+  <li>Locate a table row containing a user name with chaining + <code>has</code>/<code>hasText</code>.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> If you must use custom selectors, prefer <code>data-testid</code> attributes that are stable and reviewable over brittle DOM paths.</div>

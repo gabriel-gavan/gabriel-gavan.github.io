@@ -1,0 +1,43 @@
+<h2>Selecting and Updating the DOM</h2>
+<p>Manipulate elements by changing text, attributes, classes, and styles. Batch DOM reads/writes to avoid layout thrashing.</p>
+
+<h3>Select and update</h3>
+<div class="code-block"><pre>const title = document.querySelector('#title');
+title.textContent = 'Hello DOM';
+title.classList.add('highlight');
+
+document.querySelector('#name').setAttribute('aria-invalid', 'false');</pre></div>
+
+<h3>Dataset and ARIA</h3>
+<div class="code-block"><pre>const el = document.querySelector('[data-testid="price"]');
+el.dataset.currency = 'USD';
+el.setAttribute('aria-live', 'polite');</pre></div>
+
+<h3>Efficient updates</h3>
+<div class="code-block"><pre>// Use DocumentFragment to insert many nodes at once
+const ul = document.querySelector('#list');
+const frag = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+  const li = document.createElement('li');
+  li.textContent = `Item ${i}`;
+  frag.appendChild(li);
+}
+ul.appendChild(frag);</pre></div>
+
+<h3>Templates</h3>
+<div class="code-block"><pre>// HTML
+// &lt;template id="row-tpl"&gt;&lt;li class="row"&gt;&lt;/li&gt;&lt;/template&gt;
+
+const tpl = document.querySelector('#row-tpl');
+const li = tpl.content.firstElementChild.cloneNode(true);
+li.textContent = 'Row';
+document.querySelector('#rows').appendChild(li);</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Build a small form and update a preview area on input (use <code>input</code> events).</li>
+  <li>Toggle a theme class on <code>document.documentElement</code> and persist it in <code>localStorage</code>.</li>
+  <li>Render 1,000 items efficiently with a <code>DocumentFragment</code>.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Minimize layout thrash by grouping reads (getBoundingClientRect) and writes (style/classList) separately.</div>

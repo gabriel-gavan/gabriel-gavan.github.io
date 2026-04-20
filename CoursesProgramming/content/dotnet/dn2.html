@@ -1,0 +1,53 @@
+<h2>Types, Variables, and Operators</h2>
+<p>C# is strongly typed. Prefer explicit types for clarity or <code>var</code> when the type is obvious on the right‑hand side.</p>
+
+<h3>Value vs reference types</h3>
+<div class="code-block"><pre>int count = 5;              // value type
+bool isActive = true;       // value type
+string name = "Mia";         // reference type
+DateTime when = DateTime.UtcNow; // struct (value type)</pre></div>
+<ul>
+  <li>Value types (structs) live on the stack, copied by value.</li>
+  <li>Reference types (classes, arrays, strings) live on the heap; variables hold references.</li>
+</ul>
+
+<h3>Nullable reference types (NRT)</h3>
+<div class="code-block"><pre>#nullable enable
+string? nickname = null; // must check for null before deref
+string title = "Engineer"; // non-nullable</pre></div>
+
+<h3>Parsing and formatting</h3>
+<div class="code-block"><pre>if (int.TryParse("42", out var n)) { /* use n */ }
+
+using System.Globalization;
+var price = 19.99m;
+var us = new CultureInfo("en-US");
+Console.WriteLine(price.ToString("C", us)); // $19.99</pre></div>
+
+<h3>Operators</h3>
+<ul>
+  <li>Arithmetic: <code>+ - * / %</code></li>
+  <li>Comparison: <code>== != &lt; &gt; &lt;= &gt;=</code></li>
+  <li>Logical: <code>&amp;&amp; || !</code></li>
+  <li>Null-coalescing: <code>??</code>, null‑propagating: <code>?.</code></li>
+</ul>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Enable nullable reference types in your project for safer APIs.</li>
+  <li>Prefer decimal for money; avoid double rounding errors.</li>
+  <li>Use <code>TryParse</code> overloads to avoid exceptions on bad input.</li>
+</ul>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Build a method that safely parses integers from strings using <code>int.TryParse</code>.</li>
+  <li>Format a price as currency using <code>CultureInfo</code>.</li>
+  <li>Write unit tests for edge cases.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>C# language reference: Types & Nullable refs</li>
+  <li>Choosing between <code>var</code> and explicit types</li>
+</ul>

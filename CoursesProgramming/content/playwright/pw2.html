@@ -1,0 +1,102 @@
+<h2>Project Structure and Configuration</h2>
+<p>A predictable structure keeps tests scalable and maintainable. Store tests, page objects, fixtures, and config in consistent places so teams can navigate quickly.</p>
+
+<h3>Recommended layout</h3>
+<div class="code-block"><pre>project/
+  playwright.config.ts
+  tests/
+    smoke.spec.ts
+    login.spec.ts
+    checkout.spec.ts
+  pages/
+    LoginPage.ts
+    CartPage.ts
+    components/
+      Modal.ts
+  fixtures/
+    auth.ts
+  test-data/
+    users.json
+  helpers/
+    utils.ts</pre></div>
+
+<h3>Configuration essentials</h3>
+<div class="code-block"><pre>import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  timeout: 30_000,
+  expect: { timeout: 5_000 },
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 2 : undefined,
+  fullyParallel: true,
+  use: {
+    baseURL: 'https://example.com',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    actionTimeout: 10_000,
+    navigationTimeout: 15_000,
+  },
+  reporter: [['list'], ['html', { open: 'never' }]],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit',   use: { ...devices['Desktop Safari'] } },
+  ],
+});</pre></div>
+
+<h3>Multi‑environment config</h3>
+<p>Switch base URLs and flags by environment variables or separate files:</p>
+<div class="code-block"><pre># package.json scripts
+{
+  "scripts": {
+    "test:dev":   "cross-env BASE_URL=http://localhost:3000 npx playwright test",
+    "test:stg":   "cross-env BASE_URL=https://staging.example.com npx playwright test",
+    "test:mobile": "npx playwright test --project='Mobile Chrome'"
+  }
+}</pre></div>
+<div class="code-block"><pre>// playwright.config.ts (read env)
+const baseURL = process.env.BASE_URL || 'http://localhost:3000';
+export default defineConfig({ use: { baseURL } });</pre></div>
+
+<h3>Global setup and authenticated state</h3>
+<p>Create a user session once and reuse it via <code>storageState</code> to speed up suites.</p>
+<div class="code-block"><pre>// global-setup.ts
+import { chromium, FullConfig } from '@playwright/test';
+
+async function globalSetup(config: FullConfig) {
+  const browser = await chromium.launch();
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(process.env.BASE_URL || 'http://localhost:3000');
+  // Perform login flow
+  await page.getByLabel('Email').fill('user@example.com');
+  await page.getByLabel('Password').fill('secret');
+  await page.getByRole('button', { name: 'Log in' }).click();
+  await page.waitForURL('**/dashboard');
+  await context.storageState({ path: 'state.json' });
+  await browser.close();
+}
+export default globalSetup;</pre></div>
+<div class="code-block"><pre>// playwright.config.ts
+export default defineConfig({
+  globalSetup: require.resolve('./global-setup'),
+  use: { storageState: 'state.json' }
+});</pre></div>
+
+<h3>Naming and organization tips</h3>
+<ul>
+  <li>Group related tests by feature (e.g., <code>tests/checkout/</code>).</li>
+  <li>Keep page objects lean: expose intention‑revealing methods; avoid business assertions there.</li>
+  <li>Put one major flow per test file to simplify local runs and triage.</li>
+</ul>
+
+<h3>Practice</h3>
+<ol>
+  <li>Extract a <code>LoginPage</code> class with <code>login(email, pass)</code> and reuse it in tests.</li>
+  <li>Implement a global setup to persist <code>storageState</code> for authenticated tests.</li>
+  <li>Add a <code>stg</code> script that points to a staging base URL; verify <code>process.env.BASE_URL</code> is used.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep config deterministic in CI: set viewport, timezone, locale, and mock non‑deterministic data when visual or timing‑sensitive.</div>

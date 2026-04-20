@@ -1,0 +1,52 @@
+<h2>Async JavaScript: Callbacks, Promises, async/await</h2>
+<p>Async code prevents UI jank during I/O. Promises model eventual completion; <code>async/await</code> makes chains readable.</p>
+
+<h3>From callbacks to promises to async/await</h3>
+<div class="code-block"><pre>// Promise style
+fetch('/api/user')
+  .then(r => r.json())
+  .then(u => console.log(u))
+  .catch(err => console.error(err));
+
+// async/await style
+try {
+  const r = await fetch('/api/user');
+  if(!r.ok) throw new Error('Bad response');
+  const u = await r.json();
+  console.log(u);
+} catch (e) {
+  console.error(e);
+}</pre></div>
+
+<h3>Parallel vs sequential</h3>
+<div class="code-block"><pre>// Sequential (slower)
+const a = await fetch('/a').then(r => r.json());
+const b = await fetch('/b').then(r => r.json());
+
+// Parallel (faster)
+const [a2, b2] = await Promise.all([
+  fetch('/a').then(r => r.json()),
+  fetch('/b').then(r => r.json()),
+]);</pre></div>
+
+<h3>Promise utilities</h3>
+<div class="code-block"><pre>await Promise.race([p1, p2]);      // first to settle
+await Promise.any([p1, p2]);       // first to fulfill (ignores rejections)
+await Promise.allSettled([p1, p2]); // get outcomes without throwing</pre></div>
+
+<h3>Error handling and cancellation</h3>
+<ul>
+  <li>Always check <code>response.ok</code>; normalize error shapes.</li>
+  <li>Use <code>AbortController</code> to cancel long requests.</li>
+  <li>Surface friendly UI messages; log details for debugging.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Wrap <code>fetch</code> in a helper that times out after 5 seconds.</li>
+  <li>Retry transient failures up to 3 times with exponential backoff.</li>
+  <li>Parallelize two independent requests with <code>Promise.all</code>.</li>
+  <li>Use <code>Promise.allSettled</code> to show partial results even if some fail.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Avoid <code>await</code> inside <code>Array.map</code> without collecting promises. Build an array of promises and <code>await Promise.all</code>.</div>

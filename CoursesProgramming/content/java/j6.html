@@ -1,0 +1,37 @@
+<h2>Encapsulation and Access Modifiers</h2>
+<p>Protect invariants by keeping fields private and exposing behavior through public methods.</p>
+
+<h3>Access levels</h3>
+<ul>
+  <li><code>public</code>: everywhere</li>
+  <li><code>protected</code>: same package + subclasses</li>
+  <li><code>(package‑private)</code>: same package (no modifier)</li>
+  <li><code>private</code>: same class only</li>
+</ul>
+
+<h3>Example</h3>
+<div class="code-block"><pre>class Account {
+  private double balance;
+  public void deposit(double amount){ if(amount > 0) balance += amount; }
+  public void withdraw(double amount){
+    if(amount <= 0) throw new IllegalArgumentException("amount");
+    if(amount > balance) throw new IllegalStateException("insufficient funds");
+    balance -= amount;
+  }
+  public double getBalance(){ return balance; }
+}</pre></div>
+
+<h3>Defensive copies</h3>
+<div class="code-block"><pre>class Order {
+  private final java.util.Date createdAt;
+  Order(java.util.Date createdAt){ this.createdAt = new java.util.Date(createdAt.getTime()); }
+  public java.util.Date getCreatedAt(){ return new java.util.Date(createdAt.getTime()); }
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add <code>withdraw</code> with validation and suitable exceptions.</li>
+  <li>Explain how encapsulation lowers coupling and prevents invalid states.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer immutability for value objects and expose behavior (not setters) for entities.</div>

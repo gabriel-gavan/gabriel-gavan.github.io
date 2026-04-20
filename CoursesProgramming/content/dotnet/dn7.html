@@ -1,0 +1,28 @@
+<h2>Lists, Dictionaries, and foreach</h2>
+<p>Choose the right collection for the job and iterate clearly. Prefer interfaces (<code>IList&lt;T&gt;</code>, <code>IDictionary&lt;TKey,TValue&gt;</code>).</p>
+
+<h3>Common collections</h3>
+<div class="code-block"><pre>var list = new List<string> { "a", "b" };
+var set = new HashSet<int> { 1, 2, 2 }; // {1,2}
+var dict = new Dictionary<string, int> { ["Ava"] = 10 };
+
+// Lookup with TryGetValue (avoid KeyNotFoundException)
+if (dict.TryGetValue("Ava", out var score)) { Console.WriteLine(score); }</pre></div>
+
+<h3>Ordering and projections</h3>
+<div class="code-block"><pre>var users = new[]{ new { Name="A", P=2 }, new { Name="B", P=5 } };
+var ordered = users.OrderByDescending(u => u.P).ThenBy(u => u.Name).ToList();
+var names = users.Select(u => u.Name).ToArray();</pre></div>
+
+<h3>Immutable collections</h3>
+<div class="code-block"><pre>// System.Collections.Immutable
+a = a.Add(3); // returns a new collection</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Write a function that counts word frequency using a dictionary.</li>
+  <li>Sort a list of users by points, breaking ties by name.</li>
+  <li>Prototype a read‑only view by exposing <code>IReadOnlyList&lt;T&gt;</code> from a class.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Expose read‑only interfaces to reduce accidental mutation. Use <code>TryGetValue</code> in hot paths to avoid double lookups.</div>

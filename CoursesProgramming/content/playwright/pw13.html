@@ -1,0 +1,40 @@
+<h2>Component Testing Basics</h2>
+<p>Mount components in isolation for fast, reliable tests. Component tests validate UI logic without full app boot and are great for edge cases and visuals.</p>
+
+<h3>React example</h3>
+<div class="code-block"><pre>import { test, expect } from '@playwright/experimental-ct-react';
+import Button from './Button';
+
+test('button renders and clicks', async ({ mount }) => {
+  let clicked = 0;
+  const cmp = await mount(<Button label="Buy" onClick={() => clicked++} />);
+  await expect(cmp.getByRole('button', { name: 'Buy' })).toBeVisible();
+  await cmp.getByRole('button', { name: 'Buy' }).click();
+  expect(clicked).toBe(1);
+});</pre></div>
+
+<h3>Other frameworks</h3>
+<ul>
+  <li>Vue: <code>@playwright/experimental-ct-vue</code></li>
+  <li>Angular: <code>@playwright/experimental-ct-angular</code></li>
+  <li>Solid/Svelte: corresponding experimental CT packages</li>
+</ul>
+
+<h3>Visual checks</h3>
+<div class="code-block"><pre>// Snapshot a component
+await expect(cmp).toHaveScreenshot('button.png');</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Keep components pure where possible; inject state via props.</li>
+  <li>Mock event handlers and assert outcomes rather than internal state.</li>
+  <li>Stabilize fonts and data when taking screenshots.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Mock props and verify event callbacks with spies.</li>
+  <li>Test hover/focus/disabled states with screenshot comparison.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Use component tests for edge cases difficult to reach via E2E (error banners, validation messages, empty states).</div>

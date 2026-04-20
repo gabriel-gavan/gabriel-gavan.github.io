@@ -1,0 +1,36 @@
+<h2>Visual Snapshot Testing</h2>
+<p>Catch unintended UI changes by comparing screenshots across commits. Keep visuals deterministic to avoid noisy diffs.</p>
+
+<h3>Usage</h3>
+<div class="code-block"><pre>// Page-level comparisons
+await expect(page).toHaveScreenshot('home.png');
+
+// Element-level comparisons with options
+await expect(page.locator('#hero')).toHaveScreenshot('hero.png', {
+  maxDiffPixelRatio: 0.01,
+  animations: 'disabled',
+  caret: 'hide',
+});</pre></div>
+
+<h3>Stability tips</h3>
+<ul>
+  <li>Set a fixed viewport and device scale factor; pin fonts in CI.</li>
+  <li>Mock timestamps, random IDs, and network data that can change per run.</li>
+  <li>Disable animations/transitions or use prefers‑reduced‑motion in tests.</li>
+  <li>Mask dynamic areas (ads, tickers) to prevent false diffs.</li>
+</ul>
+
+<h3>Helpers</h3>
+<div class="code-block"><pre>export async function stableScreenshot(page, locator, name){
+  await page.addStyleTag({ content: '* { transition: none !important; animation: none !important; }' });
+  await expect(locator).toHaveScreenshot(name, { caret: 'hide', animations: 'disabled' });
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Baseline a component screenshot and verify a CSS change is detected.</li>
+  <li>Write a helper to mask dynamic areas (e.g., ads) and use it on a news card.</li>
+  <li>Stabilize fonts in CI and verify diffs disappear for unchanged UI.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Visual tests should be selective: target critical, styled areas rather than full pages when possible to reduce noise and review burden.</div>

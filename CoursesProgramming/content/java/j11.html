@@ -1,0 +1,41 @@
+<h2>Unit Testing with JUnit</h2>
+<p>Fast unit tests give rapid feedback and enable refactoring. Use JUnit 5 (Jupiter).</p>
+
+<h3>Basics</h3>
+<div class="code-block"><pre>import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.*;
+
+class MathTest {
+  @BeforeEach void setUp() { /* runs before each */ }
+  @AfterEach  void tearDown() { /* runs after each */ }
+
+  @Test void adds(){ assertEquals(4, 2+2); }
+
+  @Test void throwsOnBadInput(){
+    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
+      throw new IllegalArgumentException("bad");
+    });
+    assertEquals("bad", ex.getMessage());
+  }
+}</pre></div>
+
+<h3>Parameterized tests</h3>
+<div class="code-block"><pre>import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+class StringsTest {
+  @ParameterizedTest
+  @CsvSource({"ab,2", "hello,5"})
+  void length(String input, int expected){
+    assertEquals(expected, input.length());
+  }
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Test error cases using <code>assertThrows</code>.</li>
+  <li>Add a parameterized test for edge cases.</li>
+  <li>Adopt AAA (Arrange‑Act‑Assert) in your tests.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Test public behavior, not private implementation details. Keep tests fast and deterministic.</div>

@@ -1,0 +1,60 @@
+<h2>Java: What It Is and How to Start</h2>
+<p>Java is a statically typed, object‑oriented language that runs on the JVM. It compiles source into bytecode that executes consistently across platforms, making it a reliable choice for servers, tooling, and Android.</p>
+
+<h3>Install and verify</h3>
+<div class="code-block"><pre># macOS (Homebrew)
+brew install openjdk
+
+# Windows (winget)
+winget install EclipseAdoptium.Temurin.21.JDK
+
+# Linux (Debian/Ubuntu)
+sudo apt-get update && sudo apt-get install -y openjdk-21-jdk
+
+# Verify
+java -version
+javac -version</pre></div>
+
+<h3>Hello World</h3>
+<div class="code-block"><pre>public class HelloWorld {
+  public static void main(String[] args) {
+    System.out.println("Hello, Java!");
+  }
+}</pre></div>
+
+<h3>Project structure</h3>
+<ul>
+  <li>Place source under <code>src/</code> and compile to <code>out/</code>.</li>
+  <li>One <code>public</code> class per file; file name matches the class name.</li>
+  <li>Use packages (<code>package com.example.app;</code>) to group related classes.</li>
+</ul>
+
+<h3>Build tools (Maven/Gradle)</h3>
+<div class="code-block"><pre># Maven quickstart
+mvn -q archetype:generate -DgroupId=com.example -DartifactId=hello -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+# Gradle init
+gradle init --type java-application</pre></div>
+<ul>
+  <li>Maven: convention over configuration, uses <code>pom.xml</code>.</li>
+  <li>Gradle: flexible, Groovy/Kotlin DSL, uses <code>build.gradle</code> or <code>build.gradle.kts</code>.</li>
+</ul>
+
+<h3>Run and package</h3>
+<div class="code-block"><pre># Compile & run (javac/java)
+javac -d out src/HelloWorld.java && java -cp out HelloWorld
+
+# Maven
+mvn -q test && mvn -q package
+
+# Gradle
+gradle test && gradle build</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create a <code>Main</code> class that prints your name and the current year.</li>
+  <li>Compile with <code>javac</code> and run with <code>java</code>.</li>
+  <li>Initialize a Maven or Gradle project and run a simple unit test.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Use an LTS JDK (e.g., 21) for production; experiment with latest features on a separate toolchain.</div>

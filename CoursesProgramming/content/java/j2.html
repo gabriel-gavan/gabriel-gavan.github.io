@@ -1,0 +1,51 @@
+<h2>Variables, Types, and Operators</h2>
+<p>Java’s type system helps catch mistakes at compile time. Choose types that match your intent.</p>
+
+<h3>Primitives vs references</h3>
+<div class="code-block"><pre>int age = 21;          // primitive
+double price = 19.99;  // primitive
+boolean active = true; // primitive
+String name = "Ava";    // reference type</pre></div>
+<ul>
+  <li>Primitives live on the stack; references point to heap objects.</li>
+  <li>Use <code>==</code> for primitives; use <code>Objects.equals(a,b)</code> or <code>.equals</code> for references.</li>
+</ul>
+
+<h3>Boxing and unboxing</h3>
+<div class="code-block"><pre>Integer n = 5;        // boxing
+int m = n;            // unboxing
+List<Integer> xs = List.of(1,2,3); // collections use wrappers</pre></div>
+<div class="warn-box"><strong>Note:</strong> Avoid unnecessary boxing in hot code; prefer primitives in loops and math.</div>
+
+<h3>Numbers and money</h3>
+<div class="code-block"><pre>// Use BigDecimal for money (avoid double rounding errors)
+import java.math.BigDecimal;
+BigDecimal price = new BigDecimal("19.99");
+BigDecimal qty = BigDecimal.valueOf(3);
+BigDecimal total = price.multiply(qty);</pre></div>
+
+<h3>Operators</h3>
+<ul>
+  <li>Arithmetic: <code>+ - * / %</code></li>
+  <li>Comparison: <code>== != &lt; &gt; &lt;= &gt;=</code></li>
+  <li>Logical: <code>&amp;&amp; || !</code></li>
+  <li>Assignment: <code>+= -= *= /=</code></li>
+</ul>
+
+<h3>Formatting and parsing</h3>
+<div class="code-block"><pre>import java.text.NumberFormat;
+var usd = NumberFormat.getCurrencyInstance(java.util.Locale.US);
+System.out.println(usd.format(19.99));</pre></div>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Build a simple calculator that reads two numbers and an operator from args.</li>
+  <li>Format currency with <code>NumberFormat</code> and compare results with <code>BigDecimal</code>.</li>
+  <li>Add input validation and error messages.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>The Java Language Specification: Types and Values</li>
+  <li>Effective Java, Item 61 (primitive vs boxed)</li>
+</ul>

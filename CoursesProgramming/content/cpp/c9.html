@@ -1,0 +1,29 @@
+<h2>Smart Pointers</h2>
+<p>Manage dynamic memory with RAII helpers. Use <code>unique_ptr</code> for exclusive ownership, <code>shared_ptr</code> for shared ownership, and <code>weak_ptr</code> to break cycles.</p>
+
+<h3>unique_ptr</h3>
+<div class="code-block"><pre>#include <memory>
+auto p = std::make_unique<int>(42);
+// transfer ownership
+std::unique_ptr<int> q = std::move(p); // p becomes null</pre></div>
+
+<h3>shared_ptr and weak_ptr</h3>
+<div class="code-block"><pre>#include <memory>
+auto sp = std::make_shared<std::string>("hi");
+auto sp2 = sp; // refcount++
+std::weak_ptr<std::string> wp = sp; // non-owning; lock() to use
+if (auto locked = wp.lock()) { /* use *locked */ }</pre></div>
+
+<h3>Custom deleters</h3>
+<div class="code-block"><pre>auto fileCloser = [](FILE* f){ if(f) std::fclose(f); };
+using FilePtr = std::unique_ptr<FILE, decltype(fileCloser)>;
+FilePtr f(std::fopen("data.txt", "r"), fileCloser);</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Refactor a raw <code>new</code> allocation to <code>unique_ptr</code>.</li>
+  <li>Use <code>weak_ptr</code> to break a cycle between two <code>shared_ptr</code> owners.</li>
+  <li>Create a <code>unique_ptr</code> with a custom deleter for a FILE handle.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer <code>make_unique</code>/<code>make_shared</code> over direct <code>new</code> for exception safety and clarity.</div>

@@ -1,0 +1,41 @@
+<h2>Page Object Model (POM)</h2>
+<p>Encapsulate selectors and flows in classes to keep tests intention‑revealing. Keep POMs small, composable, and focused on <em>user actions</em>, not business assertions.</p>
+
+<h3>Simple example</h3>
+<div class="code-block"><pre>export class LoginPage {
+  /** @param {import('@playwright/test').Page} page */
+  constructor(page){ this.page = page; }
+  get email(){ return this.page.getByLabel('Email'); }
+  get pass(){ return this.page.getByLabel('Password'); }
+  get submit(){ return this.page.getByRole('button', { name: 'Log in' }); }
+  async login(e,p){
+    await this.email.fill(e);
+    await this.pass.fill(p);
+    await this.submit.click();
+    await this.page.waitForURL('**/dashboard');
+  }
+}</pre></div>
+
+<h3>Component objects (fragments)</h3>
+<p>Model reusable widgets (e.g., header, menu, modal) as <em>component objects</em> to avoid massive POMs.</p>
+<div class="code-block"><pre>export class Header {
+  constructor(root){ this.root = root; }
+  get avatar(){ return this.root.getByRole('img', { name: 'Avatar' }); }
+  async openProfile(){ await this.root.getByRole('link', { name: 'Profile' }).click(); }
+}</pre></div>
+
+<h3>Composition over inheritance</h3>
+<ul>
+  <li>Avoid deep POM inheritance trees; compose with small objects instead.</li>
+  <li>Return locators from getters and expose high‑level actions as async methods.</li>
+  <li>Keep assertions in tests to separate concerns (POM = actions/selectors).</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create a <code>PlansPage</code> with <code>select(name)</code> using chaining + filters.</li>
+  <li>Extract a <code>Header</code> component that opens the profile menu and clicks Sign out.</li>
+  <li>Keep assertions in tests; make POM methods return only after navigation stabilizes.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> If a page has many independent areas, split it into fragments (<code>Header</code>, <code>Sidebar</code>, <code>Cart</code>) and compose them in tests.</div>

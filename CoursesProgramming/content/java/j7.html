@@ -1,0 +1,45 @@
+<h2>Java Collections: Lists and Maps</h2>
+<p>The Collections Framework provides ready‑made data structures. Understanding their trade‑offs helps you write efficient code.</p>
+
+<h3>Lists</h3>
+<div class="code-block"><pre>import java.util.*;
+
+List<String> items = new ArrayList<>();
+items.add("alpha");
+items.add("beta");
+System.out.println(items.get(0)); // alpha
+
+List<String> immutable = List.of("a", "b"); // unmodifiable</pre></div>
+<ul>
+  <li><code>ArrayList</code>: fast random access, append‑heavy workloads.</li>
+  <li><code>LinkedList</code>: efficient insertions/removals in the middle (rarely needed).</li>
+</ul>
+
+<h3>Maps</h3>
+<div class="code-block"><pre>Map<String, Integer> scores = new HashMap<>();
+scores.put("ava", 10);
+scores.put("rui", 7);
+System.out.println(scores.get("ava")); // 10
+
+Map<String, Integer> small = Map.of("a",1, "b",2); // unmodifiable</pre></div>
+<ul>
+  <li><code>HashMap</code>: average O(1) get/put.</li>
+  <li><code>TreeMap</code>: sorted by key (O(log n)).</li>
+  <li><code>LinkedHashMap</code>: predictable iteration order (insertion access options).</li>
+</ul>
+
+<h3>Iteration patterns</h3>
+<div class="code-block"><pre>scores.forEach((k,v) -> System.out.println(k + ":" + v));
+for (var e : scores.entrySet()) { /* ... */ }
+
+scores.merge("ava", 1, Integer::sum); // counting
+scores.computeIfAbsent("new", k -> 0);</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create a <code>Map&lt;String, List&lt;String&gt;&gt;</code> that groups users by city.</li>
+  <li>Count occurrences of words in a sentence using <code>Map.merge</code>.</li>
+  <li>Iterate with <code>forEach((k,v) -&gt; ...)</code> to print a leaderboard.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Favor interfaces (<code>List</code>, <code>Map</code>) over implementations (<code>ArrayList</code>, <code>HashMap</code>). Prefer unmodifiable views for read‑only data.</div>

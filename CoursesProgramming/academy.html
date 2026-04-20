@@ -1,0 +1,2896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevAcademy — Master Programming</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root { --bg:#0a0a0f; --surface:#13131a; --card:#1a1a24; --border:#2a2a38; --accent:#7c5cfc; --accent2:#00e5a0; --text:#f0f0f8; --muted:#888899; --danger:#ff5c5c; }
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;line-height:1.6;}
+h1,h2,h3,h4{font-family:'Syne',sans-serif;}
+a{color:var(--accent2);text-decoration:none;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(10,10,15,0.96);backdrop-filter:blur(10px);z-index:100;gap:1rem;flex-wrap:wrap;}
+.logo{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--accent2);cursor:pointer;white-space:nowrap;}
+.logo span{color:var(--accent);}
+.nav-actions{display:flex;gap:0.7rem;align-items:center;flex-wrap:wrap;}
+button{cursor:pointer;border:none;font-family:'DM Sans',sans-serif;font-size:0.9rem;border-radius:8px;transition:all 0.2s;}
+.btn-ghost{background:transparent;color:var(--muted);padding:0.5rem 1rem;border:1px solid var(--border);}
+.btn-ghost:hover{color:var(--text);border-color:var(--accent);}
+.btn-primary{background:var(--accent);color:#fff;padding:0.55rem 1.3rem;font-weight:500;}
+.btn-primary:hover{background:#6a4de0;transform:translateY(-1px);}
+.btn-success{background:var(--accent2);color:#0a0a0f;padding:0.55rem 1.3rem;font-weight:600;}
+.btn-success:hover{background:#00cc8e;transform:translateY(-1px);}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger);padding:0.5rem 1rem;}
+.btn-danger:hover{background:rgba(255,92,92,0.1);}
+.btn-paypal{background:#0070ba;color:#fff;padding:0.8rem 2rem;font-size:1rem;font-weight:600;width:100%;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:0.5rem;}
+.btn-back{background:transparent;color:var(--muted);padding:0.4rem 0.8rem;border:1px solid var(--border);font-size:0.85rem;}
+.page{display:none;}
+.page.active{display:block;}
+.hero{text-align:center;padding:5rem 2rem 3rem;max-width:800px;margin:0 auto;}
+.badge-pill{display:inline-block;background:rgba(124,92,252,0.15);color:var(--accent);border:1px solid rgba(124,92,252,0.3);border-radius:20px;padding:0.3rem 1rem;font-size:0.78rem;font-weight:600;margin-bottom:1.5rem;letter-spacing:1px;text-transform:uppercase;}
+.hero h1{font-size:clamp(2rem,5vw,3.6rem);font-weight:800;line-height:1.1;margin-bottom:1.2rem;}
+.hero h1 .hl{color:var(--accent2);}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:560px;margin:0 auto 2rem;}
+.hero-cta{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;}
+.stats{display:flex;justify-content:center;gap:2.5rem;padding:2rem;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:1.5rem 0;flex-wrap:wrap;}
+.stat .num{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--accent2);}
+.stat .label{font-size:0.82rem;color:var(--muted);}
+.section{max-width:1060px;margin:0 auto;padding:3rem 2rem;}
+.section-title{font-size:1.7rem;font-weight:700;margin-bottom:0.4rem;}
+.section-sub{color:var(--muted);margin-bottom:2rem;}
+.courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.2rem;}
+.course-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;cursor:pointer;transition:border-color 0.2s,transform 0.2s;position:relative;overflow:hidden;}
+.course-card:hover{border-color:var(--accent);transform:translateY(-3px);}
+.course-card .lang-icon{font-size:2.2rem;margin-bottom:0.8rem;display:block;}
+.course-card h3{font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;}
+.course-card p{font-size:0.85rem;color:var(--muted);margin-bottom:1rem;}
+.course-meta{display:flex;gap:0.6rem;flex-wrap:wrap;}
+.meta-tag{font-size:0.75rem;padding:3px 8px;border-radius:5px;background:rgba(124,92,252,0.12);color:var(--accent);}
+.course-price{position:absolute;top:1rem;right:1rem;font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;color:var(--accent2);}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-top:2rem;}
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.8rem;text-align:center;}
+.pricing-card.featured{border-color:var(--accent);position:relative;}
+.featured-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:0.72rem;font-weight:600;padding:3px 12px;border-radius:20px;white-space:nowrap;}
+.pricing-card .p-icon{font-size:2rem;margin-bottom:0.5rem;display:block;}
+.pricing-card h3{font-size:1.1rem;margin-bottom:0.5rem;}
+.pricing-card .price{font-family:'Syne',sans-serif;font-size:2.5rem;font-weight:800;color:var(--accent2);margin:0.5rem 0;}
+.pricing-card .price sup{font-size:1.1rem;vertical-align:super;}
+.pricing-card .old{text-decoration:line-through;color:#555;font-size:0.9rem;margin-right:0.3rem;}
+.pricing-card ul{list-style:none;text-align:left;margin:1rem 0;display:flex;flex-direction:column;gap:0.5rem;}
+.pricing-card ul li{font-size:0.85rem;color:var(--muted);display:flex;gap:0.5rem;}
+.pricing-card ul li::before{content:'✓';color:var(--accent2);flex-shrink:0;font-weight:700;}
+.course-detail-header{background:var(--surface);border-bottom:1px solid var(--border);padding:2.5rem 2rem;}
+.course-detail-header .breadcrumb{font-size:0.82rem;color:var(--muted);margin-bottom:0.8rem;cursor:pointer;}
+.course-detail-header h1{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:0.5rem;}
+.course-detail-header p{color:var(--muted);max-width:600px;}
+.course-detail-body{max-width:960px;margin:0 auto;padding:2rem;}
+.modules-list{display:flex;flex-direction:column;gap:0.7rem;}
+.module-section-title{font-size:0.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:1.2rem 0 0.4rem;}
+.lesson-row{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:border-color 0.2s;}
+.lesson-row:hover:not(.locked){border-color:var(--accent);}
+.lesson-row.locked{opacity:0.5;cursor:not-allowed;}
+.lesson-row.done .l-icon{background:rgba(0,229,160,0.15);color:var(--accent2);}
+.l-icon{width:34px;height:34px;border-radius:8px;background:rgba(124,92,252,0.12);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;}
+.l-text h4{font-size:0.92rem;font-weight:500;}
+.l-text p{font-size:0.78rem;color:var(--muted);}
+.l-badge{margin-left:auto;font-size:0.72rem;padding:2px 8px;border-radius:5px;}
+.lb-free{background:rgba(0,229,160,0.12);color:var(--accent2);}
+.lb-lock{background:rgba(124,92,252,0.12);color:var(--accent);}
+.lb-done{background:rgba(0,229,160,0.12);color:var(--accent2);}
+.unlock-banner{background:linear-gradient(135deg,rgba(124,92,252,0.12),rgba(0,229,160,0.06));border:1px solid var(--accent);border-radius:12px;padding:2rem;text-align:center;margin:2rem 0;}
+.progress-wrap{background:var(--border);border-radius:10px;height:5px;margin:0.4rem 0 1.5rem;}
+.progress-fill{background:linear-gradient(90deg,var(--accent),var(--accent2));height:100%;border-radius:10px;transition:width 0.5s;}
+.lesson-view-header{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.lesson-view-content{max-width:760px;margin:0 auto;padding:2rem;}
+.lesson-view-content h2{font-size:1.7rem;margin-bottom:1rem;}
+.lesson-view-content h3{font-size:1.1rem;font-weight:600;margin:1.5rem 0 0.5rem;}
+.lesson-view-content p{color:var(--muted);margin-bottom:0.8rem;line-height:1.8;}
+.code-block{background:#0d0d14;border:1px solid var(--border);border-radius:10px;padding:1.2rem;margin:1rem 0;overflow-x:auto;}
+.code-block pre{font-family:'Courier New',monospace;font-size:0.83rem;color:#c9d1d9;line-height:1.7;white-space:pre;}
+/* Sticky TOC (desktop) */
+.lesson-toc-sticky{position:fixed;top:120px;right:24px;width:260px;max-height:60vh;overflow:auto;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px;z-index:150;display:none}
+@media(min-width:1100px){.lesson-toc-sticky{display:block}.lesson-view-content{max-width:760px;margin-right:320px}}
+.kw{color:#ff7b72;}
+.str{color:#a5d6ff;}
+.cmt{color:#555555;}
+.fn{color:#d2a8ff;}
+.num2{color:#f8c291;}
+.cls{color:#ffc470;}
+.tip-box{background:rgba(124,92,252,0.08);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:0.9rem 1.1rem;margin:1rem 0;}
+.warn-box{background:rgba(255,200,80,0.08);border-left:3px solid #ffc850;border-radius:0 8px 8px 0;padding:0.9rem 1.1rem;margin:1rem 0;}
+.lesson-nav-btns{display:flex;gap:1rem;margin-top:2.5rem;flex-wrap:wrap;}
+.dash-header{background:var(--surface);border-bottom:1px solid var(--border);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
+.dash-body{max-width:1060px;margin:0 auto;padding:2rem;}
+.dash-courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:1.5rem;}
+.dash-course-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem;cursor:pointer;transition:border-color 0.2s;}
+.dash-course-card:hover{border-color:var(--accent);}
+.dash-course-card .dc-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem;}
+.dash-course-card .dc-icon{font-size:1.8rem;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.overlay.open{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.2rem;width:100%;max-width:400px;position:relative;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;color:var(--muted);font-size:1.1rem;cursor:pointer;border:none;padding:0.2rem 0.5rem;}
+.modal h2{font-size:1.4rem;margin-bottom:0.3rem;}
+.modal p.sub{font-size:0.88rem;color:var(--muted);margin-bottom:1.3rem;}
+.form-group{margin-bottom:0.9rem;}
+.form-group label{display:block;font-size:0.82rem;color:var(--muted);margin-bottom:0.35rem;}
+.form-group input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.92rem;outline:none;}
+.error-msg{color:var(--danger);font-size:0.82rem;margin-top:0.4rem;display:none;}
+.switch-auth{text-align:center;font-size:0.83rem;color:var(--muted);margin-top:0.9rem;}
+.switch-auth a{color:var(--accent);cursor:pointer;}
+.paypal-info{background:var(--card);border-radius:10px;padding:1rem;margin:1rem 0;font-size:0.88rem;}
+.paypal-row{display:flex;justify-content:space-between;padding:0.3rem 0;}
+.paypal-row span:last-child{font-weight:500;color:var(--accent2);}
+.paypal-divider{border-top:1px solid var(--border);margin:0.5rem 0;}
+footer{text-align:center;padding:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:0.82rem;margin-top:2rem;}
+.adm-stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;}
+.adm-stat-label{font-size:0.78rem;color:var(--muted);margin-bottom:0.3rem;}
+.adm-stat-num{font-family:'Syne',sans-serif;font-size:1.8rem;font-weight:800;color:var(--text);}
+@media(max-width:600px){.hero{padding:3rem 1.2rem 2rem;}.section{padding:2rem 1.2rem;}.dash-body{padding:1.2rem;}}
+</style>
+<script>
+// Minimal early globals to support inline onclick handlers before main script loads
+window.scrollToId = function(id){
+  try {
+    var el = document.getElementById(id);
+    if(el && el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth' });
+  } catch(e) { /* no-op */ }
+};
+
+window.openModal = function(view){
+  try {
+    var ov = document.getElementById('auth-overlay');
+    if(ov){ ov.classList.add('open'); }
+    if(typeof window.switchAuth === 'function') {
+      window.switchAuth(view || 'login');
+    } else {
+      var login = document.getElementById('auth-login');
+      var reg = document.getElementById('auth-register');
+      if(login && reg){
+        var showLogin = (view || 'login') === 'login';
+        login.style.display = showLogin ? 'block' : 'none';
+        reg.style.display = showLogin ? 'none' : 'block';
+      }
+    }
+  } catch(e) { /* no-op */ }
+};
+window.closeModal = function(){
+  try { var ov = document.getElementById('auth-overlay'); if(ov) ov.classList.remove('open'); } catch(e) { /* no-op */ }
+};
+window.switchAuth = window.switchAuth || function(view){
+  try {
+    var login = document.getElementById('auth-login');
+    var reg = document.getElementById('auth-register');
+    if(!login || !reg) return;
+    var showLogin = view === 'login';
+    login.style.display = showLogin ? 'block' : 'none';
+    reg.style.display = showLogin ? 'none' : 'block';
+  } catch(e) { /* no-op */ }
+};
+
+window.openPayPal = function(type){
+  try {
+    if(type === 'support'){
+      window.open(PAYPAL_DONATE_URL, '_blank');
+      return;
+    }
+    var ov = document.getElementById('paypal-overlay');
+    if(ov) ov.classList.add('open');
+
+    var desc = document.getElementById('pp-desc');
+    if(desc){
+      if(type === 'bundle'){
+        desc.textContent = 'Unlock all courses (lifetime access)';
+      } else if(type === 'team'){
+        desc.textContent = 'Team access for up to 10 members';
+      } else {
+        desc.textContent = 'Unlock full course access';
+      }
+    }
+  } catch(e) { /* no-op */ }
+};
+window.closePayPal = function(){
+  try { var ov = document.getElementById('paypal-overlay'); if(ov) ov.classList.remove('open'); } catch(e) { /* no-op */ }
+};
+
+// Early openCourse fallback: if main app not ready, persist intent and reload
+window.openCourse = window.openCourse || function(courseId){
+  try {
+    if (typeof window._openCourseReal === 'function') {
+      window._openCourseReal(courseId);
+    } else {
+      try { localStorage.setItem('da_pending_course', String(courseId||'')); } catch(_) {}
+      // Try a quick jump to top, then reload to ensure main script initializes
+      try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(_) {}
+      setTimeout(function(){ location.reload(); }, 50);
+    }
+  } catch(_) {}
+};
+const API_URL = "https://devacademyusers.gabi-gabz.workers.dev";
+const PAYPAL_DONATE_URL = "https://www.paypal.com/donate?business=gabi.gabz@gmail.com&currency_code=USD";
+const PAYPAL_BUNDLE_URL = "https://www.paypal.com/donate?business=gabi.gabz@gmail.com&currency_code=USD";
+const PAYPAL_TEAM_URL = "https://www.paypal.com/donate?business=gabi.gabz@gmail.com&currency_code=USD";
+
+async function cloudGetUser(email) {
+  const res = await fetch(API_URL + "/get-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: String(email || "").trim().toLowerCase() })
+  });
+
+  const text = await res.text();
+  //console.log("GET USER status:", res.status);
+  //console.log("GET USER raw response:", text);
+
+  if (!res.ok) {
+    throw new Error(`Worker returned ${res.status}: ${text}`);
+  }
+
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (e) {
+    throw new Error("Worker did not return valid JSON: " + text);
+  }
+
+  return data;
+}
+
+async function cloudSaveUser(user) {
+  await fetch(API_URL + "/save-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(user)
+  });
+}
+// Minimal auth fallbacks (write to localStorage then reload so main app initializes state)
+window.doRegister = async function(){
+  try {
+    var name = (document.getElementById('reg-name')||{}).value || '';
+    var email = (document.getElementById('reg-email')||{}).value || '';
+    var pass = (document.getElementById('reg-pass')||{}).value || '';
+    var err = document.getElementById('reg-error');
+
+    name = name.trim();
+    email = email.trim().toLowerCase();
+
+    if (err) {
+      err.style.display = 'none';
+	  err.style.color = '';
+      err.textContent = 'Please fill in all fields correctly';
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	if(!name || !email || pass.length < 6){
+	  if(err){
+		err.textContent = 'Please fill in all fields correctly';
+		err.style.display = 'block';
+	  }
+	  return;
+	}
+
+	if(!emailRegex.test(email)){
+	  if(err){
+		err.textContent = 'Please enter a valid email address';
+		err.style.display = 'block';
+	  }
+	  return;
+	}
+
+    var existing = await cloudGetUser(email);
+
+    if(existing && existing.email){
+      if(err){
+        err.textContent = 'User with this email already exists';
+        err.style.display = 'block';
+      }
+      return;
+    }
+
+    var u = {
+      name: name,
+      email: email,
+      pass: pass,
+      paid: [],
+      completed: [],
+      quizzes: {}
+    };
+
+    await cloudSaveUser(u);
+
+    try { localStorage.setItem('da_session', JSON.stringify(u)); } catch(_){}
+
+		if (err) {
+		  err.style.display = 'block';
+		  err.style.color = '#00e5a0';
+		  err.textContent = 'Account created successfully!';
+		}
+
+		setTimeout(function(){
+		  if(typeof window.closeModal === 'function') closeModal();
+		  location.reload();
+		}, 1000);
+  } catch(_) {
+    var err = document.getElementById('reg-error');
+    if(err){
+      err.textContent = 'Could not connect to server';
+      err.style.display = 'block';
+    }
+  }
+};
+
+window.doLogin = async function(){
+  try {
+    var email = (document.getElementById('login-email')||{}).value || '';
+    var pass = (document.getElementById('login-pass')||{}).value || '';
+    var err = document.getElementById('login-error');
+
+    email = email.trim().toLowerCase();
+
+    if (err) {
+      err.style.display = 'none';
+      err.textContent = 'Invalid email or password';
+    }
+
+    var found = await cloudGetUser(email);
+    //console.log("LOGIN found user:", found);
+
+    if(!found || !found.email){
+      if(err){
+        err.textContent = 'User not found in cloud database';
+        err.style.display = 'block';
+      }
+      return;
+    }
+
+    if(found.pass !== pass){
+      if(err){
+        err.textContent = 'Incorrect password';
+        err.style.display = 'block';
+      }
+      return;
+    }
+
+    try { localStorage.setItem('da_session', JSON.stringify(found)); } catch(_){}
+	currentUser = found;
+	if(typeof window.closeModal === 'function') closeModal();
+	loadDashboard();
+  } catch(errObj) {
+    console.error('Login error:', errObj);
+    var err = document.getElementById('login-error');
+    if(err){
+      err.textContent = 'Could not connect to server';
+      err.style.display = 'block';
+    }
+  }
+};
+
+window.logout = function(){
+  try { localStorage.removeItem('da_session'); } catch(_){}
+  setTimeout(function(){ location.reload(); }, 50);
+};
+</script>
+<script src="https://www.paypal.com/sdk/js?client-id=AZmVvlPnB0ERn2tqIQkFb2bFSK-OlBQDYeNltQOBem8mAIJOObpj2rE7uvS-JyWDeHZ6cYwsa2Q8qxHe&currency=USD"></script>
+</head>
+<body>
+<nav><div class="logo" onclick="showPage('landing')">Dev<span>Academy</span></div><div class="nav-actions" id="nav-actions"><button class="btn-ghost" onclick="openModal('login')">Log in</button><button class="btn-primary" onclick="openModal('register')">Get Started</button></div></nav>
+<div id="page-landing" class="page active"><div class="hero"><div class="badge-pill">5 Complete Courses</div><h1>Learn to Code.<br/>Build <span class="hl">Real Skills.</span></h1>
+<p>
+Start learning for free. Upgrade anytime for full access.
+Beginner-friendly courses in Java, JavaScript, .NET, C++, and Playwright.
+</p>
+<div class="hero-cta"><a class="btn-success" href="#courses-section" onclick="try{renderLandingCourses()}catch(e){}" style="padding:0.8rem 2rem;font-size:1rem;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;">Browse Courses</a><button class="btn-ghost" onclick="openModal('login')" style="padding:0.8rem 1.5rem;font-size:1rem;">I have an account</button></div></div><div class="stats"><div class="stat"><div class="num">5</div><div class="label">Courses</div></div><div class="stat"><div class="num">180+</div><div class="label">Lessons</div></div><div class="stat"><div class="num">$5</div><div class="label">Per course</div></div><div class="stat"><div class="num">$79</div><div class="label">All courses bundle</div></div></div><div class="section" id="courses-section"><p class="section-title">Choose your course</p><p class="section-sub">Each course is beginner-friendly with real-world examples and exercises</p><div class="courses-grid" id="landing-courses">
+  <div class="course-card" onclick="try{openCourse('playwright')}catch(e){}"><div class="course-price">$5</div><span class="lang-icon">🎭</span><h3>Playwright Automation</h3><p>End-to-end testing from setup to CI/CD pipelines and API testing.</p><div class="course-meta"><span class="meta-tag">Modules</span><span class="meta-tag">Lessons</span><span class="meta-tag">Beginner</span></div></div>
+  <div class="course-card" onclick="try{openCourse('java')}catch(e){}"><div class="course-price">$5</div><span class="lang-icon">☕</span><h3>Java for Beginners</h3><p>Learn Java from scratch — syntax, OOP, collections, and real-world projects.</p><div class="course-meta"><span class="meta-tag">Modules</span><span class="meta-tag">Lessons</span><span class="meta-tag">Beginner</span></div></div>
+  <div class="course-card" onclick="try{openCourse('javascript')}catch(e){}"><div class="course-price">$5</div><span class="lang-icon">🟨</span><h3>JavaScript Essentials</h3><p>Master modern JavaScript — DOM, async/await, ES6+, and building web apps.</p><div class="course-meta"><span class="meta-tag">Modules</span><span class="meta-tag">Lessons</span><span class="meta-tag">Beginner</span></div></div>
+  <div class="course-card" onclick="try{openCourse('dotnet')}catch(e){}"><div class="course-price">$5</div><span class="lang-icon">🔷</span><h3>.NET &amp; C# Fundamentals</h3><p>Build powerful apps with C# and the .NET ecosystem from the ground up.</p><div class="course-meta"><span class="meta-tag">Modules</span><span class="meta-tag">Lessons</span><span class="meta-tag">Beginner</span></div></div>
+  <div class="course-card" onclick="try{openCourse('cpp')}catch(e){}"><div class="course-price">$5</div><span class="lang-icon">⚙️</span><h3>C++ for Beginners</h3><p>Learn systems programming with C++ — memory, pointers, OOP, and STL.</p><div class="course-meta"><span class="meta-tag">Modules</span><span class="meta-tag">Lessons</span><span class="meta-tag">Beginner</span></div></div>
+</div></div><div class="section">
+<p class="section-title" style="text-align:center;">Start free. Unlock everything when you're ready.</p>
+<p class="section-sub" style="text-align:center;">No subscriptions. No pressure. Learn at your pace — support the project when it helps you.</p>
+
+<div class="pricing-grid"><div class="pricing-card"><span class="p-icon">📘</span><h3>Single Course</h3><div class="price"><sup>$</sup>5</div><p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;"><span class="old">$49</span> one-time</p><ul><li>One course of your choice</li><li>All modules & lessons</li><li>Code examples & exercises</li><li>Lifetime access</li></ul><a class="btn-primary" style="width:100%;padding:0.8rem;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;" href="#courses-section" onclick="try{renderLandingCourses()}catch(e){}">Pick a Course</a></div><div class="pricing-card featured"><div class="featured-badge">BEST VALUE</div><span class="p-icon">🎓</span><h3>All Courses Bundle</h3><div class="price"><sup>$</sup>12</div><p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;"><span class="old">$245</span> launch price · lifetime access</p><ul><li>All 5 courses included</li><li>Java, JavaScript, .NET, C++, Playwright</li><li>All future courses FREE</li><li>Code examples & exercises</li><li>Lifetime access</li><li>💡 Learn at your own pace</li><li>💬 Real-world examples (not theory)</li><li>🚀 Built for getting job-ready faster</li></ul><button class="btn-success" style="width:100%;padding:0.8rem;" onclick="startRealPayment('bundle')">Unlock All Courses — $12</button><button class="btn-ghost" style="width:100%;padding:0.7rem;margin-top:0.5rem;" onclick="openPayPal('support')">❤️ Support Project (Pay What You Want)</button></div><div class="pricing-card"><span class="p-icon">🏢</span><h3>Team / Company</h3><div class="price"><sup>$</sup>59</div><p style="font-size:0.82rem;color:var(--muted);margin-bottom:1rem;">per team · one-time</p><ul><li>Up to 10 team members</li><li>All 5 courses</li><li>Team progress tracking</li><li>Lifetime access</li></ul><button class="btn-ghost" style="width:100%;padding:0.8rem;" onclick="startRealPayment('team')">Get Team Access</button></div></div>
+
+</div></div></div><footer>© 2025 DevAcademy · Learn programming, get hired faster</footer></div>
+<div id="page-course" class="page"><div class="course-detail-header"><div class="breadcrumb" onclick="showPage('landing')">← Back to courses</div><div style="display:flex;align-items:flex-start;gap:1.2rem;flex-wrap:wrap;"><div id="cd-icon" style="font-size:3rem;"></div><div><h1 id="cd-title"></h1><p id="cd-desc"></p><div style="display:flex;gap:0.8rem;margin-top:1rem;align-items:center;flex-wrap:wrap;"><span id="cd-access-badge" style="font-size:0.8rem;padding:4px 12px;border-radius:6px;"></span>
+
+<button id="cd-buy-btn" class="btn-success" style="padding:0.5rem 1.3rem;" onclick="startRealPayment('single')">Unlock this course — $5</button>
+
+</div></div></div></div><div class="course-detail-body"><p style="font-size:0.82rem;color:var(--muted);">Your progress</p><div class="progress-wrap"><div class="progress-fill" id="cd-progress" style="width:0%"></div></div><div class="modules-list" id="cd-lessons"></div></div></div>
+<div id="page-lesson" class="page"><div class="lesson-view-header"><button class="btn-back" id="lesson-back-btn">← Back</button><span id="lesson-view-title" style="font-size:0.95rem;font-weight:500;color:var(--muted);"></span></div><div class="lesson-view-content" id="lesson-view-body"></div></div>
+<div id="page-dashboard" class="page"><div class="dash-header"><div><h2 id="dash-greeting">Welcome back 👋</h2><p style="font-size:0.85rem;color:var(--muted);">Continue your learning journey</p></div><div style="display:flex;gap:0.8rem;align-items:center;flex-wrap:wrap;">
+
+<button class="btn-success" onclick="startRealPayment('bundle')" id="bundle-btn" style="display:none;">Get All Courses — $12</button>
+
+</div></div><div class="dash-body"><div class="dash-tabs" style="display:flex;gap:0.5rem;margin-bottom:0.8rem;"><button id="tab-courses" class="btn-primary" onclick="showDashboardTab('courses')">Courses</button><button id="tab-quizzes" class="btn-ghost" onclick="showDashboardTab('quizzes')">Quizzes</button></div><div id="dash-section-courses"><p class="section-title" style="font-size:1.2rem;">My Courses</p><p style="font-size:0.85rem;color:var(--muted);margin-bottom:1rem;">Click a course to continue learning</p><div class="dash-courses-grid" id="dash-courses"></div></div><div id="dash-section-quizzes" style="display:none;"><p class="section-title" style="font-size:1.2rem;">My Quizzes</p><div id="dash-quizzes"></div></div></div></div>
+<div class="overlay" id="auth-overlay"><div class="modal"><button class="modal-close" onclick="closeModal()">✕</button><div id="auth-login"><h2>Welcome back</h2><p class="sub">Log in to continue learning</p><div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"/></div><div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"/></div><p class="error-msg" id="login-error">Invalid email or password</p><button class="btn-primary" style="width:100%;padding:0.8rem;" onclick="doLogin()">Log in</button><div class="switch-auth">No account? <a onclick="switchAuth('register')">Register free</a></div></div><div id="auth-register" style="display:none;"><h2>Create account</h2><p class="sub">Free preview access — upgrade anytime</p><div class="form-group"><label>Name</label><input type="text" id="reg-name" placeholder="Your name"/></div><div class="form-group"><label>Email</label>
+<input 
+  type="email" 
+  id="reg-email" 
+  placeholder="you@example.com"
+  required
+  pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+  pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+/>
+</div><div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Min. 6 characters"/></div><p class="error-msg" id="reg-error">Please fill in all fields correctly</p><button class="btn-primary" style="width:100%;padding:0.8rem;" onclick="doRegister()">Create account</button><div class="switch-auth">Have an account? <a onclick="switchAuth('login')">Log in</a></div></div></div></div>
+<div class="overlay" id="paypal-overlay"><div class="modal"><button class="modal-close" onclick="closePayPal()">✕</button><h2>Complete purchase</h2>
+<p class="sub" id="pp-desc">
+Unlock full access instantly. One-time payment. Lifetime updates.
+</p>
+<div class="paypal-info" id="pp-info"></div>
+<div id="paypal-button-container" style="margin-top:1rem;"></div>
+
+<p style="font-size:0.73rem;color:var(--muted);margin-top:0.7rem;text-align:center;">Secure payment · Instant access</p><div id="paypal-success" style="display:none;text-align:center;margin-top:1rem;"><div style="font-size:2rem;margin-bottom:0.4rem;">🎉</div><p style="color:var(--accent2);font-weight:600;">Payment successful! Access unlocked.</p></div></div></div>
+
+<script>
+const lessonTemplate = {
+  intro(title, summary, points, codeTitle, code) {
+    const list = points.map(point => `<p>${point}</p>`).join('');
+    const codeBlock = code ? `<div class="code-block"><pre>${code}</pre></div>` : '';
+    return `<h2>${title}</h2><p>${summary}</p>${list}<h3>${codeTitle}</h3><div class="tip-box"><strong>Tip:</strong> Practice the idea in a small example before moving on to the next lesson.</div>${codeBlock}`;
+  },
+  quiz(title, quizId, questions) {
+    const qBlocks = questions.map((q, qi) => {
+      const opts = q.options.map((opt, oi) => {
+        const letter = String.fromCharCode(65 + oi);
+        const name = `${quizId}_q${qi}`;
+        const isCorrect = oi === q.correctIndex;
+        return `<label style="display:block;margin:6px 0;padding:6px 8px;border:1px solid var(--border);border-radius:6px;cursor:pointer;">
+  <input type="radio" name="${name}" data-correct="${isCorrect}" style="margin-right:6px;"/> ${letter}) ${opt}
+</label>`;
+      }).join('');
+      return `<div class="quiz-q" data-index="${qi}" style="margin:10px 0 14px;">
+  <p><strong>Q${qi + 1}.</strong> ${q.q}</p>
+  ${opts}
+</div>`;
+    }).join('');
+
+    return `
+      <h2>${title}</h2>
+      <div class="tip-box">Pick the best answer for each question, then check your answers.</div>
+      <div class="quiz" data-quiz-id="${quizId}">
+        ${qBlocks}
+        <div class="lesson-nav-btns">
+          <button class="btn-primary" onclick="gradeQuiz('${quizId}')">Check answers</button>
+          <button class="btn-ghost" onclick="retakeQuiz('${quizId}')">Retake</button>
+        </div>
+        <div class="quiz-result" style="margin-top:0.6rem;color:var(--muted);"></div>
+        <div class="quiz-history" style="margin-top:0.4rem;color:var(--muted);font-size:0.85rem;"></div>
+      </div>
+    `;
+  }
+};
+
+const COURSES = {
+  playwright: {
+    id: 'playwright',
+    icon: '🎭',
+    title: 'Playwright Automation',
+    desc: 'End-to-end testing from setup to CI/CD pipelines and API testing.',
+    price: 5,
+    modules: [
+      {
+        name: 'Basics & Setup',
+        lessons: [
+          {
+            id: 'pw1',
+            title: 'Introduction to Playwright',
+            free: true,
+            dur: '8 min',
+            content: lessonTemplate.intro(
+              'Introduction to Playwright',
+              'Playwright is a browser automation framework used for end-to-end testing. It can drive Chromium, Firefox, and WebKit with the same API.',
+              [
+                'It is designed for reliability, automatic waiting, and cross-browser coverage.',
+                'You can use it to test real user flows such as login, checkout, and form validation.',
+                'Playwright also supports screenshots, tracing, and debugging tools that are helpful for teams.'
+              ],
+              'Basic test example',
+              `import { test, expect } from '@playwright/test';
+
+test('home page loads', async ({ page }) => {
+  await page.goto('https://example.com');
+  await expect(page).toHaveTitle(/Example/);
+});`
+            )
+          },
+          {
+            id: 'pw2',
+            title: 'Project Structure & Config',
+            free: true,
+            dur: '10 min',
+            content: lessonTemplate.intro(
+              'Project Structure & Configuration',
+              'A clean project structure makes automated tests easier to grow and maintain.',
+              [
+                'Most Playwright projects keep tests, fixtures, page objects, and config in predictable folders.',
+                'The configuration file defines settings such as browser choice, base URL, retries, and reporters.',
+                'Good structure helps teams scale test suites without confusion.'
+              ],
+              'Typical config',
+              `import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  use: { baseURL: 'https://example.com', headless: true }
+});`
+            )
+          },
+          {
+            id: 'pw3',
+            title: 'Running & Debugging Tests',
+            free: false,
+            dur: '9 min',
+            content: lessonTemplate.intro(
+              'Running & Debugging Tests',
+              'You can run tests from the terminal, inspect failures, and use debugging tools to understand what happened.',
+              [
+                'The Playwright test runner shows passed and failed tests clearly.',
+                'Debug mode lets you pause execution and inspect browser state.',
+                'Trace viewer helps you replay actions step by step after a failure.'
+              ],
+              'Useful command',
+              `npx playwright test --debug`
+            )
+          }
+        ]
+      },
+      {
+        name: 'Locators & Selectors',
+        lessons: [
+          {
+            id: 'pw4',
+            title: 'getByRole & getByText',
+            free: false,
+            dur: '12 min',
+            content: lessonTemplate.intro(
+              'getByRole & getByText',
+              'Semantic locators make tests more resilient and easier to understand.',
+              [
+                'getByRole works well for buttons, links, headings, and other accessible elements.',
+                'getByText is useful when visible text is the clearest identifier.',
+                'Using semantic locators often produces tests that read like user actions.'
+              ],
+              'Locator example',
+              `await page.getByRole('button', { name: 'Submit' }).click();
+await page.getByText('Welcome back').isVisible();`
+            )
+          },
+          {
+            id: 'pw5',
+            title: 'CSS Selectors & XPath',
+            free: false,
+            dur: '9 min',
+            content: lessonTemplate.intro(
+              'CSS Selectors & XPath',
+              'CSS selectors and XPath are lower-level ways to find elements when semantic locators are not enough.',
+              [
+                'CSS selectors are often shorter and easier to read than XPath.',
+                'XPath can be useful for navigating complex document relationships.',
+                'Prefer simple, stable selectors instead of long fragile chains.'
+              ],
+              'Selector example',
+              `await page.locator('.product-card .buy-button').click();`
+            )
+          },
+          {
+            id: 'pw6',
+            title: 'Chaining & Filtering',
+            free: false,
+            dur: '8 min',
+            content: lessonTemplate.intro(
+              'Chaining & Filtering Locators',
+              'Locator chaining lets you narrow a selection step by step until you reach the correct element.',
+              [
+                'This is useful when several similar items appear in the same section.',
+                'Filtering helps target elements by text or nested content.',
+                'Well-structured locators reduce flaky tests.'
+              ],
+              'Chained locator',
+              `await page.locator('.card').filter({ hasText: 'Pro Plan' }).getByRole('button').click();`
+            )
+          }
+        ]
+      }
+    ]
+  },
+  java: {
+    id: 'java',
+    icon: '☕',
+    title: 'Java for Beginners',
+    desc: 'Learn Java from scratch — syntax, OOP, collections, and real-world projects.',
+    price: 5,
+    modules: [
+      {
+        name: 'Getting Started',
+        lessons: [
+          {
+            id: 'j1',
+            title: 'What is Java & Setting Up',
+            free: true,
+            dur: '9 min',
+            content: lessonTemplate.intro(
+              'What is Java & Setting Up',
+              'Java is a general-purpose, object-oriented language often used for backend systems, Android development, and enterprise software.',
+              [
+                'To get started, install a JDK and confirm the compiler works from the command line or an IDE.',
+                'Java code is compiled into bytecode, which runs on the JVM.',
+                'This cross-platform model is one reason Java became so popular.'
+              ],
+              'Hello World',
+              `public class HelloWorld {
+  public static void main(String[] args) {
+    System.out.println("Hello, world!");
+  }
+}`
+            )
+          },
+          {
+            id: 'j2',
+            title: 'Variables, Types & Operators',
+            free: true,
+            dur: '11 min',
+            content: lessonTemplate.intro(
+              'Variables, Types & Operators',
+              'Variables let you store data, and types tell Java what kind of data each variable holds.',
+              [
+                'Java is statically typed, so every variable has a declared type.',
+                'Operators help you perform arithmetic, comparisons, and logical checks.',
+                'Using the correct type reduces bugs and improves clarity.'
+              ],
+              'Examples',
+              `int age = 21;
+double price = 5.99;
+boolean active = true;`
+            )
+          },
+          {
+            id: 'j3',
+            title: 'Control Flow: if, switch, loops',
+            free: false,
+            dur: '12 min',
+            content: lessonTemplate.intro(
+              'Control Flow: if, switch, loops',
+              'Control flow determines which code runs and how many times it runs.',
+              [
+                'if statements are useful for decisions.',
+                'switch is useful when matching one value against many cases.',
+                'Loops help repeat work without copying code.'
+              ],
+              'For loop',
+              `for (int i = 0; i < 3; i++) {
+  System.out.println(i);
+}`
+            )
+          }
+        ]
+      }
+    ]
+  },
+  javascript: {
+    id: 'javascript',
+    icon: '🟨',
+    title: 'JavaScript Essentials',
+    desc: 'Master modern JavaScript — DOM, async/await, ES6+, and building web apps.',
+    price: 5,
+    modules: [
+      {
+        name: 'JS Fundamentals',
+        lessons: [
+          {
+            id: 'js1',
+            title: 'Introduction & How JS Works',
+            free: true,
+            dur: '8 min',
+            content: lessonTemplate.intro(
+              'Introduction & How JavaScript Works',
+              'JavaScript brings interactivity to the browser and can also run on servers through environments like Node.js.',
+              [
+                'It works with HTML and CSS to build complete web experiences.',
+                'The browser parses and executes JavaScript so it can react to events and update the DOM.',
+                'A strong understanding of the browser environment helps you debug faster.'
+              ],
+              'Console output',
+              `console.log("JavaScript is running");`
+            )
+          },
+          {
+            id: 'js2',
+            title: 'Variables: var, let, const',
+            free: true,
+            dur: '10 min',
+            content: lessonTemplate.intro(
+              'Variables: var, let, const',
+              'Modern JavaScript usually uses let and const instead of var.',
+              [
+                'const is best when the variable should not be reassigned.',
+                'let is for values that change over time.',
+                'var has older scoping behavior that can create confusing bugs.'
+              ],
+              'Examples',
+              `const name = "Ava";
+let score = 5;
+score += 1;`
+            )
+          },
+          {
+            id: 'js3',
+            title: 'Functions & Arrow Functions',
+            free: false,
+            dur: '12 min',
+            content: lessonTemplate.intro(
+              'Functions & Arrow Functions',
+              'Functions package reusable logic. Arrow functions provide a shorter syntax, especially for callbacks and array methods.',
+              [
+                'Good functions do one thing well.',
+                'Arrow functions are concise and common in modern codebases.',
+                'Be careful: arrow functions do not bind their own this.'
+              ],
+              'Function examples',
+              `function add(a, b) {
+  return a + b;
+}
+
+const greet = (name) => 'Hello, ' + name + '!';`
+            )
+          },
+          {
+            id: 'js4',
+            title: 'Arrays & Objects',
+            free: false,
+            dur: '13 min',
+            content: lessonTemplate.intro(
+              'Arrays & Objects',
+              'Arrays hold ordered lists while objects hold named properties.',
+              [
+                'Arrays are ideal for collections of similar items.',
+                'Objects represent a single thing with several fields.',
+                'You will use both constantly in JavaScript apps.'
+              ],
+              'Examples',
+              `const tasks = ['learn JS', 'build app'];
+const user = { name: 'Mia', age: 21 };`
+            )
+          }
+        ]
+      }
+    ]
+  },
+  dotnet: {
+    id: 'dotnet',
+    icon: '🔷',
+    title: '.NET & C# Fundamentals',
+    desc: 'Build powerful apps with C# and the .NET ecosystem from the ground up.',
+    price: 5,
+    modules: [
+      {
+        name: 'C# Basics',
+        lessons: [
+          {
+            id: 'dn1',
+            title: 'Intro to .NET & C#',
+            free: true,
+            dur: '9 min',
+            content: lessonTemplate.intro(
+              'Introduction to .NET & C#',
+              '.NET is a platform for building applications and C# is one of its main languages.',
+              [
+                'You can use .NET for APIs, desktop apps, services, and web apps.',
+                'C# is known for strong tooling and readable syntax.',
+                'Learning the runtime and project structure helps make the ecosystem less intimidating.'
+              ],
+              'Hello .NET',
+              `using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, .NET!");
+    }
+}`
+            )
+          },
+          {
+            id: 'dn2',
+            title: 'Types, Variables & Operators',
+            free: true,
+            dur: '11 min',
+            content: lessonTemplate.intro(
+              'Types, Variables & Operators',
+              'C# uses explicit types, making the compiler a helpful safety net.',
+              [
+                'Common types include int, double, bool, and string.',
+                'Operators are used for calculations and comparisons.',
+                'Strong typing helps catch bugs early.'
+              ],
+              'Examples',
+              `int age = 25;
+double price = 5.99;
+bool isActive = true;`
+            )
+          },
+          {
+            id: 'dn3',
+            title: 'Control Structures',
+            free: false,
+            dur: '10 min',
+            content: lessonTemplate.intro(
+              'Control Structures',
+              'Conditionals and loops are the basis of program logic in C#.',
+              [
+                'if and switch choose between code paths.',
+                'for and while repeat actions until conditions change.',
+                'Readable logic is easier to debug and extend.'
+              ],
+              'Loop example',
+              `for (int i = 0; i < 3; i++)
+{
+    Console.WriteLine(i);
+}`
+            )
+          }
+        ]
+      }
+    ]
+  },
+  cpp: {
+    id: 'cpp',
+    icon: '⚙️',
+    title: 'C++ for Beginners',
+    desc: 'Learn systems programming with C++ — memory, pointers, OOP, and STL.',
+    price: 5,
+    modules: [
+      {
+        name: 'C++ Foundations',
+        lessons: [
+          {
+            id: 'c1',
+            title: 'Intro to C++ & Compilation',
+            free: true,
+            dur: '10 min',
+            content: lessonTemplate.intro(
+              'Intro to C++ & Compilation',
+              'C++ is a high-performance language often used in systems programming, games, and tools.',
+              [
+                'Compilation transforms source code into machine code.',
+                'Understanding the build process helps you diagnose compiler errors.',
+                'C++ gives you a lot of control, which brings both power and responsibility.'
+              ],
+              'Simple program',
+              `#include <iostream>
+
+int main() {
+  std::cout << "Hello C++";
+  return 0;
+}`
+            )
+          },
+          {
+            id: 'c2',
+            title: 'Variables, Types & I/O',
+            free: true,
+            dur: '11 min',
+            content: lessonTemplate.intro(
+              'Variables, Types & I/O',
+              'C++ variables need explicit types and common input/output is handled with streams.',
+              [
+                'Basic types include int, double, char, and bool.',
+                'Use std::cout for output and std::cin for input.',
+                'Correct types make your programs safer and easier to understand.'
+              ],
+              'Basic input/output',
+              `int age = 20;
+std::cout << age << std::endl;`
+            )
+          },
+          {
+            id: 'c3',
+            title: 'Operators & Control Flow',
+            free: false,
+            dur: '10 min',
+            content: lessonTemplate.intro(
+              'Operators & Control Flow',
+              'Operators perform calculations and comparisons while control flow decides what code runs.',
+              [
+                'Use if statements to branch and loops to repeat work.',
+                'Readable control flow is especially important in longer programs.',
+                'Practice tracing the exact path through your code.'
+              ],
+              'Conditional example',
+              `if (score >= 50) {
+  std::cout << "Passed";
+}`
+            )
+          }
+        ]
+      }
+    ]
+  }
+};
+
+// Extra beginner and advanced modules appended programmatically so we don't touch the original COURSE definitions
+try {
+  // Playwright — add two more modules
+  COURSES.playwright.modules.push(
+    {
+      name: 'Assertions & Test Patterns',
+      lessons: [
+        {
+          id: 'pw7',
+          title: 'Assertions Deep Dive',
+          free: true,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Assertions Deep Dive',
+            'Understand soft vs. hard assertions, expect polls, and best practices for reliable checks.',
+            [
+              'Use expect with toBeVisible, toHaveText, toHaveURL for common cases.',
+              'Prefer stable expectations close to user intent rather than brittle CSS-only checks.',
+              'Leverage timeouts and soft assertions when aggregating multiple verifications.'
+            ],
+            'Common assertions',
+            `import { test, expect } from '@playwright/test';
+
+test('checkout shows total', async ({ page }) => {
+  await page.goto('https://myshop.example');
+  await page.getByRole('button', { name: 'Add to cart' }).click();
+  await expect(page.getByTestId('cart-total')).toHaveText('$5.00');
+});`
+          )
+        },
+        {
+          id: 'pw8',
+          title: 'Fixtures & Test Hooks',
+          free: false,
+          dur: '12 min',
+          content: lessonTemplate.intro(
+            'Fixtures & Test Hooks',
+            'Share setup/teardown, auth sessions, and test data with fixtures and hooks.',
+            [
+              'Use test.beforeEach and test.afterEach for per-test setup.',
+              'Create fixtures for authenticated pages and common objects.',
+              'Reduce duplication and speed up suites with storageState.'
+            ],
+            'Auth fixture example',
+            `import { test as base } from '@playwright/test';
+
+type Fixtures = { authedPage: import('@playwright/test').Page };
+
+const test = base.extend<Fixtures>({
+  authedPage: async ({ browser }, use) => {
+    const context = await browser.newContext({ storageState: 'state.json' });
+    const page = await context.newPage();
+    await use(page);
+    await context.close();
+  }
+});
+
+export { test };`
+          )
+        },
+        {
+          id: 'pw9',
+          title: 'Page Object Model (POM)',
+          free: false,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Page Object Model (POM)',
+            'Encapsulate selectors and actions to keep tests readable and maintainable.',
+            [
+              'Represent a page/screen as a class with locators and methods.',
+              'Hide selector details behind intention-revealing methods like login or selectPlan.',
+              'Reuse POMs across tests to avoid duplication.'
+            ],
+            'Simple POM',
+            `export class LoginPage {
+  constructor(page) {
+    this.page = page;
+    this.email = page.getByLabel('Email');
+    this.pass = page.getByLabel('Password');
+    this.submit = page.getByRole('button', { name: 'Log in' });
+  }
+  async login(email, pass) {
+    await this.email.fill(email);
+    await this.pass.fill(pass);
+    await this.submit.click();
+  }
+}`
+          )
+        },
+        {
+          id: 'pwq1',
+          title: 'Quiz: Locators & Assertions',
+          free: false,
+          dur: '6 min',
+          content: lessonTemplate.intro(
+            'Quiz: Locators & Assertions',
+            'Quick check to reinforce good locator choices and reliable asserts.',
+            [
+              'Prefer role- and text-based locators when semantics are present.',
+              'Keep assertions close to user-observable outcomes.'
+            ],
+            'Sample quiz (pseudo)',
+            `Q1: Choose the best locator for the primary submit button.
+A) page.locator('#main > div:nth-child(2) > button')
+B) page.getByRole('button', { name: 'Submit' }) <- Best
+
+Q2: Which assertion ensures text appears eventually?
+A) expect(el.textContent()).toBe('Thanks')
+B) expect(el).toHaveText('Thanks') <- Best`
+          )
+        }
+      ]
+    },
+    {
+      name: 'CI, API, and Tracing',
+      lessons: [
+        {
+          id: 'pw10',
+          title: 'API Testing',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'API Testing with Playwright',
+            'Use request context to test APIs alongside UI flows.',
+            [
+              'Create a request object from the test context.',
+              'Assert status codes and JSON bodies.',
+              'Combine API setup with UI verification for end-to-end confidence.'
+            ],
+            'API example',
+            `import { test, expect } from '@playwright/test';
+
+test('creates a user', async ({ request }) => {
+  const res = await request.post('/api/users', {
+    data: { name: 'Ava' }
+  });
+  expect(res.ok()).toBeTruthy();
+  const body = await res.json();
+  expect(body.name).toBe('Ava');
+});`
+          )
+        },
+        {
+          id: 'pw11',
+          title: 'Running in CI (GitHub Actions)',
+          free: false,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Running in CI (GitHub Actions)',
+            'Configure headless browsers, cache dependencies, and publish reports.',
+            [
+              'Use official setup-node and cache steps for faster runs.',
+              'Store Playwright reports as artifacts for debugging.',
+              'Run on a matrix of OS/browsers if needed.'
+            ],
+            'Workflow snippet',
+            `name: tests
+on: [push, pull_request]
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npx playwright test --reporter=line`
+          )
+        },
+        {
+          id: 'pw12',
+          title: 'Trace Viewer & Screenshots',
+          free: false,
+          dur: '9 min',
+          content: lessonTemplate.intro(
+            'Trace Viewer & Screenshots',
+            'Capture traces and screenshots to debug failures post-run.',
+            [
+              'Enable tracing on failure or on first retry.',
+              'Attach screenshots to reports for quick triage.',
+              'Use trace.playwright.dev to inspect timeline and network calls.'
+            ],
+            'Enable tracing (config)',
+            `import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  use: { trace: 'on-first-retry', screenshot: 'only-on-failure' }
+});`
+          )
+        }
+      ]
+    }
+  );
+
+  // Java — add OOP and Collections modules
+  COURSES.java.modules.push(
+    {
+      name: 'OOP Basics',
+      lessons: [
+        {
+          id: 'j4',
+          title: 'Classes & Objects',
+          free: true,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Classes & Objects',
+            'Model real-world concepts with classes that bundle state and behavior.',
+            [
+              'Define fields and methods to represent an object.',
+              'Instantiate classes with new to get usable objects.',
+              'Keep responsibilities small and focused.'
+            ],
+            'Example',
+            `class User {\n  String name;\n  User(String name) { this.name = name; }\n  void greet() { System.out.println("Hello, " + name); }\n}\n\npublic class Main {\n  public static void main(String[] args){ new User("Ava").greet(); }\n}`
+          )
+        },
+        {
+          id: 'j5',
+          title: 'Methods & Overloading',
+          free: false,
+          dur: '9 min',
+          content: lessonTemplate.intro(
+            'Methods & Overloading',
+            'Create reusable methods and overload them for convenience.',
+            [
+              'Overloading lets multiple methods share a name with different parameters.',
+              'Prefer clear names and short parameter lists.',
+              'Return values document outcomes explicitly.'
+            ],
+            'Overload example',
+            `class MathOps {\n  int add(int a, int b){ return a + b; }\n  double add(double a, double b){ return a + b; }\n}`
+          )
+        },
+        {
+          id: 'j6',
+          title: 'Encapsulation & Access',
+          free: false,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Encapsulation & Access Modifiers',
+            'Protect invariants with private fields and expose behavior via public methods.',
+            [
+              'Use private for fields and getters/setters if needed.',
+              'Limit visibility to reduce coupling.',
+              'Keep classes cohesive and small.'
+            ],
+            'Encapsulation',
+            `class Account {\n  private double balance;\n  public void deposit(double amount){ if(amount > 0) balance += amount; }\n  public double getBalance(){ return balance; }\n}`
+          )
+        },
+        {
+          id: 'jq1',
+          title: 'Quiz: OOP Basics',
+          free: false,
+          dur: '6 min',
+          content: lessonTemplate.intro(
+            'Quiz: OOP Basics',
+            'Test your understanding of classes, methods, and visibility.',
+            [
+              'Identify proper access modifiers.',
+              'Choose cohesive class designs.'
+            ],
+            'Sample quiz (pseudo)',
+            `Q1: Which modifier hides a field from other classes?\nA) public B) private <- Best C) protected\nQ2: Which is a good class responsibility?\nA) Do everything B) One focused job <- Best`
+          )
+        }
+      ]
+    },
+    {
+      name: 'Collections & Streams (Intro)',
+      lessons: [
+        {
+          id: 'j7',
+          title: 'Lists & Maps',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Lists & Maps',
+            'Store ordered items in List and key-value pairs in Map.',
+            [
+              'ArrayList is a common resizable list implementation.',
+              'HashMap offers average O(1) lookups by key.',
+              'Choose the right structure for your access pattern.'
+            ],
+            'Collections example',
+            `import java.util.*;\nList<String> names = new ArrayList<>();\nnames.add("Ava");\nMap<String,Integer> scores = new HashMap<>();\nscores.put("Ava", 10);`
+          )
+        },
+        {
+          id: 'j8',
+          title: 'Stream API Basics',
+          free: false,
+          dur: '12 min',
+          content: lessonTemplate.intro(
+            'Stream API Basics',
+            'Process collections with map, filter, and reduce in a fluent way.',
+            [
+              'Streams are not data structures; they operate on data sources.',
+              'Prefer pure transformations for clarity.',
+              'Beware of side effects inside stream operations.'
+            ],
+            'Stream sample',
+            `import java.util.*;\nvar nums = List.of(1,2,3,4);\nint sumSquares = nums.stream().map(n -> n*n).reduce(0, Integer::sum);`
+          )
+        }
+      ]
+    }
+  );
+
+  // JavaScript — DOM/events and async modules
+  COURSES.javascript.modules.push(
+    {
+      name: 'DOM & Events',
+      lessons: [
+        {
+          id: 'js5',
+          title: 'Selecting & Updating the DOM',
+          free: true,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Selecting & Updating the DOM',
+            'Find elements and change content, attributes, and classes.',
+            [
+              'querySelector and querySelectorAll cover most needs.',
+              'textContent and innerHTML update content.',
+              'classList toggles visual states.'
+            ],
+            'DOM basics',
+            `const title = document.querySelector('#title');\ntitle.textContent = 'Hello DOM';\ntitle.classList.add('highlight');`
+          )
+        },
+        {
+          id: 'js6',
+          title: 'Event Handling',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Event Handling',
+            'Respond to user input with addEventListener and event delegation.',
+            [
+              'Always remove listeners if you add many dynamically.',
+              'Use delegation on parent nodes for efficient lists.',
+              'Prevent default when overriding link or form behavior.'
+            ],
+            'Click example',
+            `document.querySelector('#btn').addEventListener('click', () => {\n  console.log('Clicked');\n});`
+          )
+        },
+        {
+          id: 'js7',
+          title: 'Quiz: DOM & Events',
+          free: false,
+          dur: '6 min',
+          content: lessonTemplate.intro(
+            'Quiz: DOM & Events',
+            'Reinforce DOM selection and event patterns.',
+            [
+              'Prefer delegation for dynamic lists.',
+              'Use classList for stateful UI changes.'
+            ],
+            'Sample quiz (pseudo)',
+            `Q1: Best way to handle clicks on many list items?\nA) Add a listener to each item\nB) Add one listener to ul and check event.target <- Best`
+          )
+        }
+      ]
+    },
+    {
+      name: 'Asynchronous JavaScript',
+      lessons: [
+        {
+          id: 'js8',
+          title: 'Callbacks, Promises, async/await',
+          free: false,
+          dur: '12 min',
+          content: lessonTemplate.intro(
+            'Callbacks, Promises, async/await',
+            'Move from callback pyramids to readable async/await.',
+            [
+              'Promises represent eventual completion.',
+              'async/await makes async code look synchronous.',
+              'Always use try/catch for awaited calls that can fail.'
+            ],
+            'Promise to async/await',
+            `function getData() {\n  return fetch('/api').then(r => r.json());\n}\n\nasync function main(){\n  try {\n    const data = await getData();\n    console.log(data);\n  } catch (e) {\n    console.error('Failed', e);\n  }\n}`
+          )
+        },
+        {
+          id: 'js9',
+          title: 'Fetch API & Error Handling',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Fetch API & Error Handling',
+            'Load JSON data from APIs and handle network or server errors.',
+            [
+              'Check response.ok before parsing JSON.',
+              'Use AbortController for timeouts and cancellation.',
+              'Gracefully show fallback UI on errors.'
+            ],
+            'Fetch example',
+            `async function loadUser(){\n  const ctrl = new AbortController();\n  const res = await fetch('/users/1', { signal: ctrl.signal });\n  if(!res.ok) throw new Error('Bad response');\n  return res.json();\n}`
+          )
+        }
+      ]
+    }
+  );
+
+  // .NET/C# — OOP and LINQ
+  COURSES.dotnet.modules.push(
+    {
+      name: 'OOP with C#',
+      lessons: [
+        {
+          id: 'dn4',
+          title: 'Classes & Objects',
+          free: true,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Classes & Objects',
+            'Define classes with properties and methods to model data and behavior.',
+            [
+              'Auto-properties simplify getters/setters.',
+              'Constructors set valid initial state.',
+              'Use PascalCase for public members.'
+            ],
+            'Example',
+            `public class User {\n  public string Name { get; set; }\n  public User(string name) { Name = name; }\n  public void Greet() => Console.WriteLine($"Hello, {Name}");\n}`
+          )
+        },
+        {
+          id: 'dn5',
+          title: 'Encapsulation with Properties',
+          free: false,
+          dur: '9 min',
+          content: lessonTemplate.intro(
+            'Encapsulation with Properties',
+            'Back your properties with private fields to protect invariants.',
+            [
+              'Validate in setters when needed.',
+              'Keep fields private; expose behavior via methods.',
+              'Prefer immutability where possible.'
+            ],
+            'Backing field',
+            `public class Account {\n  private decimal _balance;\n  public void Deposit(decimal amount){ if(amount > 0) _balance += amount; }\n  public decimal Balance => _balance;\n}`
+          )
+        },
+        {
+          id: 'dn6',
+          title: 'Inheritance & Polymorphism',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Inheritance & Polymorphism',
+            'Reuse behavior with base classes and override virtual members.',
+            [
+              'Prefer composition over deep inheritance trees.',
+              'Mark methods virtual and override as needed.',
+              'Use interfaces to model capabilities.'
+            ],
+            'Polymorphism',
+            `public abstract class Shape {\n  public abstract double Area();\n}\npublic class Circle : Shape {\n  public double R;\n  public Circle(double r){ R = r; }\n  public override double Area() => Math.PI * R * R;\n}`
+          )
+        },
+        {
+          id: 'dnq1',
+          title: 'Quiz: OOP in C#',
+          free: false,
+          dur: '6 min',
+          content: lessonTemplate.intro(
+            'Quiz: OOP in C#',
+            'Check understanding of classes, properties, and inheritance.',
+            [
+              'Spot the correct use of auto-properties.',
+              'Recognize when to use interfaces.'
+            ],
+            'Sample quiz (pseudo)',
+            `Q1: Which keyword allows overrides?\nA) base B) virtual <- Best C) sealed`
+          )
+        }
+      ]
+    },
+    {
+      name: 'Collections & LINQ (Intro)',
+      lessons: [
+        {
+          id: 'dn7',
+          title: 'Lists, Dictionaries, foreach',
+          free: false,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Lists, Dictionaries, foreach',
+            'Store items efficiently and iterate over them idiomatically.',
+            [
+              'List<T> is a resizable array; Dictionary<TKey,TValue> maps keys to values.',
+              'Use foreach for clear iteration.',
+              'Pick the right structure for lookups vs. order.'
+            ],
+            'Example',
+            `var scores = new Dictionary<string,int>();\nscores["Ava"] = 10;\nforeach (var kv in scores) { Console.WriteLine(kv.Key); }`
+          )
+        },
+        {
+          id: 'dn8',
+          title: 'LINQ Basics',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'LINQ Basics',
+            'Query in-memory collections with Where, Select, and Aggregate.',
+            [
+              'LINQ provides a readable pipeline over sequences.',
+              'Prefer expressions without side effects.',
+              'Use method syntax for consistency.'
+            ],
+            'LINQ sample',
+            `var nums = new[]{1,2,3,4};\nvar evens = nums.Where(n => n % 2 == 0).ToArray();`
+          )
+        }
+      ]
+    }
+  );
+
+  // C++ — functions/pointers and OOP basics
+  COURSES.cpp.modules.push(
+    {
+      name: 'Functions & Pointers',
+      lessons: [
+        {
+          id: 'c4',
+          title: 'Functions & Parameters',
+          free: true,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Functions & Parameters',
+            'Split programs into reusable functions and understand pass-by-value vs reference.',
+            [
+              'Pass by reference with & to modify arguments.',
+              'Keep functions small and focused.',
+              'Return values communicate results.'
+            ],
+            'Example',
+            `#include <iostream>\nvoid inc(int &x){ x++; }\nint main(){ int a=1; inc(a); std::cout << a; }`
+          )
+        },
+        {
+          id: 'c5',
+          title: 'Pointers & Addresses',
+          free: false,
+          dur: '11 min',
+          content: lessonTemplate.intro(
+            'Pointers & Addresses',
+            'Work with memory addresses directly for powerful, low-level control.',
+            [
+              'Use * to declare pointers and & to take addresses.',
+              'Always initialize pointers to avoid undefined behavior.',
+              'Prefer smart pointers in modern C++ where possible.'
+            ],
+            'Pointer basics',
+            `int v = 42;\nint *p = &v;\n*p = 43;`
+          )
+        }
+      ]
+    },
+    {
+      name: 'OOP Basics',
+      lessons: [
+        {
+          id: 'c6',
+          title: 'Classes & Objects',
+          free: false,
+          dur: '10 min',
+          content: lessonTemplate.intro(
+            'Classes & Objects',
+            'Define simple classes to group data and behavior.',
+            [
+              'Constructors set valid initial state.',
+              'Methods implement behavior on the class.',
+              'Use const member functions when not modifying state.'
+            ],
+            'Class example',
+            `#include <iostream>\nclass User {\n  std::string name;\npublic:\n  User(std::string n): name(n) {}\n  void greet() const { std::cout << "Hello, " << name; }\n};`
+          )
+        },
+        {
+          id: 'c7',
+          title: 'Constructors & Methods',
+          free: false,
+          dur: '9 min',
+          content: lessonTemplate.intro(
+            'Constructors & Methods',
+            'Provide multiple constructors and const-correct methods.',
+            [
+              'Initializer lists set fields efficiently.',
+              'Overload constructors for convenience.',
+              'Mark methods const when they do not change state.'
+            ],
+            'Constructors',
+            `class Point {\n  int x, y;\npublic:\n  Point(): x(0), y(0) {}\n  Point(int x, int y): x(x), y(y) {}\n};`
+          )
+        },
+        {
+          id: 'cq1',
+          title: 'Quiz: C++ Basics',
+          free: false,
+          dur: '6 min',
+          content: lessonTemplate.intro(
+            'Quiz: C++ Basics',
+            'Check your understanding of functions, pointers, and classes.',
+            [
+              'Identify pointer vs reference usage.',
+              'Choose correct constructor forms.'
+            ],
+            'Sample quiz (pseudo)',
+            `Q1: Which takes an address?\nA) & B) * <- Best (dereference) C) ->\nQ2: Best way to pass to modify caller value?\nA) Pass by value B) Pass by reference <- Best`
+          )
+        }
+      ]
+    }
+  );
+  // Advanced modules per course
+  // Playwright advanced: Component testing & visuals
+  COURSES.playwright.modules.push({
+    name: 'Component Testing & Visuals',
+    lessons: [
+      {
+        id: 'pw13',
+        title: 'Component Testing Basics',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Component Testing Basics',
+          'Test components in isolation with fast feedback loops.',
+          [
+            'Mount components with realistic props.',
+            'Prefer role/text locators for stable assertions.',
+            'Keep tests focused and deterministic.'
+          ],
+          'Example (pseudo)',
+          `import { test, expect } from '@playwright/experimental-ct-react';
+import Button from './Button';
+
+test('button renders', async ({ mount }) => {
+  const cmp = await mount(<Button label="Buy" />);
+  await expect(cmp.getByRole('button', { name: 'Buy' })).toBeVisible();
+});`
+        )
+      },
+      {
+        id: 'pw14',
+        title: 'Visual Snapshot Testing',
+        free: false,
+        dur: '10 min',
+        content: lessonTemplate.intro(
+          'Visual Snapshot Testing',
+          'Catch unintended UI changes with image snapshots.',
+          [
+            'Use toHaveScreenshot on pages or locators.',
+            'Run with stable fonts and deterministic data.',
+            'Review diffs on CI failures.'
+          ],
+          'Snapshot example',
+          `import { test, expect } from '@playwright/test';
+
+test('homepage visual', async ({ page }) => {
+  await page.goto('/');
+  await expect(page).toHaveScreenshot('home.png');
+});`
+        )
+      },
+      {
+        id: 'pw15',
+        title: 'Network Mocking & Interception',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Network Mocking & Interception',
+          'Stabilize tests by intercepting flaky network calls.',
+          [
+            'Use page.route to fulfill or modify requests.',
+            'Simulate error states and slow responses.',
+            'Isolate UI logic from backend volatility.'
+          ],
+          'Mock example',
+          `await page.route('**/api/products', route => {
+  route.fulfill({ status: 200, body: JSON.stringify([{ id: 1, name: 'Pro' }]) });
+});`
+        )
+      }
+    ]
+  });
+
+  // Java advanced: Exceptions, Files, Testing
+  COURSES.java.modules.push({
+    name: 'Exceptions, Files & Testing',
+    lessons: [
+      {
+        id: 'j9',
+        title: 'Exceptions & try/catch',
+        free: false,
+        dur: '10 min',
+        content: lessonTemplate.intro(
+          'Exceptions & try/catch',
+          'Handle exceptional cases without crashing the program.',
+          [
+            'Use checked exceptions for recoverable errors.',
+            'Always close resources in finally or try-with-resources.',
+            'Create custom exceptions for domain errors.'
+          ],
+          'Example',
+          `try { Integer.parseInt("abc"); } catch (NumberFormatException e) { System.out.println("Bad number"); }`
+        )
+      },
+      {
+        id: 'j10',
+        title: 'File I/O (NIO.2)',
+        free: false,
+        dur: '12 min',
+        content: lessonTemplate.intro(
+          'File I/O (NIO.2)',
+          'Read and write files using Paths and Files utilities.',
+          [
+            'Prefer Files.readString/writeString for simple cases.',
+            'Use UTF-8 consistently.',
+            'Check existence and permissions before writing.'
+          ],
+          'NIO.2 example',
+          `import java.nio.file.*;\nvar p = Path.of("notes.txt");\nFiles.writeString(p, "Hello");\nString s = Files.readString(p);`
+        )
+      },
+      {
+        id: 'j11',
+        title: 'Unit Testing with JUnit',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Unit Testing with JUnit',
+          'Write small, fast tests to validate logic.',
+          [
+            'Use @Test and assertions like assertEquals.',
+            'Arrange-Act-Assert keeps tests readable.',
+            'Mock collaborators when necessary.'
+          ],
+          'JUnit sample',
+          `import static org.junit.jupiter.api.Assertions.*;\nimport org.junit.jupiter.api.Test;\n\nclass MathTest {\n  @Test void adds(){ assertEquals(4, 2+2); }\n}`
+        )
+      }
+    ]
+  });
+
+  // JavaScript advanced: Tooling & Modules
+  COURSES.javascript.modules.push({
+    name: 'Tooling & Modules',
+    lessons: [
+      {
+        id: 'js10',
+        title: 'ES Modules: import/export',
+        free: false,
+        dur: '12 min',
+        content: lessonTemplate.intro(
+          'ES Modules: import/export',
+          'Organize code into modules with clear interfaces.',
+          [
+            'Use named and default exports appropriately.',
+            'Prefer ESM over legacy globals.',
+            'Keep modules small and cohesive.'
+          ],
+          'ESM example',
+          `// math.js\nexport function add(a,b){ return a+b; }\n// main.js\nimport { add } from './math.js';\nconsole.log(add(2,2));`
+        )
+      },
+      {
+        id: 'js11',
+        title: 'NPM scripts & Linting',
+        free: false,
+        dur: '10 min',
+        content: lessonTemplate.intro(
+          'NPM scripts & Linting',
+          'Automate tasks and enforce code style.',
+          [
+            'Use npm run for common workflows.',
+            'Configure ESLint for quality.',
+            'Prettier for consistent formatting.'
+          ],
+          'package.json snippet',
+          `{
+  \"scripts\": { \"dev\": \"vite\", \"test\": \"jest\" }
+}`
+        )
+      },
+      {
+        id: 'js12',
+        title: 'Testing with Jest (Intro)',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Testing with Jest (Intro)',
+          'Test pure functions quickly with Jest.',
+          [
+            'Use describe/test for structure.',
+            'Matchers like toEqual and toThrow.',
+            'Keep tests fast and deterministic.'
+          ],
+          'Jest sample',
+          `test('adds', () => { expect(2+2).toBe(4); });`
+        )
+      }
+    ]
+  });
+
+  // .NET advanced: Async & I/O
+  COURSES.dotnet.modules.push({
+    name: 'Async & I/O',
+    lessons: [
+      {
+        id: 'dn9',
+        title: 'async/await & Tasks',
+        free: false,
+        dur: '12 min',
+        content: lessonTemplate.intro(
+          'async/await & Tasks',
+          'Write asynchronous code that stays readable.',
+          [
+            'Use Task and async methods for non-blocking I/O.',
+            'await naturally composes asynchronous calls.',
+            'Avoid blocking on async code (no .Result).'
+          ],
+          'Async sample',
+          `using System.Threading.Tasks;\nasync Task<int> GetAsync(){ await Task.Delay(10); return 42; }`
+        )
+      },
+      {
+        id: 'dn10',
+        title: 'HTTP with HttpClient',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'HTTP with HttpClient',
+          'Call external APIs asynchronously.',
+          [
+            'Reuse a single HttpClient instance.',
+            'Check status codes and parse JSON.',
+            'Handle timeouts and cancellations.'
+          ],
+          'HttpClient sample',
+          `using var http = new HttpClient();\nvar text = await http.GetStringAsync(\"https://example.com\");`
+        )
+      },
+      {
+        id: 'dn11',
+        title: 'Files & Streams',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Files & Streams',
+          'Read and write files safely with using statements.',
+          [
+            'Prefer File.ReadAllText/WriteAllText for simple cases.',
+            'Use using to dispose streams.',
+            'Consider async I/O for large files.'
+          ],
+          'File sample',
+          `System.IO.File.WriteAllText(\"notes.txt\", \"Hello\");\nvar text = System.IO.File.ReadAllText(\"notes.txt\");`
+        )
+      }
+    ]
+  });
+
+  // C++ advanced: STL & Memory
+  COURSES.cpp.modules.push({
+    name: 'STL & Memory',
+    lessons: [
+      {
+        id: 'c8',
+        title: 'Vectors, Maps, Iterators',
+        free: false,
+        dur: '12 min',
+        content: lessonTemplate.intro(
+          'Vectors, Maps, Iterators',
+          'Use standard containers and range-based for loops.',
+          [
+            'std::vector for dynamic arrays.',
+            'std::map for sorted key-value pairs.',
+            'Prefer range-based for over indices.'
+          ],
+          'STL sample',
+          `#include <vector>\n#include <map>\nstd::vector<int> v = {1,2,3};\nfor(int n : v){};\nstd::map<std::string,int> m; m[\"a\"]=1;`
+        )
+      },
+      {
+        id: 'c9',
+        title: 'Smart Pointers',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'Smart Pointers',
+          'Manage dynamic memory with RAII helpers.',
+          [
+            'unique_ptr owns one object exclusively.',
+            'shared_ptr shares ownership with ref counting.',
+            'Avoid raw new/delete in modern C++.'
+          ],
+          'unique_ptr',
+          `#include <memory>\nauto p = std::make_unique<int>(42);`
+        )
+      },
+      {
+        id: 'c10',
+        title: 'RAII & Resource Management',
+        free: false,
+        dur: '11 min',
+        content: lessonTemplate.intro(
+          'RAII & Resource Management',
+          'Acquire resources in constructors and release in destructors.',
+          [
+            'Guarantee cleanup on all code paths.',
+            'Prefer smart pointers and standard containers.',
+            'Keep ownership rules simple.'
+          ],
+          'RAII idea',
+          `struct File { FILE* f; File(const char* p){ f=fopen(p, \"r\"); } ~File(){ if(f) fclose(f); } };`
+        )
+      }
+    ]
+  });
+
+} catch (e) { /* no-op */ }
+
+// Link Playwright lessons to external HTML content files
+try {
+  const pwLessons = COURSES.playwright?.modules?.flatMap(m => m.lessons) || [];
+  pwLessons.forEach(l => {
+    if (/^pw\d+$/i.test(l.id)) {
+      l.contentPath = `content/playwright/${l.id}.html`;
+    }
+  });
+} catch (e) { /* no-op */ }
+
+// Link JavaScript lessons to external HTML content files
+try {
+  const jsLessons = COURSES.javascript?.modules?.flatMap(m => m.lessons) || [];
+  jsLessons.forEach(l => {
+    const isQuiz = typeof l.title === 'string' && /^\s*Quiz:/i.test(l.title);
+    if (!isQuiz && /^js\d+$/i.test(l.id)) {
+      l.contentPath = `content/javascript/${l.id}.html`;
+    }
+  });
+} catch (e) { /* no-op */ }
+
+// Link Java lessons to external HTML content files
+try {
+  const javaLessons = COURSES.java?.modules?.flatMap(m => m.lessons) || [];
+  javaLessons.forEach(l => {
+    const isQuiz = typeof l.title === 'string' && /^\s*Quiz:/i.test(l.title);
+    if (!isQuiz && /^j\d+$/i.test(l.id)) {
+      l.contentPath = `content/java/${l.id}.html`;
+    }
+  });
+} catch (e) { /* no-op */ }
+
+// Link .NET lessons to external HTML content files
+try {
+  const dnLessons = COURSES.dotnet?.modules?.flatMap(m => m.lessons) || [];
+  dnLessons.forEach(l => {
+    const isQuiz = typeof l.title === 'string' && /^\s*Quiz:/i.test(l.title);
+    if (!isQuiz && /^dn\d+$/i.test(l.id)) {
+      l.contentPath = `content/dotnet/${l.id}.html`;
+    }
+  });
+} catch (e) { /* no-op */ }
+
+// Link C++ lessons to external HTML content files
+try {
+  const cppLessons = COURSES.cpp?.modules?.flatMap(m => m.lessons) || [];
+  cppLessons.forEach(l => {
+    const isQuiz = typeof l.id === 'string' && /^cq/i.test(l.id);
+    if (!isQuiz && /^c\d+$/i.test(l.id)) {
+      l.contentPath = `content/cpp/${l.id}.html`;
+    }
+  });
+} catch (e) { /* no-op */ }
+
+// Replace quiz placeholder content with interactive quizzes
+try {
+  const setQuiz = (courseId, lessonId, quizId, title, questions) => {
+    const course = COURSES[courseId];
+    if(!course) return;
+    const lesson = course.modules.flatMap(m => m.lessons).find(l => l.id === lessonId);
+    if(lesson) lesson.content = lessonTemplate.quiz(title, quizId, questions);
+  };
+
+  // Playwright quiz
+  setQuiz('playwright', 'pwq1', 'quiz_pw1', 'Quiz: Locators & Assertions', [
+    { q: 'Choose the best locator for the primary submit button.', options: [
+      "page.locator('#main > div:nth-child(2) > button')",
+      "page.getByRole('button', { name: 'Submit' })",
+      "page.locator('.btn.btn-primary:eq(0)')"
+    ], correctIndex: 1 },
+    { q: 'Which assertion waits for text to eventually appear?', options: [
+      "expect(el.textContent()).toBe('Thanks')",
+      "expect(el).toHaveText('Thanks')"
+    ], correctIndex: 1 }
+  ]);
+
+  // Java quiz
+  setQuiz('java', 'jq1', 'quiz_j1', 'Quiz: OOP Basics', [
+    { q: 'Which modifier hides a field from other classes?', options: ['public', 'private', 'protected'], correctIndex: 1 },
+    { q: 'Which is a good class responsibility?', options: ['Do everything', 'One focused job', 'Manage unrelated concerns'], correctIndex: 1 }
+  ]);
+
+  // JavaScript quiz
+  setQuiz('javascript', 'js7', 'quiz_js1', 'Quiz: DOM & Events', [
+    { q: 'Best way to handle clicks for a dynamic list of items?', options: [
+      'Attach a click handler to every item individually',
+      'Add one handler to the <ul> and check event.target',
+      'Use inline onclick on each <li>'
+    ], correctIndex: 1 },
+    { q: 'Best way to toggle a visual active state on an element?', options: [
+      'element.style.display = "none"',
+      'element.classList.toggle("active")',
+      'element.innerHTML = "active"'
+    ], correctIndex: 1 }
+  ]);
+
+  // .NET/C# quiz
+  setQuiz('dotnet', 'dnq1', 'quiz_dn1', 'Quiz: OOP in C#', [
+    { q: 'Which keyword marks a method that can be overridden?', options: ['base', 'virtual', 'sealed'], correctIndex: 1 },
+    { q: 'What should interfaces represent?', options: ['Capabilities/behavior', 'Implementation details', 'Random utilities'], correctIndex: 0 }
+  ]);
+
+  // C++ quiz
+  setQuiz('cpp', 'cq1', 'quiz_c1', 'Quiz: C++ Basics', [
+    { q: 'Which operator takes the address of a variable?', options: ['&', '*', '->'], correctIndex: 0 },
+    { q: 'Best way to let a function modify a caller\'s variable?', options: ['Pass by value', 'Pass by reference', 'Return a const value'], correctIndex: 1 }
+  ]);
+} catch (e) { /* no-op */ }
+
+let users = [];
+let currentUser = null;
+function initApp(){
+  try {
+    const saved = localStorage.getItem('da_session');
+
+    if(saved){
+      currentUser = JSON.parse(saved);
+
+      console.log("Restored session:", currentUser);
+
+      loadDashboard(); // 🔥 THIS WAS MISSING
+    } else {
+      showPage('landing');
+    }
+  } catch(e){
+    console.error("Init failed:", e);
+    showPage('landing');
+  }
+}
+let currentCourseId = null;
+let currentLessonId = null;
+let ppPurchaseType = 'single';
+
+try { users = JSON.parse(localStorage.getItem('da_users') || '[]'); } catch(e) {}
+try { currentUser = JSON.parse(localStorage.getItem('da_session') || 'null'); } catch(e) {}
+
+function saveUsers(){ try { localStorage.setItem('da_users', JSON.stringify(users)); } catch(e) {} }
+function saveSession(){ try { localStorage.setItem('da_session', JSON.stringify(currentUser)); } catch(e) {} }
+async function syncCurrentUserToCloud() {
+  try {
+    if (currentUser && currentUser.email) {
+      await cloudSaveUser(currentUser);
+      localStorage.setItem('da_session', JSON.stringify(currentUser));
+    }
+  } catch (e) {
+    console.error('Cloud sync failed', e);
+  }
+}
+// Progress & completion helpers
+function getCompletedKey(courseId, lessonId){ return `${courseId}:${lessonId}`; }
+function isCompleted(courseId, lessonId){
+  if(!currentUser) return false;
+  const comp = currentUser.completed || [];
+  return comp.includes(getCompletedKey(courseId, lessonId));
+}
+function markCompleted(lessonId, courseId){
+  if(!currentUser) return;
+  const key = getCompletedKey(courseId, lessonId);
+  if(!currentUser.completed) currentUser.completed = [];
+  if(!currentUser.completed.includes(key)) currentUser.completed.push(key);
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx >= 0){
+    if(!users[idx].completed) users[idx].completed = [];
+    if(!users[idx].completed.includes(key)) users[idx].completed.push(key);
+  }
+  saveUsers();
+  saveSession();
+  syncCurrentUserToCloud();
+}
+function getCourseProgress(courseId){
+  const total = (COURSES[courseId]?.modules || []).reduce((acc, m) => acc + m.lessons.length, 0);
+  const completed = (currentUser?.completed || []).filter(k => k.startsWith(courseId + ':')).length;
+  return { completed, total };
+}
+function saveQuizResult(quizId, correct, total, selections, pass){
+  if(!currentUser) return;
+  if(!currentUser.quizzes) currentUser.quizzes = {};
+  const prev = currentUser.quizzes[quizId] || {};
+  const history = Array.isArray(prev.history) ? prev.history.slice() : [];
+  if(total > 0){
+    history.push({ at: Date.now(), correct, total, pass: !!pass });
+  }
+  currentUser.quizzes[quizId] = {
+    ...prev,
+    correct,
+    total,
+    pass: !!pass,
+    selections: selections || prev.selections || {},
+    history,
+    at: Date.now(),
+    courseId: currentCourseId,
+    lessonId: currentLessonId
+  };
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx >= 0){
+    if(!users[idx].quizzes) users[idx].quizzes = {};
+    users[idx].quizzes[quizId] = currentUser.quizzes[quizId];
+  }
+  saveUsers();
+  saveSession();
+  syncCurrentUserToCloud();
+}
+
+function getQuizState(quizId){
+  return currentUser?.quizzes?.[quizId] || null;
+}
+
+function saveQuizSelections(quizId, selections){
+  if(!currentUser) return;
+  if(!currentUser.quizzes) currentUser.quizzes = {};
+  const prev = currentUser.quizzes[quizId] || {};
+  currentUser.quizzes[quizId] = { ...prev, selections: selections, at: Date.now(), courseId: currentCourseId, lessonId: currentLessonId };
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx >= 0){
+    if(!users[idx].quizzes) users[idx].quizzes = {};
+    users[idx].quizzes[quizId] = currentUser.quizzes[quizId];
+  }
+  saveUsers();
+  saveSession();
+  syncCurrentUserToCloud();
+}
+
+function renderQuizScore(quizId, correct, total, pass){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  const result = root.querySelector('.quiz-result');
+  if(result){
+    result.textContent = `Score: ${correct} / ${total}${pass ? ' — Passed!' : ''}`;
+    result.style.color = pass ? 'var(--accent2)' : 'var(--muted)';
+  }
+}
+
+function outlineQuizAnswers(quizId){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  root.querySelectorAll('.quiz-q').forEach((qEl, idx) => {
+    const name = `${quizId}_q${idx}`;
+    const selected = root.querySelector(`input[name="${name}"]:checked`);
+    qEl.querySelectorAll('label').forEach(l => l.style.outline = '');
+    if(selected){
+      const lab = selected.closest('label');
+      if(selected.dataset.correct === 'true'){
+        lab.style.outline = '2px solid var(--accent2)';
+      } else {
+        lab.style.outline = '2px solid var(--danger)';
+        const correctInput = qEl.querySelector('input[data-correct="true"]');
+        if(correctInput){
+          const cl = correctInput.closest('label');
+          if(cl) cl.style.outline = '2px dashed var(--accent2)';
+        }
+      }
+    }
+  });
+}
+
+function initQuizzesInLesson(){
+  document.querySelectorAll('.quiz').forEach(root => {
+    const quizId = root.getAttribute('data-quiz-id');
+    if(!quizId) return;
+
+    // Apply saved selections
+    const state = getQuizState(quizId);
+    if(state && state.selections){
+      Object.entries(state.selections).forEach(([qi, oi]) => {
+        const name = `${quizId}_q${qi}`;
+        const inputs = root.querySelectorAll(`input[name="${name}"]`);
+        if(inputs && inputs[oi]) inputs[oi].checked = true;
+      });
+      // Render prior feedback if available
+      if(typeof state.correct === 'number' && typeof state.total === 'number'){
+        outlineQuizAnswers(quizId);
+        renderQuizScore(quizId, state.correct, state.total, !!state.pass);
+      }
+    }
+
+    // Save selections on change
+    root.addEventListener('change', e => {
+      if(e.target && e.target.matches('input[type="radio"]')){
+        const selections = {};
+        root.querySelectorAll('.quiz-q').forEach((qEl, idx) => {
+          const name = `${quizId}_q${idx}`;
+          const inputs = root.querySelectorAll(`input[name="${name}"]`);
+          inputs.forEach((inp, oi) => { if(inp.checked) selections[idx] = oi; });
+        });
+        saveQuizSelections(quizId, selections);
+      }
+    });
+
+    renderQuizHistory(quizId);
+  });
+}
+
+function getAdjacentLessonIds(courseId, lessonId){
+  const c = COURSES[courseId];
+  if(!c) return { prevId: null, nextId: null };
+  const all = c.modules.flatMap(m => m.lessons);
+  const idx = all.findIndex(l => l.id === lessonId);
+  const prev = idx > 0 ? all[idx - 1] : null;
+  const next = (idx >= 0 && idx < all.length - 1) ? all[idx + 1] : null;
+  return { prevId: prev ? prev.id : null, nextId: next ? next.id : null };
+}
+
+function injectLessonTOC(){
+  const container = document.getElementById('lesson-html-body');
+  if(!container) return;
+  const hs = Array.from(container.querySelectorAll('h2, h3'));
+  if(hs.length < 3) return;
+  const buildList = () => {
+    const ul = document.createElement('ul');
+    ul.style.listStyle = 'none';
+    ul.style.paddingLeft = '0';
+    hs.forEach((h, i) => {
+      if(!h.id){ h.id = 'sec-' + i + '-' + (h.textContent || '').toLowerCase().replace(/[^a-z0-9]+/g,'-'); }
+      const li = document.createElement('li');
+      li.style.margin = '4px 0';
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = (h.tagName === 'H3' ? '↳ ' : '') + (h.textContent || '');
+      a.style.color = 'var(--accent)';
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    return ul;
+  };
+  // Inline TOC inside content
+  const toc = document.createElement('div');
+  toc.className = 'tip-box';
+  toc.style.marginBottom = '1rem';
+  const title = document.createElement('div');
+  title.style.fontWeight = '600';
+  title.style.marginBottom = '6px';
+  title.textContent = 'On this page';
+  toc.appendChild(title);
+  toc.appendChild(buildList());
+  container.prepend(toc);
+  // Sticky TOC (desktop)
+  let sticky = document.getElementById('lesson-toc-sticky');
+  if(sticky) sticky.remove();
+  sticky = document.createElement('div');
+  sticky.id = 'lesson-toc-sticky';
+  sticky.className = 'lesson-toc-sticky';
+  const stitle = document.createElement('div');
+  stitle.style.fontWeight = '600';
+  stitle.style.marginBottom = '6px';
+  stitle.textContent = 'On this page';
+  sticky.appendChild(stitle);
+  sticky.appendChild(buildList());
+  document.body.appendChild(sticky);
+}
+
+function buildLessonNav(courseId, lessonId){
+  const c = COURSES[courseId];
+  if(!c) return '';
+  const { prevId, nextId } = getAdjacentLessonIds(courseId, lessonId);
+  const paid = hasCourse(courseId);
+  const findLesson = (id) => c.modules.flatMap(m => m.lessons).find(l => l.id === id);
+  const cur = findLesson(lessonId) || {};
+  const dur = cur.dur || '';
+  const diff = (cur.diff || cur.difficulty || 'Beginner');
+  const meta = `<div style=\"display:flex;gap:.5rem;align-items:center;margin-bottom:.5rem;flex-wrap:wrap;\">`+
+               (dur?`<span class=\"meta-tag\">${dur}</span>`:'')+
+               (diff?`<span class=\"meta-tag\">${diff}</span>`:'')+
+               `</div>`;
+
+  let prevBtn = '';
+  if(prevId){
+    const prevL = findLesson(prevId);
+    const canOpenPrev = prevL ? (prevL.free || paid) : false;
+    prevBtn = canOpenPrev
+      ? `<button class="btn-ghost" onclick="openLesson('${prevId}','${courseId}')">Previous Lesson</button>`
+      : `<button class="btn-ghost" disabled>Previous (Locked)</button>`;
+  }
+
+  let nextBtn = '';
+  if(nextId){
+    const nextL = findLesson(nextId);
+    const canOpenNext = nextL ? (nextL.free || paid) : false;
+    nextBtn = canOpenNext
+      ? `<button class="btn-primary" onclick="openLesson('${nextId}','${courseId}')">Next Lesson</button>`
+      : `<button class="btn-success" onclick="openPayPal('single')">Unlock to continue — $5</button>`;
+  } else {
+    nextBtn = `<button class="btn-primary" onclick="openCourse('${courseId}')">Back to Course</button>`;
+  }
+
+  const resetBtn = `<button class=\"btn-ghost\" onclick=\"resetLessonProgress('${courseId}','${lessonId}')\">Reset this lesson</button>`;
+
+  return meta + `<div class=\"lesson-nav-btns\">${prevBtn}${nextBtn}${resetBtn}</div>`;
+}
+
+function renderQuizHistory(quizId){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  const el = root.querySelector('.quiz-history');
+  if(!el) return;
+  const state = getQuizState(quizId);
+  const hist = state?.history || [];
+  if(hist.length === 0){ el.textContent = ''; return; }
+  const best = Math.max(...hist.map(h => h.total > 0 ? Math.round((h.correct/h.total)*100) : 0));
+  const last = hist[hist.length-1];
+  const lastPct = last && last.total > 0 ? Math.round((last.correct/ last.total) * 100) : 0;
+  el.textContent = `Attempts: ${hist.length} · Last: ${lastPct}% · Best: ${best}%`;
+}
+
+function retakeQuiz(quizId){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  // Clear selections
+  root.querySelectorAll('input[type="radio"]').forEach(inp => { inp.checked = false; });
+  // Clear outlines
+  root.querySelectorAll('label').forEach(l => l.style.outline = '');
+  // Clear result text
+  const result = root.querySelector('.quiz-result');
+  if(result){ result.textContent = ''; result.style.color = 'var(--muted)'; }
+  // Save cleared selections and non-passing state (history preserved)
+  saveQuizSelections(quizId, {});
+  saveQuizResult(quizId, 0, 0, {}, false);
+  renderQuizHistory(quizId);
+}
+
+function getQuizState(quizId){
+  return currentUser?.quizzes?.[quizId] || null;
+}
+
+
+function renderQuizScore(quizId, correct, total, pass){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  const result = root.querySelector('.quiz-result');
+  if(result){
+    result.textContent = `Score: ${correct} / ${total}${pass ? ' — Passed!' : ''}`;
+    result.style.color = pass ? 'var(--accent2)' : 'var(--muted)';
+  }
+}
+
+function outlineQuizAnswers(quizId){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  root.querySelectorAll('.quiz-q').forEach((qEl, idx) => {
+    const name = `${quizId}_q${idx}`;
+    const selected = root.querySelector(`input[name="${name}"]:checked`);
+    qEl.querySelectorAll('label').forEach(l => l.style.outline = '');
+    if(selected){
+      const lab = selected.closest('label');
+      if(selected.dataset.correct === 'true'){
+        lab.style.outline = '2px solid var(--accent2)';
+      } else {
+        lab.style.outline = '2px solid var(--danger)';
+        const correctInput = qEl.querySelector('input[data-correct="true"]');
+        if(correctInput){
+          const cl = correctInput.closest('label');
+          if(cl) cl.style.outline = '2px dashed var(--accent2)';
+        }
+      }
+    }
+  });
+}
+
+function initQuizzesInLesson(){
+  document.querySelectorAll('.quiz').forEach(root => {
+    const quizId = root.getAttribute('data-quiz-id');
+    if(!quizId) return;
+
+    // Apply saved selections
+    const state = getQuizState(quizId);
+    if(state && state.selections){
+      Object.entries(state.selections).forEach(([qi, oi]) => {
+        const name = `${quizId}_q${qi}`;
+        const inputs = root.querySelectorAll(`input[name="${name}"]`);
+        if(inputs && inputs[oi]) inputs[oi].checked = true;
+      });
+      // Render prior feedback if available
+      if(typeof state.correct === 'number' && typeof state.total === 'number'){
+        outlineQuizAnswers(quizId);
+        renderQuizScore(quizId, state.correct, state.total, !!state.pass);
+      }
+    }
+
+    // Save selections on change
+    root.addEventListener('change', e => {
+      if(e.target && e.target.matches('input[type="radio"]')){
+        const selections = {};
+        root.querySelectorAll('.quiz-q').forEach((qEl, idx) => {
+          const name = `${quizId}_q${idx}`;
+          const inputs = root.querySelectorAll(`input[name="${name}"]`);
+          inputs.forEach((inp, oi) => { if(inp.checked) selections[idx] = oi; });
+        });
+        saveQuizSelections(quizId, selections);
+      }
+    });
+  });
+}
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  if(page) page.classList.add('active');
+  if (name === 'landing') {
+    try { renderLandingCourses(); } catch(e) {}
+  }
+  window.scrollTo(0, 0);
+}
+
+function scrollToId(id){
+  const element = document.getElementById(id);
+  if(element) element.scrollIntoView({ behavior: 'smooth' });
+}
+
+function showDashboardTab(tab){
+  const secC = document.getElementById('dash-section-courses');
+  const secQ = document.getElementById('dash-section-quizzes');
+  const btnC = document.getElementById('tab-courses');
+  const btnQ = document.getElementById('tab-quizzes');
+  if(!secC || !secQ || !btnC || !btnQ) return;
+  const onCourses = tab === 'courses';
+  secC.style.display = onCourses ? 'block' : 'none';
+  secQ.style.display = onCourses ? 'none' : 'block';
+  btnC.className = onCourses ? 'btn-primary' : 'btn-ghost';
+  btnQ.className = onCourses ? 'btn-ghost' : 'btn-primary';
+  if(!onCourses) renderDashboardQuizzes();
+}
+
+function renderDashboardQuizzes(){
+  const cont = document.getElementById('dash-quizzes');
+  if(!cont) return;
+  const data = currentUser?.quizzes || {};
+  const entries = Object.entries(data);
+  if(entries.length === 0){
+    cont.innerHTML = '<p style="color:var(--muted);">No quiz attempts yet.</p>';
+    return;
+  }
+  // Group by course
+  const byCourse = {};
+  entries.forEach(([qid, q]) => {
+    const cid = q.courseId || 'unknown';
+    if(!byCourse[cid]) byCourse[cid] = [];
+    byCourse[cid].push({ id: qid, ...q });
+  });
+  const html = Object.keys(byCourse).map(cid => {
+    const course = COURSES[cid];
+    const title = course ? course.title : cid;
+    // Course pass rate across all attempts
+    const attempts = byCourse[cid].reduce((a, q) => a + (Array.isArray(q.history) ? q.history.length : 0), 0);
+    const passes = byCourse[cid].reduce((a, q) => a + (Array.isArray(q.history) ? q.history.filter(h => h.pass).length : 0), 0);
+    const rate = attempts > 0 ? Math.round((passes / attempts) * 100) : 0;
+
+    const items = byCourse[cid].map(q => {
+      const lastPct = q.total > 0 ? Math.round((q.correct / q.total) * 100) : 0;
+      const bestPct = Array.isArray(q.history) && q.history.length
+        ? Math.max(...q.history.map(h => h.total > 0 ? Math.round((h.correct/h.total)*100) : 0))
+        : lastPct;
+      const passMark = q.pass ? '✓' : '';
+      const ltitle = (() => {
+        if(course){
+          const l = course.modules.flatMap(m => m.lessons).find(l => l.id === q.lessonId);
+          return l ? l.title : (q.lessonId || q.id);
+        }
+        return q.lessonId || q.id;
+      })();
+      return `<div class="adm-stat-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:0.6rem;flex-wrap:wrap;"><div><div style=\"font-weight:600;\">${ltitle}</div><div style=\"font-size:0.8rem;color:var(--muted);\">${q.id}</div></div><div style=\"display:flex;gap:0.5rem;align-items:center;\"><span style=\"font-size:0.9rem;\">Last: ${lastPct}% · Best: ${bestPct}% ${passMark}</span><button class=\"btn-ghost\" onclick=\"retakeQuizFromDashboard('${q.id}','${cid}','${q.lessonId}')\">Retake</button><button class=\"btn-primary\" onclick=\"openLesson('${q.lessonId}','${cid}')\">Open</button></div></div></div>`;
+    }).join('');
+    return `<div style="margin-bottom:1rem;"><p class="section-title" style="font-size:1rem;margin-bottom:0.2rem;">${title}</p><p style="color:var(--muted);font-size:0.9rem;margin-bottom:0.4rem;">Pass rate: ${rate}% (${passes}/${attempts})</p><div style="display:flex;flex-direction:column;gap:0.5rem;">${items}</div></div>`;
+  }).join('');
+  cont.innerHTML = html;
+}
+
+function resetLessonProgress(courseId, lessonId){
+  if(!currentUser) return;
+  const key = `${courseId}:${lessonId}`;
+  // Remove completed flag
+  currentUser.completed = (currentUser.completed || []).filter(k => k !== key);
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx >= 0){
+    users[idx].completed = (users[idx].completed || []).filter(k => k !== key);
+  }
+  // Remove any quiz state for this lesson
+  const quizzes = currentUser.quizzes || {};
+  Object.keys(quizzes).forEach(qid => {
+    const q = quizzes[qid];
+    if(q.courseId === courseId && q.lessonId === lessonId){
+      delete quizzes[qid];
+      if(idx >= 0 && users[idx].quizzes) delete users[idx].quizzes[qid];
+    }
+  });
+  currentUser.quizzes = quizzes;
+  saveUsers();
+  saveSession();
+  // Reload lesson UI
+  openLesson(lessonId, courseId);
+}
+
+function resetCourseProgress(courseId){
+  if(!currentUser) return;
+  // Remove all completed for this course
+  currentUser.completed = (currentUser.completed || []).filter(k => !k.startsWith(courseId + ':'));
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  if(idx >= 0){
+    users[idx].completed = (users[idx].completed || []).filter(k => !k.startsWith(courseId + ':'));
+  }
+  // Remove all quiz states for this course
+  const quizzes = currentUser.quizzes || {};
+  Object.keys(quizzes).forEach(qid => {
+    const q = quizzes[qid];
+    if(q.courseId === courseId){
+      delete quizzes[qid];
+      if(idx >= 0 && users[idx].quizzes) delete users[idx].quizzes[qid];
+    }
+  });
+  currentUser.quizzes = quizzes;
+  saveUsers();
+  saveSession();
+  // Rerender course and dashboard progress
+  openCourse(courseId);
+}
+
+function resetAllProgress(){
+  if(!currentUser) return;
+  const idx = users.findIndex(u => u.email === currentUser.email);
+  currentUser.completed = [];
+  currentUser.quizzes = {};
+  if(idx >= 0){
+    users[idx].completed = [];
+    users[idx].quizzes = {};
+  }
+  saveUsers();
+  saveSession();
+  if(currentCourseId) openCourse(currentCourseId);
+  loadDashboard();
+}
+
+function retakeQuizFromDashboard(quizId, courseId, lessonId){
+  // Clear saved selections and zero-out current score (history is preserved)
+  saveQuizSelections(quizId, {});
+  saveQuizResult(quizId, 0, 0, {}, false);
+  renderDashboardQuizzes();
+  // Navigate to lesson to retake
+  openLesson(lessonId, courseId);
+}
+
+function renderMarkdown(md){
+  // Very small markdown renderer (headings, code fences, inline code, lists, bold/italic)
+  let html = md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  // Fenced code blocks ```
+  html = html.replace(/```([\s\S]*?)```/g, (m, code) => `<div class="code-block"><pre>${code.replace(/&lt;/g,'<').replace(/&gt;/g,'>')}</pre></div>`);
+  // Headings
+  html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+             .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+             .replace(/^#\s+(.+)$/gm, '<h2>$1</h2>');
+  // Lists
+  html = html.replace(/^\s*\-\s+(.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*?<\/li>)(\s*(<li>.*?<\/li>))+?/gs, (m) => `<ul>${m}</ul>`);
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  // Bold/italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+             .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Paragraphs
+  html = html.replace(/^(?!<h\d|<div|<ul|<li|<pre|<code)(.+)$/gm, '<p>$1</p>');
+  return html;
+}
+
+function renderLandingCourses(){
+  const el = document.getElementById('landing-courses');
+  if(!el) return;
+  el.innerHTML = Object.values(COURSES).map(c => {
+    const lessonCount = c.modules.reduce((acc, module) => acc + module.lessons.length, 0);
+    return `<div class="course-card" onclick="openCourse('${c.id}')"><div class="course-price">$5</div><span class="lang-icon">${c.icon}</span><h3>${c.title}</h3><p>${c.desc}</p><div class="course-meta"><span class="meta-tag">${c.modules.length} modules</span><span class="meta-tag">${lessonCount} lessons</span><span class="meta-tag">Beginner</span></div></div>`;
+  }).join('');
+}
+
+function hasCourse(courseId){
+  if(!currentUser) return false;
+  const paid = currentUser.paid || [];
+  return paid.includes('bundle') || paid.includes(courseId);
+}
+
+function openCourse(courseId){
+  currentCourseId = courseId;
+  const c = COURSES[courseId];
+  if(!c) return;
+
+  document.getElementById('cd-icon').textContent = c.icon;
+  document.getElementById('cd-title').textContent = c.title;
+  document.getElementById('cd-desc').textContent = c.desc;
+
+  const paid = hasCourse(courseId);
+  const badge = document.getElementById('cd-access-badge');
+  const buyBtn = document.getElementById('cd-buy-btn');
+
+  if(paid){
+    badge.textContent = '✓ Full Access';
+    badge.style.cssText = 'font-size:0.8rem;padding:4px 12px;border-radius:6px;background:rgba(0,229,160,0.15);color:var(--accent2)';
+    buyBtn.style.display = 'none';
+  } else {
+    badge.textContent = 'Free Preview';
+    badge.style.cssText = 'font-size:0.8rem;padding:4px 12px;border-radius:6px;background:rgba(124,92,252,0.15);color:var(--accent)';
+    buyBtn.style.display = 'inline-flex';
+  }
+
+  // Progress calculation
+  const progress = getCourseProgress(courseId);
+  const totalLessons = progress.total;
+  const completedCount = progress.completed;
+  const pct = totalLessons ? Math.round((completedCount / totalLessons) * 100) : 0;
+  const pf = document.getElementById('cd-progress');
+  if(pf) pf.style.width = pct + '%';
+
+  let html = `<div class=\"lesson-nav-btns\" style=\"margin:0.8rem 0;\"><button class=\"btn-ghost\" onclick=\"resetCourseProgress('${courseId}')\">Reset course progress</button></div>`;
+  let modCount = 0;
+  c.modules.forEach(mod => {
+    modCount++;
+    html += `<p class=\"module-section-title\">Module ${modCount} — ${mod.name}</p>`;
+    mod.lessons.forEach(l => {
+      const canOpen = l.free || paid;
+      const done = isCompleted(courseId, l.id);
+      const rowCls = `${canOpen ? '' : 'locked'} ${done ? 'done' : ''}`.trim();
+      const badgeCls = done ? 'lb-done' : (canOpen ? 'lb-free' : 'lb-lock');
+      const badgeText = done ? 'Done' : (canOpen ? 'Open' : 'Locked');
+      html += `<div class=\"lesson-row ${rowCls}\" onclick=\"${canOpen ? `openLesson('${l.id}','${courseId}')` : ''}\"><div class=\"l-icon\">▶</div><div class=\"l-text\"><h4>${l.title}</h4><p>${l.dur}</p></div><span class=\"l-badge ${badgeCls}\">${badgeText}</span></div>`;
+    });
+  });
+
+  if(!paid){
+    const lessonCount = c.modules.reduce((acc, module) => acc + module.lessons.length, 0);
+    html += `<div class=\"unlock-banner\"><h3>🔒 Unlock all ${lessonCount} lessons</h3><p>Get full access to every module, code example, and exercise.</p><button class=\"btn-success\" style=\"padding:0.7rem 2rem;\" onclick=\"openPayPal('single')\">Unlock ${c.title} — $5</button></div>`;
+  }
+
+  const lessonsRoot = document.getElementById('cd-lessons');
+  lessonsRoot.innerHTML = html;
+  // Append Resources section if present (only when served over http/https)
+  if(location.protocol !== 'file:'){
+    const resPath = `content/${courseId}/resources.html`;
+    fetch(resPath).then(r => r.ok ? r.text() : Promise.reject()).then(rhtml => {
+      const section = document.createElement('div');
+      section.innerHTML = `<p class=\"section-title\" style=\"margin-top:1.2rem;\">Resources</p>` + rhtml;
+      lessonsRoot.appendChild(section);
+    }).catch(() => {});
+  }
+  showPage('course');
+}
+
+function openLesson(lessonId, courseId){
+  const c = COURSES[courseId || currentCourseId];
+  if(!c) return;
+
+  const allLessons = c.modules.flatMap(m => m.lessons);
+  const lesson = allLessons.find(l => l.id === lessonId);
+  if(!lesson) return;
+  currentLessonId = lessonId;
+
+  document.getElementById('lesson-view-title').textContent = c.title + ' › ' + lesson.title;
+  document.getElementById('lesson-back-btn').onclick = () => openCourse(courseId || currentCourseId);
+
+  const paid = hasCourse(courseId || currentCourseId);
+  const allowed = lesson.free || paid;
+  const cid = courseId || currentCourseId;
+
+  showPage('lesson');
+
+  if(allowed && lesson.contentPath){
+    const el = document.getElementById('lesson-view-body');
+    if(location.protocol === 'file:'){
+      // Local file mode blocks fetch(): show helpful message
+      const msg = `<div class=\"warn-box\"><strong>Local file mode:</strong> Your browser blocks loading external lesson files from file://. Start a local server (e.g., <code>python -m http.server 5500</code> or <code>npx http-server -p 5500</code>) and open <code>http://localhost:5500/devacademy.html</code>.</div>`;
+      el.innerHTML = msg + buildLessonNav(cid, lessonId);
+    } else {
+      el.innerHTML = '<p style="color:var(--muted);">Loading lesson...</p>';
+      const fetchWithFallback = (path) => fetch(path).then(r => r.ok ? r.text() : Promise.reject());
+      const toMdPath = (p) => p.endsWith('.html') ? p.replace(/\.html$/i, '.md') : p + '.md';
+      fetchWithFallback(lesson.contentPath)
+        .then(html => {
+          el.innerHTML = `<div id=\"lesson-html-body\">${html}</div>` + buildLessonNav(cid, lessonId);
+          injectLessonTOC();
+          initQuizzesInLesson();
+        })
+        .catch(() => fetchWithFallback(toMdPath(lesson.contentPath))
+          .then(md => {
+            const rendered = renderMarkdown(md);
+            el.innerHTML = `<div id="lesson-html-body">${rendered}</div>` + buildLessonNav(cid, lessonId);
+            injectLessonTOC();
+            initQuizzesInLesson();
+          })
+          .catch(() => {
+            el.innerHTML = `<div class="warn-box"><strong>Could not load lesson content.</strong> Please check your connection or try again later.</div>` + buildLessonNav(cid, lessonId);
+          })
+        );
+        }
+      } else {
+        const el = document.getElementById('lesson-view-body');
+        if (!allowed) {
+        el.innerHTML = `<div class="unlock-banner"><h3>🔒 Lesson locked</h3><p>Unlock this course to continue learning.</p><button class="btn-success" onclick="openPayPal('single')">Unlock — $5</button></div>` + buildLessonNav(cid, lessonId);
+        } else {
+        el.innerHTML = `<div id="lesson-html-body">${lesson.content || ''}</div>` + buildLessonNav(cid, lessonId);
+        injectLessonTOC();
+        initQuizzesInLesson();
+        }
+      }
+}
+
+function gradeQuiz(quizId){
+  const root = document.querySelector(`.quiz[data-quiz-id="${quizId}"]`);
+  if(!root) return;
+  const qs = Array.from(root.querySelectorAll('.quiz-q'));
+  let correct = 0;
+  const selections = {};
+  qs.forEach((qEl, idx) => {
+    const name = `${quizId}_q${idx}`;
+    const opts = Array.from(root.querySelectorAll(`input[name="${name}"]`));
+    const sel = opts.find(o => o.checked);
+    if(sel){
+      selections[idx] = opts.indexOf(sel);
+      if(sel.dataset.correct === 'true') correct++;
+    }
+  });
+  const total = qs.length;
+  const pass = total > 0 ? (correct/total) >= 0.7 : false;
+  saveQuizSelections(quizId, selections);
+  saveQuizResult(quizId, correct, total, selections, pass);
+  outlineQuizAnswers(quizId);
+  renderQuizScore(quizId, correct, total, pass);
+}
+
+// Auth modal helpers
+function openModal(view){
+  const ov = document.getElementById('auth-overlay');
+  if(!ov) return;
+  ov.classList.add('open');
+  switchAuth(view || 'login');
+}
+function closeModal(){
+  const ov = document.getElementById('auth-overlay');
+  if(ov) ov.classList.remove('open');
+}
+function switchAuth(view){
+  const login = document.getElementById('auth-login');
+  const reg = document.getElementById('auth-register');
+  if(!login || !reg) return;
+  const showLogin = view === 'login';
+  login.style.display = showLogin ? 'block' : 'none';
+  reg.style.display = showLogin ? 'none' : 'block';
+}
+
+
+
+// PayPal overlay (simulated)
+function openPayPal(type){
+  if(type === 'support'){
+    window.open(PAYPAL_DONATE_URL, '_blank');
+    return;
+  }
+
+  if(type === 'bundle'){
+    window.open(PAYPAL_BUNDLE_URL, '_blank');
+    return;
+  }
+
+  if(type === 'team'){
+    window.open(PAYPAL_TEAM_URL, '_blank');
+    return;
+  }
+
+  ppPurchaseType = type || 'single';
+  const ov = document.getElementById('paypal-overlay');
+  const info = document.getElementById('pp-info');
+  const desc = document.getElementById('pp-desc');
+  const btn = document.getElementById('pp-btn-label');
+
+  if(ov){ ov.classList.add('open'); }
+
+  if(desc){
+    desc.textContent = 'Unlock full course access';
+  }
+
+  if(info){
+    info.innerHTML = `
+      <div class="paypal-row"><span>Item</span><span>${currentCourseId ? COURSES[currentCourseId].title : 'Single Course'}</span></div>
+      <div class="paypal-row"><span>Price</span><span>$5</span></div>
+      <div class="paypal-divider"></div>
+      <div class="paypal-row"><span>Total</span><span>$5</span></div>`;
+  }
+
+  if(btn){ btn.textContent = 'Pay with PayPal'; }
+  const ok = document.getElementById('paypal-success');
+  if(ok) ok.style.display='none';
+}
+function closePayPal(){ const ov = document.getElementById('paypal-overlay'); if(ov) ov.classList.remove('open'); }
+
+async function startRealPayment(type){
+  const email = currentUser?.email;
+
+  if(!email){
+    alert("Please login first");
+    return;
+  }
+
+  const overlay = document.getElementById('paypal-overlay');
+  const info = document.getElementById('pp-info');
+  const container = document.getElementById('paypal-button-container');
+
+  if(container) container.innerHTML = '';
+
+  let label = 'Single Course';
+  if(type === 'bundle') label = 'All Courses Bundle';
+  if(type === 'team') label = 'Team Access';
+
+  if(info){
+    info.innerHTML = `<div class="paypal-row"><span>Preparing</span><span>${label}</span></div>`;
+  }
+
+  let res, orderText, order;
+  try {
+    res = await fetch(API_URL + "/create-order", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ type, email, courseId: currentCourseId || null })
+    });
+
+    orderText = await res.text();
+    //console.log("create-order raw:", orderText);
+
+    order = JSON.parse(orderText);
+  } catch (err) {
+    console.error("create-order failed:", err, orderText);
+    alert("Could not create PayPal order.");
+    return;
+  }
+
+  if(!res.ok || !order.id){
+    console.error("Bad order response:", order);
+    alert("Could not create PayPal order.");
+    return;
+  }
+
+  if(overlay) overlay.classList.add('open');
+  if(container) container.innerHTML = '';
+
+  paypal.Buttons({
+    createOrder: () => order.id,
+
+    onApprove: async (data) => {
+      const captureRes = await fetch(API_URL + "/capture-order", {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ orderID: data.orderID })
+      });
+
+      const captureText = await captureRes.text();
+      console.log("capture-order raw:", captureText);
+
+      if(!captureRes.ok){
+        alert("Payment capture failed.");
+        return;
+      }
+
+      alert("✅ Payment successful!");
+      location.reload();
+    },
+
+    onError: (err) => {
+      console.error("PayPal button error:", err);
+      alert("Payment failed. Check console.");
+    }
+	
+  }).render('#paypal-button-container');
+}
+
+function loadDashboard(){
+  // Simple dashboard loader: show courses
+  const nav = document.getElementById('nav-actions');
+  if(nav) nav.innerHTML = '<button class="btn-ghost" onclick="resetAllProgress()">Reset all progress</button><button class="btn-danger" onclick="logout()">Log out</button>';
+  const root = document.getElementById('dash-courses');
+  if(root){
+    const html = Object.values(COURSES).map(c => {
+      const prog = getCourseProgress(c.id);
+      const pct = prog.total ? Math.round((prog.completed/prog.total)*100) : 0;
+      return `<div class="dash-course-card" onclick="openCourse('${c.id}')"><div class="dc-top"><div class="dc-icon">${c.icon}</div><div><div style=\"font-weight:600;\">${c.title}</div><div style=\"font-size:0.85rem;color:var(--muted);\">${pct}% complete</div></div></div><div>${c.desc}</div></div>`;
+    }).join('');
+    root.innerHTML = html;
+  }
+  showPage('dashboard');
+}
+
+function showLandingForCurrentState() {
+  const nav = document.getElementById('nav-actions');
+
+  if (nav) {
+    if (currentUser && currentUser.email) {
+      nav.innerHTML = `
+        <button class="btn-ghost" onclick="loadDashboard()">Dashboard</button>
+        <button class="btn-danger" onclick="logout()">Log out</button>
+      `;
+    } else {
+      nav.innerHTML = `
+        <button class="btn-ghost" onclick="openModal('login')">Log in</button>
+        <button class="btn-primary" onclick="openModal('register')">Get Started</button>
+      `;
+    }
+  }
+
+  showPage('landing');
+
+  try { renderLandingCourses(); } catch(e) {}
+}
+	function goToLanding() {
+	  showLandingForCurrentState();
+	}
+
+
+	(function initLanding() {
+  function safeRender() {
+    try {
+      showLandingForCurrentState();
+    } catch(e) { console.error(e); }
+
+    try {
+      var pending = localStorage.getItem('da_pending_course');
+      if (pending) {
+        localStorage.removeItem('da_pending_course');
+        if (typeof openCourse === 'function') openCourse(pending);
+      }
+    } catch(_) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', safeRender, { once: true });
+  } else {
+    safeRender();
+  }
+})();
+
+// Expose functions for inline onclick handlers (defensive)
+window.scrollToId = scrollToId;
+window.showPage = showPage;
+window.openModal = openModal;
+window.closeModal = closeModal;
+window.switchAuth = switchAuth;
+
+window.openPayPal = openPayPal;
+window.closePayPal = closePayPal;
+
+window.openCourse = openCourse;
+window._openCourseReal = openCourse;
+window.openLesson = openLesson;
+window.gradeQuiz = gradeQuiz;
+window.retakeQuiz = retakeQuiz;
+window.retakeQuizFromDashboard = retakeQuizFromDashboard;
+window.resetAllProgress = resetAllProgress;
+window.resetCourseProgress = resetCourseProgress;
+</script>
+<script src="/js/ads.js"></script>
+<script src="/footer.js"></script>
+</body>
+</html>
+            

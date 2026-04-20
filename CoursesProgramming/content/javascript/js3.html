@@ -1,0 +1,56 @@
+<h2>Functions and Arrow Functions</h2>
+<p>Functions encapsulate reusable logic. Arrow functions offer a concise syntax and lexical <code>this</code> binding, which differs from traditional functions.</p>
+
+<h3>Declaration vs. expression</h3>
+<div class="code-block"><pre>// Declaration (hoisted)
+function add(a, b) { return a + b; }
+
+// Expression (not hoisted the same way)
+const mul = function(a, b) { return a * b; };
+
+// Arrow (lexical this)
+const pow = (a, b) => a ** b;</pre></div>
+
+<h3>Parameters and defaults</h3>
+<div class="code-block"><pre>function greet(name = 'friend', { excited = false } = {}){
+  const msg = `Hello, ${name}${excited ? '!' : ''}`;
+  return msg;
+}
+
+function sum(...nums){ return nums.reduce((a,b) => a+b, 0); }</pre></div>
+
+<h3>Arrow gotchas</h3>
+<ul>
+  <li>No own <code>this</code>, <code>arguments</code>, <code>super</code>, or <code>new.target</code>.</li>
+  <li>Not constructible (<code>new</code> with arrow throws).</li>
+  <li>Implicit return for single expressions; wrap object literals in <code>(...)</code>.</li>
+</ul>
+<div class="code-block"><pre>const makeUser = (name) => ({ name }); // parentheses to return object</pre></div>
+
+<h3>Closures and currying</h3>
+<div class="code-block"><pre>function makeCounter(){
+  let n = 0;
+  return () => ++n; // closure over n
+}
+
+const addN = n => x => x + n; // curried add</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Keep functions small; do one thing well.</li>
+  <li>Prefer pure functions for predictable outcomes.</li>
+  <li>Use arrow functions for callbacks; regular functions for methods needing dynamic <code>this</code>.</li>
+</ul>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Refactor <code>Array.map/filter/reduce</code> callbacks to arrows with descriptive names.</li>
+  <li>Replace a dynamic <code>this</code> method with an explicit parameter or bind.</li>
+  <li>Implement a curried function and show its reuse across a dataset.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>MDN: Arrow functions</li>
+  <li>MDN: Closures</li>
+</ul>

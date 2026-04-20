@@ -1,0 +1,41 @@
+<h2>Exceptions and try/catch</h2>
+<p>Handle exceptional cases explicitly and keep normal flows readable.</p>
+
+<h3>Checked vs unchecked</h3>
+<ul>
+  <li>Checked: must be declared or handled (e.g., <code>IOException</code>).</li>
+  <li>Unchecked: subclasses of <code>RuntimeException</code>; often programming errors.</li>
+</ul>
+
+<h3>Basic try/catch</h3>
+<div class="code-block"><pre>try {
+  Integer.parseInt("abc");
+} catch (NumberFormatException e) {
+  System.out.println("Bad number");
+}</pre></div>
+
+<h3>try-with-resources</h3>
+<div class="code-block"><pre>import java.nio.file.*;
+try (var lines = Files.lines(Path.of("data.txt"))) {
+  long count = lines.count();
+} catch (Exception e) {
+  // handle
+}</pre></div>
+
+<h3>Custom exceptions</h3>
+<div class="code-block"><pre>class DomainException extends RuntimeException {
+  DomainException(String msg){ super(msg); }
+}
+
+void withdraw(int amount){
+  if(amount < 0) throw new DomainException("amount must be positive");
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Create a custom exception for domain errors.</li>
+  <li>Use try-with-resources to auto-close files.</li>
+  <li>Normalize exception messages and include context.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer informative messages and include key values. Avoid swallowing exceptions; rethrow with cause when needed.</div>

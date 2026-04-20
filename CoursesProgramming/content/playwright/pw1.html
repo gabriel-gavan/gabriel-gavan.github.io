@@ -1,0 +1,83 @@
+<h2>Playwright: What It Is and Why It Matters</h2>
+<p>Playwright is a modern end‑to‑end testing framework for web apps. It automates Chromium, Firefox, and WebKit with a single API, emphasizing reliability through auto‑waiting, resilient locators, and rich debugging tools. It is designed for CI from day one and works well for UI, API, and component testing.</p>
+
+<h3>Why teams pick Playwright</h3>
+<ul>
+  <li>Single API for all major browsers (Chromium, Firefox, WebKit), including mobile emulation.</li>
+  <li>Auto‑waiting for elements to be actionable; fewer <code>sleep</code> calls and race conditions.</li>
+  <li>Powerful Locator engine (roles, labels, text, test IDs) and chainable filters.</li>
+  <li>First‑class debugging: Inspector, Trace Viewer, videos, console/network/event logs.</li>
+  <li>Integrated test runner with parallelism, sharding, retries, and fixtures.</li>
+</ul>
+
+<h3>Install and scaffold</h3>
+<div class="code-block"><pre># Initialize a Node project
+npm init -y
+# Install Playwright Test runner
+npm i -D @playwright/test
+# Download browser binaries
+npx playwright install
+# Optional: scaffold example tests and config
+npx playwright test --init</pre></div>
+
+<h3>Project setup (TS and JS)</h3>
+<div class="code-block"><pre># TypeScript (recommended)
+npm i -D typescript ts-node @types/node
+npx tsc --init --rootDir . --moduleResolution node --target ES2020 --module commonjs
+
+# JavaScript (ESM)
+# Use .mjs files or set "type": "module" in package.json</pre></div>
+
+<h3>Your first UI test</h3>
+<div class="code-block"><pre>import { test, expect } from '@playwright/test';
+
+test('homepage shows headline', async ({ page }) => {
+  await page.goto('https://example.com');
+  await expect(page).toHaveTitle(/Example/);
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+});</pre></div>
+
+<h3>Codegen (record selectors)</h3>
+<div class="code-block"><pre># Launch the recorder; click around to generate code
+npx playwright codegen https://example.com
+
+# Generate into a test file
+echo "import { test, expect } from '@playwright/test';\n" > tests/example.spec.ts
+npx playwright codegen https://example.com --output tests/example.spec.ts</pre></div>
+
+<h3>Recommended folder layout</h3>
+<div class="code-block"><pre>project/
+  playwright.config.ts
+  tests/
+    smoke.spec.ts
+  pages/
+    HomePage.ts
+  fixtures/
+    auth.ts
+  test-data/
+    users.json</pre></div>
+
+<h3>Run tests</h3>
+<div class="code-block"><pre># All tests
+npx playwright test
+# Headed debugging
+npx playwright test --headed --project=chromium
+# Open last HTML report
+npx playwright show-report</pre></div>
+
+<h3>Common pitfalls to avoid</h3>
+<ul>
+  <li>Avoid fixed sleeps; rely on auto‑waiting and <code>expect(...)</code> with timeouts.</li>
+  <li>Prefer semantic locators (<code>getByRole</code>, <code>getByLabel</code>, <code>getByText</code>) over brittle CSS/XPath.</li>
+  <li>Keep tests independent; do not rely on execution order or shared state.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Open a site you use daily and assert title, URL, and a visible H1.</li>
+  <li>Use <code>getByRole</code> to click the main call‑to‑action. Assert a success message appears.</li>
+  <li>Record a short flow with <code>codegen</code>, then refactor selectors to semantic locators.</li>
+  <li>Capture a screenshot after the click and store it in <code>test-results/</code>.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep one test = one user goal (login, add to cart). Short, intention‑revealing tests are more reliable and easier to debug.</div>

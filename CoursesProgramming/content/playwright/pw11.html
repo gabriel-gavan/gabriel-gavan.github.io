@@ -1,0 +1,66 @@
+<h2>Running in CI (GitHub Actions)</h2>
+<p>Execute tests headless in CI, cache dependencies, shard across workers, and publish artifacts for fast feedback.</p>
+
+<h3>Basic workflow</h3>
+<div class="code-block"><pre>name: e2e
+on: [push, pull_request]
+
+env:
+  PLAYWRIGHT_BROWSERS_PATH: ~/.cache/ms-playwright
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20' }
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-browsers-${{ hashFiles('**/package-lock.json') }}
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npx playwright test --reporter=line,html
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: report, path: playwright-report }
+</pre></div>
+
+<h3>Matrix across browsers</h3>
+<div class="code-block"><pre>strategy:
+  fail-fast: false
+  matrix:
+    project: [chromium, firefox, webkit]
+
+steps:
+  - run: npx playwright test --project=${{ matrix.project }}</pre></div>
+
+<h3>Sharding and retries</h3>
+<div class="code-block"><pre># Split the suite across 2 CI jobs
+npx playwright test --shard=1/2
+npx playwright test --shard=2/2
+
+# Configure retries in playwright.config.ts for CI
+retries: process.env.CI ? 2 : 0</pre></div>
+
+<h3>Artifacts: traces, screenshots, videos</h3>
+<div class="code-block"><pre>// playwright.config.ts
+export default defineConfig({ use: { trace: 'on-first-retry', screenshot: 'only-on-failure', video: 'retain-on-failure' } });
+
+# Upload test-results and trace zips on failure
+- uses: actions/upload-artifact@v4
+  if: failure()
+  with:
+    name: traces
+    path: test-results/**/*.zip</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add a browser matrix and upload reports for each job (unique artifact names).</li>
+  <li>Enable sharding to split the suite across two jobs; confirm runtime decreases.</li>
+  <li>Attach trace and video artifacts on failure for easier triage.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep CI deterministic: pin Node and browser versions, set timezone/locale, and mock non‑deterministic data for visual tests.</div>

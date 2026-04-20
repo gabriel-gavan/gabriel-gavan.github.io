@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="220" viewBox="0 0 520 220">
+  <rect width="520" height="220" fill="#0d0d14"/>
+  <text x="20" y="28" fill="#c9d1d9" font-family="monospace" font-size="16">JS: Arrays vs Objects</text>
+  <rect x="20" y="50" width="200" height="140" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="30" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Array</text>
+  <text x="30" y="95" fill="#c9d1d9" font-family="monospace" font-size="12">ordered items</text>
+  <text x="30" y="115" fill="#c9d1d9" font-family="monospace" font-size="12">index access</text>
+  <rect x="280" y="50" width="220" height="140" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="290" y="75" fill="#9cdcfe" font-family="monospace" font-size="14">Object</text>
+  <text x="290" y="95" fill="#c9d1d9" font-family="monospace" font-size="12">named properties</text>
+  <text x="290" y="115" fill="#c9d1d9" font-family="monospace" font-size="12">key access</text>
+</svg>

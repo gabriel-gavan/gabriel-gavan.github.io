@@ -1,0 +1,30 @@
+<h2>Classes and Objects</h2>
+<p>Model data with properties and add behavior with methods. Keep classes cohesive and validate invariants.</p>
+
+<h3>Example</h3>
+<div class="code-block"><pre>public class User {
+  public string Name { get; }
+  public int Points { get; private set; }
+  public User(string name) { Name = name ?? throw new ArgumentNullException(nameof(name)); }
+  public void AddPoints(int p){ if(p > 0) Points += p; }
+  public override string ToString() => $"{Name}({Points})";
+  public override bool Equals(object? obj) => obj is User u && u.Name == Name;
+  public override int GetHashCode() => Name.GetHashCode();
+}</pre></div>
+
+<h3>Records (immutable data)</h3>
+<div class="code-block"><pre>public record Money(decimal Amount, string Currency);
+var price = new Money(19.99m, "USD");</pre></div>
+
+<h3>Init-only setters (C# 9+)</h3>
+<div class="code-block"><pre>public class Product {
+  public required string Id { get; init; }
+  public string? Name { get; init; }
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Override <code>ToString()</code> to return a friendly label.</li>
+  <li>Refactor a DTO class to a <code>record</code> where immutability helps.</li>
+  <li>Add validation to constructors and throw the appropriate exceptions.</li>
+</ol>

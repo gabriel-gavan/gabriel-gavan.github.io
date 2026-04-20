@@ -1,0 +1,46 @@
+<h2>Network Mocking and Interception</h2>
+<p>Stabilize tests by mocking requests and simulating failures. Interception lets you control server responses, latency, and errors to verify UI behavior.</p>
+
+<h3>Intercept and fulfill</h3>
+<div class="code-block"><pre>// Fulfill a request with static JSON
+await page.route('**/api/products', route => {
+  route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([{ id: 1, name: 'Pro' }]) });
+});</pre></div>
+
+<h3>Continue and modify</h3>
+<div class="code-block"><pre>// Pass through with modified headers
+await page.route('**/api/*', route => {
+  const headers = { ...route.request().headers(), 'x-test': '1' };
+  route.continue({ headers });
+});</pre></div>
+
+<h3>Simulate latency and errors</h3>
+<div class="code-block"><pre>// Slow response to test loading states
+await page.route('**/api/report', async route => {
+  await new Promise(r => setTimeout(r, 1200));
+  await route.fulfill({ status: 200, body: JSON.stringify({ ok: true }) });
+});
+
+// 500 error to test error UI
+await page.route('**/api/checkout', route => route.fulfill({ status: 500, body: 'Server error' }));</pre></div>
+
+<h3>Context‑level routing</h3>
+<div class="code-block"><pre>// Applies to all pages in the context
+const context = await browser.newContext();
+await context.route('**/feature-flags', route => route.fulfill({ body: '{"beta":true}' }));</pre></div>
+
+<h3>Best practices</h3>
+<ul>
+  <li>Prefer API seeding over intercepting core flows so E2E still exercises real backend logic.</li>
+  <li>Use interception for edge cases and failure paths that are hard to trigger reliably.</li>
+  <li>Keep mocked data in small fixtures to reuse across tests.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Mock a slow network response and assert a loading state appears.</li>
+  <li>Simulate a 500 error and verify an error banner is shown.</li>
+  <li>Apply a context‑level route for feature flags and verify a feature toggle in the UI.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Reset routes between tests to avoid leaks: <code>await page.unroute('**/api/*')</code> or create a fresh context.</div>

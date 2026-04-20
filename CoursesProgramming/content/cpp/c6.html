@@ -1,0 +1,47 @@
+<h2>Classes and Objects in C++</h2>
+<p>Classes group data and behavior. Use constructors to guarantee valid state and mark methods <code>const</code> when not mutating.</p>
+
+<h3>Defining a class</h3>
+<div class="code-block"><pre>#include <iostream>
+#include <string>
+
+class User {
+  std::string name;
+  int points {0};
+public:
+  explicit User(std::string n) : name(std::move(n)) {}
+  void add_points(int p){ if(p > 0) points += p; }
+  int get_points() const { return points; }
+  const std::string& get_name() const { return name; }
+  void greet() const { std::cout << "Hello, " << name; }
+};</pre></div>
+
+<h3>Rule of zero/five</h3>
+<div class="code-block"><pre>// If you manage no resources, let compiler generate special members (rule of zero)
+// If you manage resources, define or =delete copy/move/dtor appropriately (rule of five)
+struct Buffer {
+  size_t n{}; int* data{};
+  Buffer(size_t n): n(n), data(new int[n]{}) {}
+  ~Buffer(){ delete[] data; }
+  Buffer(const Buffer& other): n(other.n), data(new int[n]){ std::copy(other.data, other.data+n, data); }
+  Buffer& operator=(const Buffer& o){ if(this!=&o){ Buffer tmp(o); std::swap(n,tmp.n); std::swap(data,tmp.data);} return *this; }
+  Buffer(Buffer&& o) noexcept : n(o.n), data(o.data){ o.n=0; o.data=nullptr; }
+  Buffer& operator=(Buffer&& o) noexcept { if(this!=&o){ delete[] data; n=o.n; data=o.data; o.n=0; o.data=nullptr;} return *this; }
+};</pre></div>
+
+<h3>Using the class</h3>
+<div class="code-block"><pre>int main(){
+  User u{"Ava"};
+  u.add_points(5);
+  u.greet();
+  std::cout << ": " << u.get_points();
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Add a <code>level()</code> method derived from points.</li>
+  <li>Split declaration/definition across <code>.h</code> and <code>.cpp</code> files.</li>
+  <li>Implement copy/move for a small resource‑owning type and test it.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer the rule of zero: use <code>std::vector</code>, <code>std::string</code>, and smart pointers to avoid manual memory management.</div>

@@ -1,0 +1,39 @@
+<h2>File I/O with NIO.2</h2>
+<p>Use <code>Path</code> and <code>Files</code> for modern I/O. Prefer UTF‑8 and try‑with‑resources.</p>
+
+<h3>Basics</h3>
+<div class="code-block"><pre>import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+
+var p = Path.of("notes.txt");
+Files.writeString(p, "Hello", StandardCharsets.UTF_8);
+String s = Files.readString(p, StandardCharsets.UTF_8);
+
+boolean exists = Files.exists(p);
+long size = Files.size(p);</pre></div>
+
+<h3>List, walk, copy</h3>
+<div class="code-block"><pre>// List directory
+try (var stream = Files.list(Path.of("."))) {
+  stream.forEach(System.out::println);
+}
+
+// Walk tree and copy .txt files
+try (var paths = Files.walk(Path.of("src"))) {
+  paths.filter(x -> x.toString().endsWith(".txt")).forEach(System.out::println);
+}</pre></div>
+
+<h3>Reading lines</h3>
+<div class="code-block"><pre>try (var lines = Files.lines(Path.of("data.csv"))) {
+  lines.map(l -> l.split(","))
+       .forEach(cols -> System.out.println(cols[0]));
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>List all files in a directory using <code>Files.list</code>.</li>
+  <li>Copy a directory tree safely with <code>Files.walk</code> and <code>Files.copy</code>.</li>
+  <li>Read a CSV file and build a list of POJOs.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Always close streams; prefer try‑with‑resources to avoid leaks.</div>

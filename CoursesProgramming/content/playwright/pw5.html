@@ -1,0 +1,38 @@
+<h2>CSS Selectors and XPath</h2>
+<p>Use CSS/XPath when semantics are missing (e.g., custom widgets). Keep selectors short, stable, and scoped through parent locators to reduce flakiness.</p>
+
+<h3>CSS patterns that age well</h3>
+<div class="code-block"><pre>// Scope then select with a short class
+const card = page.locator('.plan-card').filter({ hasText: 'Pro' });
+await card.locator('.buy-button').click();
+
+// Attribute selectors are explicit and readable
+await page.locator('[data-testid="cart-icon"]').click();
+await page.locator('button[data-state="open"]').click();
+
+// :has() can target by descendant presence (supported by Playwright's engine)
+await page.locator('.row:has(.status-badge:has-text("Active")) .menu').click();</pre></div>
+
+<h3>XPath when relationships are complex</h3>
+<div class="code-block"><pre>// Row with a specific cell value
+await page.locator("//tr[td[contains(., 'Invoice #42')]]//a[normalize-space(.)='View']").click();
+
+// Select sibling by relative position
+await page.locator("//label[.='Email']/following-sibling::input").fill('user@example.com');</pre></div>
+
+<h3>Guidelines</h3>
+<ul>
+  <li>Prefer <code>data-testid</code> for complex, custom components lacking roles/labels.</li>
+  <li>Scope with a parent locator, then use a short selector inside.</li>
+  <li>Avoid index‑based selectors (e.g., <code>:nth-child(5)</code>) unless the order is truly stable.</li>
+  <li>Prefer CSS over XPath when either works; CSS is often shorter and faster to read.</li>
+</ul>
+
+<h3>Practice</h3>
+<ol>
+  <li>Add <code>data-testid</code> attributes to a custom dropdown, and update tests to target them.</li>
+  <li>Refactor one long descendant chain into <em>scoped locator + short selector</em>.</li>
+  <li>Use <code>:has()</code> to click the context menu of the row that contains a target user.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Keep selectors intentional. Ask: “If this UI changes slightly, will the selector still point at the <em>same concept</em>?”</div>

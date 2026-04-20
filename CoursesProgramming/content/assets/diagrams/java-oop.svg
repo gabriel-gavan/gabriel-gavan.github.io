@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="200" viewBox="0 0 520 200">
+  <rect width="520" height="200" fill="#0d0d14"/>
+  <text x="20" y="28" fill="#c9d1d9" font-family="monospace" font-size="16">Java OOP: Class -&gt; Object</text>
+  <rect x="20" y="50" width="200" height="120" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="30" y="70" fill="#9cdcfe" font-family="monospace" font-size="14">class User</text>
+  <text x="30" y="90" fill="#c9d1d9" font-family="monospace" font-size="12">- name: String</text>
+  <text x="30" y="110" fill="#c9d1d9" font-family="monospace" font-size="12">+ addPoints(int)</text>
+  <text x="30" y="130" fill="#c9d1d9" font-family="monospace" font-size="12">+ getPoints(): int</text>
+  <line x1="240" y1="110" x2="320" y2="110" stroke="#7c5cfc" stroke-width="2" marker-end="url(#arrow)"/>
+  <rect x="330" y="80" width="160" height="60" fill="#1a1a24" stroke="#2a2a38" rx="8"/>
+  <text x="340" y="100" fill="#9cdcfe" font-family="monospace" font-size="14">User("Ava")</text>
+  <text x="340" y="120" fill="#c9d1d9" font-family="monospace" font-size="12">points: 5</text>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L6,3 z" fill="#7c5cfc"/>
+    </marker>
+  </defs>
+</svg>

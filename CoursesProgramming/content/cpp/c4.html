@@ -1,0 +1,26 @@
+<h2>Functions and Parameters</h2>
+<p>Break programs into small, reusable pieces. Understand pass‑by‑value vs references and const‑correctness.</p>
+
+<h3>Examples</h3>
+<div class="code-block"><pre>void inc(int &x){ x++; }
+int sum(int a, int b) { return a + b; }
+int sum3(int a, int b, int c = 0) { return a + b + c; } // default arg
+
+// Prefer const& for large objects to avoid copies
+int size_of(const std::string& s) { return static_cast<int>(s.size()); }
+
+// constexpr (evaluated at compile-time when possible)
+constexpr int sq(int n){ return n*n; }
+static_assert(sq(3) == 9);</pre></div>
+
+<h3>noexcept and return by value</h3>
+<div class="code-block"><pre>std::string make_label(int n) noexcept { return "item-" + std::to_string(n); }</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Write a function that swaps two integers using references.</li>
+  <li>Refactor a function to take <code>const std::string&</code> instead of by value.</li>
+  <li>Add a <code>constexpr</code> function and use <code>static_assert</code> to verify it.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer passing small trivially copyable types by value; pass large or non‑trivial types by <code>const&</code>.</div>

@@ -1,0 +1,35 @@
+<h2>RAII and Resource Management</h2>
+<p>Acquire resources in constructors and release them in destructors to ensure cleanup on all paths. RAII underpins exception safety.</p>
+
+<h3>Example: file wrapper</h3>
+<div class="code-block"><pre>struct File {
+  FILE* f{};
+  explicit File(const char* p){ f = std::fopen(p, "r"); }
+  ~File(){ if(f) std::fclose(f); }
+  File(const File&) = delete; File& operator=(const File&) = delete; // non-copyable
+  File(File&& o) noexcept : f(o.f){ o.f = nullptr; }
+  File& operator=(File&& o) noexcept { if(this!=&o){ if(f) std::fclose(f); f=o.f; o.f=nullptr; } return *this; }
+};</pre></div>
+
+<h3>lock_guard and scope guards</h3>
+<div class="code-block"><pre>#include <mutex>
+std::mutex m;
+void work(){ std::lock_guard<std::mutex> lk(m); /* critical section */ }
+
+// Scope guard via unique_ptr custom deleter
+auto guard = std::unique_ptr<void, std::function<void(void*)>>((void*)1, [](void*){/* cleanup */});</pre></div>
+
+<h3>Exception safety</h3>
+<ul>
+  <li>Basic guarantee: no resource leaks; invariants preserved.</li>
+  <li>Strong guarantee: commit/rollback semantics (copy‑and‑swap).</li>
+  <li>No‑throw guarantee: operations marked <code>noexcept</code>.</li>
+</ul>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Wrap a socket handle with RAII for safe cleanup.</li>
+  <li>Explain exception‑safety guarantees of RAII and implement copy‑and‑swap for a small type.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer RAII wrappers and standard facilities (<code>lock_guard</code>, smart pointers) over manual <code>new</code>/<code>delete</code> and <code>lock/unlock</code> calls.</div>

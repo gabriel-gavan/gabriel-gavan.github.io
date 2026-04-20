@@ -1,0 +1,37 @@
+<h2>Stream API Basics</h2>
+<p>Transform collections declaratively using streams. Streams are lazy; operations are evaluated when a terminal operation is invoked.</p>
+
+<h3>Pipeline: source → intermediate → terminal</h3>
+<div class="code-block"><pre>var nums = List.of(1,2,3,4);
+int sumSquares = nums.stream()
+  .filter(n -> n % 2 == 0)
+  .map(n -> n * n)
+  .reduce(0, Integer::sum);</pre></div>
+
+<h3>Common operations</h3>
+<ul>
+  <li>Intermediate: <code>filter</code>, <code>map</code>, <code>flatMap</code>, <code>distinct</code>, <code>sorted</code>, <code>peek</code></li>
+  <li>Terminal: <code>forEach</code>, <code>collect</code>, <code>reduce</code>, <code>count</code>, <code>findFirst</code>/<code>findAny</code></li>
+</ul>
+
+<h3>Collectors</h3>
+<div class="code-block"><pre>import static java.util.stream.Collectors.*;
+
+var words = List.of("apple","apricot","banana");
+var byFirst = words.stream().collect(groupingBy(w -> w.substring(0,1)));
+var joined = words.stream().collect(joining(", "));
+var toMap  = words.stream().collect(toMap(w -> w, String::length));</pre></div>
+
+<h3>Optionals and streams</h3>
+<div class="code-block"><pre>import java.util.Optional;
+Optional<Integer> maybe = Optional.of(42);
+int val = maybe.stream().map(x -> x + 1).findFirst().orElse(0);</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Filter even numbers and collect to a list.</li>
+  <li>Group words by their first letter.</li>
+  <li>Build a frequency map of characters in a string.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Avoid side effects inside stream operations; prefer pure transformations for readability and correctness.</div>

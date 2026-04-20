@@ -1,0 +1,46 @@
+<h2>Control Flow: if, switch, and loops</h2>
+<p>Control flow structures decide what code runs and how many times it runs. Prefer early returns over deep nesting.</p>
+
+<h3>if / else</h3>
+<div class="code-block"><pre>if (age >= 18) {
+  System.out.println("Adult");
+} else {
+  System.out.println("Minor");
+}</pre></div>
+
+<h3>Enhanced switch (Java 14+)</h3>
+<div class="code-block"><pre>String activity = switch (day) {
+  case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY -> "Work";
+  case SATURDAY, SUNDAY -> "Rest";
+  default -> throw new IllegalArgumentException("Invalid day");
+};</pre></div>
+
+<h3>Loops</h3>
+<div class="code-block"><pre>// for
+for (int i = 0; i < 3; i++) System.out.println(i);
+
+// while
+int n = 3; while (n-- > 0) System.out.println(n);
+
+// for-each
+for (var s : List.of("a","b","c")) System.out.println(s);
+
+// break/continue with labels
+outer: for (int i=0;i<3;i++) {
+  for (int j=0;j<3;j++) {
+    if (i*j > 2) break outer; // exit both loops
+  }
+}</pre></div>
+
+<h3>Practice Project</h3>
+<ol>
+  <li>Write a menu loop that executes commands until the user types <code>quit</code>.</li>
+  <li>Refactor nested <code>if</code> chains into an enhanced <code>switch</code>.</li>
+  <li>Implement a finite‑state machine using <code>switch</code> expressions.</li>
+</ol>
+
+<h3>Suggested Reading</h3>
+<ul>
+  <li>Java 17 switch enhancements</li>
+  <li>Best practices for early returns</li>
+</ul>

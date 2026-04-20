@@ -1,0 +1,44 @@
+<h2>The STL: Vectors, Maps, Iterators</h2>
+<p>The C++ Standard Library provides containers and algorithms. Combine them to write expressive, efficient code.</p>
+<img src="../assets/diagrams/cpp-stl.svg" alt="C++ STL Overview" style="max-width:100%;border:1px solid var(--border);border-radius:8px;margin:0.5rem 0;"/>
+
+<h3>Vectors and capacity</h3>
+<div class="code-block"><pre>#include <vector>
+std::vector<int> v{1,2,3};
+v.reserve(10); // avoid reallocations
+v.push_back(4);
+for(int n : v) { /*...*/ }</pre></div>
+
+<h3>Maps and unordered_maps</h3>
+<div class="code-block"><pre>#include <map>
+#include <unordered_map>
+std::map<std::string,int> sorted;          // ordered by key
+std::unordered_map<std::string,int> fast;  // average O(1) lookup
+sorted["alice"] = 10;
+for (auto const& [k,v] : sorted) { /*...*/ }</pre></div>
+
+<h3>Algorithms (transform, find_if, erase/remove)</h3>
+<div class="code-block"><pre>#include <algorithm>
+#include <numeric>
+
+int sum = std::accumulate(v.begin(), v.end(), 0);
+std::sort(v.begin(), v.end());
+std::transform(v.begin(), v.end(), v.begin(), [](int x){ return x*2; });
+
+// Erase-remove idiom
+v.erase(std::remove_if(v.begin(), v.end(), [](int x){ return x < 0; }), v.end());</pre></div>
+
+<h3>Iterators and structured bindings</h3>
+<div class="code-block"><pre>if (auto it = sorted.find("alice"); it != sorted.end()) {
+  auto const& [key, value] = *it;
+  // use key, value
+}</pre></div>
+
+<h3>Exercises</h3>
+<ol>
+  <li>Build a frequency map from a vector of strings.</li>
+  <li>Use <code>std::transform</code> to uppercase all items in a vector.</li>
+  <li>Benchmark <code>std::vector</code> vs <code>std::list</code> for random access.</li>
+</ol>
+
+<div class="tip-box"><strong>Tip:</strong> Prefer <code>unordered_map</code> for fast lookups when ordering is unnecessary; remember to reserve capacity for vectors in hot paths.</div>
