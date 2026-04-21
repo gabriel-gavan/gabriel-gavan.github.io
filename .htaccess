@@ -1,0 +1,75 @@
+# Security Headers for Apache Server
+# Place this file in your website's root directory
+
+# Prevent clickjacking attacks
+Header always set X-Frame-Options "SAMEORIGIN"
+
+# Prevent MIME type sniffing
+Header always set X-Content-Type-Options "nosniff"
+
+# Enable XSS protection
+Header always set X-XSS-Protection "1; mode=block"
+
+# Referrer Policy
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Strict Transport Security (HSTS)
+# Uncomment the line below ONLY if you have HTTPS enabled
+# Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+
+# Content Security Policy
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://fundingchoicesmessages.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.google.com https://fundingchoicesmessages.google.com; frame-src 'self' https://www.google.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;"
+
+# Permissions Policy (formerly Feature Policy)
+Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+# Prevent directory browsing
+Options -Indexes
+
+# Disable server signature
+ServerSignature Off
+
+# Protect .htaccess and other sensitive files
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect specific file types
+<FilesMatch "\.(env|log|sql|bak|config|conf)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Enable GZIP compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Browser caching for static resources
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
+
+# Force HTTPS (Uncomment if you have SSL certificate)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Protect against DDoS and brute force
+<IfModule mod_evasive20.c>
+    DOSHashTableSize 3097
+    DOSPageCount 2
+    DOSSiteCount 50
+    DOSPageInterval 1
+    DOSSiteInterval 1
+    DOSBlockingPeriod 10
+</IfModule>
