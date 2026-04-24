@@ -26,11 +26,58 @@
            window.addEventListener("DOMContentLoaded", fcCallback);
          })();
       </script>
+      <script>
+         window.__adsConsentFallback = function () {
+            try {
+               const raw = localStorage.getItem("nrPrivacyConsent");
+               if (!raw) return false;
+               const parsed = JSON.parse(raw);
+               return parsed && parsed.status === "granted";
+            } catch (e) {
+               return false;
+            }
+         };
+      </script>
+      <script>
+         (function () {
+            function syncConsentButtons() {
+               const hasConsent = window.__adsConsentFallback && window.__adsConsentFallback();
+               const banner = document.getElementById("cookie-banner");
+               const privacy = document.getElementById("privacy-modal-backdrop");
+               const accept = document.getElementById("btnConsentAccept");
+               const decline = document.getElementById("btnConsentDecline");
 
-      <link rel="preconnect" href="https://pagead2.googlesyndication.com">
-      <link rel="preconnect" href="https://www.googletagmanager.com">
-      <link rel="preconnect" href="https://googleads.g.doubleclick.net">
-      <link rel="preconnect" href="https://tpc.googlesyndication.com">
+               if (banner) banner.style.display = hasConsent ? "none" : "";
+               if (privacy) privacy.style.display = hasConsent ? "none" : "";
+               if (accept) accept.onclick = function () {
+                  localStorage.setItem("nrPrivacyConsent", JSON.stringify({
+                     status: "granted",
+                     analytics: true,
+                     ads: true,
+                     updatedAt: new Date().toISOString()
+                  }));
+                  syncConsentButtons();
+                  window.location.reload();
+               };
+               if (decline) decline.onclick = function () {
+                  localStorage.setItem("nrPrivacyConsent", JSON.stringify({
+                     status: "denied",
+                     analytics: false,
+                     ads: false,
+                     updatedAt: new Date().toISOString()
+                  }));
+                  syncConsentButtons();
+               };
+            }
+
+            if (document.readyState === "loading") {
+               document.addEventListener("DOMContentLoaded", syncConsentButtons);
+            } else {
+               syncConsentButtons();
+            }
+         })();
+      </script>
+
       <link rel="preconnect" href="https://neon-feedback.gabi-gabz.workers.dev">
       <link rel="preload" as="image" href="headers/header-bg.webp">
 
@@ -48,10 +95,6 @@
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1" />
       <meta name="google-adsense-account" content="ca-pub-5482914432517813">
-      <!-- Global site tag - Google Analytics (needed for Consent Mode) -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id=AW-CONVERSION_ID"></script>
-
- 
       <link rel="preload" href="styles.css" as="style">
       <link rel="stylesheet" href="styles.css" media="print" onload="this.media='all'">
       <noscript>
@@ -74,34 +117,34 @@
 			  "mainEntity": [
 				{
 				  "@type": "Question",
-				  "name": "##faq_q1##",
+				  "name": "What types of games are available?",
 				  "acceptedAnswer": {
 					"@type": "Answer",
-					"text": "##faq_a1##"
+					"text": "We offer a variety of free neon-style HTML5 games including arcade, puzzle, and action games that can be played instantly in your browser."
 				  }
 				},
 				{
 				  "@type": "Question",
-				  "name": "##faq_q2##",
+				  "name": "Do I need to download anything?",
 				  "acceptedAnswer": {
 					"@type": "Answer",
-					"text": "##faq_a2##"
+					"text": "No downloads required! All games run directly in your web browser without any installation."
 				  }
 				},
 				{
 				  "@type": "Question",
-				  "name": "##faq_q3##",
+				  "name": "Is it free to play?",
 				  "acceptedAnswer": {
 					"@type": "Answer",
-					"text": "##faq_a3##"
+					"text": "Yes, all games are completely free to play with no hidden costs or subscriptions."
 				  }
 				},
 				{
 				  "@type": "Question",
-				  "name": "##faq_q4##",
+				  "name": "What devices can I play on?",
 				  "acceptedAnswer": {
 					"@type": "Answer",
-					"text": "##faq_a4##"
+					"text": "You can play on any device with a modern web browser including desktop computers, laptops, tablets, and mobile phones."
 				  }
 				}
 			  ]
@@ -111,7 +154,10 @@
 	  <script defer src="js/loadgames.js"></script>
    </head>
    <body>
-	<div class="top-banner" style="max-width:1100px;margin:20px auto;"></div>
+      <div class="top-banner" style="max-width:1100px;margin:20px auto;"></div>
+      <div id="ads-consent-note" style="max-width:1100px;margin:0 auto 18px;padding:12px 14px;border:1px solid rgba(56,189,248,0.25);border-radius:12px;background:rgba(2,6,23,0.55);color:#cbd5f5;font-size:14px;line-height:1.5;">
+         Ads are shown only after consent is granted. You can manage cookies using the privacy controls below.
+      </div>
       <header class="hero-card-section">
 									<!-- SUS: NEON MINI GAME -->
 				<h2 class="hero-top-title">NEON MINI GAME</h2>
@@ -1336,15 +1382,30 @@
 				const script = document.getElementById("faq-schema");
 				if (!script) return;
 
-				let jsonText = script.textContent;
+				// Build FAQ array from translation keys
+				const faqs = [];
+				let i = 1;
+				while (dict[`faq_q${i}`] && dict[`faq_a${i}`]) {
+					faqs.push({
+						"@type": "Question",
+						"name": dict[`faq_q${i}`],
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": dict[`faq_a${i}`]
+						}
+					});
+					i++;
+				}
 
-				// Replace all ##keys##
-				Object.keys(dict).forEach(key => {
-					const placeholder = `##${key}##`;
-					jsonText = jsonText.replaceAll(placeholder, dict[key]);
-				});
-
-				script.textContent = jsonText;
+				// Only update if we have FAQ translations
+				if (faqs.length > 0) {
+					const faqSchema = {
+						"@context": "https://schema.org",
+						"@type": "FAQPage",
+						"mainEntity": faqs
+					};
+					script.textContent = JSON.stringify(faqSchema, null, 2);
+				}
 			}
 
 			function updateLangButton(lang) {
