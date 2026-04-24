@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18053605335"></script>
@@ -10,17 +10,20 @@
   gtag('config', 'AW-18053605335');
 </script>
   <meta charset="UTF-8">
-  <title>Submit Your Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Submit Your Game - Neon Mini Game Hub</title>
+  <meta name="description" content="Submit your HTML5 game to Neon Mini Game Hub. Get featured in our curated browser arcade.">
+  
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   
   <style>
 body{
  background:
     linear-gradient(135deg, rgba(0,0,0,0.82), rgba(15,23,42,0.92)),
-    url("images/hub-bg.jpg") center center / cover no-repeat fixed !important;in-height:100vh;
+    url("images/hub-bg.jpg") center center / cover no-repeat fixed !important;
+ min-height:100vh;
 }
-
-
 </style>
 </head>
 <body style="background:#020617;color:white;font-family:system-ui;padding:40px;max-width:800px;margin:auto;line-height:1.6;">
@@ -43,7 +46,8 @@ body{
 
 
 <form id="submitForm">
-  <input type="text" name="website" style="display:none;">
+  <!-- Honeypot field for bot detection -->
+  <input type="text" name="website" style="display:none;" tabindex="-1" autocomplete="off">
 
   <input type="text" name="title" placeholder="Game Title" required 
          style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;"><br>
@@ -53,6 +57,7 @@ body{
 
   <select name="category" required 
           style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;">
+    <option value="">Select a category...</option>
     <option value="arcade">Arcade</option>
     <option value="strategy">Strategy</option>
     <option value="logic">Logic</option>
@@ -62,9 +67,13 @@ body{
   <input type="email" name="email" placeholder="Your Email" required 
          style="width:100%;margin-bottom:10px;padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:white;"><br>
 
-  <input type="file" name="file" accept=".zip" required style="margin-bottom:20px;"><br>
+  <input type="file" name="file" id="gameFile" accept=".zip" required style="margin-bottom:20px;color:white;"><br>
+  
+  <div id="fileSizeWarning" style="display:none;color:#fbbf24;margin-bottom:10px;padding:8px;background:#78350f;border-radius:6px;font-size:14px;">
+    ⚠️ File size exceeds 50MB limit
+  </div>
 
-  <button type="submit" 
+  <button type="submit" id="submitBtn"
           style="
             padding:12px 28px;
             border-radius:999px;
@@ -149,7 +158,6 @@ If it requires a server (Node, PHP, etc.), please mention it in the description.
 </p>
 
 <hr style="border:1px solid #1e293b;margin:40px 0;">
-<hr style="border:1px solid #1e293b;margin:40px 0;">
 
 <h2>🏆 Why Submit To Neon Mini Game Hub?</h2>
 
@@ -167,7 +175,7 @@ that demonstrate performance, polish, and replayability may receive:
 </p>
 
 <ul>
-<li>⭐ “Featured” badge</li>
+<li>⭐ "Featured" badge</li>
 <li>📌 Priority placement</li>
 <li>📢 Promotion in upcoming updates</li>
 </ul>
@@ -196,16 +204,84 @@ We evaluate:
 <p style="opacity:0.85;">
 If your game meets our quality standards, we will contact you via email.
 </p>
+
 <script>
+// File size validation
+const fileInput = document.getElementById("gameFile");
+const fileSizeWarning = document.getElementById("fileSizeWarning");
+const submitBtn = document.getElementById("submitBtn");
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
+fileInput.addEventListener("change", function() {
+  if (this.files && this.files[0]) {
+    const fileSize = this.files[0].size;
+    
+    if (fileSize > MAX_FILE_SIZE) {
+      fileSizeWarning.style.display = "block";
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = "0.5";
+      submitBtn.style.cursor = "not-allowed";
+    } else {
+      fileSizeWarning.style.display = "none";
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = "1";
+      submitBtn.style.cursor = "pointer";
+    }
+  }
+});
+
+// Form submission with security validations
 document.getElementById("submitForm").addEventListener("submit", async function(e){
   e.preventDefault();
 
   const form = this;
   const status = document.getElementById("status");
   const button = form.querySelector("button");
+  
+  // Honeypot check - if filled, it's a bot
+  const honeypot = form.querySelector('input[name="website"]');
+  if (honeypot && honeypot.value !== "") {
+    console.log("Bot detected");
+    return false;
+  }
+
+  // File validation
+  const fileInput = document.getElementById("gameFile");
+  if (fileInput.files && fileInput.files[0]) {
+    const file = fileInput.files[0];
+    
+    // Check file size
+    if (file.size > MAX_FILE_SIZE) {
+      status.style.display = "block";
+      status.style.padding = "15px";
+      status.style.marginTop = "20px";
+      status.style.borderRadius = "12px";
+      status.style.background = "linear-gradient(135deg,#7f1d1d,#991b1b)";
+      status.style.border = "1px solid #ef4444";
+      status.style.color = "#fee2e2";
+      status.style.fontWeight = "600";
+      status.innerHTML = "❌ File size exceeds 50MB limit. Please compress your game.";
+      return false;
+    }
+    
+    // Check file type
+    if (!file.name.endsWith('.zip')) {
+      status.style.display = "block";
+      status.style.padding = "15px";
+      status.style.marginTop = "20px";
+      status.style.borderRadius = "12px";
+      status.style.background = "linear-gradient(135deg,#7f1d1d,#991b1b)";
+      status.style.border = "1px solid #ef4444";
+      status.style.color = "#fee2e2";
+      status.style.fontWeight = "600";
+      status.innerHTML = "❌ Only ZIP files are accepted.";
+      return false;
+    }
+  }
 
   button.disabled = true;
   button.innerText = "Uploading...";
+  button.style.opacity = "0.7";
   status.innerHTML = "";
   status.style.display = "none";
 
@@ -216,6 +292,10 @@ document.getElementById("submitForm").addEventListener("submit", async function(
       method: "POST",
       body: formData
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     const data = await response.json();
 
@@ -240,7 +320,7 @@ document.getElementById("submitForm").addEventListener("submit", async function(
         display:inline-block;
         margin-top:5px;
       ">
-        ${data.submissionId}
+        ${data.submissionId || 'Pending'}
       </span>
       <br><br>
       Your game is now under review (24–72h).
@@ -249,6 +329,7 @@ document.getElementById("submitForm").addEventListener("submit", async function(
     form.reset();
 
   } catch (err) {
+    console.error('Upload error:', err);
     status.style.display = "block";
     status.style.padding = "15px";
     status.style.marginTop = "20px";
@@ -257,14 +338,14 @@ document.getElementById("submitForm").addEventListener("submit", async function(
     status.style.border = "1px solid #ef4444";
     status.style.color = "#fee2e2";
     status.style.fontWeight = "600";
-    status.innerHTML = "❌ Upload failed. Please try again.";
+    status.innerHTML = "❌ Upload failed. Please check your connection and try again.";
   }
 
   button.disabled = false;
   button.innerText = "🚀 Submit Game";
+  button.style.opacity = "1";
 });
 </script>
-
 
 </body>
 </html>

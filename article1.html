@@ -48,6 +48,21 @@
             cursor: pointer;
         }
         .comments-section button:hover { background: #1e3a8a; }
+        .article-meta {
+            color: #cbd5f5;
+            opacity: 0.9;
+            font-size: 0.95rem;
+            max-width: 78ch;
+        }
+        .article-note {
+            margin: 18px 0 28px;
+            padding: 12px 14px;
+            border: 1px solid rgba(148,163,184,0.22);
+            border-radius: 12px;
+            background: rgba(2,6,23,0.55);
+            color: #cbd5f5;
+        }
+        .article-note a { color: #93c5fd; }
     </style>
 </head>
 
@@ -82,18 +97,22 @@
         The Rise of HTML5 Neon Games: Why Browser Arcades Are Back
     </h1>
 
-    <p data-i18n="art1_p1">
-        The browser-gaming world is going through a stunning revival...
+    <p class="article-meta" data-i18n="art1_p1">
+        The browser-gaming world is going through a stunning revival as faster browsers, better mobile hardware, and richer web APIs make instant-play games feel polished again.
     </p>
 
-    <p data-i18n="art1_p2">
-        Neon-styled arcades like Neon Mini Game Hub are leading this movement...
+    <p class="article-meta" data-i18n="art1_p2">
+        Neon-styled arcades like Neon Mini Game Hub are part of this shift: they combine quick loading, bold visuals, and short play sessions that fit modern browsing habits.
     </p>
+
+    <div class="article-note">
+        This article is an editorial overview of browser gaming trends. For site ownership, privacy, and contact details, see the <a href="about.html">About</a>, <a href="privacy.html">Privacy</a>, and <a href="contact.html">Contact</a> pages.
+    </div>
 
     <h2 data-i18n="art1_h2_why">Why Browser Games Are Back</h2>
 
     <p data-i18n="art1_p3">
-        A few years ago, browser games were considered “dead”...
+        A few years ago, browser games were considered “dead,” but that view missed how quickly the web platform was improving. Modern browsers now support smoother graphics, better input handling, and more efficient JavaScript engines than ever before.
     </p>
 
     <ul>
@@ -106,13 +125,13 @@
 
     <h2 data-i18n="art1_h2_neon">The Neon Aesthetic</h2>
     <p data-i18n="art1_p4">
-        Retro vaporwave, cyber-punk palettes, neon glows...
+        Retro vaporwave, cyber-punk palettes, and neon glows create a distinct visual identity that helps small browser games stand out. The style works especially well when combined with dark backgrounds, bright accents, and strong contrast.
     </p>
 
     <h2 data-i18n="art1_h2_love">Why Players Love Neon Mini-Games</h2>
 
     <p data-i18n="art1_p5">
-        Short-session games are dominating attention spans...
+        Short-session games are popular because they respect the player’s time. A game that starts instantly, teaches itself quickly, and ends in a few minutes is easy to return to throughout the day.
     </p>
 
     <ul>
@@ -126,7 +145,7 @@
     <h2 data-i18n="art1_h2_dev_love">Why Developers Love HTML5</h2>
 
     <p data-i18n="art1_p6">
-        The modern web stack gives developers superpowers:
+        The modern web stack gives developers practical advantages:
     </p>
 
     <ul>
@@ -140,12 +159,13 @@
     <h2 data-i18n="art1_h2_future">The Future</h2>
 
     <p data-i18n="art1_p7">
-        With WebGPU coming soon and browsers becoming even more optimized...
+        With WebGPU improving and browsers becoming even more optimized, browser games will likely keep gaining quality and reach. The gap between web games and native installs continues to shrink.
     </p>
 
     <!-- COMMENTS -->
     <div class="comments-section" style="margin-top:40px;">
       <h3 data-i18n="comments_title">💬 Comments</h3>
+      <p class="article-meta">Comments are public and may be moderated. Please avoid sharing personal information.</p>
 
       <textarea id="commentInput" 
                 data-i18n-placeholder="comments_placeholder"
