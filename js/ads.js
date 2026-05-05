@@ -60,7 +60,7 @@
 	  return ins;
 	}
 
-  function createAsideAd() {
+  function createAsideAd(slot) {
 	  const aside = document.createElement("aside");
 	  aside.style.width = "160px";
 	  aside.style.minHeight = "600px";
@@ -72,7 +72,7 @@
 	  ins.style.height = "600px";
 
 	  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-	  ins.setAttribute("data-ad-slot", "3686182226");
+	  ins.setAttribute("data-ad-slot", slot);
 
 	  aside.appendChild(ins);
 	  return aside;
@@ -218,7 +218,7 @@
 		  left.className = "fixed-side-ad left";
 		  left.style.display = "block";
 
-		  const ad = createAsideAd();
+		  const ad = createAsideAd("3686182226");
 		  left.appendChild(ad);
 
 		  document.body.appendChild(left);
@@ -231,7 +231,7 @@
 		  right.className = "fixed-side-ad right";
 		  right.style.display = "block";
 
-		  const ad = createAsideAd();
+		  const ad = createAsideAd("7624620010");
 		  right.appendChild(ad);
 
 		  document.body.appendChild(right);
