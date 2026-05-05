@@ -23,7 +23,7 @@ window.adsbygoogleLoaded = true;
 // =============================
 
 function loadScript(url, target = document.body) {
-if (document.querySelector(`script[src="${url}"]`)) return;
+if (document.querySelector(script[src="${url}"])) return;
 const s = document.createElement("script");
 s.async = true;
 s.src = url;
@@ -53,12 +53,10 @@ ins.style.display = "block";
 ins.style.width = "100%";
 ins.style.minHeight = "90px";
 
-```
 ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
 ins.setAttribute("data-ad-slot", "8834567127");
 
 return ins;
-```
 
 }
 
@@ -69,7 +67,6 @@ function hideBlankAds() {
 document.querySelectorAll('[id^="container-"]').forEach(ad => {
 if (!ad) return;
 
-```
   const hasIframe = ad.querySelector("iframe");
   const visibleText = ad.innerText.trim().length;
 
@@ -77,7 +74,6 @@ if (!ad) return;
     ad.style.display = "none";
   }
 });
-```
 
 }
 
@@ -89,7 +85,6 @@ setInterval(hideBlankAds, 1000);
 (function addAdStyles() {
 if (document.getElementById("ads-global-styles")) return;
 
-```
 const style = document.createElement("style");
 style.id = "ads-global-styles";
 
@@ -109,7 +104,6 @@ style.innerHTML = `
 `;
 
 document.head.appendChild(style);
-```
 
 })();
 
@@ -122,7 +116,6 @@ aside.className = "sidebar-ad left";
 aside.style.width = "160px";
 aside.style.minHeight = "600px";
 
-```
 const ins = document.createElement("ins");
 ins.className = "adsbygoogle";
 ins.style.display = "block";
@@ -134,7 +127,6 @@ ins.setAttribute("data-ad-slot", "3686182226");
 
 aside.appendChild(ins);
 return aside;
-```
 
 }
 
@@ -145,7 +137,6 @@ function addTopAd() {
 const top = document.querySelector(".top-banner");
 if (!top || top.dataset.extraAd) return;
 
-```
 if (!top.querySelector(".adsbygoogle")) {
   const ins = createHorizontalAd();
   top.appendChild(ins);
@@ -153,7 +144,6 @@ if (!top.querySelector(".adsbygoogle")) {
 }
 
 top.dataset.extraAd = "1";
-```
 
 }
 
@@ -163,7 +153,6 @@ top.dataset.extraAd = "1";
 function addBottomAd() {
 if (document.getElementById("extra-bottom-ad")) return;
 
-```
 const bottom = document.createElement("div");
 bottom.id = "extra-bottom-ad";
 bottom.style.maxWidth = "960px";
@@ -176,7 +165,6 @@ bottom.appendChild(ad);
 document.querySelector(".main-content")?.appendChild(bottom);
 
 setTimeout(() => pushAd(ad), 800);
-```
 
 }
 
@@ -186,7 +174,6 @@ setTimeout(() => pushAd(ad), 800);
 function addSideAds() {
 if (window.innerWidth < 1400) return;
 
-```
 setTimeout(() => {
 
   if (!document.getElementById("extra-left-ad")) {
@@ -214,7 +201,6 @@ setTimeout(() => {
   }
 
 }, 1500);
-```
 
 }
 
@@ -224,7 +210,6 @@ setTimeout(() => {
 function addInContentAds() {
 const sections = document.querySelectorAll(".section");
 
-```
 sections.forEach((section, i) => {
   if (i % 2 === 1) {
     const ad = createHorizontalAd();
@@ -234,7 +219,6 @@ sections.forEach((section, i) => {
     setTimeout(() => pushAd(ad), 800);
   }
 });
-```
 
 }
 
@@ -245,14 +229,12 @@ function addGamePageAds() {
 const game = document.querySelector("canvas, iframe");
 if (!game || document.getElementById("game-ad")) return;
 
-```
 const ad = createHorizontalAd();
 ad.id = "game-ad";
 ad.style.margin = "20px 0";
 
 game.parentNode.insertBefore(ad, game.nextSibling);
 setTimeout(() => pushAd(ad), 800);
-```
 
 }
 
@@ -270,13 +252,11 @@ if (!el || !el.classList.contains("adsbygoogle")) return;
 if (!document.contains(el)) return;
 if (isAdInitialized(el)) return;
 
-```
 el.dataset.adPushAttempted = "true";
 
 try {
   (window.adsbygoogle = window.adsbygoogle || []).push({});
 } catch (e) {}
-```
 
 }
 
@@ -287,8 +267,8 @@ function initExtraAds() {
 addTopAd();
 addBottomAd();
 addSideAds();
-addInContentAds();   // 🔥 NEW
-addGamePageAds();    // 🔥 NEW
+addInContentAds(); // 🔥 NEW
+addGamePageAds(); // 🔥 NEW
 }
 
 if (document.readyState === "loading") {
@@ -306,7 +286,6 @@ try {
 if (window.googlefc && window.googlefc.getConsentStatus) {
 const status = window.googlefc.getConsentStatus();
 
-```
       if (status === 1 || status === 2) {
         document.querySelectorAll(".adsbygoogle").forEach(ad => {
           try {
@@ -319,7 +298,6 @@ const status = window.googlefc.getConsentStatus();
     }
   } catch (e) {}
 }, 500);
-```
 
 }
 
