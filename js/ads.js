@@ -46,60 +46,53 @@
   }
 
   function createHorizontalAd() {
-    const ins = document.createElement("ins");
-    ins.className = "adsbygoogle";
-    ins.style.display = "block";
-    ins.style.width = "100%";
-    ins.style.minHeight = "90px";
+	  const ins = document.createElement("ins");
+	  ins.className = "adsbygoogle";
+	  ins.style.display = "block";
+	  ins.style.width = "100%";
+	  ins.style.minHeight = "90px";
 
-    ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-    ins.setAttribute("data-ad-slot", "8834567127");
-    ins.setAttribute("data-ad-format", "auto");
-    ins.setAttribute("data-full-width-responsive", "true");
+	  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+	  ins.setAttribute("data-ad-slot", "8834567127");
+	  ins.setAttribute("data-ad-format", "auto");
+	  ins.setAttribute("data-full-width-responsive", "true");
 
-    return ins;
-  }
+	  return ins;
+	}
 
   function createAsideAd() {
-    const aside = document.createElement("aside");
-    aside.style.width = "160px";
-    aside.style.minHeight = "600px";
+	  const aside = document.createElement("aside");
+	  aside.style.width = "160px";
+	  aside.style.minHeight = "600px";
 
-    const ins = document.createElement("ins");
-    ins.className = "adsbygoogle";
-    ins.style.display = "block";
-    ins.style.width = "160px";
-    ins.style.height = "600px";
+	  const ins = document.createElement("ins");
+	  ins.className = "adsbygoogle";
+	  ins.style.display = "inline-block";
+	  ins.style.width = "160px";
+	  ins.style.height = "600px";
 
-    ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-    ins.setAttribute("data-ad-slot", "3686182226");
+	  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+	  ins.setAttribute("data-ad-slot", "3686182226");
 
-    aside.appendChild(ins);
-    return aside;
-  }
+	  aside.appendChild(ins);
+	  return aside;
+	}
 
-  function isAdInitialized(el) {
-    if (!el) return true;
-    if (el.dataset.adPushAttempted === "true") return true;
-    if (el.hasAttribute("data-adsbygoogle-status")) return true;
-    if (el.querySelector("iframe")) return true;
-    if (el.innerHTML.trim() !== "") return true;
-    return false;
-  }
 
   function pushAd(el) {
-    if (!el || !el.classList.contains("adsbygoogle")) return;
-    if (!document.contains(el)) return;
-    if (isAdInitialized(el)) return;
+  if (!el || !el.classList.contains("adsbygoogle")) return;
+  if (!document.contains(el)) return;
 
+  if (el.hasAttribute("data-adsbygoogle-status")) return;
+  if (el.querySelector("iframe")) return;
+
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
     el.dataset.adPushAttempted = "true";
-
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (e) {
-      console.log("Ad push skipped", e);
-    }
+  } catch (e) {
+    console.log("Ad push skipped", e);
   }
+}
 
   // =============================
   // 3️⃣ STYLES
@@ -112,42 +105,45 @@
 
     style.innerHTML = `
       .fixed-side-ad {
-        position: fixed;
-        top: 120px;
-        width: 160px;
-        min-height: 600px;
-        z-index: 999;
-      }
+	  position: fixed;
+	  top: 140px;
+	  width: 160px;
+	  min-height: 600px;
+	  z-index: 9999;
+	  display: block;
+	}
 
-      .fixed-side-ad.left {
-        left: 10px;
-      }
+	.fixed-side-ad.left {
+	  left: 10px;
+	}
 
-      .fixed-side-ad.right {
-        right: 10px;
-      }
+	.fixed-side-ad.right {
+	  right: 10px;
+	}
 
-      #extra-bottom-ad {
-        width: 100%;
-        max-width: 960px;
-        min-height: 90px;
-        margin: 40px auto;
-        text-align: center;
-      }
+	#extra-bottom-ad {
+	  width: 100%;
+	  max-width: 970px;
+	  min-height: 120px;
+	  margin: 50px auto;
+	  text-align: center;
+	  display: block;
+	  clear: both;
+	}
 
-      .inline-ad-slot {
-        width: 100%;
-        max-width: 960px;
-        min-height: 90px;
-        margin: 35px auto;
-        text-align: center;
-      }
+	.inline-ad-slot {
+	  width: 100%;
+	  max-width: 960px;
+	  min-height: 90px;
+	  margin: 35px auto;
+	  text-align: center;
+	}
 
-      @media (max-width: 1400px) {
-        .fixed-side-ad {
-          display: none !important;
-        }
-      }
+	@media (max-width: 1400px) {
+	  .fixed-side-ad {
+		display: none !important;
+	  }
+	}	
     `;
 
     document.head.appendChild(style);
@@ -189,52 +185,60 @@
   // 6️⃣ BOTTOM AD
   // =============================
   function addBottomAd() {
-    if (document.getElementById("extra-bottom-ad")) return;
+	  if (document.getElementById("extra-bottom-ad")) return;
 
-    const bottom = document.createElement("div");
-    bottom.id = "extra-bottom-ad";
+	  const bottom = document.createElement("div");
+	  bottom.id = "extra-bottom-ad";
+	  bottom.style.width = "100%";
+	  bottom.style.maxWidth = "970px";
+	  bottom.style.minHeight = "120px";
+	  bottom.style.margin = "50px auto";
+	  bottom.style.textAlign = "center";
+	  bottom.style.display = "block";
+	  bottom.style.clear = "both";
 
-    const ad = createHorizontalAd();
-    bottom.appendChild(ad);
+	  const ad = createHorizontalAd();
+	  bottom.appendChild(ad);
 
-    const target = document.querySelector(".main-content") || document.body;
-    target.appendChild(bottom);
+	  document.body.appendChild(bottom);
 
-    setTimeout(() => pushAd(ad), 1200);
-  }
+	  setTimeout(() => pushAd(ad), 2000);
+	}
 
   // =============================
   // 7️⃣ SIDE ADS
   // =============================
   function addSideAds() {
-    if (window.innerWidth < 1400) return;
+	  if (window.innerWidth < 1400) return;
 
-    setTimeout(() => {
-      if (!document.getElementById("extra-left-ad")) {
-        const left = document.createElement("aside");
-        left.id = "extra-left-ad";
-        left.className = "fixed-side-ad left";
+	  setTimeout(() => {
+		if (!document.getElementById("extra-left-ad")) {
+		  const left = document.createElement("aside");
+		  left.id = "extra-left-ad";
+		  left.className = "fixed-side-ad left";
+		  left.style.display = "block";
 
-        const ad = createAsideAd();
-        left.appendChild(ad);
+		  const ad = createAsideAd();
+		  left.appendChild(ad);
 
-        document.body.appendChild(left);
-        setTimeout(() => pushAd(ad.querySelector("ins")), 1200);
-      }
+		  document.body.appendChild(left);
+		  setTimeout(() => pushAd(ad.querySelector("ins")), 2000);
+		}
 
-      if (!document.getElementById("extra-right-ad")) {
-        const right = document.createElement("aside");
-        right.id = "extra-right-ad";
-        right.className = "fixed-side-ad right";
+		if (!document.getElementById("extra-right-ad")) {
+		  const right = document.createElement("aside");
+		  right.id = "extra-right-ad";
+		  right.className = "fixed-side-ad right";
+		  right.style.display = "block";
 
-        const ad = createAsideAd();
-        right.appendChild(ad);
+		  const ad = createAsideAd();
+		  right.appendChild(ad);
 
-        document.body.appendChild(right);
-        setTimeout(() => pushAd(ad.querySelector("ins")), 1200);
-      }
-    }, 1500);
-  }
+		  document.body.appendChild(right);
+		  setTimeout(() => pushAd(ad.querySelector("ins")), 2500);
+		}
+	  }, 2000);
+	}
 
   // =============================
   // 8️⃣ IN-CONTENT ADS
