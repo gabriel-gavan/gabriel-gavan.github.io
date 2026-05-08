@@ -169,29 +169,32 @@
 	}
 	
   function addCloseButton(wrapper) {
-	  if (!isGamePage()) return; // 🚫 only on game pages
+	if (!isGamePage()) return;
 
 	  const btn = document.createElement("button");
 	  btn.innerText = "×";
+	  btn.type = "button";
 
 	  btn.style.position = "absolute";
 	  btn.style.top = "5px";
 	  btn.style.right = "5px";
-	  btn.style.background = "rgba(0,0,0,0.6)";
+	  btn.style.background = "rgba(0,0,0,0.75)";
 	  btn.style.color = "#fff";
-	  btn.style.border = "none";
+	  btn.style.border = "1px solid rgba(255,255,255,0.3)";
+	  btn.style.borderRadius = "4px";
 	  btn.style.cursor = "pointer";
 	  btn.style.fontSize = "16px";
-	  btn.style.padding = "2px 6px";
+	  btn.style.padding = "2px 7px";
 	  btn.style.zIndex = "1000000";
 
-	  btn.onclick = () => {
+	  btn.onclick = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
 		wrapper.style.display = "none";
 	  };
 
-	  wrapper.style.position = "relative";
 	  wrapper.appendChild(btn);
-	}
+	}			
   // 5️⃣ TOP AD
   // =============================
   function addTopAd() {
