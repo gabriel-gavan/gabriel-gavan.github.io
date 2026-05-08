@@ -145,7 +145,7 @@
 
     document.head.appendChild(style);
   })();
-
+	
   // =============================
   // 4️⃣ HIDE EMPTY ADSTERRA CONTAINERS ONLY
   // =============================
@@ -163,6 +163,35 @@
   setInterval(hideBlankAds, 1000);
 
   // =============================
+  function isGamePage() {
+  // NOT the main hub → game page
+	  return !document.body.classList.contains("hub-page");
+	}
+	
+  function addCloseButton(wrapper) {
+	  if (!isGamePage()) return; // 🚫 only on game pages
+
+	  const btn = document.createElement("button");
+	  btn.innerText = "×";
+
+	  btn.style.position = "absolute";
+	  btn.style.top = "5px";
+	  btn.style.right = "5px";
+	  btn.style.background = "rgba(0,0,0,0.6)";
+	  btn.style.color = "#fff";
+	  btn.style.border = "none";
+	  btn.style.cursor = "pointer";
+	  btn.style.fontSize = "16px";
+	  btn.style.padding = "2px 6px";
+	  btn.style.zIndex = "1000000";
+
+	  btn.onclick = () => {
+		wrapper.style.display = "none";
+	  };
+
+	  wrapper.style.position = "relative";
+	  wrapper.appendChild(btn);
+	}
   // 5️⃣ TOP AD
   // =============================
   function addTopAd() {
@@ -217,7 +246,7 @@
 
 		  const ad = createAsideAd("3686182226");
 		  left.appendChild(ad);
-
+		  addCloseButton(left); 
 		  document.body.appendChild(left);
 		  setTimeout(() => pushAd(ad.querySelector("ins")), 2000);
 		}
@@ -230,7 +259,7 @@
 
 		  const ad = createAsideAd("7624620010");
 		  right.appendChild(ad);
-
+		  addCloseButton(right);
 		  document.body.appendChild(right);
 		  setTimeout(() => pushAd(ad.querySelector("ins")), 2500);
 		}
