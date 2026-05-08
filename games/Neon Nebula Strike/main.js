@@ -14,6 +14,7 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 class Game {
     constructor() {
 		this.levelsSinceAd = 0;
+		this.lastAdBreakTime = 0; // cooldown for NeonAds game-break interstitials
         this.leaderboard = new LeaderboardManager();
         this.dailyMission = new DailyMissionManager();
         
@@ -407,9 +408,11 @@ class Game {
             if (this.bloomPass) this.bloomPass.strength = 0.5; // Reduce bloom intensity
         }
 
-        this.adSkipBtn.onclick = () => {
-            this.closeAdInterstitial();
-        };
+        if (this.adSkipBtn) {
+            this.adSkipBtn.onclick = () => {
+                this.closeAdInterstitial();
+            };
+        }
 
         this.animate();
 		document.querySelectorAll('.tab').forEach(btn => {
@@ -493,106 +496,108 @@ class Game {
         };
     }
 	
-	showAdInterstitial(callback) {
+	// === AD MONETIZATION START ===
+	maybeShowAdBreak(reason) {
+        const now = Date.now();
+        const COOLDOWN_MS = 60000; // max 1 game-break ad per 60s
 
-    // --- Official Google H5 Games SDK ---
-    if (typeof window.adBreak === 'function') {
+        // Cooldown gate: never show ads back-to-back
+        if (now - this.lastAdBreakTime < COOLDOWN_MS) return false;
+
+        this.lastAdBreakTime = now;
+
+        if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === "function") {
+            // Ensure game is paused while overlay is visible
+            this.gameActive = false;
+            try {
+                window.NeonAds.showGameBreakAd();
+            } catch (e) {
+                console.log("NeonAds showGameBreakAd error", e);
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    hideAdBreak() {
+        if (window.NeonAds && typeof window.NeonAds.hideGameBreakAd === "function") {
+            try {
+                window.NeonAds.hideGameBreakAd();
+            } catch (e) {
+                console.log("NeonAds hideGameBreakAd error", e);
+            }
+        }
+    }
+
+	showAdInterstitial(callback) {
+        // Used only at safe “level complete / before next level” breakpoints
         this.onAdComplete = callback;
 
-        window.adBreak({
-            type: 'next',
-            name: 'level-complete',
+        const didShow = this.maybeShowAdBreak("level_complete");
+        if (!didShow) {
+            if (callback) callback();
+            return;
+        }
 
-            beforeAd: () => {
-                console.log('Ad starting...');
-                this.gameActive = false;
-            },
+        // Wait until NeonAds overlay is closed (user clicks × inside ads.js)
+        // Event-driven approach (no polling) + 8s safety timeout.
+        let finished = false;
 
-            afterAd: () => {
-                console.log('Ad finished.');
-                this.closeAdInterstitial();
-            },
+        const finish = () => {
+            if (finished) return;
+            finished = true;
 
-            adDismissed: () => { this.closeAdInterstitial(); },
-            adViewed: () => { this.closeAdInterstitial(); },
+            try {
+                observer?.disconnect();
+            } catch (e) {}
 
-            adBreakDone: (info) => {
-                console.log('Ad break done', info);
-                this.closeAdInterstitial();
+            clearTimeout(safetyTimeout);
+
+            this.hideAdBreak();
+
+            if (this.onAdComplete) {
+                const cb = this.onAdComplete;
+                this.onAdComplete = null;
+                cb();
             }
+        };
+
+        const safetyTimeout = setTimeout(() => {
+            finish();
+        }, 8000);
+
+        const observer = new MutationObserver(() => {
+            const wrap = document.getElementById("neon-game-break-ad");
+            const isClosed = !wrap || wrap.style.display === "none" || getComputedStyle(wrap).display === "none";
+            if (!isClosed) return;
+            finish();
         });
 
-        return;
+        // Observe additions + attribute changes (style/class) so we detect when ad closes.
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["style", "class"]
+        });
+
+        // In case it closes very quickly after showing:
+        const wrapNow = document.getElementById("neon-game-break-ad");
+        const isClosedNow = !wrapNow || wrapNow.style.display === "none" || getComputedStyle(wrapNow).display === "none";
+        if (isClosedNow) finish();
     }
-
-    // --- AdSense fallback ---
-    if (!this.adInterstitialEl) {
-        if (callback) callback();
-        return;
-    }
-
-    this.onAdComplete = callback;
-
-    this.adInterstitialEl.style.display = 'flex';
-    this.adSkipBtn.style.display = 'none';
-
-    // Inject real AdSense ad
-    const adContainer = document.getElementById("gameInterstitialAd");
-
-    if (adContainer && !adContainer.hasChildNodes()) {
-
-        adContainer.innerHTML = `
-            <ins class="adsbygoogle"
-                style="display:block"
-                data-ad-client="ca-pub-5482914432517813"
-                data-ad-slot="8527470351"
-                data-ad-format="auto"
-                data-full-width-responsive="true">
-            </ins>
-        `;
-
-        try {
-            (adsbygoogle = window.adsbygoogle || []).push({});
-        } catch (e) {
-            console.log("AdSense push error", e);
-        }
-    }
-
-    // Countdown timer
-    let timeLeft = 5;
-
-    this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-    
-
-    const timerInterval = setInterval(() => {
-
-        timeLeft--;
-
-        if (timeLeft <= 0) {
-
-            clearInterval(timerInterval);
-
-            this.adSkipBtn.style.display = 'block';
-            this.adTimerEl.innerText = 'AD READY TO SKIP';
-          
-
-        } else {
-
-            this.adTimerEl.innerText = `AD ENDS IN ${timeLeft}s`;
-
-
-        }
-
-    }, 1000);
-}
 
     closeAdInterstitial() {
-        this.adInterstitialEl.style.display = 'none';
+        // Safety: used by existing skip/close UI
+        this.hideAdBreak();
         if (this.onAdComplete) {
-            this.onAdComplete();
+            const cb = this.onAdComplete;
             this.onAdComplete = null;
+            cb();
         }
     }
+    // === AD MONETIZATION END ===
 
     checkNickname() {
 		const name = this.leaderboard.getPlayerName();
@@ -1590,6 +1595,7 @@ class Game {
     }
 
     startGame(campaignIndex = 0, levelInCampaign = 1) {
+        this.hideAdBreak();
         this.startScreenEl.style.display = 'none';
         this.campaignSelectionEl.style.display = 'none';
         this.levelSelectionEl.style.display = 'none';
@@ -1722,6 +1728,7 @@ class Game {
     }
 
     restartGame() {
+        this.hideAdBreak();
         this.gameOverEl.style.display = 'none';
         this.enemies.forEach(e => e.die());
         this.enemies = [];
@@ -2490,6 +2497,9 @@ class Game {
         this.dailyMission.updateProgress('high_accuracy', accuracy, true);
 
         this.updateDailyMissionUI();
+        // === AD MONETIZATION START ===
+        this.maybeShowAdBreak("game_over");
+        // === AD MONETIZATION END ===
         this.missionSummaryEl.style.display = 'flex';
         
         // Restore name input container
@@ -2520,6 +2530,7 @@ class Game {
     }
 
     proceedToNextLevel() {
+        this.hideAdBreak();
         if (this.level < CONFIG.LEVELS.COUNT) {
             this.level++;
 			 
