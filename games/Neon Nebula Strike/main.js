@@ -1823,7 +1823,12 @@ class Game {
 
     gameOver() {
         this.gameActive = false;
-		if (this.controller.mobileControls) {
+
+        // === AD MONETIZATION START ===
+        this.maybeShowAdBreak("death_game_over");
+        // === AD MONETIZATION END ===
+
+                if (this.controller.mobileControls) {
             this.controller.mobileControls.hide();
         }
         this.cameraController.disable();
@@ -2498,9 +2503,16 @@ class Game {
 
         this.updateDailyMissionUI();
         // === AD MONETIZATION START ===
-        this.maybeShowAdBreak("game_over");
-        // === AD MONETIZATION END ===
+        // === AD MONETIZATION START ===
         this.missionSummaryEl.style.display = 'flex';
+
+        // Between missions/levels: show interstitial every N mission completions
+        this.levelsSinceAd = (this.levelsSinceAd || 0) + 1;
+        const AD_EVERY_N_MISSIONS = 3;
+        if (this.levelsSinceAd >= AD_EVERY_N_MISSIONS) {
+            this.levelsSinceAd = 0;
+            this.maybeShowAdBreak("level_complete");
+        }
         
         // Restore name input container
         const container = document.getElementById('name-input-container');
