@@ -79,18 +79,14 @@
 	}
 
 
-  function pushAd(el) {
+ function pushAd(el) {
   if (!el || !el.classList.contains("adsbygoogle")) return;
   if (!document.contains(el)) return;
 
-  if (el.hasAttribute("data-adsbygoogle-status")) return;
-  if (el.querySelector("iframe")) return;
-
   try {
     (window.adsbygoogle = window.adsbygoogle || []).push({});
-    el.dataset.adPushAttempted = "true";
   } catch (e) {
-    console.log("Ad push skipped", e);
+    console.log("Ad push error", e);
   }
 }
 
@@ -109,8 +105,9 @@
 	  top: 140px;
 	  width: 160px;
 	  min-height: 600px;
-	  z-index: 9999;
+	  z-index: 999999;
 	  display: block;
+	  background: rgba(255,0,0,0.2);
 	}
 
 	.fixed-side-ad.left {
@@ -118,7 +115,7 @@
 	}
 
 	.fixed-side-ad.right {
-	  right: 10px;
+	  right: calc((100vw - 1300px) / 2 - 180px);
 	}
 
 	#extra-bottom-ad {
@@ -318,6 +315,83 @@
       } catch (e) {}
     }, 500);
   }
+	// =============================
+// 🎮 PUBLIC API FOR GAME PAGES
+// =============================
+	window.NeonAds = {
+	  showGameBreakAd: function (containerSelector) {
 
+		const target =
+		  document.querySelector(containerSelector) ||
+		  document.querySelector(".game-container") ||
+		  document.querySelector("#game") ||
+		  document.body;
+
+		if (!target) return;
+
+		let wrap = document.getElementById("neon-game-break-ad");
+
+		if (!wrap) {
+		  wrap = document.createElement("div");
+		  wrap.id = "neon-game-break-ad";
+
+		  wrap.style.position = "fixed";
+		  wrap.style.top = "0";
+		  wrap.style.left = "0";
+		  wrap.style.width = "100%";
+		  wrap.style.height = "100%";
+		  wrap.style.background = "rgba(0,0,0,0.9)";
+		  wrap.style.display = "flex";
+		  wrap.style.alignItems = "center";
+		  wrap.style.justifyContent = "center";
+		  wrap.style.zIndex = "999999";
+
+		  // ✅ CLOSE BUTTON
+		  const close = document.createElement("button");
+		  close.innerText = "×";
+		  close.style.position = "absolute";
+		  close.style.top = "20px";
+		  close.style.right = "20px";
+		  close.style.fontSize = "28px";
+		  close.style.background = "transparent";
+		  close.style.color = "white";
+		  close.style.border = "none";
+		  close.style.cursor = "pointer";
+
+		  close.onclick = () => {
+			wrap.style.display = "none";
+		  };
+
+		  // ✅ AD CONTAINER (SQUARE)
+		  const ad = document.createElement("ins");
+		  ad.className = "adsbygoogle";
+		  ad.style.display = "inline-block";
+		  ad.style.width = "300px";
+		  ad.style.height = "250px";
+
+		  ad.setAttribute("data-ad-client", "ca-pub-5482914432517813");
+		  ad.setAttribute("data-ad-slot", "1570389117");
+
+		  wrap.appendChild(close);
+		  wrap.appendChild(ad);
+
+		  document.body.appendChild(wrap);
+
+		  setTimeout(() => {
+			try {
+			  (window.adsbygoogle = window.adsbygoogle || []).push({});
+			} catch (e) {}
+		  }, 300);
+
+		} else {
+		  wrap.style.display = "flex";
+		}
+	  },
+
+	  hideGameBreakAd: function () {
+		const wrap = document.getElementById("neon-game-break-ad");
+		if (wrap) wrap.style.display = "none";
+	  }
+	};
   waitForConsentAndLoadAds();
 })();
