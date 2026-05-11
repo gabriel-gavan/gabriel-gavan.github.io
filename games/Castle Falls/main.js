@@ -31,6 +31,12 @@ class Game {
         this.lastFireTime = 0;
         this.fireRate = 0.25;
 
+        // Ad interstitial state (uses /js/ads.js -> window.NeonAds)
+        this.lastInterstitialTime = 0;
+        this.isAdInProgress = false;
+        this.completedLevelsSinceAd = 0;
+        this.checkpointsSinceAd = 0;
+
         // Scene aesthetics
         this.scene.background = new THREE.Color(CONFIG.COLORS.VOID);
         this.scene.fog = new THREE.FogExp2(CONFIG.COLORS.FOG, 0.015); // Slightly thinner fog for distant view
@@ -136,6 +142,76 @@ class Game {
         );
     }
 
+
+    maybeShowInterstitialAd(options = {}) {
+        const force = options.force === true;
+        const pauseGame = options.pauseGame !== false;
+        const now = Date.now();
+        const COOLDOWN_MS = 60000;
+
+        if (this.isAdInProgress) return false;
+        if (!force && now - this.lastInterstitialTime < COOLDOWN_MS) return false;
+
+        if (!window.NeonAds || typeof window.NeonAds.showGameBreakAd !== 'function') {
+            return false;
+        }
+
+        this.lastInterstitialTime = now;
+        this.isAdInProgress = true;
+
+        const wasPaused = this.isPaused;
+        const wasGameOver = this.isGameOver;
+        const wasVisible = this.playerMesh ? this.playerMesh.visible : true;
+
+        if (pauseGame && !wasGameOver) {
+            this.isPaused = true;
+        }
+
+        try {
+            window.NeonAds.showGameBreakAd();
+        } catch (e) {
+            console.warn('NeonAds showGameBreakAd failed', e);
+            this.isAdInProgress = false;
+            if (pauseGame && !wasGameOver) this.isPaused = wasPaused;
+            if (this.playerMesh) this.playerMesh.visible = wasVisible;
+            return false;
+        }
+
+        let finished = false;
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+
+            try { observer?.disconnect(); } catch (e) {}
+            clearTimeout(safetyTimeout);
+
+            this.isAdInProgress = false;
+
+            if (pauseGame && !this.isGameOver) {
+                this.isPaused = wasPaused;
+            }
+            if (this.playerMesh) this.playerMesh.visible = wasVisible;
+        };
+
+        const safetyTimeout = setTimeout(finish, 8000);
+
+        const observer = new MutationObserver(() => {
+            const wrap = document.getElementById('neon-game-break-ad');
+            if (!wrap) return;
+            const hidden = wrap.style.display === 'none' || getComputedStyle(wrap).display === 'none';
+            if (hidden) finish();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+
+        return true;
+    }
+
     startLevel(levelNum, sectorName) {
         this.currentLevel = levelNum;
         this.targetDistance = this.gameState.getLevelDistance(levelNum);
@@ -231,6 +307,7 @@ class Game {
                 this.isGameOver = true;
                 this.gameState.saveScore(this.currentLevel, this.distance);
                 this.uiManager.showGameOver(this.distance, this.currentLevel, this.gameState.progress.leaderboard);
+                this.maybeShowInterstitialAd({ force: true, pauseGame: false });
                 audioManager.playGameOver();
                 this.particleSystem.emit(hitPos, 20, 0xff0000);
             } else {
@@ -415,6 +492,11 @@ class Game {
                 this.gameState.completeLevel(this.currentLevel);
                 this.uiManager.renderCampaigns(this.gameState);
                 this.uiManager.showLevelComplete(this.currentLevel, this.distance, this.currentLevel + 1);
+                this.completedLevelsSinceAd++;
+                if (this.completedLevelsSinceAd >= 2) {
+                    this.completedLevelsSinceAd = 0;
+                    this.maybeShowInterstitialAd({ pauseGame: true });
+                }
             }
         }
 
@@ -629,6 +711,11 @@ class Game {
             if (currentCkp > this.lastCheckpointDist) {
                 this.lastCheckpointDist = currentCkp;
                 this.uiManager.showStatus("Checkpoint Reached!");
+                this.checkpointsSinceAd++;
+                if (this.checkpointsSinceAd >= 3) {
+                    this.checkpointsSinceAd = 0;
+                    this.maybeShowInterstitialAd({ pauseGame: true });
+                }
             }
         }
         this.wasOnGround = this.controller.isOnGround;

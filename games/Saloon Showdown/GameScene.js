@@ -260,6 +260,7 @@ export class GameScene {
 
         // Close door after seeing the death
         setTimeout(() => {
+            if (this.isPaused || this.isGameOver) return;
             if (targetDoor.isOpen) targetDoor.close();
         }, 350);
 
@@ -330,6 +331,7 @@ export class GameScene {
     }
 
     start() {
+        this.isPaused = false;
         this.isGameStarted = true;
         this.score = 0;
         this.ammo = CONFIG.GAME.MAX_AMMO;
@@ -361,6 +363,7 @@ export class GameScene {
         if (this.isGameOver) return;
         this.isGameOver = true;
         this.isGameStarted = false;
+        this.isPaused = false;
         
         // Clear any pending bandit timeouts
         this.activeBanditTimeouts.forEach(timeout => clearTimeout(timeout));
@@ -370,7 +373,7 @@ export class GameScene {
     }
 
     update() {
-        if (!this.isGameStarted || this.isGameOver) return;
+        if (!this.isGameStarted || this.isGameOver || this.isPaused) return;
         
         // Update particles
         for (let i = this.particles.length - 1; i >= 0; i--) {
@@ -429,6 +432,7 @@ export class GameScene {
                     const baseLevelDuration = CONFIG.GAME.BASE_SHOT_TIME - (this.level - 1) * CONFIG.GAME.LEVEL_SHOT_REDUCTION;
                     const duration = baseLevelDuration - (this.score * 10);
                     const timeout = setTimeout(() => {
+                        if (this.isPaused || this.isGameOver) return;
                         if (door.isOpen && door.currentTarget && !door.currentTarget.isShot) {
                             this.lives--;
                             if (this.onLivesUpdate) this.onLivesUpdate(this.lives);
@@ -444,6 +448,7 @@ export class GameScene {
                     // Innocents close automatically after a while
                     const doorId = door.id; // Capture ID for the cleanup
                     const timeout = setTimeout(() => {
+                        if (this.isPaused || this.isGameOver) return;
                         if (door.isOpen) {
                             door.close();
                         }

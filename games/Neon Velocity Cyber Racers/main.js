@@ -21,6 +21,10 @@ class Game {
         this.completedTracks = JSON.parse(localStorage.getItem('neon_campaign_progress') || '[]');
         this.username = localStorage.getItem('neon_username') || Config.DEFAULT_PLAYER_NAME;
 
+        // NeonAds interstitial state
+        this.lastInterstitialTime = 0;
+        this.racesSinceInterstitial = 0;
+
         this.setupLights();
         this.setupSkybox();
         this.setupEvents();
@@ -31,6 +35,39 @@ class Game {
 
         if (!localStorage.getItem('neon_username')) {
             this.showUsernamePrompt();
+        }
+    }
+
+
+    showInterstitialAd(force = false) {
+        const now = Date.now();
+        const COOLDOWN_MS = 60000;
+
+        if (!force && now - this.lastInterstitialTime < COOLDOWN_MS) {
+            return false;
+        }
+
+        this.lastInterstitialTime = now;
+
+        try {
+            if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+                window.NeonAds.showGameBreakAd();
+                return true;
+            }
+        } catch (e) {
+            console.log('NeonAds interstitial failed', e);
+        }
+
+        return false;
+    }
+
+    hideInterstitialAd() {
+        try {
+            if (window.NeonAds && typeof window.NeonAds.hideGameBreakAd === 'function') {
+                window.NeonAds.hideGameBreakAd();
+            }
+        } catch (e) {
+            console.log('NeonAds hide interstitial failed', e);
         }
     }
 
@@ -150,8 +187,18 @@ class Game {
     }
 
     setupEvents() {
-        window.addEventListener('keydown', (e) => this.handleKey(e.code, true));
-        window.addEventListener('keyup', (e) => this.handleKey(e.code, false));
+        window.addEventListener('keydown', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(e.code)) {
+                e.preventDefault();
+            }
+            this.handleKey(e.code, true);
+        }, { passive: false });
+        window.addEventListener('keyup', (e) => {
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'].includes(e.code)) {
+                e.preventDefault();
+            }
+            this.handleKey(e.code, false);
+        }, { passive: false });
         window.addEventListener('resize', () => {
             this.camera.aspect = window.innerWidth / window.innerHeight;
             this.camera.updateProjectionMatrix();
@@ -325,7 +372,7 @@ class Game {
             <div id="trackList" style="display: grid; grid-template-columns: ${isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)'}; gap: 15px; width: 95%; max-width: 900px;"></div>
 			            
             <div style="margin-top: 40px; width: 100%; display: flex; justify-content: center;">
-                <button onclick="window.location.href='/index.html'" style="
+                <button onclick="if(window.gameInstance){window.gameInstance.showInterstitialAd(true); setTimeout(function(){window.location.href='/index.html';},350);}else{window.location.href='/index.html';}" style="
                     background: transparent;
                     border: 1px solid #ff00ff;
                     color: #ff00ff;
@@ -485,6 +532,13 @@ class Game {
         const msg = document.getElementById('message');
         msg.innerHTML = `${this.username} WINS!<br><span style="font-size: 24px; color: #00ffff">TRACK COMPLETED</span>`;
         msg.style.display = 'block';
+
+        this.racesSinceInterstitial++;
+        if (this.racesSinceInterstitial >= 2 || (this.currentTrackIndex + 1) % 3 === 0) {
+            this.racesSinceInterstitial = 0;
+            this.showInterstitialAd();
+        }
+
         setTimeout(() => this.returnToMenu(), 3000);
     }
 
@@ -493,6 +547,13 @@ class Game {
         const msg = document.getElementById('message');
         msg.innerHTML = `${winner.name} WON!<br><span style="font-size: 24px; color: #ff0000">TRY AGAIN</span>`;
         msg.style.display = 'block';
+
+        this.racesSinceInterstitial++;
+        if (this.racesSinceInterstitial >= 2) {
+            this.racesSinceInterstitial = 0;
+            this.showInterstitialAd();
+        }
+
         setTimeout(() => this.returnToMenu(), 3000);
     }
 

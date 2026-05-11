@@ -38,6 +38,10 @@ export default function initGame(
 	let coins = 0;
     let coinRotationSpeed = 0.08;
     const clock = new THREE.Clock();
+    // === NEON ADS INTERSTITIAL STATE ===
+    let lastAdBreakTime = 0;
+    let adBreakInProgress = false;
+    const AD_COOLDOWN_MS = 60000; // max 1 game-break ad per 60s
 	let coinTex;
     //let road1, road2, road3;
 	const speed = 0.30 * difficulty;
@@ -52,6 +56,56 @@ export default function initGame(
 		screen.style.display = "none";
 		screen.classList.remove("show");
 	}
+
+    // ============================================================
+    // 🎮 NEON ADS INTERSTITIAL HELPER
+    // Uses /js/ads.js -> window.NeonAds.showGameBreakAd()
+    // Safe for game-over / menu breaks only.
+    // ============================================================
+    function maybeShowInterstitialAd(force = false) {
+        const now = Date.now();
+
+        if (adBreakInProgress) return false;
+        if (!force && now - lastAdBreakTime < AD_COOLDOWN_MS) return false;
+
+        if (!window.NeonAds || typeof window.NeonAds.showGameBreakAd !== "function") {
+            return false;
+        }
+
+        lastAdBreakTime = now;
+        adBreakInProgress = true;
+
+        try {
+            window.NeonAds.showGameBreakAd();
+        } catch (e) {
+            console.log("NeonAds interstitial failed", e);
+            adBreakInProgress = false;
+            return false;
+        }
+
+        const finish = () => {
+            adBreakInProgress = false;
+            try { observer.disconnect(); } catch (e) {}
+            clearTimeout(safetyTimer);
+        };
+
+        const safetyTimer = setTimeout(finish, 8000);
+        const observer = new MutationObserver(() => {
+            const wrap = document.getElementById("neon-game-break-ad");
+            if (!wrap) return;
+            const hidden = wrap.style.display === "none" || getComputedStyle(wrap).display === "none";
+            if (hidden) finish();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ["style", "class"]
+        });
+
+        return true;
+    }
     // ============================================================
     // INIT
     // ============================================================
@@ -827,6 +881,9 @@ export default function initGame(
     // ============================================================
     function showGameOver() {
 		gameRunning = false;
+
+        // Natural break: show interstitial after the run ends.
+        maybeShowInterstitialAd();
 
 		const screen = document.getElementById("gameOverScreen");
 		document.getElementById("finalScore").textContent = "Score: " + score;

@@ -82,6 +82,76 @@
         updateBannerVisibility();
       }
 
+
+      // ================================
+      // 🎮 NEON ADS INTERSTITIAL SUPPORT
+      // Unity-safe: does not touch the Unity instance or canvas input.
+      // Shows ads only on safe browser-level breaks with cooldown.
+      // ================================
+      var neonUnityAds = (function () {
+        var lastAdTime = 0;
+        var sessionStartedAt = Date.now();
+        var hasLoadedUnity = false;
+        var hasShownFirstSessionBreak = false;
+        var COOLDOWN_MS = 60000;
+        var FIRST_SESSION_BREAK_MS = 180000;
+        var REPEAT_SESSION_BREAK_MS = 300000;
+        var sessionBreakTimer = null;
+
+        function canShowAd(force) {
+          var now = Date.now();
+          if (!force && now - lastAdTime < COOLDOWN_MS) return false;
+          return !!(window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function');
+        }
+
+        function show(reason, force) {
+          if (!canShowAd(force)) return false;
+          lastAdTime = Date.now();
+          try {
+            window.NeonAds.showGameBreakAd();
+            return true;
+          } catch (e) {
+            console.log('NeonAds Unity interstitial failed:', reason, e);
+            return false;
+          }
+        }
+
+        function markUnityLoaded() {
+          hasLoadedUnity = true;
+          scheduleSessionBreak();
+        }
+
+        function scheduleSessionBreak() {
+          if (sessionBreakTimer) clearTimeout(sessionBreakTimer);
+
+          var delay = hasShownFirstSessionBreak ? REPEAT_SESSION_BREAK_MS : FIRST_SESSION_BREAK_MS;
+          sessionBreakTimer = setTimeout(function () {
+            if (!hasLoadedUnity || document.hidden) {
+              scheduleSessionBreak();
+              return;
+            }
+            hasShownFirstSessionBreak = true;
+            show('long_session_break', false);
+            scheduleSessionBreak();
+          }, delay);
+        }
+
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden && hasLoadedUnity && Date.now() - sessionStartedAt > 90000) {
+            show('focus_return', false);
+          }
+        });
+
+        window.addEventListener('blur', function () {
+          // no-op, kept intentionally so focus-return logic stays browser safe
+        });
+
+        return {
+          show: show,
+          markUnityLoaded: markUnityLoaded
+        };
+      })();
+
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/Restaurant3DGame.loader.js";
       var config = {
@@ -121,6 +191,7 @@
           progressBarFull.style.width = 100 * progress + "%";
         }).then((unityInstance) => {
           loadingBar.style.display = "none";
+          neonUnityAds.markUnityLoaded();
           fullscreenButton.onclick = () => {
             unityInstance.SetFullscreen(1);
           };

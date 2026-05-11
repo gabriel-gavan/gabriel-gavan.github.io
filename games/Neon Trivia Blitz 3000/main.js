@@ -26,6 +26,10 @@ class TriviaGame {
 
         this.isPaused = false;
         this.isDailyMode = false;
+
+        // === NeonAds interstitial control ===
+        this.lastInterstitialTime = 0;
+        this.questionsSinceInterstitial = 0;
         this.lastTime = 0;
         this.animate = this.animate.bind(this);
         
@@ -43,7 +47,32 @@ class TriviaGame {
         requestAnimationFrame(this.animate);
     }
 
+    // === AD MONETIZATION START ===
+    showInterstitialAd(force = false, reason = 'game_break') {
+        const now = Date.now();
+        const COOLDOWN_MS = 60000;
+
+        if (!force && now - this.lastInterstitialTime < COOLDOWN_MS) {
+            return false;
+        }
+
+        this.lastInterstitialTime = now;
+
+        try {
+            if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+                window.NeonAds.showGameBreakAd();
+                return true;
+            }
+        } catch (e) {
+            console.log('NeonAds interstitial failed:', reason, e);
+        }
+
+        return false;
+    }
+    // === AD MONETIZATION END ===
+
     showWelcome() {
+        this.showInterstitialAd(false, 'return_to_menu');
         this.triviaEngine.stopTimer(); // Ensure any running timer is stopped
         this.gameScene.resetCamera();
         this.gameScene.setStageColor(CONFIG.COLORS.PRIMARY);
@@ -82,6 +111,7 @@ class TriviaGame {
         // Unlock audio on first interaction
         await this.audioManager.start();
         this.audioManager.playStart();
+        this.questionsSinceInterstitial = 0;
         
         this.triviaEngine.resetGame(); // Ensure lifelines are reset
         this.gameScene.resetCamera();
@@ -153,6 +183,11 @@ class TriviaGame {
             result.correctAnswer, 
             () => {
                 this.gameScene.setStageColor(CONFIG.COLORS.PRIMARY);
+                this.questionsSinceInterstitial++;
+                if (this.questionsSinceInterstitial >= 5) {
+                    this.questionsSinceInterstitial = 0;
+                    this.showInterstitialAd(false, 'question_break');
+                }
                 this.nextQuestion();
             }
         );
@@ -163,6 +198,7 @@ class TriviaGame {
         this.gameScene.setStageColor(CONFIG.COLORS.SECONDARY);
         
         const isHighScore = this.leaderboard.isHighScore(this.triviaEngine.score);
+        this.showInterstitialAd(true, 'game_over');
         this.uiController.showGameOver(this.triviaEngine.score, isHighScore);
         this.isDailyMode = false;
     }

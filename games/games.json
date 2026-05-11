@@ -322,6 +322,21 @@
   "category": "top"
 },
 {
+  "id": "neon-orbit-collector",
+  "title": "t_game_neon_orbit_collector",
+  "url": "games/neon-orbit-collector/neon-orbit-collector.html",
+  "thumb": "images/neon-orbit-collector.webp",
+  "desc": "Orbit the neon core, collect energy shards, chain combos, grab powerups and survive hazards in this fast arcade survival game.",
+  "tags": [
+	"arcade",
+	"skill",
+	"survival",
+	"featured",
+	"new"
+  ],
+  "category": "top"
+},
+{
   "id": "survivor-arena",
   "title": "t_game_survivor_arena",
   "url": "survivor-arena.html",

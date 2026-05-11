@@ -1264,5 +1264,6 @@
   "t_game_timer_bomb": "Bomba a Tempo",
   "t_game_pattern_lock": "Blocco a Motivo",
   "t_game_sliding_puzzle": "Puzzle Scorrevole (3×3)",
-  "t_game_neonnebula_strike": "Attacco della Nebulosa Neon"
+  "t_game_neonnebula_strike": "Attacco della Nebulosa Neon",
+  "t_game_neon_orbit_collector": "Collezionista di Orbite Neon"
 }

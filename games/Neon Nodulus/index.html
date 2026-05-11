@@ -35,5 +35,64 @@
       });
 	  
     </script>
+  
+    <script src="/js/ads.js"></script>
+    <script>
+      // Neon Mini Game Hub - Unity-safe interstitial hooks
+      (function () {
+        var lastInterstitialTime = 0;
+        var firstSessionAdShown = false;
+        var COOLDOWN_MS = 60000; // 1 ad max per 60 seconds
+        var FIRST_AD_DELAY_MS = 90000; // first possible safe break after 90 sec
+        var FOCUS_RETURN_MIN_AWAY_MS = 30000;
+        var hiddenAt = 0;
+
+        function canShowInterstitial(force) {
+          var now = Date.now();
+          if (!force && now - lastInterstitialTime < COOLDOWN_MS) return false;
+          return true;
+        }
+
+        function showInterstitial(reason, force) {
+          if (!canShowInterstitial(force)) return false;
+          if (!window.NeonAds || typeof window.NeonAds.showGameBreakAd !== "function") return false;
+
+          lastInterstitialTime = Date.now();
+
+          try {
+            window.NeonAds.showGameBreakAd();
+            console.log("NeonAds Unity interstitial shown:", reason || "safe_break");
+            return true;
+          } catch (e) {
+            console.log("NeonAds Unity interstitial failed", e);
+            return false;
+          }
+        }
+
+        // Safe delayed ad: Unity does not expose game-over here, so this waits for a long play session.
+        window.setTimeout(function () {
+          if (firstSessionAdShown) return;
+          firstSessionAdShown = true;
+          showInterstitial("long_session_safe_break", false);
+        }, FIRST_AD_DELAY_MS);
+
+        // Safe return trigger: player left tab/app for a while and came back.
+        document.addEventListener("visibilitychange", function () {
+          if (document.hidden) {
+            hiddenAt = Date.now();
+            return;
+          }
+
+          if (hiddenAt && Date.now() - hiddenAt >= FOCUS_RETURN_MIN_AWAY_MS) {
+            showInterstitial("return_to_game", false);
+          }
+        });
+
+        // Optional public hook for Unity SendMessage / future JS calls.
+        window.NodulusShowInterstitial = function (reason) {
+          showInterstitial(reason || "unity_hook", false);
+        };
+      })();
+    </script>
   </body>
 </html>

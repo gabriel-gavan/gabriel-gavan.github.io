@@ -1264,5 +1264,6 @@
   "t_game_timer_bomb": "Zeitbombe",
   "t_game_pattern_lock": "Mustersperre",
   "t_game_sliding_puzzle": "Schiebepuzzle (3×3)",
-  "t_game_neonnebula_strike": "Neon-Nebelstoß"
+  "t_game_neonnebula_strike": "Neon-Nebelstoß",
+  "t_game_neon_orbit_collector": "Neon-Orbit-Sammler"
 }

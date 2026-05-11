@@ -10,6 +10,7 @@ class Game {
         this.unlockedCampaigns = JSON.parse(localStorage.getItem('unlockedCampaigns') || '[0]');
         this.starsData = JSON.parse(localStorage.getItem('starsData') || '{}');
         this.currentCampaignId = 0;
+        this.lastInterstitialTime = 0;
         this.init();
     }
 
@@ -34,6 +35,13 @@ class Game {
 
         this.player = new Player(this.scene, () => {
             this.levelDeaths++; // Track deaths per level
+
+            // Show an interstitial only after repeated deaths, with cooldown.
+            if (this.levelDeaths >= 5) {
+                this.showInterstitialAd();
+                this.levelDeaths = 0;
+            }
+
             this.ui.showDeath();
         }, {
             onCheckpoint: () => this.ui.showCheckpoint()
@@ -60,9 +68,35 @@ class Game {
         this.animate();
     }
 
+    showInterstitialAd(force = false) {
+        const now = Date.now();
+
+        // Keep ads from showing too often unless this is a major campaign-complete break.
+        if (!force && now - this.lastInterstitialTime < 60000) {
+            return;
+        }
+
+        this.lastInterstitialTime = now;
+
+        try {
+            if (
+                window.NeonAds &&
+                typeof window.NeonAds.showGameBreakAd === 'function'
+            ) {
+                window.NeonAds.showGameBreakAd();
+            }
+        } catch (e) {
+            console.log('Interstitial ad failed', e);
+        }
+    }
+
     goHome() {
         this.isGameOver = true;
         this.player.controller.mobileControls.setVisibility(false);
+
+        // Safe break: player returns to campaign/menu.
+        this.showInterstitialAd();
+
         this.ui.showCampaignMenu(CONFIG.CAMPAIGNS, this.unlockedCampaigns);
     }
 
@@ -103,6 +137,9 @@ class Game {
                     localStorage.setItem('unlockedCampaigns', JSON.stringify(this.unlockedCampaigns));
                 }
             }
+            // Major safe break: campaign finished / next campaign unlocked.
+            this.showInterstitialAd(true);
+
             this.ui.showCampaignMenu(CONFIG.CAMPAIGNS, this.unlockedCampaigns);
             this.isGameOver = true;
             return;
@@ -166,6 +203,12 @@ class Game {
                 this.saveStars(completedLevelIdx, stars);
                 
                 this.checkPrizes(completedLevelIdx + 1);
+
+                // Safe break: every 3 completed levels.
+                if ((completedLevelIdx + 1) % 3 === 0) {
+                    this.showInterstitialAd();
+                }
+
                 this.ui.showWin(
                     completedLevelIdx + 1, 
                     elapsedTime, 

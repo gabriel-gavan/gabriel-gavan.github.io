@@ -57,6 +57,10 @@ export class GameScene {
         this.currentWorldKey = 'NEON';
         this.currentShopTab = 'characters';
 
+        // NeonAds interstitial state
+        this.lastInterstitialTime = 0;
+        this.completedRunsSinceAd = 0;
+
         this._applySkin();
         this._applyBoardSkin();
         this._setupLights();
@@ -247,7 +251,10 @@ export class GameScene {
             this.startGame();
         };
 
-        this.ui.restartBtn.onclick = () => this.startGame();
+        this.ui.restartBtn.onclick = () => {
+            this.showInterstitialAd();
+            this.startGame();
+        };
         this.ui.openShopBtn.onclick = () => this._showMenu('shopMenu');
         this.ui.closeShopBtn.onclick = () => this._showMenu('mainMenu');
         this.ui.openMissionsBtn.onclick = () => this._showMenu('missionsMenu');
@@ -273,6 +280,7 @@ export class GameScene {
         this.ui.shopNext.onclick = () => this._cycleShopItem(1);
 
         this.ui.openUpgradesBtn.onclick = () => {
+            this.showInterstitialAd();
             this.currentShopTab = 'upgrades';
             this._showMenu('shopMenu');
         };
@@ -288,6 +296,7 @@ export class GameScene {
         };
 
         this.ui.goHomeBtn.onclick = () => {
+            this.showInterstitialAd();
             this.ui.gameOver.style.display = 'none';
             this._showMenu('mainMenu');
         };
@@ -329,6 +338,29 @@ export class GameScene {
         });
 
         this._updateMenuCamera();
+    }
+
+    showInterstitialAd(force = false) {
+        const now = Date.now();
+        const COOLDOWN_MS = 60000;
+
+        if (!force && now - this.lastInterstitialTime < COOLDOWN_MS) {
+            return false;
+        }
+
+        if (!window.NeonAds || typeof window.NeonAds.showGameBreakAd !== 'function') {
+            return false;
+        }
+
+        this.lastInterstitialTime = now;
+
+        try {
+            window.NeonAds.showGameBreakAd();
+            return true;
+        } catch (e) {
+            console.log('NeonAds interstitial failed', e);
+            return false;
+        }
     }
 
     togglePause() {
@@ -620,6 +652,9 @@ export class GameScene {
         if (this.ui.bestScore) this.ui.bestScore.innerText = Math.floor(this.highScores[0] || 0);
         
         this._showMenu('gameOver');
+
+        // Safe natural break: show interstitial after the run ends.
+        window.setTimeout(() => this.showInterstitialAd(true), 800);
         
         this.hitSfx.triggerAttackRelease('C1', '4n');
         
