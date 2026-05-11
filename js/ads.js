@@ -198,6 +198,7 @@
   // 5️⃣ TOP AD
   // =============================
   function addTopAd() {
+	if (!document.body.classList.contains("hub-page")) return;
     const top = document.querySelector(".top-banner");
     if (!top || top.dataset.extraAd) return;
 
