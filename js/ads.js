@@ -10,7 +10,7 @@
   const isHubPage =
   document.body.classList.contains("hub-page");
 
-if (!window.adsbygoogleLoaded && isHubPage) {
+if (!window.adsbygoogleLoaded) {
     const adsenseScript = document.createElement("script");
     adsenseScript.async = true;
     adsenseScript.src =
@@ -319,12 +319,15 @@ if (!window.adsbygoogleLoaded && isHubPage) {
   // 🔟 INIT
   // =============================
   function initExtraAds() {
-    addTopAd();
-    addBottomAd();
-    addSideAds();
-    addInContentAds();
-    addGamePageAds();
-  }
+	  if (isHubPage) {
+		addTopAd();
+		addBottomAd();
+		addInContentAds();
+		addGamePageAds();
+	  }
+
+	  addSideAds();
+	}
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initExtraAds);
