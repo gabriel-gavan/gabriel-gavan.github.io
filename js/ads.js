@@ -7,7 +7,12 @@
   // =============================
   // 1️⃣ ADSENSE
   // =============================
-  if (!window.adsbygoogleLoaded) {
+  const isHubPage =
+  document.body.classList.contains("hub-page") ||
+  location.pathname === "/" ||
+  location.pathname.endsWith("/index.html");
+
+if (!window.adsbygoogleLoaded && isHubPage) {
     const adsenseScript = document.createElement("script");
     adsenseScript.async = true;
     adsenseScript.src =
