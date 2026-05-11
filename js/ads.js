@@ -218,6 +218,7 @@ if (!window.adsbygoogleLoaded && isHubPage) {
   // 6️⃣ BOTTOM AD
   // =============================
   function addBottomAd() {
+	  if (!isHubPage) return;
 	  if (document.getElementById("extra-bottom-ad")) return;
 
 	  const bottom = document.createElement("div");
