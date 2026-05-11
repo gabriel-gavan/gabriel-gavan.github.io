@@ -133,6 +133,7 @@
           progressBarFull.style.width = 100 * progress + "%";
               }).then((unityInstance) => {
                 loadingBar.style.display = "none";
+                if (window.__markUnityLoadedForNeonAds) window.__markUnityLoadedForNeonAds();
                 fullscreenButton.onclick = () => {
                   unityInstance.SetFullscreen(1);
                 };
@@ -145,5 +146,74 @@
 
     </script>
 	<script src="/js/ads.js"></script>
-  </body>
+  
+<script>
+// =============================
+// Neon Mini Game Hub - Unity-safe interstitial hooks
+// Uses /js/ads.js public API: window.NeonAds.showGameBreakAd()
+// =============================
+(function () {
+  var lastNeonInterstitial = 0;
+  var NEON_AD_COOLDOWN = 60000;
+  var sessionStartedAt = Date.now();
+  var sessionTimer = null;
+  var unityLoaded = false;
+
+  function showNeonInterstitial(force) {
+    var now = Date.now();
+    if (!force && now - lastNeonInterstitial < NEON_AD_COOLDOWN) return false;
+    lastNeonInterstitial = now;
+
+    try {
+      if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+        window.NeonAds.showGameBreakAd('#unity-container');
+        return true;
+      }
+    } catch (e) {
+      console.warn('Neon interstitial failed:', e);
+    }
+    return false;
+  }
+
+  function startSessionBreakTimer() {
+    if (sessionTimer) clearInterval(sessionTimer);
+    sessionTimer = setInterval(function () {
+      if (!unityLoaded) return;
+      if (document.hidden) return;
+      // Safe long-session break: roughly every 4 minutes, protected by cooldown.
+      if (Date.now() - sessionStartedAt > 240000) {
+        showNeonInterstitial(false);
+        sessionStartedAt = Date.now();
+      }
+    }, 30000);
+  }
+
+  window.NeonUnityGameBreak = showNeonInterstitial;
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && unityLoaded) {
+      // Player returned to tab: natural break, cooldown-protected.
+      setTimeout(function () { showNeonInterstitial(false); }, 1200);
+    }
+  });
+
+  window.addEventListener('focus', function () {
+    if (unityLoaded) {
+      setTimeout(function () { showNeonInterstitial(false); }, 1500);
+    }
+  });
+
+  window.addEventListener('load', function () {
+    startSessionBreakTimer();
+  });
+
+  window.__markUnityLoadedForNeonAds = function () {
+    unityLoaded = true;
+    sessionStartedAt = Date.now();
+    startSessionBreakTimer();
+  };
+})();
+</script>
+
+</body>
 </html>

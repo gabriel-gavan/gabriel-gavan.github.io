@@ -27,6 +27,12 @@ class Game {
         this.startTime = 0;
         this.timerInterval = null;
 
+        // === AD MONETIZATION STATE ===
+        this.lastAdBreakTime = 0;
+        this.completedProtocolsSinceAd = 0;
+        this.retryAttemptsSinceAd = 0;
+        this.onAdComplete = null;
+
         // Particle system for win effect
         this.particles = [];
         this.particleGroup = new THREE.Group();
@@ -41,6 +47,79 @@ class Game {
         this.animate = this.animate.bind(this);
         requestAnimationFrame(this.animate);
     }
+
+    // === AD MONETIZATION START ===
+    maybeShowAdBreak(reason = 'game_break', force = false) {
+        const now = Date.now();
+        const COOLDOWN_MS = 60000; // max 1 game-break ad per 60 seconds
+
+        if (!force && now - this.lastAdBreakTime < COOLDOWN_MS) return false;
+
+        if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+            this.lastAdBreakTime = now;
+            try {
+                window.NeonAds.showGameBreakAd();
+                return true;
+            } catch (e) {
+                console.log('NeonAds showGameBreakAd error', e);
+            }
+        }
+
+        return false;
+    }
+
+    hideAdBreak() {
+        if (window.NeonAds && typeof window.NeonAds.hideGameBreakAd === 'function') {
+            try {
+                window.NeonAds.hideGameBreakAd();
+            } catch (e) {
+                console.log('NeonAds hideGameBreakAd error', e);
+            }
+        }
+    }
+
+    showAdInterstitial(callback, reason = 'game_break', force = false) {
+        this.onAdComplete = callback || null;
+        const didShow = this.maybeShowAdBreak(reason, force);
+
+        if (!didShow) {
+            if (callback) callback();
+            return;
+        }
+
+        let finished = false;
+
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+
+            try { observer?.disconnect(); } catch (e) {}
+            clearTimeout(safetyTimeout);
+            this.hideAdBreak();
+
+            if (this.onAdComplete) {
+                const cb = this.onAdComplete;
+                this.onAdComplete = null;
+                cb();
+            }
+        };
+
+        const safetyTimeout = setTimeout(finish, 8000);
+
+        const observer = new MutationObserver(() => {
+            const wrap = document.getElementById('neon-game-break-ad');
+            const isClosed = !wrap || wrap.style.display === 'none' || getComputedStyle(wrap).display === 'none';
+            if (isClosed) finish();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+    }
+    // === AD MONETIZATION END ===
 
     initLights() {
         const ambient = new THREE.AmbientLight(0xffffff, 0.8);
@@ -310,11 +389,25 @@ class Game {
         const nextBtn = document.getElementById('next-btn');
         if (nextBtn) nextBtn.onclick = () => {
             this.currentPuzzleIndex = (this.currentPuzzleIndex + 1) % PUZZLES.length;
-            this.startLevel(this.currentPuzzleIndex);
+            this.completedProtocolsSinceAd++;
+            if (this.completedProtocolsSinceAd >= 2) {
+                this.completedProtocolsSinceAd = 0;
+                this.showAdInterstitial(() => this.startLevel(this.currentPuzzleIndex), 'next_protocol');
+            } else {
+                this.startLevel(this.currentPuzzleIndex);
+            }
         };
 
         const retryBtn = document.getElementById('retry-btn');
-        if (retryBtn) retryBtn.onclick = () => this.startLevel(this.currentPuzzleIndex);
+        if (retryBtn) retryBtn.onclick = () => {
+            this.retryAttemptsSinceAd++;
+            if (this.retryAttemptsSinceAd >= 3) {
+                this.retryAttemptsSinceAd = 0;
+                this.showAdInterstitial(() => this.startLevel(this.currentPuzzleIndex), 'retry_protocol');
+            } else {
+                this.startLevel(this.currentPuzzleIndex);
+            }
+        };
 
         const hintBtn = document.getElementById('hint-btn');
         if (hintBtn) hintBtn.onclick = () => {
@@ -365,6 +458,7 @@ class Game {
         this.isGameActive = false;
         Tone.Transport.stop();
         if (this.timerInterval) clearInterval(this.timerInterval);
+        this.showAdInterstitial(null, 'return_to_hub');
         const overlay = document.getElementById('menu-overlay');
         if (overlay) overlay.classList.remove('hidden');
         
@@ -397,6 +491,9 @@ class Game {
             if (finalTime && timerText) finalTime.textContent = timerText.textContent;
             const finalMoves = document.getElementById('final-moves');
             if (finalMoves) finalMoves.textContent = this.moves;
+
+            // Safe natural break: show the interstitial after the win panel appears.
+            this.showAdInterstitial(null, 'puzzle_complete');
         }, 1500);
 
         this.playNote("C5", "win");

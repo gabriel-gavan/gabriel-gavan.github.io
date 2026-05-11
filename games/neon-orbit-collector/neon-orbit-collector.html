@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18053605335"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-18053605335');
+</script>
+<meta charset="UTF-8">
+<title>Neon Orbit Collector – Mini Game Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Play Neon Orbit Collector, a fast neon arcade game where you pilot a cyber ship, collect energy orbs, avoid red mines, and survive rotating orbital waves.">
+<style>
+*{box-sizing:border-box} html,body{overflow-x:hidden;overscroll-behavior:none} body{background:#020617;color:#e5e7eb;font-family:system-ui;margin:0;display:flex;justify-content:center;min-height:100vh;background:linear-gradient(135deg,rgba(0,0,0,.82),rgba(15,23,42,.92)),url("images/orbit-bg.jpg") center center/cover no-repeat fixed!important}.page-wrap{display:flex;width:100%;max-width:1440px;padding:12px;gap:12px}.side-banner{flex:0 0 162px}.main-game{flex:1;background:rgba(15,23,42,.95);border-radius:14px;border:1px solid #1f2937;box-shadow:0 16px 50px rgba(0,0,0,.7);display:flex;flex-direction:column;overflow:hidden}.top-banner{padding:.6rem 1.2rem .4rem;border-bottom:1px solid #111827;min-height:48px}.game-header{padding:.55rem 1.2rem;border-bottom:1px solid #111827;color:#38bdf8;font-size:26px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px}.game-header .sub{font-size:13px;color:#94a3b8;font-weight:600}.back-btn{color:#38bdf8;font-size:14px;text-decoration:none;font-weight:700;padding:4px 10px;border:1px solid #38bdf8;border-radius:8px;box-shadow:0 0 10px rgba(56,189,248,.45);white-space:nowrap}.game-body{flex:1;display:flex;justify-content:center;align-items:flex-start;padding:1rem}.game-wrap{display:flex;gap:25px;align-items:flex-start;flex-wrap:wrap;justify-content:center;width:100%}.arena-shell{position:relative;width:min(760px,100%);border:4px solid #38bdf8;border-radius:16px;padding:3px;box-shadow:0 0 25px rgba(56,189,248,.55);animation:pulse 2.8s infinite alternate;background:rgba(2,6,23,.75)}@keyframes pulse{0%{box-shadow:0 0 16px rgba(56,189,248,.35)}100%{box-shadow:0 0 42px rgba(56,189,248,.55)}}canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:12px;background:#020617;touch-action:none}.overlay{position:absolute;inset:3px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(2,6,23,.84),rgba(15,23,42,.78));text-align:center;padding:20px}.overlay.hidden{display:none}.panel-title{font-size:38px;font-weight:900;color:#38bdf8;text-shadow:0 0 14px rgba(56,189,248,.9);margin:0 0 6px}.panel-sub{color:#cbd5e1;max-width:540px;line-height:1.45;margin:0 auto 16px}.sidebar{width:270px;display:flex;flex-direction:column;gap:12px;background:#0f172a;border:1px solid #334155;padding:14px;border-radius:12px;box-shadow:0 0 16px rgba(56,189,248,.25)}.sbtitle{font-weight:900;color:#e2e8f0;display:flex;justify-content:space-between;align-items:baseline}.badge{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid #334155;color:#94a3b8}.metric{display:flex;gap:8px;justify-content:space-between;font-size:14px;color:#cbd5e1}.metric b{color:#e2e8f0}.row{display:flex;gap:10px;flex-wrap:wrap}.sbbtn,.sbsel{background:#1e293b;border:1px solid #475569;color:white;padding:10px 16px;border-radius:8px;cursor:pointer;font-size:14px}.sbbtn:hover,.sbsel:hover{border-color:#38bdf8}.sbbtn.secondary{background:#0b1222}.sbbtn.danger:hover{border-color:#ef4444}.sbsep{height:1px;background:#1f2937;margin:2px 0}.small{font-size:12px;color:#94a3b8;line-height:1.35}.toast{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:rgba(2,6,23,.85);border:1px solid #334155;color:#e5e7eb;padding:10px 12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.5);display:none;z-index:99999;max-width:min(520px,92vw)}.toast.show{display:block}.touch-controls{display:none;position:absolute;left:12px;right:12px;bottom:12px;justify-content:space-between;pointer-events:none}.touch-pad{width:130px;height:130px;border:1px solid rgba(56,189,248,.45);background:rgba(15,23,42,.52);border-radius:999px;display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr;pointer-events:auto}.touch-pad button,.boost-btn{background:rgba(30,41,59,.75);border:1px solid #475569;color:#e2e8f0;border-radius:12px;font-weight:800}.boost-btn{width:112px;height:112px;align-self:flex-end;pointer-events:auto;color:#38bdf8;box-shadow:0 0 18px rgba(56,189,248,.25)}.pc-only{display:block}.asset-strip{display:flex;gap:10px;align-items:center}.asset-strip img{width:42px;height:42px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(56,189,248,.55))}.powerbar{height:8px;background:#0b1222;border:1px solid #334155;border-radius:999px;overflow:hidden}.powerbar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#38bdf8,#a855f7);box-shadow:0 0 10px rgba(56,189,248,.55)}.pill-row{display:flex;gap:6px;flex-wrap:wrap}.power-pill{font-size:11px;padding:5px 8px;border:1px solid #334155;border-radius:999px;color:#94a3b8;background:#0b1222}.power-pill.on{border-color:#38bdf8;color:#e0f2fe;box-shadow:0 0 12px rgba(56,189,248,.35)}#achOverlay,#dailyOverlay{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;justify-content:center;align-items:center;z-index:99999}.modal-panel{background:#0f172a;padding:20px;border-radius:12px;border:2px solid #38bdf8;max-width:680px;max-height:80vh;overflow:auto;box-shadow:0 0 25px rgba(56,189,248,.55);color:white}.ach-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.ach-card{border:1px solid #334155;border-radius:10px;padding:10px;background:#0b1222;color:#94a3b8}.ach-card.done{border-color:#38bdf8;color:#e5e7eb;box-shadow:0 0 12px rgba(56,189,248,.25)}@media(max-width:1050px){.sidebar{width:min(420px,92vw)}.arena-shell{width:min(94vw,760px)}}@media(max-width:900px){.pc-only{display:none!important}.page-wrap{display:block;padding:0;margin:0;max-width:100%;width:100%}.side-banner{display:none!important}.main-game{width:100%!important;max-width:100%!important;border-radius:0}.game-header{font-size:20px;padding:.6rem .8rem}.game-body{display:block;padding:10px}.game-wrap{display:block;width:100%;padding:0}.arena-shell{width:100%;border-width:3px}.sidebar{width:100%!important;margin-top:12px;max-width:100%!important}.touch-controls{display:flex}.panel-title{font-size:28px}}@media(max-width:900px) and (orientation:landscape){.game-body{display:flex!important;flex-direction:row!important;padding:.5rem!important}.game-wrap{display:flex!important;flex-direction:row!important;gap:6px!important;flex-wrap:nowrap!important}.arena-shell{max-width:66vw!important}.sidebar{width:28vw!important;max-width:230px!important;font-size:12px}.touch-pad{width:90px;height:90px}.boost-btn{width:82px;height:82px}.sbbtn,.sbsel{padding:7px 9px;font-size:12px}.small{display:none}}
+</style>
+</head>
+<body>
+<div class="page-wrap">
+  <aside class="side-banner"></aside>
+  <main class="main-game">
+    <div class="top-banner"></div>
+    <div class="game-header">
+      <div><div>Neon Orbit Collector</div><div class="sub" id="modeLabel">Arcade Survival</div></div>
+      <div style="display:flex;align-items:center;gap:14px;position:relative;"><div class="sub" id="statusLabel">Autosave: ON</div><a id="backToHub" href="/index.html" class="back-btn">⬅ Back to Hub</a></div>
+    </div>
+    <div class="game-body">
+      <div class="game-wrap">
+        <div class="arena-shell">
+          <canvas id="game" width="960" height="540" aria-label="Neon Orbit Collector game canvas"></canvas>
+          <div id="menu" class="overlay"><div><h1 class="panel-title">Neon Orbit Collector</h1><p class="panel-sub">Pilot the blue neon ship. Collect cyan energy orbs, avoid red mines, and use boost when the orbit storm gets tight.</p><button class="sbbtn" onclick="startGame()">PLAY</button> <button class="sbbtn secondary" onclick="startDailyChallenge()">Daily Challenge</button> <button class="sbbtn secondary" onclick="openHTP()">How to Play</button></div></div>
+          <div id="gameOver" class="overlay hidden"><div><h1 class="panel-title">GAME OVER</h1><p class="panel-sub" id="finalStats">Score: 0</p><button class="sbbtn" onclick="startGame()">Restart</button> <button class="sbbtn secondary" onclick="showMenu()">Main Menu</button></div></div>
+          <div class="touch-controls"><div class="touch-pad"><span></span><button data-dir="up">▲</button><span></span><button data-dir="left">◀</button><span></span><button data-dir="right">▶</button><span></span><button data-dir="down">▼</button><span></span></div><button class="boost-btn" id="touchBoost">BOOST</button></div>
+        </div>
+        <div class="sidebar">
+          <div class="sbtitle"><span>Controls</span><span class="badge" id="difficultyBadge">Normal</span></div>
+          <div class="metric"><span>Score</span><b id="scoreTxt">0</b></div><div class="metric"><span>Best</span><b id="bestTxt">0</b></div><div class="metric"><span>Time</span><b id="timeTxt">00:00</b></div><div class="metric"><span>Lives</span><b id="livesTxt">3</b></div><div class="metric"><span>Combo</span><b id="comboTxt">x1</b></div><div class="metric"><span>Daily</span><b id="dailyTxt">Off</b></div><div class="metric"><span>Boost</span><b id="boostTxt">Ready</b></div><div class="powerbar"><span id="boostBar"></span></div><div class="pill-row"><span class="power-pill" id="slowPill">Slow</span><span class="power-pill" id="magnetPill">Magnet</span><span class="power-pill" id="shieldPill">Shield</span></div>
+          <div class="row"><button class="sbbtn" onclick="startGame()">New Game</button><button class="sbbtn secondary" onclick="startDailyChallenge()">Daily</button><button class="sbbtn secondary" onclick="togglePause()">Pause</button></div><div class="row"><button class="sbbtn secondary" onclick="openAchievements()">Achievements</button><button class="sbbtn secondary" onclick="resetAchievements()">Reset Ach.</button></div>
+          <select id="diff" class="sbsel" onchange="setDifficulty(this.value)"><option value="easy">Easy</option><option value="normal" selected>Normal</option><option value="hard">Hard</option><option value="insane">Insane</option></select>
+          <div class="asset-strip"><img src="images/player.png" alt="ship"><img src="images/orb.png" alt="orb"><img src="images/hazard.png" alt="mine"></div>
+          <div class="sbsep"></div><div class="small"><b style="color:#38bdf8">How to Play</b><br>• WASD / arrows to move<br>• Space = boost<br>• Collect cyan orbs<br>• Avoid red orbit mines<br>• Higher combo = more points<br>• Pick powerups: slow, magnet, shield<br>• Daily Challenge changes every day<br><button class="sbbtn secondary" onclick="openHTP()" style="margin-top:10px">More…</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="pc-only" style="max-width:1200px;margin:34px auto;padding:20px;color:#e5e7eb;font-size:12px;line-height:1.65">
+      <h1>Neon Orbit Collector – Cyber Arcade Survival Game</h1><p>Neon Orbit Collector is an original HTML5 arcade game designed for Neon Mini Game Hub. The player controls a fast cyber ship in a glowing orbital arena, collects energy cores, avoids rotating mines, and builds a score combo by staying alive.</p><h2>Gameplay Loop</h2><p>The core loop is simple and replayable: move, collect, dodge, boost, survive longer, and beat your local high score. The difficulty increases over time by spawning more hazards and increasing their speed.</p><h2>Controls</h2><p><strong>Desktop:</strong> Use WASD or arrow keys to move. Press Space for a short boost. <strong>Mobile:</strong> Use the on-screen direction pad and BOOST button.</p><h2>Why It Fits the Hub</h2><p>The game uses the same neon palette, framed layout, sidebar control panel, background approach, localStorage score saving, and ad script hook as the attached Neon Sudoku Deluxe page.</p><h2>FAQ</h2><h3>Is it free?</h3><p>Yes, it runs directly in the browser with no login required.</p><h3>Does it save progress?</h3><p>The game stores your best score locally on your device using localStorage.</p>
+    </div>
+  </main>
+  <aside class="side-banner"></aside>
+</div>
+<div id="htpOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;justify-content:center;align-items:center;z-index:99999"><div style="background:#0f172a;padding:20px;border-radius:12px;border:2px solid #38bdf8;max-width:600px;max-height:80vh;overflow:auto;box-shadow:0 0 25px rgba(56,189,248,.55);color:white"><h2 style="color:#38bdf8;text-align:center;margin-bottom:10px">How to Play Neon Orbit Collector</h2><p><b>Goal:</b> Collect as many cyan energy orbs as possible while avoiding red mines.</p><p><b>Movement:</b> WASD, arrow keys, or mobile direction pad.</p><p><b>Boost:</b> Press Space or tap BOOST. Boost has a short cooldown.</p><p><b>Combo:</b> Collect orbs quickly to increase your multiplier.</p><p><b>Lives:</b> You start with 3 lives. Mines remove one life and reset the combo.</p><p><b>Difficulty:</b> Higher difficulty increases mine speed and spawn pressure.</p><p><b>Powerups:</b> Green slows mines, purple magnet pulls orbs, blue shield blocks one hit.</p><p><b>Daily Challenge:</b> A seeded run that changes every day and saves your best daily score.</p><p><b>Achievements:</b> Milestones are saved locally with localStorage.</p><div style="text-align:center;margin-top:12px"><button class="sbbtn" onclick="closeHTP()">Close</button></div></div></div>
+
+<div id="achOverlay"><div class="modal-panel"><h2 style="color:#38bdf8;text-align:center;margin-top:0">Achievements</h2><div id="achList" class="ach-grid"></div><div style="text-align:center;margin-top:12px"><button class="sbbtn" onclick="closeAchievements()">Close</button></div></div></div>
+<div id="dailyOverlay"><div class="modal-panel"><h2 style="color:#38bdf8;text-align:center;margin-top:0">Daily Challenge Complete</h2><p id="dailyResult" style="text-align:center;color:#cbd5e1"></p><div style="text-align:center;margin-top:12px"><button class="sbbtn" onclick="startDailyChallenge()">Replay Daily</button> <button class="sbbtn secondary" onclick="closeDaily()">Close</button></div></div></div>
+<div id="toast" class="toast"></div>
+<script>
+const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
+const W=canvas.width,H=canvas.height;
+const img={player:new Image(),orb:new Image(),hazard:new Image()};
+img.player.src='images/player.png'; img.orb.src='images/orb.png'; img.hazard.src='images/hazard.png';
+const keys={};
+let running=false,paused=false,last=0,elapsed=0,score=0,lives=3,combo=1,difficulty='normal',boost=0,boostCd=0,shake=0;
+let player={x:W/2,y:H/2,r:18,vx:0,vy:0,inv:0,noHit:true},orbs=[],mines=[],particles=[],powerups=[],dailyMode=false,dailyBest=0,runStats={orbs:0,powerups:0,maxCombo:1,blocked:0};
+let slowTimer=0,magnetTimer=0,shieldTimer=0,spawnTimers={orb:0,mine:0,power:0};
+const BEST_KEY='neon_orbit_best_v2', DAILY_KEY='neon_orbit_daily_best_v2', ACH_KEY='neon_orbit_achievements_v2';
+let lastGameBreakAdTime=0;
+let best=Number(localStorage.getItem(BEST_KEY)||localStorage.getItem('neon_orbit_best_v1')||0);
+const cfg={easy:{mineRate:1.35,mineSpeed:.72,orbRate:1.25,powerRate:1.2},normal:{mineRate:1,mineSpeed:1,orbRate:1,powerRate:1},hard:{mineRate:.72,mineSpeed:1.24,orbRate:.9,powerRate:.9},insane:{mineRate:.5,mineSpeed:1.55,orbRate:.8,powerRate:.75}};
+const achievements={
+  first_orb:{name:'First Spark',desc:'Collect your first orb.'}, score_250:{name:'Neon Rookie',desc:'Reach 250 points.'}, score_750:{name:'Orbit Ace',desc:'Reach 750 points.'}, combo_5:{name:'Combo Rider',desc:'Reach x5 combo.'}, combo_9:{name:'Combo Overdrive',desc:'Reach x9 combo.'}, survive_60:{name:'One Minute Pilot',desc:'Survive 60 seconds.'}, power_3:{name:'Power Collector',desc:'Collect 3 powerups in one run.'}, shield_block:{name:'Shield Savior',desc:'Block a mine with shield.'}, daily_done:{name:'Daily Pilot',desc:'Play a Daily Challenge.'}, no_hit_45:{name:'Clean Flight',desc:'Survive 45 seconds without losing all shields/lives.'}
+};
+let ach=loadAchievements(); document.getElementById('bestTxt').textContent=best;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._tm);toast._tm=setTimeout(()=>t.classList.remove('show'),1700)}
+function fmtTime(s){const m=Math.floor(s/60),ss=Math.floor(s%60);return (m<10?'0':'')+m+':'+(ss<10?'0':'')+ss}
+function dailySeed(){const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')}
+function rng(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>((s=s*16807%2147483647)-1)/2147483646}
+let rand=Math.random;
+function setDifficulty(v){difficulty=v;document.getElementById('difficultyBadge').textContent=v[0].toUpperCase()+v.slice(1);toast('Difficulty: '+v)}
+function reset(){rand=dailyMode?rng(Number(dailySeed())):Math.random;player={x:W/2,y:H/2,r:18,vx:0,vy:0,inv:1.2,noHit:true};orbs=[];mines=[];particles=[];powerups=[];elapsed=0;score=0;lives=3;combo=1;boost=0;boostCd=0;shake=0;slowTimer=0;magnetTimer=0;shieldTimer=0;spawnTimers={orb:0,mine:0,power:0};runStats={orbs:0,powerups:0,maxCombo:1,blocked:0};spawnOrb();spawnOrb();}
+function startGame(){dailyMode=false;document.getElementById('modeLabel').textContent='Arcade Survival';reset();running=true;paused=false;last=performance.now();document.getElementById('menu').classList.add('hidden');document.getElementById('gameOver').classList.add('hidden');requestAnimationFrame(loop)}
+function startDailyChallenge(){dailyMode=true;dailyBest=Number(localStorage.getItem(DAILY_KEY+'_'+dailySeed())||0);document.getElementById('modeLabel').textContent='Daily Challenge • '+dailySeed();reset();running=true;paused=false;last=performance.now();document.getElementById('menu').classList.add('hidden');document.getElementById('gameOver').classList.add('hidden');closeDaily();unlock('daily_done');requestAnimationFrame(loop)}
+function showMenu(){running=false;document.getElementById('menu').classList.remove('hidden');document.getElementById('gameOver').classList.add('hidden')}
+function togglePause(){if(!running)return;paused=!paused;toast(paused?'Paused':'Resumed');if(!paused){last=performance.now();requestAnimationFrame(loop)}}
+function maybeShowInterstitial(){
+  const now=Date.now();
+  const COOLDOWN_MS=60000;
+  if(now-lastGameBreakAdTime<COOLDOWN_MS)return false;
+  lastGameBreakAdTime=now;
+
+  if(window.NeonAds&&typeof window.NeonAds.showGameBreakAd==='function'){
+    try{
+      window.NeonAds.showGameBreakAd('.arena-shell');
+      return true;
+    }catch(e){console.log('NeonAds showGameBreakAd error',e)}
+  }
+
+  try{
+    if(typeof window.adBreak==='function'){
+      window.adBreak({type:'next',name:'neon-orbit-game-over'});
+      return true;
+    }
+  }catch(e){}
+
+  try{window.dispatchEvent(new CustomEvent('neonGameOverAd',{detail:{game:'neon-orbit-collector',score}}));}catch(e){}
+  return false;
+}
+function hideInterstitial(){
+  if(window.NeonAds&&typeof window.NeonAds.hideGameBreakAd==='function'){
+    try{window.NeonAds.hideGameBreakAd();}catch(e){console.log('NeonAds hideGameBreakAd error',e)}
+  }
+}
+function gameOver(){running=false;best=Math.max(best,score);localStorage.setItem(BEST_KEY,best);document.getElementById('bestTxt').textContent=best;if(dailyMode){const k=DAILY_KEY+'_'+dailySeed();const old=Number(localStorage.getItem(k)||0);if(score>old)localStorage.setItem(k,score);document.getElementById('dailyResult').textContent='Today: '+score+' • Best Daily: '+Math.max(old,score);document.getElementById('dailyOverlay').style.display='flex'}document.getElementById('finalStats').textContent='Score: '+score+' • Time: '+fmtTime(elapsed)+' • Best: '+best;document.getElementById('gameOver').classList.remove('hidden');checkAchievements(true);maybeShowInterstitial()}
+function spawnOrb(){orbs.push({x:60+rand()*(W-120),y:60+rand()*(H-120),r:17,t:rand()*9})}
+function spawnMine(){let edge=Math.floor(rand()*4),x,y;if(edge===0){x=-30;y=rand()*H}else if(edge===1){x=W+30;y=rand()*H}else if(edge===2){x=rand()*W;y=-30}else{x=rand()*W;y=H+30}let a=Math.atan2(player.y-y,player.x-x)+(rand()-.5)*.9;let sp=(90+elapsed*3)*cfg[difficulty].mineSpeed*(slowTimer>0?.45:1);mines.push({x,y,r:18,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:rand()*6});}
+function spawnPowerup(){const types=['slow','magnet','shield'];const type=types[Math.floor(rand()*types.length)];powerups.push({type,x:70+rand()*(W-140),y:70+rand()*(H-140),r:18,t:0});}
+function burst(x,y,col,n=16,big=false){for(let i=0;i<n;i++){let a=rand()*Math.PI*2,s=(big?100:40)+rand()*(big?330:190);particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:.4+rand()*.75,col,size:big?3+rand()*4:2+rand()*3})}}
+function activatePower(type){runStats.powerups++;if(type==='slow'){slowTimer=6;toast('SLOW MOTION activated')}if(type==='magnet'){magnetTimer=7;toast('MAGNET activated')}if(type==='shield'){shieldTimer=10;toast('SHIELD activated')}burst(player.x,player.y,type==='slow'?'#22c55e':type==='magnet'?'#a855f7':'#38bdf8',24,true)}
+function update(dt){elapsed+=dt;boost=Math.max(0,boost-dt);boostCd=Math.max(0,boostCd-dt);slowTimer=Math.max(0,slowTimer-dt);magnetTimer=Math.max(0,magnetTimer-dt);shieldTimer=Math.max(0,shieldTimer-dt);shake=Math.max(0,shake-dt*12);
+ let ax=0,ay=0;if(keys.ArrowLeft||keys.a)ax--;if(keys.ArrowRight||keys.d)ax++;if(keys.ArrowUp||keys.w)ay--;if(keys.ArrowDown||keys.s)ay++;if((keys[' ']||keys.Space)&&boostCd<=0){boost=.22;boostCd=1.7;burst(player.x,player.y,'#38bdf8',10)}let len=Math.hypot(ax,ay)||1;let speed=boost>0?720:360;player.vx+=(ax/len*speed-player.vx)*Math.min(1,dt*9);player.vy+=(ay/len*speed-player.vy)*Math.min(1,dt*9);player.x+=player.vx*dt;player.y+=player.vy*dt;player.x=Math.max(24,Math.min(W-24,player.x));player.y=Math.max(24,Math.min(H-24,player.y));player.inv=Math.max(0,player.inv-dt);
+ spawnTimers.orb-=dt;spawnTimers.mine-=dt;spawnTimers.power-=dt;if(spawnTimers.orb<=0&&orbs.length<5){spawnOrb();spawnTimers.orb=(.9+rand()*1.1)*cfg[difficulty].orbRate}if(spawnTimers.mine<=0){spawnMine();spawnTimers.mine=(.45+rand()*1.2)*cfg[difficulty].mineRate/(1+elapsed*.012)}if(spawnTimers.power<=0&&powerups.length<2){spawnPowerup();spawnTimers.power=(10+rand()*9)*cfg[difficulty].powerRate}
+ if(magnetTimer>0){orbs.forEach(o=>{let dx=player.x-o.x,dy=player.y-o.y,d=Math.hypot(dx,dy)||1;if(d<210){o.x+=dx/d*260*dt;o.y+=dy/d*260*dt}})}
+ orbs.forEach(o=>o.t+=dt*5); for(let i=orbs.length-1;i>=0;i--){let o=orbs[i];if(Math.hypot(player.x-o.x,player.y-o.y)<player.r+o.r){orbs.splice(i,1);runStats.orbs++;score+=10*combo;combo=Math.min(9,combo+1);runStats.maxCombo=Math.max(runStats.maxCombo,combo);burst(o.x,o.y,'#22d3ee',20,true);spawnOrb();}}
+ for(let i=powerups.length-1;i>=0;i--){let p=powerups[i];p.t+=dt*4;if(Math.hypot(player.x-p.x,player.y-p.y)<player.r+p.r){powerups.splice(i,1);activatePower(p.type)}}
+ for(let i=mines.length-1;i>=0;i--){let m=mines[i];m.x+=m.vx*dt*(slowTimer>0?.58:1);m.y+=m.vy*dt*(slowTimer>0?.58:1);m.rot+=dt*(slowTimer>0?2.2:5);if(m.x<-80||m.x>W+80||m.y<-80||m.y>H+80){mines.splice(i,1);continue} if(player.inv<=0&&Math.hypot(player.x-m.x,player.y-m.y)<player.r+m.r){mines.splice(i,1);combo=1;shake=1;burst(player.x,player.y,'#ef4444',34,true);if(shieldTimer>0){shieldTimer=0;player.inv=1;runStats.blocked++;unlock('shield_block');toast('Shield blocked the hit!')}else{lives--;player.noHit=false;player.inv=1.1;if(lives<=0){gameOver();return}}}}
+ particles.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.98;p.vy*=.98;p.life-=dt});particles=particles.filter(p=>p.life>0);checkAchievements(false);updateHud();}
+function updateHud(){document.getElementById('scoreTxt').textContent=score;document.getElementById('timeTxt').textContent=fmtTime(elapsed);document.getElementById('livesTxt').textContent=lives;document.getElementById('comboTxt').textContent='x'+combo;document.getElementById('dailyTxt').textContent=dailyMode?('Best '+Number(localStorage.getItem(DAILY_KEY+'_'+dailySeed())||0)):'Off';document.getElementById('boostTxt').textContent=boostCd<=0?'Ready':boostCd.toFixed(1)+'s';document.getElementById('boostBar').style.width=(boostCd<=0?100:(100*(1-boostCd/1.7)))+'%';document.getElementById('slowPill').classList.toggle('on',slowTimer>0);document.getElementById('magnetPill').classList.toggle('on',magnetTimer>0);document.getElementById('shieldPill').classList.toggle('on',shieldTimer>0);document.getElementById('statusLabel').textContent=running?(paused?'Paused':'Autosave: ON'):'Autosave: ON'}
+function drawPowerup(p){ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.t);ctx.shadowBlur=18;ctx.shadowColor=p.type==='slow'?'#22c55e':p.type==='magnet'?'#a855f7':'#38bdf8';ctx.strokeStyle=ctx.shadowColor;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,18+Math.sin(p.t*2)*2,0,Math.PI*2);ctx.stroke();ctx.fillStyle=ctx.shadowColor;ctx.font='bold 18px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.type==='slow'?'S':p.type==='magnet'?'M':'★',0,1);ctx.restore()}
+function draw(){if(!player)player={x:W/2,y:H/2,r:18,vx:0,vy:0,inv:0,noHit:true};ctx.save();ctx.clearRect(0,0,W,H);if(shake>0)ctx.translate((rand()-.5)*shake*8,(rand()-.5)*shake*8);let g=ctx.createRadialGradient(W/2,H/2,30,W/2,H/2,620);g.addColorStop(0,'rgba(14,165,233,.18)');g.addColorStop(1,'rgba(2,6,23,.95)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);ctx.strokeStyle='rgba(56,189,248,.15)';ctx.lineWidth=2;for(let r=70;r<470;r+=70){ctx.beginPath();ctx.ellipse(W/2,H/2,r*1.35,r*.72,0,0,Math.PI*2);ctx.stroke()}ctx.strokeStyle='rgba(168,85,247,.12)';for(let x=-W;x<W*2;x+=80){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+W,H);ctx.stroke()}orbs.forEach(o=>{ctx.save();ctx.translate(o.x,o.y);ctx.rotate(o.t*.5);ctx.drawImage(img.orb,-27,-27,54,54);ctx.restore()});powerups.forEach(drawPowerup);mines.forEach(m=>{ctx.save();ctx.translate(m.x,m.y);ctx.rotate(m.rot);ctx.drawImage(img.hazard,-28,-28,56,56);ctx.restore()});particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.col;ctx.beginPath();ctx.arc(p.x,p.y,p.size||3,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1});if(shieldTimer>0){ctx.strokeStyle='rgba(56,189,248,.8)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(player.x,player.y,34+Math.sin(elapsed*10)*2,0,Math.PI*2);ctx.stroke()}ctx.save();ctx.translate(player.x,player.y);ctx.rotate(Math.atan2(player.vy,player.vx)+Math.PI/2);if(player.inv>0&&Math.floor(player.inv*12)%2===0)ctx.globalAlpha=.45;ctx.drawImage(img.player,-28,-28,56,56);ctx.restore(); if(boostCd>0){ctx.fillStyle='rgba(15,23,42,.8)';ctx.fillRect(14,H-24,130,10);ctx.fillStyle='#38bdf8';ctx.fillRect(14,H-24,130*(1-boostCd/1.7),10)}ctx.restore();}
+function loop(now){if(!running||paused)return;let dt=Math.min(.033,(now-last)/1000);last=now;update(dt);draw();if(running)requestAnimationFrame(loop)}
+function loadAchievements(){try{return JSON.parse(localStorage.getItem(ACH_KEY)||'{}')}catch(e){return {}}}
+function saveAchievements(){localStorage.setItem(ACH_KEY,JSON.stringify(ach))}
+function unlock(id){if(!ach[id]){ach[id]=Date.now();saveAchievements();toast('Achievement unlocked: '+achievements[id].name)}}
+function checkAchievements(final){if(runStats.orbs>=1)unlock('first_orb');if(score>=250)unlock('score_250');if(score>=750)unlock('score_750');if(runStats.maxCombo>=5)unlock('combo_5');if(runStats.maxCombo>=9)unlock('combo_9');if(elapsed>=60)unlock('survive_60');if(runStats.powerups>=3)unlock('power_3');if(final&&elapsed>=45&&player&&player.noHit)unlock('no_hit_45')}
+function openAchievements(){const list=document.getElementById('achList');list.innerHTML=Object.entries(achievements).map(([id,a])=>`<div class="ach-card ${ach[id]?'done':''}"><b>${ach[id]?'✅':'⬜'} ${a.name}</b><br><span>${a.desc}</span></div>`).join('');document.getElementById('achOverlay').style.display='flex'}
+function closeAchievements(){document.getElementById('achOverlay').style.display='none'}
+function resetAchievements(){if(confirm('Reset local achievements?')){ach={};saveAchievements();openAchievements();toast('Achievements reset')}}
+function closeDaily(){document.getElementById('dailyOverlay').style.display='none'}
+const GAME_KEYS=new Set(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','w','a','s','d','W','A','S','D',' ','Spacebar']);
+window.addEventListener('keydown',e=>{
+  if(GAME_KEYS.has(e.key))e.preventDefault();
+  keys[e.key]=true;
+  if(e.key&&e.key.length===1)keys[e.key.toLowerCase()]=true;
+},{passive:false});
+window.addEventListener('keyup',e=>{
+  if(GAME_KEYS.has(e.key))e.preventDefault();
+  keys[e.key]=false;
+  if(e.key&&e.key.length===1)keys[e.key.toLowerCase()]=false;
+},{passive:false});
+document.querySelectorAll('.touch-pad button').forEach(b=>{const d=b.dataset.dir;function on(v){if(d==='left')keys.ArrowLeft=v;if(d==='right')keys.ArrowRight=v;if(d==='up')keys.ArrowUp=v;if(d==='down')keys.ArrowDown=v}b.addEventListener('pointerdown',e=>{e.preventDefault();on(true)});b.addEventListener('pointerup',()=>on(false));b.addEventListener('pointerleave',()=>on(false))});
+document.getElementById('touchBoost').addEventListener('pointerdown',e=>{e.preventDefault();keys[' ']=true;setTimeout(()=>keys[' ']=false,120)});
+function openHTP(){document.getElementById('htpOverlay').style.display='flex'} function closeHTP(){document.getElementById('htpOverlay').style.display='none'} setDifficulty('normal');updateHud();draw();
+</script>
+<script src="/js/ads.js"></script>
+</body>
+</html>

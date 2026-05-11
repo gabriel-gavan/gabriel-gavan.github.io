@@ -1087,6 +1087,119 @@ requiring smart tower placement and efficient upgrades.
   requestAnimationFrame(loop);
 })();
 </script>
+
+<!-- NeonAds interstitial trigger helper: safe game-over / win / round-break ads -->
+<script>
+(function(){
+  if (window.__NEON_GAME_INTERSTITIAL_HELPER__) return;
+  window.__NEON_GAME_INTERSTITIAL_HELPER__ = true;
+
+  var GAME_AD_COOLDOWN_MS = 60000;
+  var lastShown = 0;
+  var roundArmed = true;
+  var observerTimer = null;
+
+  function now(){ return Date.now ? Date.now() : new Date().getTime(); }
+
+  function normalizeText(value){
+    return String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  }
+
+  function looksLikeSafeBreak(text){
+    text = normalizeText(text);
+    if (!text || text.length < 4) return false;
+    return /game\s*over|you\s*(win|won|lost)|victory|defeat|mission\s*(complete|failed)|level\s*(complete|cleared)|wave\s*(complete|cleared)|round\s*(over|complete)|time\s*(up|out)|final\s*score|score\s*submitted|puzzle\s*(solved|complete)|correct!|exploded|bomb\s*exploded|crashed|survived/i.test(text);
+  }
+
+  function neonShowInterstitial(reason){
+    var t = now();
+    if (!roundArmed) return false;
+    if (t - lastShown < GAME_AD_COOLDOWN_MS) return false;
+    if (!window.NeonAds || typeof window.NeonAds.showGameBreakAd !== 'function') return false;
+
+    lastShown = t;
+    roundArmed = false;
+
+    try {
+      window.NeonAds.showGameBreakAd();
+      window.dispatchEvent(new CustomEvent('neonGameBreakAdShown', { detail: { reason: reason || 'safe_break' } }));
+      setTimeout(function(){ roundArmed = true; }, 15000);
+      return true;
+    } catch(e) {
+      console.log('NeonAds interstitial trigger failed', e);
+      roundArmed = true;
+      return false;
+    }
+  }
+
+  window.NeonGameAds = window.NeonGameAds || {};
+  window.NeonGameAds.trigger = neonShowInterstitial;
+  window.NeonGameAds.armNextBreak = function(){ roundArmed = true; };
+
+  function tryFromText(text, reason){
+    if (looksLikeSafeBreak(text)) {
+      setTimeout(function(){ neonShowInterstitial(reason || 'text_break'); }, 250);
+    }
+  }
+
+  var originalAlert = window.alert;
+  window.alert = function(message){
+    var result = originalAlert.apply(window, arguments);
+    tryFromText(message, 'alert_break');
+    return result;
+  };
+
+  function isVisible(el){
+    if (!el || el.nodeType !== 1) return false;
+    var cs = window.getComputedStyle(el);
+    if (!cs || cs.display === 'none' || cs.visibility === 'hidden' || Number(cs.opacity) === 0) return false;
+    var r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0;
+  }
+
+  function scanVisibleBreakText(){
+    var selectors = [
+      '#game-over', '#gameOver', '#gameOverScreen', '#game-over-screen', '#end-screen', '#result', '#message', '#status',
+      '.game-over', '.gameOver', '.end-screen', '.result', '.modal', '.overlay', '.center-message', '#centerMessage'
+    ];
+    for (var i = 0; i < selectors.length; i++) {
+      var nodes = document.querySelectorAll(selectors[i]);
+      for (var j = 0; j < nodes.length; j++) {
+        var el = nodes[j];
+        if (isVisible(el) && looksLikeSafeBreak(el.innerText || el.textContent || '')) {
+          neonShowInterstitial('visible_break_screen');
+          return;
+        }
+      }
+    }
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target && e.target.closest ? e.target.closest('button, a, [role="button"]') : null;
+    if (!btn) return;
+    var txt = normalizeText(btn.innerText || btn.textContent || btn.value || '');
+    if (/start|restart|play\s*again|new\s*game|try\s*again|next\s*level|continue/.test(txt)) {
+      roundArmed = true;
+    }
+  }, true);
+
+  function startObserver(){
+    scanVisibleBreakText();
+    var obs = new MutationObserver(function(){
+      clearTimeout(observerTimer);
+      observerTimer = setTimeout(scanVisibleBreakText, 200);
+    });
+    obs.observe(document.body, { childList:true, subtree:true, attributes:true, characterData:true, attributeFilter:['style','class','hidden'] });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startObserver);
+  } else {
+    startObserver();
+  }
+})();
+</script>
+
 <script src="/js/ads.js"></script>
 </body>
 <script src="footer.js"></script>

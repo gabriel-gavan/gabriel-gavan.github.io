@@ -19,6 +19,125 @@ function init() {
 
     game = new GameScene(scene, camera, renderer);
 
+    // ================================
+    // 🎮 AD MONETIZATION START
+    // (Neon Nebula Strike-style breaks)
+    // ================================
+    let levelsSinceAd = 0;
+    let lastAdBreakTime = 0;
+    let isAdInProgress = false;
+
+    const COOLDOWN_MS = 60000; // max 1 game-break ad per 60s
+    const AD_EVERY_N_LEVELS = 2;
+
+    const maybeShowAdBreak = () => {
+        const now = Date.now();
+        if (now - lastAdBreakTime < COOLDOWN_MS) return false;
+
+        lastAdBreakTime = now;
+
+        if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+            try {
+                window.NeonAds.showGameBreakAd();
+                return true;
+            } catch (e) {
+                console.warn('NeonAds showGameBreakAd error', e);
+            }
+        }
+
+        return false;
+    };
+
+    const showAdInterstitial = (onAdComplete) => {
+        if (isAdInProgress) {
+            onAdComplete();
+            return;
+        }
+
+        const shouldPause = game.isGameStarted && !game.isGameOver;
+        if (!shouldPause) {
+            onAdComplete();
+            return;
+        }
+
+        isAdInProgress = true;
+        const pausedBeforeAd = true;
+
+        // Pause the game while the overlay is visible
+        game.isGameStarted = false;
+        game.isPaused = true;
+
+        const didShow = maybeShowAdBreak();
+        if (!didShow) {
+            isAdInProgress = false;
+            game.isPaused = false;
+            game.isGameStarted = pausedBeforeAd && !game.isGameOver;
+            onAdComplete();
+            return;
+        }
+
+        let finished = false;
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+
+            try {
+                window.NeonAds?.hideGameBreakAd?.();
+            } catch (e) {
+                // ignore
+            }
+
+            // Stop observing + safety timeout
+            try {
+                observer?.disconnect();
+            } catch (e) {}
+
+            clearTimeout(safetyTimeout);
+
+            isAdInProgress = false;
+
+            // Restore gameplay
+            game.isPaused = false;
+            if (pausedBeforeAd && !game.isGameOver) {
+                game.isGameStarted = true;
+            }
+
+            onAdComplete();
+        };
+
+        const safetyTimeout = setTimeout(() => finish(), 8000);
+
+        const observer = new MutationObserver(() => {
+            const wrap = document.getElementById('neon-game-break-ad');
+            if (!wrap) return;
+
+            const isHidden =
+                wrap.style.display === 'none' ||
+                getComputedStyle(wrap).display === 'none';
+
+            if (isHidden) finish();
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+
+        // In case it already closed very quickly:
+        const wrapNow = document.getElementById('neon-game-break-ad');
+        if (wrapNow) {
+            const isHiddenNow =
+                wrapNow.style.display === 'none' ||
+                getComputedStyle(wrapNow).display === 'none';
+            if (isHiddenNow) finish();
+        }
+    };
+    // ================================
+    // 🎮 AD MONETIZATION END
+    // ================================
+
     // Setup UI
     const scoreBoard = document.getElementById('score-board');
     const levelBoard = document.getElementById('level-board');
@@ -45,20 +164,15 @@ function init() {
 
     const updateAmmoUI = (ammo) => {
         ammoIcons.forEach((icon, i) => {
-            if (i < ammo) {
-                icon.classList.remove('bullet-empty');
-            } else {
-                icon.classList.add('bullet-empty');
-            }
+            if (i < ammo) icon.classList.remove('bullet-empty');
+            else icon.classList.add('bullet-empty');
         });
         reloadBtn.style.display = ammo <= 0 ? 'block' : 'none';
     };
 
     const updateLivesUI = (lives) => {
         let hearts = "";
-        for (let i = 0; i < 3; i++) {
-            hearts += i < lives ? "❤️" : "🖤";
-        }
+        for (let i = 0; i < 3; i++) hearts += i < lives ? "❤️" : "🖤";
         livesBoard.innerText = `Lives: ${hearts}`;
     };
 
@@ -81,7 +195,7 @@ function init() {
 
     game.onLevelUp = (level) => {
         playLevelUpSound();
-        // Show level up message
+
         const levelMsg = document.createElement('div');
         levelMsg.innerText = `LEVEL ${level}`;
         levelMsg.style.position = 'fixed';
@@ -95,7 +209,13 @@ function init() {
         levelMsg.style.pointerEvents = 'none';
         levelMsg.style.fontFamily = "'Rye', cursive";
         document.body.appendChild(levelMsg);
-        
+
+        levelsSinceAd++;
+        if (levelsSinceAd >= AD_EVERY_N_LEVELS) {
+            levelsSinceAd = 0;
+            showAdInterstitial(() => {});
+        }
+
         setTimeout(() => {
             levelMsg.style.opacity = '0';
             levelMsg.style.transition = 'opacity 1s';
@@ -105,12 +225,11 @@ function init() {
 
     game.onShoot = () => {
         playShootSound();
-        // Recoil animation
+
         gunSprite.classList.remove('recoil');
         void gunSprite.offsetWidth; // trigger reflow
         gunSprite.classList.add('recoil');
 
-        // Muzzle flash animation
         muzzleFlash.style.animation = 'none';
         void muzzleFlash.offsetWidth; // trigger reflow
         muzzleFlash.style.animation = 'flash-anim 0.1s forwards';
@@ -123,18 +242,9 @@ function init() {
         playPlayerHitSound();
     };
 
-    game.onAmmoUpdate = (ammo) => {
-        updateAmmoUI(ammo);
-    };
-
-    game.onLivesUpdate = (lives) => {
-        updateLivesUI(lives);
-    };
-
-    game.onInnocentsUpdate = (count) => {
-        updateInnocentsUI(count);
-    };
-
+    game.onAmmoUpdate = (ammo) => updateAmmoUI(ammo);
+    game.onLivesUpdate = (lives) => updateLivesUI(lives);
+    game.onInnocentsUpdate = (count) => updateInnocentsUI(count);
     game.onProgressUpdate = (killed, total) => {
         progressBoard.innerText = `Progress: ${killed}/${total}`;
     };
@@ -148,18 +258,13 @@ function init() {
         }
     };
 
-    game.onDryFire = () => {
-        playDryFireSound();
-    };
-
-    game.onAutoReload = () => {
-        playReloadSound();
-    };
+    game.onDryFire = () => playDryFireSound();
+    game.onAutoReload = () => playReloadSound();
 
     const updateLeaderboardUI = () => {
         const leaderboardList = document.getElementById('leaderboard-list');
         const scores = JSON.parse(localStorage.getItem('wwbb_leaderboard') || '[]');
-        
+
         if (scores.length === 0) {
             leaderboardList.innerHTML = "No legends yet...";
             return;
@@ -176,36 +281,36 @@ function init() {
 
     const saveToLeaderboard = (score, level) => {
         const scores = JSON.parse(localStorage.getItem('wwbb_leaderboard') || '[]');
-        
-        // Check if score qualifies for top 5
+
         const isTopScore = scores.length < 5 || score > scores[scores.length - 1].score;
-        
-        if (isTopScore) {
-            nameModal.style.display = 'flex';
-            nameInput.focus();
-            
-            const handleSubmit = () => {
-                const playerName = nameInput.value.trim() || "Anonymous Outlaw";
-                scores.push({ name: playerName, score, level, date: new Date().toISOString() });
-                scores.sort((a, b) => b.score - a.score || b.level - a.level);
-                const topScores = scores.slice(0, 5);
-                localStorage.setItem('wwbb_leaderboard', JSON.stringify(topScores));
-                
-                nameModal.style.display = 'none';
-                updateLeaderboardUI();
-                submitBtn.removeEventListener('click', handleSubmit);
-            };
-            
-            submitBtn.addEventListener('click', handleSubmit);
-        }
+        if (!isTopScore) return;
+
+        nameModal.style.display = 'flex';
+        nameInput.focus();
+
+        const handleSubmit = () => {
+            const playerName = nameInput.value.trim() || "Anonymous Outlaw";
+            scores.push({ name: playerName, score, level, date: new Date().toISOString() });
+            scores.sort((a, b) => b.score - a.score || b.level - a.level);
+            const topScores = scores.slice(0, 5);
+            localStorage.setItem('wwbb_leaderboard', JSON.stringify(topScores));
+
+            nameModal.style.display = 'none';
+            updateLeaderboardUI();
+            submitBtn.removeEventListener('click', handleSubmit);
+        };
+
+        submitBtn.addEventListener('click', handleSubmit);
     };
 
     game.onGameOver = (type, score) => {
+        // Neon-style: show a death interstitial (no need to pause/resume since gameplay is already stopped)
+        maybeShowAdBreak();
+
         messageOverlay.style.display = 'block';
         gunContainer.style.display = 'none';
         crosshair.style.display = 'none';
-        
-        // Update personal best
+
         const currentHighscore = parseInt(localStorage.getItem('wwbb_highscore') || '0');
         if (score > currentHighscore) {
             localStorage.setItem('wwbb_highscore', score);
@@ -214,49 +319,35 @@ function init() {
             messageSubtitle.innerHTML = `Score: ${score} (Best: ${currentHighscore})<br>Don't be a yellow-belly!`;
         }
 
-        // Handle leaderboard entry
         saveToLeaderboard(score, game.level);
         updateLeaderboardUI();
 
-        if (type === 'bandit_shot_you') {
-            messageTitle.innerText = "BANDIT GOT YOU!";
-        } else if (type === 'boss') {
+        if (type === 'bandit_shot_you') messageTitle.innerText = "BANDIT GOT YOU!";
+        else if (type === 'boss') {
             messageTitle.innerText = "THE BOSS GOT YOU!";
             messageSubtitle.innerHTML = `NEW RECORD! Score: ${score}<br>The Big Bad Boss was too fast!`;
         } else if (type === 'victory') {
             messageTitle.innerText = "LEGENDARY SHERIFF!";
             messageTitle.style.textShadow = '4px 4px #2ecc71';
             messageSubtitle.innerHTML = `YOU CLEANED UP THE TOWN!<br>Final Score: ${score}<br>A true hero of the West!`;
-        } else if (type === 'bandit') {
-            messageTitle.innerText = "BANDIT GOT AWAY!";
-        } else {
-            messageTitle.innerText = "OUTLAW!";
-        }
-        
+        } else if (type === 'bandit') messageTitle.innerText = "BANDIT GOT AWAY!";
+        else messageTitle.innerText = "OUTLAW!";
+
         stopAmbience();
         playGameOverSound();
     };
 
-    game.onPropBreak = () => {
-        playPropShatterSound();
-    };
-
-    game.onWallHit = () => {
-        playWallHitSound();
-    };
+    game.onPropBreak = () => playPropShatterSound();
+    game.onWallHit = () => playWallHitSound();
 
     reloadBtn.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
         game.reload();
         playReloadSound();
     });
-    
-    // Fallback click for accessibility
-    reloadBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
 
-    // Display high score on start screen
+    reloadBtn.addEventListener('click', (e) => e.stopPropagation());
+
     const highscore = localStorage.getItem('wwbb_highscore') || 0;
     if (highscore > 0) {
         const hsDisplay = document.createElement('p');
@@ -270,19 +361,17 @@ function init() {
         await Tone.start();
         game.autoReload = autoReloadToggle.checked;
         startScreen.style.display = 'none';
-        gunContainer.style.display = 'block'; // Show gun when game starts
+        gunContainer.style.display = 'block';
         crosshair.style.display = 'block';
         startAmbience();
         game.start();
     });
 
-    // Gun and Crosshair follow pointer (mouse or touch)
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
+
     window.addEventListener('pointermove', (e) => {
         if (!game.isGameStarted || game.isGameOver) return;
-        
-        // Update crosshair position (only if not touch)
+
         if (!isTouchDevice) {
             crosshair.style.display = 'block';
             crosshair.style.left = `${e.clientX}px`;
@@ -291,15 +380,14 @@ function init() {
             crosshair.style.display = 'none';
         }
 
-        // Subtle gun sway and orientation
         const swayAmount = isTouchDevice ? 40 : 100;
-        const xPercent = (e.clientX / window.innerWidth - 0.5) * swayAmount; 
+        const xPercent = (e.clientX / window.innerWidth - 0.5) * swayAmount;
         const yPercent = (e.clientY / window.innerHeight - 0.5) * (swayAmount / 2);
         gunContainer.style.transform = `translate(calc(-50% + ${xPercent}px), ${yPercent}px)`;
     });
 
     window.addEventListener('resize', onWindowResize, false);
-    onWindowResize(); // Ensure initial scale is correct
+    onWindowResize();
 
     animate();
 }
@@ -310,14 +398,9 @@ function onWindowResize() {
     const aspect = width / height;
 
     camera.aspect = aspect;
-    
-    // Adjusted camera Z to see the much larger scene
-    // The doors span roughly from x=-40 to x=40 (total 80)
-    if (aspect < 1.7) {
-        camera.position.z = 50 * (1.7 / aspect);
-    } else {
-        camera.position.z = 50;
-    }
+
+    if (aspect < 1.7) camera.position.z = 50 * (1.7 / aspect);
+    else camera.position.z = 50;
 
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
@@ -332,9 +415,7 @@ function animate() {
 
 // Simple Procedural Sounds with Tone.js
 const gunshot = new Tone.NoiseSynth({
-    noise: {
-        type: 'white'
-    },
+    noise: { type: 'white' },
     envelope: {
         attack: 0.005,
         decay: 0.1,
@@ -350,6 +431,7 @@ const clickSynth = new Tone.MetalSynth({
         release: 0.05
     }
 }).toDestination();
+
 const gameOverSynth = new Tone.MonoSynth().toDestination();
 const glassShatterSynth = new Tone.NoiseSynth({
     noise: { type: 'pink' },
@@ -362,7 +444,7 @@ const wallHitSynth = new Tone.MembraneSynth({
     oscillator: { type: 'sine' }
 }).toDestination();
 
-// Background Ambience: A haunting, lonely spaghetti western whistle/flute
+// Background Ambience: a haunting, lonely spaghetti western whistle/flute
 const whistleSynth = new Tone.DuoSynth({
     vibratoAmount: 0.5,
     vibratoRate: 5,
@@ -387,10 +469,10 @@ let ambienceLoopId = null;
 
 function startAmbience() {
     ambientWind.start();
-    
+
     const notes = ["E4", "G4", "A4", "B4", "D5", "E5"];
     let step = 0;
-    
+
     ambienceLoopId = Tone.Transport.scheduleRepeat((time) => {
         if (step % 16 === 0 || Math.random() < 0.3) {
             const note = notes[Math.floor(Math.random() * notes.length)];
@@ -398,7 +480,7 @@ function startAmbience() {
         }
         step++;
     }, "2n");
-    
+
     Tone.Transport.start();
 }
 
@@ -414,7 +496,6 @@ function stopAmbience() {
 function playShootSound() {
     try {
         const now = Tone.now();
-        // Use a tiny offset to ensure scheduling doesn't overlap in the same tick
         gunshot.triggerAttackRelease("16n", now + 0.01);
     } catch (e) {
         console.warn("Audio scheduling conflict:", e);
@@ -466,10 +547,8 @@ function playWallHitSound() {
 function playPlayerHitSound() {
     try {
         const now = Tone.now() + 0.01;
-        // Low, punchy impact sound
         const impact = new Tone.MembraneSynth().toDestination();
         impact.triggerAttackRelease("C1", "8n", now);
-        // Clean up after play
         setTimeout(() => impact.dispose(), 500);
     } catch (e) {
         console.warn("Audio scheduling conflict:", e);

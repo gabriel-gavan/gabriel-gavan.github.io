@@ -88,5 +88,85 @@
         <img src="" alt="" />
     </div>
 	<script src="/js/ads.js"></script>
+
+<script>
+(function(){
+  if (window.__NEON_CLASSIC_INTERSTITIALS__) return;
+  window.__NEON_CLASSIC_INTERSTITIALS__ = true;
+
+  var lastAdTime = 0;
+  var COOLDOWN_MS = 60000;
+
+  function showGameBreakAd(reason, force) {
+    var now = Date.now();
+    if (!force && now - lastAdTime < COOLDOWN_MS) return false;
+    lastAdTime = now;
+
+    try {
+      if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+        window.NeonAds.showGameBreakAd();
+        return true;
+      }
+    } catch (e) {
+      console.warn('Neon game-break ad failed:', reason, e);
+    }
+    return false;
+  }
+
+  function isVisible(el) {
+    if (!el) return false;
+    var cs = window.getComputedStyle(el);
+    if (cs.display === 'none' || cs.visibility === 'hidden' || cs.opacity === '0') return false;
+    return el.offsetWidth > 0 || el.offsetHeight > 0 || el.getClientRects().length > 0;
+  }
+
+  var selectors = [
+    '.gameover-menu',
+    '.congrats',
+    '.input',
+    '#gameOverScreen',
+    '.game-over',
+    '.messages .input',
+    '.dialog.congrats',
+    '.congrats.backdrop'
+  ];
+
+  var seenVisible = new WeakMap();
+
+  function scanForBreaks() {
+    selectors.forEach(function(selector) {
+      document.querySelectorAll(selector).forEach(function(el) {
+        var visible = isVisible(el);
+        var wasVisible = seenVisible.get(el) === true;
+        seenVisible.set(el, visible);
+        if (visible && !wasVisible) {
+          showGameBreakAd(selector, false);
+        }
+      });
+    });
+  }
+
+  document.addEventListener('click', function(e) {
+    var actionEl = e.target && e.target.closest && e.target.closest('[data-action]');
+    if (!actionEl) return;
+    var action = (actionEl.getAttribute('data-action') || '').toLowerCase();
+    if (/finishgame|endgame|maindisplay|mainscreen|restart|newgame|save/.test(action)) {
+      showGameBreakAd('menu-action-' + action, false);
+    }
+  }, true);
+
+  var observer = new MutationObserver(function(){ scanForBreaks(); });
+  if (document.body) {
+    observer.observe(document.body, { attributes:true, childList:true, subtree:true, attributeFilter:['class','style'] });
+  }
+
+  window.addEventListener('NEON_GAME_OVER', function(){ showGameBreakAd('custom-game-over', true); });
+  window.addEventListener('NEON_LEVEL_COMPLETE', function(){ showGameBreakAd('custom-level-complete', false); });
+
+  setInterval(scanForBreaks, 1500);
+  setTimeout(scanForBreaks, 1000);
+})();
+</script>
+
 </body>
 </html>

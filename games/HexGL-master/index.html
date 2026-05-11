@@ -18,8 +18,8 @@
     <meta property="og:image" content="http://hexgl.bkcore.com/image.png" />
     <meta property="og:site_name" content="HexGL by BKcore" />
     <meta property="fb:admins" content="1482017639" />
-    <link rel="icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
-    <link rel="shortcut icon" href="http://hexgl.bkcore.com/favicon.png" type="image/png">
+    <link rel="icon" href="https://hexgl.bkcore.com/favicon.png" type="image/png">
+    <link rel="shortcut icon" href="https://hexgl.bkcore.com/favicon.png" type="image/png">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/multi.css" type="text/css" charset="utf-8">
     <link rel="stylesheet" href="css/fonts.css" type="text/css" charset="utf-8">
@@ -138,5 +138,140 @@
 
     <script src="launch.js"></script>
 <script src="/js/ads.js"></script>
+
+<script>
+(function () {
+  // ============================================================
+  // 🎮 Neon Mini Game Hub - HexGL Interstitial Hooks
+  // Uses the existing /js/ads.js public API: window.NeonAds.showGameBreakAd()
+  // Safe for legacy HexGL because it does not touch game internals.
+  // ============================================================
+  var lastInterstitialTime = 0;
+  var raceStartedAt = 0;
+  var longSessionTimer = null;
+  var resultAdShownForThisRace = false;
+  var COOLDOWN_MS = 60000;
+
+  function canShowInterstitial(force) {
+    var now = Date.now();
+    if (!force && now - lastInterstitialTime < COOLDOWN_MS) return false;
+    lastInterstitialTime = now;
+    return true;
+  }
+
+  function showGameBreakAd(force) {
+    if (!canShowInterstitial(force)) return false;
+
+    try {
+      if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === 'function') {
+        window.NeonAds.showGameBreakAd();
+        return true;
+      }
+    } catch (e) {
+      console.warn('NeonAds interstitial failed', e);
+    }
+
+    return false;
+  }
+
+  function isVisible(el) {
+    if (!el) return false;
+    return el.style.display !== 'none' && getComputedStyle(el).display !== 'none';
+  }
+
+  function markRaceStarted() {
+    raceStartedAt = Date.now();
+    resultAdShownForThisRace = false;
+
+    clearTimeout(longSessionTimer);
+    longSessionTimer = setTimeout(function () {
+      // Long-session break: only if the race is still active.
+      var gameStep = document.getElementById('step-4');
+      if (isVisible(gameStep)) showGameBreakAd(false);
+    }, 180000); // 3 minutes
+  }
+
+  function markRaceEnded() {
+    clearTimeout(longSessionTimer);
+
+    if (resultAdShownForThisRace) return;
+    resultAdShownForThisRace = true;
+
+    // Natural break: race result / final time screen.
+    showGameBreakAd(false);
+  }
+
+  function wireStartButtons() {
+    var start = document.getElementById('start');
+    var continueStep = document.getElementById('step-2');
+
+    if (start && !start.dataset.neonAdHooked) {
+      start.dataset.neonAdHooked = '1';
+      start.addEventListener('click', function () {
+        markRaceStarted();
+      }, true);
+    }
+
+    // HexGL uses click/touch to move through pre-race screens. This keeps the timer fresh.
+    if (continueStep && !continueStep.dataset.neonAdHooked) {
+      continueStep.dataset.neonAdHooked = '1';
+      continueStep.addEventListener('click', markRaceStarted, true);
+      continueStep.addEventListener('touchstart', markRaceStarted, { passive: true, capture: true });
+    }
+  }
+
+  function observeRaceResultScreen() {
+    var resultStep = document.getElementById('step-5');
+    if (!resultStep) return;
+
+    var observer = new MutationObserver(function () {
+      if (isVisible(resultStep)) {
+        setTimeout(markRaceEnded, 500);
+      }
+    });
+
+    observer.observe(resultStep, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
+
+  function observeGameScreen() {
+    var gameStep = document.getElementById('step-4');
+    if (!gameStep) return;
+
+    var observer = new MutationObserver(function () {
+      if (isVisible(gameStep) && !raceStartedAt) {
+        markRaceStarted();
+      }
+    });
+
+    observer.observe(gameStep, {
+      attributes: true,
+      attributeFilter: ['style', 'class']
+    });
+  }
+
+  function setupNeonInterstitials() {
+    wireStartButtons();
+    observeRaceResultScreen();
+    observeGameScreen();
+
+    // Safe focus-return break after the user leaves and comes back mid-session.
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && Date.now() - raceStartedAt > 90000) {
+        var gameStep = document.getElementById('step-4');
+        if (isVisible(gameStep)) showGameBreakAd(false);
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupNeonInterstitials);
+  } else {
+    setupNeonInterstitials();
+  }
+})();
+</script>
   </body>
 </html>
