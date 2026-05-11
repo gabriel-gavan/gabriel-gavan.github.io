@@ -8,9 +8,7 @@
   // 1️⃣ ADSENSE
   // =============================
   const isHubPage =
-  document.body.classList.contains("hub-page") ||
-  location.pathname === "/" ||
-  location.pathname.endsWith("/index.html");
+  document.body.classList.contains("hub-page");
 
 if (!window.adsbygoogleLoaded && isHubPage) {
     const adsenseScript = document.createElement("script");
