@@ -106,6 +106,106 @@ export default function initGame(
 
         return true;
     }
+
+    // ============================================================
+    // 🎮 Play another Game (retention) — powered by /games/games.json
+    // ============================================================
+    const CURRENT_GAME_ID = "neondash";
+
+    const safeParseJSON = (raw, fallback) => {
+        try {
+            return JSON.parse(raw) || fallback;
+        } catch {
+            return fallback;
+        }
+    };
+
+    const normalizeUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith("http://") || url.startsWith("https://")) return url;
+        if (url.startsWith("/")) return url;
+        return "/" + url;
+    };
+
+    const getSuggestedNextGame = async () => {
+        try {
+            const res = await fetch("/games/games.json");
+            const gamesCatalog = await res.json();
+
+            const allGames = [];
+            if (Array.isArray(gamesCatalog.topPicks)) allGames.push(...gamesCatalog.topPicks);
+            if (Array.isArray(gamesCatalog.classic)) allGames.push(...gamesCatalog.classic);
+            if (Array.isArray(gamesCatalog.skill)) allGames.push(...gamesCatalog.skill);
+            if (Array.isArray(gamesCatalog.strategy)) allGames.push(...gamesCatalog.strategy);
+
+            const playCounts = safeParseJSON(localStorage.getItem("gamePlayCounts"), {});
+            const getPlays = (id) => {
+                const n = Number(playCounts?.[id] || 0);
+                return Number.isFinite(n) && n > 0 ? n : 0;
+            };
+
+            const candidates = allGames.filter(
+                (g) => g?.id && g.id !== CURRENT_GAME_ID && g?.url
+            );
+
+            if (candidates.length === 0) {
+                const topFallback = Array.isArray(gamesCatalog.topPicks)
+                    ? gamesCatalog.topPicks.find((g) => g?.id && g.id !== CURRENT_GAME_ID && g?.url)
+                    : null;
+                return topFallback || null;
+            }
+
+            candidates.sort((a, b) => {
+                const byPlays = getPlays(b.id) - getPlays(a.id);
+                if (byPlays !== 0) return byPlays;
+                return String(a.id).localeCompare(String(b.id));
+            });
+
+            return candidates[0];
+        } catch (e) {
+            console.warn("[SoldierRunner] getSuggestedNextGame error:", e);
+            return null;
+        }
+    };
+
+    const playAnotherBtn = document.getElementById("playAnotherBtn");
+    if (playAnotherBtn) {
+        playAnotherBtn.addEventListener("click", async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            playAnotherBtn.disabled = true;
+            playAnotherBtn.style.opacity = "0.75";
+
+            try {
+                const nextGame = await getSuggestedNextGame();
+                const href = normalizeUrl(nextGame?.url);
+
+                if (href) {
+                    window.location.href = href;
+                    return;
+                }
+
+                // Hard fallback (never bounce to this game)
+                const STATIC_FALLBACK_URLS = [
+                    "/games/Neon Obby Legend/index.html",
+                    "/games/Castle Falls/index.html",
+                    "/games/Neon Nebula Strike/index.html",
+                    "/games/Saloon Showdown/index.html",
+                ];
+
+                const fallbackHref =
+                    STATIC_FALLBACK_URLS.find((u) => u !== "/games/Soldier Runner/index.html") ||
+                    STATIC_FALLBACK_URLS[0];
+
+                window.location.href = fallbackHref;
+            } finally {
+                playAnotherBtn.disabled = false;
+                playAnotherBtn.style.opacity = "";
+            }
+        });
+    }
+
     // ============================================================
     // INIT
     // ============================================================

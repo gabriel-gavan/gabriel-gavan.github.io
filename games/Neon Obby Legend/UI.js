@@ -1,7 +1,7 @@
 import { CONFIG } from './config.js';
 
 export class UI {
-    constructor(onRestart, onSelectCampaign, onGoHome) {
+    constructor(onRestart, onSelectCampaign, onGoHome, onPlayAnotherGame) {
         this.container = document.createElement('div');
         this.container.style.position = 'fixed';
         this.container.style.top = '0';
@@ -276,9 +276,43 @@ export class UI {
         this.deathPopup.style.textShadow = '0 0 20px #ff0000, 0 0 40px #000';
         this.deathPopup.style.zIndex = '200';
         this.deathPopup.style.transition = 'transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s';
-        this.deathPopup.style.pointerEvents = 'none';
+        this.deathPopup.style.pointerEvents = 'auto';
         this.deathPopup.style.opacity = '0';
-        this.deathPopup.innerText = 'YOU DIED';
+
+        this.deathPopup.innerHTML = 'YOU DIED';
+
+        const deathActions = document.createElement('div');
+        deathActions.style.marginTop = '30px';
+        deathActions.style.display = 'flex';
+        deathActions.style.flexDirection = 'column';
+        deathActions.style.gap = '14px';
+        deathActions.style.alignItems = 'center';
+
+        const deathPlayAnotherBtn = document.createElement('button');
+        deathPlayAnotherBtn.id = 'play-another-game-death-btn';
+        deathPlayAnotherBtn.innerText = 'PLAY ANOTHER GAME';
+        deathPlayAnotherBtn.style.width = '320px';
+        deathPlayAnotherBtn.style.padding = '14px 18px';
+        deathPlayAnotherBtn.style.fontSize = '18px';
+        deathPlayAnotherBtn.style.cursor = 'pointer';
+        deathPlayAnotherBtn.style.background = '#00ffff';
+        deathPlayAnotherBtn.style.color = '#000';
+        deathPlayAnotherBtn.style.border = 'none';
+        deathPlayAnotherBtn.style.borderRadius = '12px';
+        deathPlayAnotherBtn.style.fontFamily = 'inherit';
+        deathPlayAnotherBtn.style.fontWeight = 'bold';
+        deathPlayAnotherBtn.style.boxShadow = '0 0 15px rgba(0,255,255,0.45)';
+        deathPlayAnotherBtn.style.transition = 'all 0.2s';
+
+        deathPlayAnotherBtn.onclick = () => {
+            this.deathPopup.style.opacity = '0';
+            this.deathPopup.style.transform = 'translate(-50%, -50%) scale(0)';
+            if (typeof this.onPlayAnotherGame === 'function') this.onPlayAnotherGame();
+        };
+
+        deathActions.appendChild(deathPlayAnotherBtn);
+        this.deathPopup.appendChild(deathActions);
+
         this.container.appendChild(this.deathPopup);
 
         // Campaign Progress Overlay
@@ -297,6 +331,7 @@ export class UI {
         this.onRestart = onRestart;
         this.onSelectCampaign = onSelectCampaign;
         this.onGoHome = onGoHome;
+        this.onPlayAnotherGame = onPlayAnotherGame;
 
         this.backBtn.onclick = () => {
             this.levelMenu.style.display = 'none';
@@ -659,6 +694,21 @@ export class UI {
                         transition: all 0.2s;
                     ">MENU</button>
                 </div>
+
+                <button id="play-another-game-win-btn" style="
+                    width: 280px;
+                    padding: 14px;
+                    font-size: 16px;
+                    cursor: pointer;
+                    background: #00ffff;
+                    color: #000;
+                    border: none;
+                    border-radius: 12px;
+                    font-family: inherit;
+                    font-weight: bold;
+                    transition: all 0.2s;
+                    box-shadow: 0 0 15px rgba(0,255,255,0.45);
+                ">PLAY ANOTHER GAME</button>
             </div>
         `;
         
@@ -670,6 +720,7 @@ export class UI {
         const nextBtn = document.getElementById('next-btn');
         const restartBtn = document.getElementById('restart-btn');
         const selectBtn = document.getElementById('select-btn');
+        const playAnotherWinBtn = document.getElementById('play-another-game-win-btn');
 
         nextBtn.onclick = () => {
             this.msg.style.display = 'none';
@@ -686,6 +737,13 @@ export class UI {
             this.msg.style.display = 'none';
             onLevelSelect();
         };
+
+        if (playAnotherWinBtn) {
+            playAnotherWinBtn.onclick = () => {
+                this.msg.style.display = 'none';
+                if (typeof this.onPlayAnotherGame === 'function') this.onPlayAnotherGame();
+            };
+        }
 
         // Trigger animations
         setTimeout(() => {
