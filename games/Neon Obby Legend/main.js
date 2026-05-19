@@ -27,10 +27,79 @@ class Game {
 
         this.world = new World(this.scene);
         
+        const playAnotherGame = async () => {
+            const CURRENT_GAME_ID = 'neon-obby-legend';
+
+            const safeParseJSON = (raw, fallback) => {
+                try {
+                    return JSON.parse(raw) || fallback;
+                } catch {
+                    return fallback;
+                }
+            };
+
+            const normalizeUrl = (url) => {
+                if (!url) return null;
+                if (url.startsWith('http://') || url.startsWith('https://')) return url;
+                if (url.startsWith('/')) return url;
+                return '/' + url;
+            };
+
+            const STATIC_FALLBACK_URLS = [
+                '/games/Soldier Runner/index.html',
+                '/games/Castle Falls/index.html',
+                '/games/Neon Nebula Strike/index.html',
+                '/games/Saloon Showdown/index.html',
+                '/index.html'
+            ];
+
+            try {
+                const res = await fetch('/games/games.json');
+                const gamesCatalog = await res.json();
+
+                const allGames = [];
+                if (Array.isArray(gamesCatalog.topPicks)) allGames.push(...gamesCatalog.topPicks);
+                if (Array.isArray(gamesCatalog.classic)) allGames.push(...gamesCatalog.classic);
+                if (Array.isArray(gamesCatalog.skill)) allGames.push(...gamesCatalog.skill);
+                if (Array.isArray(gamesCatalog.strategy)) allGames.push(...gamesCatalog.strategy);
+
+                const playCounts = safeParseJSON(localStorage.getItem('gamePlayCounts'), {});
+                const getPlays = (id) => {
+                    const n = Number(playCounts?.[id] || 0);
+                    return Number.isFinite(n) && n > 0 ? n : 0;
+                };
+
+                const candidates = allGames.filter(g => g?.id && g.id !== CURRENT_GAME_ID && g?.url);
+
+                if (candidates.length === 0) {
+                    const topFallback = Array.isArray(gamesCatalog.topPicks)
+                        ? gamesCatalog.topPicks.find(g => g?.id && g.id !== CURRENT_GAME_ID && g?.url)
+                        : null;
+                    const href = normalizeUrl(topFallback?.url);
+                    window.location.href = href || STATIC_FALLBACK_URLS[0];
+                    return;
+                }
+
+                candidates.sort((a, b) => {
+                    const byPlays = getPlays(b.id) - getPlays(a.id);
+                    if (byPlays !== 0) return byPlays;
+                    return String(a.id).localeCompare(String(b.id));
+                });
+
+                const href = normalizeUrl(candidates[0]?.url);
+                window.location.href = href || STATIC_FALLBACK_URLS[0];
+            } catch (e) {
+                console.warn('[NeonObbyLegend] playAnotherGame error:', e);
+                const fallbackHref = STATIC_FALLBACK_URLS.find(u => !u.includes('Neon Obby Legend')) || STATIC_FALLBACK_URLS[0];
+                window.location.href = fallbackHref;
+            }
+        };
+
         this.ui = new UI(
-            () => this.restart(), 
+            () => this.restart(),
             (id) => this.selectCampaign(id),
-            () => this.goHome()
+            () => this.goHome(),
+            playAnotherGame
         );
 
         this.player = new Player(this.scene, () => {

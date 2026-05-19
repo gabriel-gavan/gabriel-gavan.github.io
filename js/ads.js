@@ -334,21 +334,49 @@ if (!window.adsbygoogleLoaded) {
   // 9️⃣ GAME PAGE ADS
   // =============================
   function addGamePageAds() {
-    if (document.getElementById("game-ad")) return;
+	  if (document.getElementById("game-ad")) return;
 
-    const game = document.querySelector("canvas, iframe, .game-container, #game");
-    if (!game) return;
+	  const game = document.querySelector("canvas, iframe, .game-container, #game");
+	  if (!game) return;
 
-    const wrap = document.createElement("div");
-    wrap.id = "game-ad";
-    wrap.className = "inline-ad-slot";
+	  const wrap = document.createElement("div");
+	  wrap.id = "game-ad";
+	  wrap.className = "game-page-ad-slot";
+	  wrap.style.maxWidth = "728px";
+	  wrap.style.minHeight = "90px";
+	  wrap.style.margin = "14px auto";
+	  wrap.style.textAlign = "center";
+	  wrap.style.position = "relative";
+	  wrap.style.zIndex = "5";
 
-    const ad = createHorizontalAd();
-    wrap.appendChild(ad);
+	  const btn = document.createElement("button");
+	  btn.type = "button";
+	  btn.innerText = "Minimize ad";
+	  btn.style.marginBottom = "6px";
+	  btn.style.padding = "5px 10px";
+	  btn.style.borderRadius = "999px";
+	  btn.style.border = "1px solid rgba(255,255,255,0.25)";
+	  btn.style.background = "rgba(0,0,0,0.65)";
+	  btn.style.color = "#fff";
+	  btn.style.cursor = "pointer";
 
-    game.parentNode.insertBefore(wrap, game.nextSibling);
-    setTimeout(() => pushAd(ad), 1200);
-  }
+	  const adBox = document.createElement("div");
+	  const ad = createHorizontalAd("8834567127", "90px");
+	  adBox.appendChild(ad);
+
+	  btn.onclick = () => {
+		const hidden = adBox.style.display === "none";
+		adBox.style.display = hidden ? "block" : "none";
+		wrap.style.minHeight = hidden ? "90px" : "32px";
+		btn.innerText = hidden ? "Minimize ad" : "Show ad";
+	  };
+
+	  wrap.appendChild(btn);
+	  wrap.appendChild(adBox);
+
+	  game.parentNode.insertBefore(wrap, game.nextSibling);
+	  setTimeout(() => pushAd(ad), 1200);
+	}
 
   // =============================
   // 10️⃣ STICKY BOTTOM MOBILE AD
