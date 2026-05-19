@@ -48,15 +48,15 @@ if (!window.adsbygoogleLoaded) {
     return c;
   }
 
-  function createHorizontalAd() {
+  function createHorizontalAd(adSlot = "8834567127", minHeight = "90px") {
 	  const ins = document.createElement("ins");
 	  ins.className = "adsbygoogle";
 	  ins.style.display = "block";
 	  ins.style.width = "100%";
-	  ins.style.minHeight = "90px";
+	  ins.style.minHeight = minHeight;
 
 	  ins.setAttribute("data-ad-client", "ca-pub-5482914432517813");
-	  ins.setAttribute("data-ad-slot", "8834567127");
+	  ins.setAttribute("data-ad-slot", adSlot);
 	  ins.setAttribute("data-ad-format", "auto");
 	  ins.setAttribute("data-full-width-responsive", "true");
 
@@ -110,7 +110,7 @@ if (!window.adsbygoogleLoaded) {
 	  min-height: 600px;
 	  z-index: 999999;
 	  display: block;
-	  background: rgba(255,0,0,0.2);
+	  
 	}
 
 	.fixed-side-ad.left {
@@ -137,6 +137,32 @@ if (!window.adsbygoogleLoaded) {
 	  min-height: 90px;
 	  margin: 35px auto;
 	  text-align: center;
+	}
+
+	.sticky-mobile-ad {
+	  position: fixed;
+	  left: 0;
+	  right: 0;
+	  bottom: 0;
+	  z-index: 999998;
+	  background: rgba(0,0,0,0.65);
+	  padding: 8px 10px;
+	  display: none;
+	  align-items: center;
+	  justify-content: center;
+	  border-top: 1px solid rgba(255,255,255,0.12);
+	  backdrop-filter: blur(6px);
+	}
+
+	.sticky-mobile-ad .adsbygoogle {
+	  width: 320px;
+	  height: 100px;
+	  display: block;
+	}
+
+	@media (max-width: 900px) {
+	  .sticky-mobile-ad { display: flex; }
+	  body { padding-bottom: 120px; }
 	}
 
 	@media (max-width: 1400px) {
@@ -275,23 +301,32 @@ if (!window.adsbygoogleLoaded) {
 	}
 
   // =============================
-  // 8️⃣ IN-CONTENT ADS
+  // 8️⃣ IN-CONTENT ADS (hub)
   // =============================
   function addInContentAds() {
-    const sections = document.querySelectorAll(".section");
-    if (!sections.length) return;
+    // Your homepage doesn't use `.section`, so we anchor on real hub blocks:
+    // - grid containers
+    // - category titles
+    const anchors = Array.from(document.querySelectorAll("#grid-topPicks, #grid-best, #grid-addictive, #grid-classic, #grid-skill, #grid-strategy"));
+    if (!anchors.length) return;
 
-    sections.forEach((section, i) => {
-      if (i % 2 === 1 && !section.nextElementSibling?.classList?.contains("inline-ad-slot")) {
-        const wrap = document.createElement("div");
-        wrap.className = "inline-ad-slot";
+    anchors.forEach((anchor, i) => {
+      // Insert after every other anchor; avoids spamming.
+      if (i % 2 !== 1) return;
 
-        const ad = createHorizontalAd();
-        wrap.appendChild(ad);
+      // Avoid duplicates
+      const next = anchor.nextElementSibling;
+      if (next && next.classList && next.classList.contains("inline-ad-slot")) return;
 
-        section.after(wrap);
-        setTimeout(() => pushAd(ad), 1200);
-      }
+      const wrap = document.createElement("div");
+      wrap.className = "inline-ad-slot";
+
+      // Reuse a slot already on-page to reduce ad unit configuration risk
+      const ad = createHorizontalAd("7917827151", "90px");
+      wrap.appendChild(ad);
+
+      anchor.after(wrap);
+      setTimeout(() => pushAd(ad), 1200);
     });
   }
 
@@ -316,6 +351,31 @@ if (!window.adsbygoogleLoaded) {
   }
 
   // =============================
+  // 10️⃣ STICKY BOTTOM MOBILE AD
+  // =============================
+  function addStickyMobileAd() {
+    if (!isHubPage) return;
+    if (window.innerWidth > 768) return;
+
+    if (document.getElementById("sticky-mobile-ad")) return;
+
+    const wrap = document.createElement("div");
+    wrap.id = "sticky-mobile-ad";
+    wrap.className = "sticky-mobile-ad";
+
+    const ad = createHorizontalAd("7917827151", "100px");
+    // Make it square-ish-ish for mobile; Adsense will adapt via responsive flags
+    // but we keep hard sizes for Active View stability.
+    ad.style.width = "320px";
+    ad.style.minHeight = "100px";
+
+    wrap.appendChild(ad);
+    document.body.appendChild(wrap);
+
+    setTimeout(() => pushAd(ad), 1200);
+  }
+
+  // =============================
   // 🔟 INIT
   // =============================
   function initExtraAds() {
@@ -323,6 +383,8 @@ if (!window.adsbygoogleLoaded) {
 		addTopAd();
 		addBottomAd();
 		addInContentAds();
+		addStickyMobileAd();
+	  } else {
 		addGamePageAds();
 	  }
 

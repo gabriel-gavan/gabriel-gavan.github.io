@@ -161,6 +161,7 @@ function init() {
     const muzzleFlash = document.getElementById('muzzle-flash');
     const crosshair = document.getElementById('crosshair');
     const damageFlash = document.getElementById('damage-flash');
+    const playNextBtn = document.getElementById('play-next-btn');
 
     const updateAmmoUI = (ammo) => {
         ammoIcons.forEach((icon, i) => {
@@ -388,6 +389,103 @@ function init() {
 
     window.addEventListener('resize', onWindowResize, false);
     onWindowResize();
+
+    const CURRENT_GAME_ID = 'bangbang';
+
+    const safeParseJSON = (raw, fallback) => {
+        try {
+            return JSON.parse(raw) || fallback;
+        } catch {
+            return fallback;
+        }
+    };
+
+    const normalizeUrl = (url) => {
+        if (!url) return null;
+        if (url.startsWith('http://') || url.startsWith('https://')) return url;
+        if (url.startsWith('/')) return url;
+        return '/' + url;
+    };
+
+    const getSuggestedNextGame = async () => {
+        try {
+            const res = await fetch('/games/games.json');
+            const gamesCatalog = await res.json();
+
+            const allGames = [];
+            if (Array.isArray(gamesCatalog.topPicks)) allGames.push(...gamesCatalog.topPicks);
+            if (Array.isArray(gamesCatalog.classic)) allGames.push(...gamesCatalog.classic);
+            if (Array.isArray(gamesCatalog.skill)) allGames.push(...gamesCatalog.skill);
+            if (Array.isArray(gamesCatalog.strategy)) allGames.push(...gamesCatalog.strategy);
+
+            const playCounts = safeParseJSON(localStorage.getItem('gamePlayCounts'), {});
+            const getPlays = (id) => {
+                const n = Number(playCounts?.[id] || 0);
+                return Number.isFinite(n) && n > 0 ? n : 0;
+            };
+
+            const candidates = allGames.filter(g => g?.id && g.id !== CURRENT_GAME_ID && g?.url);
+            console.log('[Saloon] getSuggestedNextGame candidates:', candidates.map(c => c.id).slice(0, 10), 'count=', candidates.length);
+
+            if (candidates.length === 0) {
+                const topFallback = Array.isArray(gamesCatalog.topPicks)
+                    ? gamesCatalog.topPicks.find(g => g?.id && g.id !== CURRENT_GAME_ID && g?.url)
+                    : null;
+
+                console.log('[Saloon] getSuggestedNextGame fallback topPicks:', topFallback?.id ?? null);
+
+                return topFallback || null;
+            }
+
+            candidates.sort((a, b) => {
+                const byPlays = getPlays(b.id) - getPlays(a.id);
+                if (byPlays !== 0) return byPlays;
+                return String(a.id).localeCompare(String(b.id));
+            });
+
+            console.log('[Saloon] getSuggestedNextGame picked:', candidates[0]?.id);
+            return candidates[0];
+        } catch (e) {
+            console.warn('[Saloon] getSuggestedNextGame error:', e);
+            return null;
+        }
+    };
+
+    if (playNextBtn) {
+        playNextBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            try {
+                playNextBtn.disabled = true;
+                playNextBtn.style.opacity = '0.75';
+
+                const nextGame = await getSuggestedNextGame();
+                const href = normalizeUrl(nextGame?.url);
+
+                if (href) {
+                    window.location.href = href;
+                    return;
+                }
+
+                // Hard fallback (never bounce to hub)
+                const STATIC_FALLBACK_URLS = [
+                    '/games/Soldier Runner/index.html',
+                    '/games/Neon Nebula Strike/index.html',
+                    '/games/Neon Obby Legend/index.html',
+                    '/games/Saloon Showdown/index.html'
+                ];
+
+                const fallbackHref = STATIC_FALLBACK_URLS.find(u => u !== '/games/Saloon Showdown/index.html') || STATIC_FALLBACK_URLS[0];
+                console.warn('[Saloon] Play Next fallback ->', fallbackHref, 'nextGame=', nextGame);
+
+                window.location.href = fallbackHref;
+            } finally {
+                playNextBtn.disabled = false;
+                playNextBtn.style.opacity = '';
+            }
+        });
+    }
 
     animate();
 }
