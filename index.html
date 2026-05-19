@@ -385,7 +385,45 @@
 				  data-i18n="title_neon_games">
 				Neon Games
 			  </h2>
-               <!-- ===================== TOP PICKS ===================== -->
+
+<!-- ===================== TOP GAMES (BEST + MOST ADDICTIVE) ===================== -->
+				<div class="category-title">
+			   <span class="label" data-i18n="cat_best_games">🏆 BEST games</span>
+			   <span class="sub" data-i18n="cat_best_games_sub">Curated for high replay value.</span>
+				</div>
+				<div id="grid-best" class="game-grid"></div>
+
+				<div class="category-title">
+			   <span class="label" data-i18n="cat_addictive_games">🔥 Most addictive games</span>
+			   <span class="sub" data-i18n="cat_addictive_games_sub">Based on plays on this device.</span>
+				</div>
+				<div id="grid-addictive" class="game-grid"></div>
+
+<!-- ===================== RETENTION (ANONYMOUS) ===================== -->
+<div id="retention-bar" style="max-width:1300px;margin:16px auto 0;padding:0 12px;">
+  <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:stretch;">
+    <div id="retention-continue" style="flex:1 1 360px;min-width:280px;padding:12px 14px;border:1px solid rgba(148,163,184,0.25);border-radius:16px;background:rgba(2,6,23,0.35);">
+      <div style="font-weight:900;color:#93c5fd;margin-bottom:6px;">Continue</div>
+      <div id="retention-continue-body" style="color:#cbd5f5;font-size:14px;opacity:0.95;">
+        Play a game to see your “Continue” option here.
+      </div>
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button id="retention-continue-btn" style="display:none;border-radius:999px;border:1px solid rgba(56,189,248,0.55);background:rgba(2,6,23,0.55);color:#e5e7eb;padding:10px 14px;font-weight:900;cursor:pointer;">
+          Continue playing
+        </button>
+      </div>
+    </div>
+
+    <div id="retention-daily" style="flex:1 1 280px;min-width:240px;padding:12px 14px;border:1px solid rgba(148,163,184,0.25);border-radius:16px;background:rgba(2,6,23,0.35);">
+      <div style="font-weight:900;color:#facc15;margin-bottom:6px;">Daily Streak</div>
+      <div id="retention-daily-body" style="color:#fde68a;font-size:14px;opacity:0.95;">
+        Come back tomorrow to keep your streak alive.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOP PICKS ===================== -->
 				<div class="category-title">
 			   <span class="label" data-i18n="cat_top_picks">🔥 Top Picks</span>
 			   <span class="sub" data-i18n="cat_top_picks_sub">Hand-picked for quick fun and high replay value.</span>
@@ -1172,6 +1210,59 @@
 		  link.addEventListener('click', () => {
 			playCounts[id] = (playCounts[id] || 0) + 1;
 			localStorage.setItem('gamePlayCounts', JSON.stringify(playCounts));
+
+			// ===== Retention (anonymous) =====
+			try {
+			  const now = new Date();
+			  const todayKey = now.toISOString().slice(0, 10); // YYYY-MM-DD
+
+			  // Continue: store last played
+			  const lastTitle = card?.dataset?.title || id;
+			  const href = link?.getAttribute('href') || (link && link.href) || '';
+			  localStorage.setItem('nr_last_played_game_id', id);
+			  localStorage.setItem('nr_last_played_game_title', lastTitle);
+			  localStorage.setItem('nr_last_played_game_url', href);
+
+			  // Daily streak: count at most once per day
+			  const prevDate = localStorage.getItem('nr_daily_last_date');
+			  const prevStreak = parseInt(localStorage.getItem('nr_daily_streak') || '0', 10);
+			  let streak = prevStreak;
+
+			  if (prevDate !== todayKey) {
+				// first play ever OR new day
+				streak = prevDate ? (prevDate === new Date(now.getTime() - 86400000).toISOString().slice(0, 10) ? prevStreak + 1 : 1) : 1;
+				localStorage.setItem('nr_daily_last_date', todayKey);
+				localStorage.setItem('nr_daily_streak', String(streak));
+			  }
+
+			  const playCountKey = 'nr_daily_play_count_' + todayKey;
+			  const prevCount = parseInt(localStorage.getItem(playCountKey) || '0', 10);
+			  localStorage.setItem(playCountKey, String(prevCount + 1));
+
+			  // Update UI immediately
+			  const continueBtn = document.getElementById('retention-continue-btn');
+			  const continueBody = document.getElementById('retention-continue-body');
+			  if (continueBtn && continueBody) {
+				continueBody.textContent = 'Last played: ' + (lastTitle || id);
+				continueBtn.style.display = 'inline-flex';
+				continueBtn.onclick = () => {
+				  const url = localStorage.getItem('nr_last_played_game_url');
+				  if (url) window.location.href = url;
+				};
+			  }
+
+			  const dailyBody = document.getElementById('retention-daily-body');
+			  if (dailyBody) {
+				const isToday = localStorage.getItem('nr_daily_last_date') === todayKey;
+				if (isToday) {
+				  dailyBody.textContent = 'Streak: 🔥 ' + localStorage.getItem('nr_daily_streak') + ' days — you played today.';
+				} else {
+				  dailyBody.textContent = 'Come back tomorrow to keep your streak alive.';
+				}
+			  }
+			} catch (e) {
+			  // no-op
+			}
 		  });
 		});
 

@@ -434,6 +434,7 @@ The larger you become, the harder the game gets — one mistake means game over.
     best = Math.max(best, score);
     localStorage.setItem("snake.best", String(best));
     updateHUD();
+    setTimeout(() => window.NeonGameBreak && window.NeonGameBreak(), 350);
   }
 
   function step() {
@@ -737,6 +738,28 @@ The larger you become, the harder the game gets — one mistake means game over.
     ? t("snake_mobile_controls")
     : t("snake_desktop_controls");
 }, 200);
+})();
+</script>
+
+<script id="neon-game-break-helper">
+window.NeonGameBreak = window.NeonGameBreak || (function () {
+  let lastAdTime = 0;
+  const COOLDOWN_MS = 60000;
+
+  return function showNeonGameBreak(force = false) {
+    const now = Date.now();
+
+    if (!force && now - lastAdTime < COOLDOWN_MS) return;
+    lastAdTime = now;
+
+    try {
+      if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === "function") {
+        window.NeonAds.showGameBreakAd();
+      }
+    } catch (e) {
+      console.log("Neon game-break ad failed", e);
+    }
+  };
 })();
 </script>
 <script src="/js/ads.js"></script>

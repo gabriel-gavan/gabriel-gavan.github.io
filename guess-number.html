@@ -372,6 +372,7 @@ This neon version highlights each feedback state in glowing colors for instant r
         localStorage.setItem("guess_best", String(best));
         bestPill.textContent = t("gtn_best") + ": " + best;
       }
+      setTimeout(() => window.NeonGameBreak && window.NeonGameBreak(), 350);
     } else if (v < target) {
       setMessage(t("gtn_too_low"), "");
     } else {
@@ -387,6 +388,28 @@ This neon version highlights each feedback state in glowing colors for instant r
   });
 
   newTarget();
+})();
+</script>
+
+<script id="neon-game-break-helper">
+window.NeonGameBreak = window.NeonGameBreak || (function () {
+  let lastAdTime = 0;
+  const COOLDOWN_MS = 60000;
+
+  return function showNeonGameBreak(force = false) {
+    const now = Date.now();
+
+    if (!force && now - lastAdTime < COOLDOWN_MS) return;
+    lastAdTime = now;
+
+    try {
+      if (window.NeonAds && typeof window.NeonAds.showGameBreakAd === "function") {
+        window.NeonAds.showGameBreakAd();
+      }
+    } catch (e) {
+      console.log("Neon game-break ad failed", e);
+    }
+  };
 })();
 </script>
 <script src="/js/ads.js"></script>
