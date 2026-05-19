@@ -344,7 +344,7 @@ if (!window.adsbygoogleLoaded) {
 	  wrap.className = "game-page-ad-slot";
 	  wrap.style.maxWidth = "728px";
 	  wrap.style.minHeight = "90px";
-	  wrap.style.margin = "14px auto";
+	  wrap.style.margin = "30px auto 50px";
 	  wrap.style.textAlign = "center";
 	  wrap.style.position = "relative";
 	  wrap.style.zIndex = "5";
@@ -374,7 +374,7 @@ if (!window.adsbygoogleLoaded) {
 	  wrap.appendChild(btn);
 	  wrap.appendChild(adBox);
 
-	  game.parentNode.insertBefore(wrap, game.nextSibling);
+	  document.body.appendChild(wrap);
 	  setTimeout(() => pushAd(ad), 1200);
 	}
 
