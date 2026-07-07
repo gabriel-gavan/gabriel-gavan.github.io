@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+    <meta name="description" content="Play a no-signup P2E Command starter mining demo with an R1 Scout Rocket and 3 Fuel." />
+    <link rel="canonical" href="https://xcoin-ipo.com/p2e/demo.html" />
+    <link rel="icon" href="assets/favicon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="P2E Command" />
+    <meta property="og:title" content="P2E Command Starter Mine Demo" />
+    <meta property="og:description" content="Try a no-signup rocket-mining demo: spend demo Fuel, mine demo ORE, and see durability change before joining the live test." />
+    <meta property="og:url" content="https://xcoin-ipo.com/p2e/demo.html" />
+    <meta property="og:image" content="https://xcoin-ipo.com/p2e/social/p2e-command-demo-social-card-1600x900.png" />
+    <meta property="og:video" content="https://xcoin-ipo.com/p2e/social/p2e-command-demo-run-mobile.mp4" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="P2E Command Starter Mine Demo" />
+    <meta name="twitter:description" content="No signup, no wallet, no seed phrase. Run the starter rocket mine and send first-loop feedback." />
+    <meta name="twitter:image" content="https://xcoin-ipo.com/p2e/social/p2e-command-demo-social-card-1600x900.png" />
+    <title>P2E Command Starter Mine Demo</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "P2E Command Starter Mine Demo",
+        "url": "https://xcoin-ipo.com/p2e/demo.html",
+        "image": "https://xcoin-ipo.com/p2e/social/p2e-command-demo-social-card-1600x900.png",
+        "description": "A no-signup browser demo for the first P2E Command rocket-mining loop.",
+        "applicationCategory": "Game",
+        "operatingSystem": "Web Browser",
+        "playMode": "SinglePlayer",
+        "isAccessibleForFree": true
+      }
+    </script>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #071521;
+        color: #f7fbff;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        min-width: 320px;
+        min-height: 100vh;
+        margin: 0;
+        background:
+          radial-gradient(circle at 78% 12%, rgba(89, 203, 255, 0.18), transparent 32%),
+          linear-gradient(180deg, #081723, #050b12);
+      }
+
+      main {
+        width: min(430px, 100%);
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 22px;
+      }
+
+      a { color: #82dcff; }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 26px;
+        font-weight: 900;
+        font-size: 18px;
+      }
+
+      .brand img {
+        width: 48px;
+        height: 38px;
+        object-fit: contain;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 34px;
+        line-height: 1.05;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 18px;
+        line-height: 1.2;
+      }
+
+      p {
+        color: #b9c7d4;
+        line-height: 1.55;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: #88d8ff;
+        font-size: 11px;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0;
+      }
+
+      .panel {
+        margin-top: 16px;
+        padding: 14px;
+        border: 1px solid rgba(130, 220, 255, 0.2);
+        border-radius: 8px;
+        background: rgba(9, 22, 32, 0.78);
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin: 14px 0;
+      }
+
+      .stat {
+        min-height: 78px;
+        padding: 10px;
+        border: 1px solid rgba(130, 220, 255, 0.16);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.055);
+      }
+
+      .stat strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 24px;
+      }
+
+      .stat span {
+        color: #a8bac8;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .rocket {
+        display: grid;
+        grid-template-columns: 86px 1fr;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .rocket img {
+        width: 86px;
+        height: 86px;
+        object-fit: contain;
+      }
+
+      .button-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 14px;
+      }
+
+      button,
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 12px;
+        border: 1px solid rgba(130, 220, 255, 0.24);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #dceaf5;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 850;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      button.primary,
+      .button.primary {
+        border: 0;
+        background: #e7f9ff;
+        color: #06131c;
+      }
+
+      button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .log {
+        display: grid;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .log div {
+        padding: 9px 10px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.055);
+        color: #c8d8e4;
+        font-size: 13px;
+      }
+
+      .note {
+        padding: 12px;
+        border-radius: 8px;
+        background: rgba(31, 199, 127, 0.1);
+        color: #c8f9e0;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .conversion-prompt {
+        margin-top: 12px;
+        padding: 12px;
+        border: 1px solid rgba(31, 199, 127, 0.22);
+        border-radius: 8px;
+        background: rgba(31, 199, 127, 0.12);
+      }
+
+      .conversion-prompt[hidden] {
+        display: none;
+      }
+
+      .conversion-prompt strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #dfffee;
+      }
+
+      .conversion-prompt p {
+        margin-bottom: 10px;
+      }
+
+      .share-actions {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .share-actions p {
+        margin: 0;
+        font-size: 13px;
+      }
+
+      .share-status {
+        min-height: 18px;
+        margin-top: 8px !important;
+        color: #9fe7ff !important;
+        font-size: 12px !important;
+        font-weight: 800;
+      }
+    </style>
+  </head>
+  <body>
+  <a href="/index.html" id="backToHub"
+    <main>
+      <div class="brand">
+        <img src="assets/logo-250.png" alt="P2E Command" />
+        <span>P2E Command</span>
+      </div>
+
+      <p class="eyebrow">No-Signup Starter Demo</p>
+      <h1>Run the starter rocket mine.</h1>
+      <p>This mini demo simulates the first P2E Command mining loop with an R1 Scout Rocket and 3 Fuel. It does not create an account, save rewards, or request a wallet.</p>
+
+      <section class="panel">
+        <div class="rocket">
+          <img src="assets/rocket-r1.png" alt="R1 Scout Rocket" />
+          <div>
+            <h2>R1 Scout Rocket</h2>
+            <p>Power 100. Costs 1 Fuel per run. Mines 18 ORE per run in this demo.</p>
+          </div>
+        </div>
+
+        <div class="stats" aria-label="Demo stats">
+          <div class="stat">
+            <strong id="fuel">3</strong>
+            <span>Fuel</span>
+          </div>
+          <div class="stat">
+            <strong id="ore">0</strong>
+            <span>ORE</span>
+          </div>
+          <div class="stat">
+            <strong id="durability">100%</strong>
+            <span>Durability</span>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button class="primary" id="mineButton" type="button">Run Mine</button>
+          <button id="resetButton" type="button">Reset</button>
+        </div>
+
+        <div class="log" id="log" aria-live="polite">
+          <div>Starter rocket ready. Run the mine to spend 1 Fuel and earn demo ORE.</div>
+        </div>
+
+        <div class="conversion-prompt" id="conversionPrompt" hidden>
+          <strong>First run complete. Was the loop clear?</strong>
+          <p>Send a 30-second note on what felt confusing, or open the live test if you want to save progress after signup.</p>
+          <div class="button-row">
+            <a class="button primary" data-demo-event="demo_feedback_click" href="https://xcoin-ipo.com/p2e/feedback.html?utm_source=demo_page&utm_medium=no_signup_demo&utm_campaign=test_pilot_sprint&utm_content=after_first_run_feedback">30-sec Feedback</a>
+            <a class="button" data-demo-event="demo_live_click" data-live-link="true" href="https://xcoin-ipo.com/p2e/?utm_source=demo_page&utm_medium=no_signup_demo&utm_campaign=test_pilot_sprint&utm_content=after_first_run">Save Progress Live</a>
+          </div>
+          <div class="share-actions">
+            <p>Know one person who plays browser games? Send them this no-signup demo.</p>
+            <div class="button-row">
+              <button id="shareButton" type="button">Share Demo</button>
+              <button id="copyButton" type="button">Copy Link</button>
+            </div>
+            <p class="share-status" id="shareStatus" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p class="note">This demo has no cash value. If the first mine is understandable, send feedback or continue to the live test to save progress.</p>
+        <div class="button-row">
+          <a class="button primary" data-demo-event="demo_feedback_click" href="https://xcoin-ipo.com/p2e/feedback.html?utm_source=demo_page&utm_medium=no_signup_demo&utm_campaign=test_pilot_sprint&utm_content=feedback">30-sec Feedback</a>
+          <a class="button" data-demo-event="demo_live_click" data-live-link="true" href="https://xcoin-ipo.com/p2e/?utm_source=demo_page&utm_medium=no_signup_demo&utm_campaign=test_pilot_sprint&utm_content=open_live">Open Live Test</a>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const state = { fuel: 3, ore: 0, durability: 100, runs: 0 };
+      const fuel = document.querySelector('#fuel');
+      const ore = document.querySelector('#ore');
+      const durability = document.querySelector('#durability');
+      const mineButton = document.querySelector('#mineButton');
+      const resetButton = document.querySelector('#resetButton');
+      const shareButton = document.querySelector('#shareButton');
+      const copyButton = document.querySelector('#copyButton');
+      const shareStatus = document.querySelector('#shareStatus');
+      const log = document.querySelector('#log');
+      const conversionPrompt = document.querySelector('#conversionPrompt');
+      const eventEndpoint = window.location.hostname.endsWith('xcoin-ipo.com')
+        ? '/p2e/api/marketing/event.gif'
+        : 'https://xcoin-ipo.com/p2e/api/marketing/event.gif';
+
+      function demoVisitorId() {
+        const existing = window.localStorage.getItem('p2e_marketing_visitor');
+        if (existing) return existing;
+        const generated = window.crypto?.randomUUID?.() || `demo-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        window.localStorage.setItem('p2e_marketing_visitor', generated);
+        return generated;
+      }
+
+      function trackingParams(eventName) {
+        const params = new URLSearchParams(window.location.search);
+        const sourceFallback = window.location.hostname.endsWith('xcoin-ipo.com') ? 'demo_page' : 'html5_demo_package';
+        const content = params.get('utm_content') || eventName;
+        return new URLSearchParams({
+          eventName,
+          visitorId: demoVisitorId(),
+          utmSource: params.get('utm_source') || sourceFallback,
+          utmMedium: params.get('utm_medium') || 'no_signup_demo',
+          utmCampaign: params.get('utm_campaign') || 'test_pilot_sprint',
+          utmContent: eventName === content ? content : `${content}_${eventName}`,
+          referrer: document.referrer || '',
+          landingPath: `${window.location.pathname}${window.location.search}`
+        });
+      }
+
+      function trackDemoEvent(eventName) {
+        const sessionKey = `p2e_${eventName}_recorded`;
+        if (window.sessionStorage.getItem(sessionKey)) return;
+        window.sessionStorage.setItem(sessionKey, '1');
+        const img = new Image(1, 1);
+        img.decoding = 'async';
+        img.src = `${eventEndpoint}?${trackingParams(eventName).toString()}&t=${Date.now()}`;
+      }
+
+      function demoShareUrl() {
+        const url = new URL('https://xcoin-ipo.com/p2e/demo.html');
+        url.searchParams.set('utm_source', 'player_share');
+        url.searchParams.set('utm_medium', 'organic_share');
+        url.searchParams.set('utm_campaign', 'test_pilot_sprint');
+        url.searchParams.set('utm_content', 'after_first_run_share');
+        return url.toString();
+      }
+
+      function setShareStatus(message) {
+        if (shareStatus) shareStatus.textContent = message;
+      }
+
+      async function copyDemoLink() {
+        const url = demoShareUrl();
+        trackDemoEvent('demo_copy_click');
+        try {
+          await navigator.clipboard.writeText(url);
+          setShareStatus('Demo link copied.');
+        } catch {
+          setShareStatus(url);
+        }
+      }
+
+      async function shareDemo() {
+        const url = demoShareUrl();
+        trackDemoEvent('demo_share_click');
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: 'P2E Command Starter Mine Demo',
+              text: 'Try this no-signup rocket-mining demo and see if the first loop makes sense.',
+              url
+            });
+            setShareStatus('Share sheet opened.');
+            return;
+          } catch (error) {
+            if (error?.name === 'AbortError') return;
+          }
+        }
+        await copyDemoLink();
+      }
+
+      function attachVisitorToLiveLinks() {
+        document.querySelectorAll('[data-live-link="true"]').forEach((link) => {
+          try {
+            const url = new URL(link.getAttribute('href'), window.location.origin);
+            url.searchParams.set('mv', demoVisitorId());
+            const href = url.origin === window.location.origin ? `${url.pathname}${url.search}${url.hash}` : url.toString();
+            link.setAttribute('href', href);
+          } catch {
+            // Leave the original link untouched.
+          }
+        });
+      }
+
+      function render(message) {
+        fuel.textContent = state.fuel;
+        ore.textContent = state.ore;
+        durability.textContent = `${state.durability}%`;
+        mineButton.disabled = state.fuel <= 0;
+        conversionPrompt.hidden = state.runs === 0;
+        if (message) {
+          const item = document.createElement('div');
+          item.textContent = message;
+          log.prepend(item);
+        }
+      }
+
+      mineButton.addEventListener('click', () => {
+        if (state.fuel <= 0) return;
+        state.fuel -= 1;
+        state.ore += 18;
+        state.durability = Math.max(0, state.durability - 5);
+        state.runs += 1;
+        render(`Run ${state.runs}: spent 1 Fuel, mined 18 demo ORE.`);
+        if (state.runs === 1) {
+          trackDemoEvent('demo_run');
+        }
+        if (state.fuel === 0) {
+          render('Demo fuel empty. Open the live test to continue with a real account.');
+        }
+      });
+
+      resetButton.addEventListener('click', () => {
+        state.fuel = 3;
+        state.ore = 0;
+        state.durability = 100;
+        state.runs = 0;
+        log.innerHTML = '';
+        render('Demo reset. Starter rocket ready.');
+      });
+
+      shareButton.addEventListener('click', shareDemo);
+      copyButton.addEventListener('click', copyDemoLink);
+
+      document.querySelectorAll('[data-demo-event]').forEach((link) => {
+        link.addEventListener('click', () => trackDemoEvent(link.dataset.demoEvent));
+      });
+
+      attachVisitorToLiveLinks();
+      trackDemoEvent('demo_view');
+      render();
+    </script>
+	<script src="/js/ads.js"></script>
+  </body>
+</html>

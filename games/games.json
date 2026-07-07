@@ -659,6 +659,15 @@
     "category": "strategy"
   },
   {
+    "id": "p2e-command",
+    "title": "t_p2e_command",
+    "url": "games/P2E Command/index.html",
+    "thumb": "images/p2e-command.webp",
+    "desc": "P2E Command is a no-signup HTML5 browser playtest for a mobile-first strategy and idle resource loop. Players run short rocket-mining sessions, upgrade equipment, and test early progression pacing directly in the browser. This review build requires no wallet connection, deposit, wagering, purchase, or real-money reward claims. Demo and press kit: https://xcoin-ipo.com/p2e/demo.html?utm_source=neonminigamehub&utm_medium=html5_zip_upload&utm_campaign=test_pilot_sprint&utm_content=no_signup_demo and https://xcoin-ipo.com/p2e/press-kit.html",
+    "tags": ["arcade", "shooter"],
+    "category": "strategy"
+  },
+  {
     "id": "neo-runner",
     "title": "t_game_neo_runner",
     "url": "neo-runner.html",

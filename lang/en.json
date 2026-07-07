@@ -1267,5 +1267,6 @@
   "t_game_pattern_lock": "Pattern Lock",
   "t_game_sliding_puzzle": "Sliding Puzzle (3×3)",
   "t_game_neonnebula_strike": "Neon Nebula Strike",
-  "t_game_neon_orbit_collector": "Neon Orbit Collector"
+  "t_game_neon_orbit_collector": "Neon Orbit Collector",
+  "t_p2e_command": "P2E Command"
 }
